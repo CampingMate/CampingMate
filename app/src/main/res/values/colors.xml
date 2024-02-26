@@ -2,4 +2,21 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="brandColor">#399D74</color>
+    <color name="background">#FFFEFA</color>
+    <color name="green90">#3C5A46</color>
+    <color name="green15">#2641C38E</color>
+    <color name="green30">#279668</color>
+    <color name="chip_stroke">#837E7E</color>
+    <color name="chip_text">#313131</color>
+    <color name="holiday_text">#D92E2E</color>
+    <color name="board_gray">#707070</color>
+    <color name="tag">#006874</color>
+    <color name="camp_detail_tap">#545454</color>
+    <color name="chat_input_text">#494949</color>
+    <color name="hint_gray">#C7C7C7</color>
+    <color name="snackbar_gray">#636363</color>
+    <color name="search_gray">#F4F4F4</color>
+    <color name="search_hint">#727272</color>
+    <color name="bottom_gray">#9F9F9F</color>
 </resources>
