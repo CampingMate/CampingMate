@@ -68,4 +68,8 @@ dependencies {
     implementation ("com.airbnb.android:lottie:6.3.0")
     // Android splash
     implementation("androidx.core:core-splashscreen:1.0.1")
+
+    // Bottom navigation theme
+    implementation ("nl.joery.animatedbottombar:library:1.1.0")
+
 }
