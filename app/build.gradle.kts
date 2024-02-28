@@ -72,4 +72,8 @@ dependencies {
     // Bottom navigation theme
     implementation ("nl.joery.animatedbottombar:library:1.1.0")
 
+    // Kotlin
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
+
 }
