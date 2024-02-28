@@ -4,19 +4,19 @@
 
     <!--regular-->
     <font
-        android:font="@font/spoqhansansneo_regular"
+        android:font="@font/spoqahansansneo_regular"
         android:fontStyle="normal"
         android:fontWeight="400"
-        app:font="@font/spoqhansansneo_regular"
+        app:font="@font/spoqahansansneo_regular"
         app:fontStyle="normal"
         app:fontWeight="400" />
 
     <!--bold-->
     <font
-        android:font="@font/spoqhansansneo_bold"
+        android:font="@font/spoqahansansneo_bold"
         android:fontStyle="normal"
         android:fontWeight="400"
-        app:font="@font/spoqhansansneo_bold"
+        app:font="@font/spoqahansansneo_bold"
         app:fontStyle="normal"
         app:fontWeight="400" />
 
