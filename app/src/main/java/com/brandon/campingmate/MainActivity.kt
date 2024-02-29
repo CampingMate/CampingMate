@@ -1,58 +1,51 @@
 package com.brandon.campingmate
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import com.brandon.campingmate.databinding.ActivityMainBinding
-import com.google.firebase.Firebase
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.firestore.firestore
+import nl.joery.animatedbottombar.AnimatedBottomBar
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
-    private lateinit var databaseReference: DatabaseReference
-    private val TAG = "Main"
+    val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        supportFragmentManager.beginTransaction().apply {
-            replace(R.id.mapview, MapFragment())
-            commit()
-        }
-
-        // Firebase 데이터베이스 인스턴스 가져오기
-        val firebaseDatabase = FirebaseDatabase.getInstance()
-        val db = Firebase.firestore
 
 
-        // "camps" 경로의 DatabaseReference 가져오기
-//        databaseReference = firebaseDatabase.getReference("camps")
+        setupBottomNavigation()
 
-        // 버튼 클릭 이벤트 처리
-        binding.button.setOnClickListener {
-            Log.e("CampInfo", "데이터 요청!!")
-
-            val campsRef = db.collection("camps")
-
-//            campsRef.whereEqualTo("induty", "글램핑")
-            campsRef.whereArrayContainsAny("induty", listOf("카라반"))
-                .limit(20)
-                .get()
-                .addOnSuccessListener { documents ->
-                    for (document in documents) {
-                        // 각 문서에 대한 작업 수행
-                        Log.e(TAG, "${document.id} => ${document.data}\n")
-                    }
-                    Log.e(TAG, "결과 값: ${documents.toString()}")
-                }
-                .addOnFailureListener { exception ->
-                    Log.e(TAG, "Error getting documents: ", exception)
-                }
-        }
     }
+
+    private fun setupBottomNavigation() {
+
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
+        navController = navHostFragment.navController
+
+        binding.bottomNavigation.setOnTabSelectListener(object : AnimatedBottomBar.OnTabSelectListener {
+            override fun onTabSelected(
+                lastIndex: Int,
+                lastTab: AnimatedBottomBar.Tab?,
+                newIndex: Int,
+                newTab: AnimatedBottomBar.Tab
+            ) {
+                // 여기에서 NavController를 사용하여 화면 전환을 수행합니다.
+                // 예를 들어, 각 탭의 ID 또는 태그에 따라 다른 화면으로 이동할 수 있습니다.
+                when (newTab.id) {
+                    R.id.tab_home -> navController.navigate(R.id.homeFragment)
+                    R.id.tab_board -> navController.navigate(R.id.boardFragment)
+                    R.id.tab_chat -> navController.navigate(R.id.chatFragment)
+                    R.id.tab_map -> navController.navigate(R.id.mapFragment)
+                    R.id.tab_profile -> navController.navigate(R.id.profileFragment)
+                }
+            }
+        })
+    }
+
 }
