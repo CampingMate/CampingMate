@@ -1,60 +1,123 @@
 package com.brandon.campingmate.ui
-
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.brandon.campingmate.R
+import com.brandon.campingmate.databinding.FragmentMapBinding
+import com.google.firebase.Firebase
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.firestore
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraPosition
+import com.naver.maps.map.MapView
+import com.naver.maps.map.NaverMap
+import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.Align
+import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.OverlayImage
+import com.naver.maps.map.util.MarkerIcons
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [MapFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class MapFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
+class MapFragment : Fragment(),OnMapReadyCallback {
+    private var _binding : FragmentMapBinding? = null
+    private val binding  get() = _binding!!
+    private var mapView: MapView? = null
+    private var naverMap: NaverMap? = null
+    private var maptype : Boolean = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_map, container, false)
+        _binding = FragmentMapBinding.inflate(inflater,container,false)
+        mapView = binding.mvMap
+        mapView?.onCreate(savedInstanceState)
+        mapView?.getMapAsync(this)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MapFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MapFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.btnSattel.setOnClickListener {
+            if(maptype){
+                naverMap?.mapType = NaverMap.MapType.Satellite
+                maptype=false
+                binding.btnSattel.text = "지형도"
+            }else{
+                naverMap?.mapType = NaverMap.MapType.Terrain
+                maptype=true
+                binding.btnSattel.text = "위성"
+            }
+        }
+
+    }
+
+    override fun onMapReady(p0: NaverMap) {
+        naverMap = p0
+        val cameraPosition = CameraPosition(LatLng(37.413294,127.269311),10.0)
+        naverMap?.cameraPosition = cameraPosition
+
+        val firebaseDatabase = FirebaseDatabase.getInstance()
+        val db = Firebase.firestore
+
+        val campsRef = db.collection("camps")
+
+//            campsRef.whereEqualTo("induty", "글램핑")
+        campsRef
+            .limit(10)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    // 각 문서에 대한 작업 수행
+                    val marker = Marker()
+                    marker.icon = MarkerIcons.GREEN
+                    marker.captionText = ""+document.data["facltNm"]
+                    marker.captionRequestedWidth = 200
+                    marker.setCaptionAligns(Align.Top)
+                    marker.captionOffset = 10
+                    marker.captionTextSize = 18f
+                    marker.position = LatLng(document.data["mapY"].toString().toDouble() , document.data["mapX"].toString().toDouble())
+                    marker.setOnClickListener {overlay ->
+
+                        true
+                    }
+                    marker.map = naverMap
                 }
             }
+            .addOnFailureListener { exception ->
+                Log.e("test", "Error getting documents: ", exception)
+            }
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView?.onPause()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mapView?.onStop()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        mapView?.onDestroy()
+        _binding = null
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        mapView?.onSaveInstanceState(outState)
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        mapView?.onLowMemory()
     }
 }
