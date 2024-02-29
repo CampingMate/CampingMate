@@ -12,7 +12,6 @@ class MainActivity : AppCompatActivity() {
     val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -24,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         binding.viewPager.offscreenPageLimit = 4
         binding.bottomNavigation.setupWithViewPager2(binding.viewPager)
 
-        binding.bottomNavigation.setOnTabSelectListener(object: AnimatedBottomBar.OnTabSelectListener{
+        binding.bottomNavigation.setOnTabSelectListener(object : AnimatedBottomBar.OnTabSelectListener {
             override fun onTabSelected(
                 lastIndex: Int,
                 lastTab: AnimatedBottomBar.Tab?,
@@ -35,7 +34,4 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-
-
-
 }
