@@ -1,10 +1,15 @@
 package com.brandon.campingmate.ui
+import android.app.AlertDialog
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isGone
+import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.FragmentMapBinding
 import com.google.firebase.Firebase
 import com.google.firebase.database.FirebaseDatabase
@@ -25,6 +30,7 @@ class MapFragment : Fragment(),OnMapReadyCallback {
     private var mapView: MapView? = null
     private var naverMap: NaverMap? = null
     private var maptype : Boolean = true
+    private var context : Context? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -33,6 +39,7 @@ class MapFragment : Fragment(),OnMapReadyCallback {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        context = container?.context
         _binding = FragmentMapBinding.inflate(inflater,container,false)
         mapView = binding.mvMap
         mapView?.onCreate(savedInstanceState)
@@ -55,6 +62,18 @@ class MapFragment : Fragment(),OnMapReadyCallback {
             }
         }
 
+        binding.ivDialogclose.setOnClickListener {
+            binding.clMapBottomDialog.isGone = true
+        }
+
+        binding.tvDialogcampname.setOnClickListener {
+            //캠프디테일로 이동
+        }
+
+        binding.button.setOnClickListener {
+            val intent = Intent(context,WebViewActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     override fun onMapReady(p0: NaverMap) {
@@ -67,7 +86,8 @@ class MapFragment : Fragment(),OnMapReadyCallback {
 
         val campsRef = db.collection("camps")
 
-//            campsRef.whereEqualTo("induty", "글램핑")
+
+
         campsRef
             .limit(10)
             .get()
@@ -83,7 +103,14 @@ class MapFragment : Fragment(),OnMapReadyCallback {
                     marker.captionTextSize = 18f
                     marker.position = LatLng(document.data["mapY"].toString().toDouble() , document.data["mapX"].toString().toDouble())
                     marker.setOnClickListener {overlay ->
-
+                        val tag = document.data["induty"] as List<*>
+                        val loc = document.data["lctCl"] as List<*>
+                        val str = tag.joinToString(", ")+" · "+loc.joinToString(" / ")
+                        binding.tvDialogtag.text = str
+                        binding.tvDialogcampname.text = document.data["facltNm"].toString()
+                        binding.tvDialoglocation.text = document.data["addr1"].toString()
+                        //binding.rvCampimg.adapter
+                        binding.clMapBottomDialog.isGone=false
                         true
                     }
                     marker.map = naverMap
