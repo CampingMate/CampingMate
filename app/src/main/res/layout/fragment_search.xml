@@ -916,9 +916,9 @@
                 </com.google.android.material.chip.ChipGroup>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/reset_layout"
+                    android:id="@+id/btn_reset"
                     android:layout_width="150dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="50dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="50dp"
@@ -951,14 +951,16 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_apply"
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:text="@string/search_apply"
                     android:layout_marginStart="20dp"
                     android:background="@drawable/apply_btn"
-                    app:layout_constraintStart_toEndOf="@id/reset_layout"
-                    app:layout_constraintTop_toTopOf="@id/reset_layout"
-                    app:layout_constraintBottom_toBottomOf="@id/reset_layout"/>
+                    android:textColor="@color/background"
+                    app:layout_constraintStart_toEndOf="@id/btn_reset"
+                    app:layout_constraintTop_toTopOf="@id/btn_reset"
+                    app:layout_constraintBottom_toBottomOf="@id/btn_reset"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>
