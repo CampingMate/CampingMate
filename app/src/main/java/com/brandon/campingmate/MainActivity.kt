@@ -20,6 +20,11 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        supportFragmentManager.beginTransaction().apply {
+            replace(R.id.mapview, MapFragment())
+            commit()
+        }
+
         // Firebase 데이터베이스 인스턴스 가져오기
         val firebaseDatabase = FirebaseDatabase.getInstance()
         val db = Firebase.firestore
@@ -35,7 +40,7 @@ class MainActivity : AppCompatActivity() {
             val campsRef = db.collection("camps")
 
 //            campsRef.whereEqualTo("induty", "글램핑")
-            campsRef.whereArrayContains("induty", "글램핑")
+            campsRef.whereArrayContainsAny("induty", listOf("카라반"))
                 .limit(20)
                 .get()
                 .addOnSuccessListener { documents ->

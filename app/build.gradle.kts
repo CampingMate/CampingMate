@@ -69,4 +69,6 @@ dependencies {
     implementation ("com.airbnb.android:lottie:6.3.0")
     // Android splash
     implementation("androidx.core:core-splashscreen:1.0.1")
+    //naver maps
+    implementation("com.naver.maps:map-sdk:3.17.0")
 }
