@@ -4,10 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.brandon.campingmate.data.PostListItem
 import com.brandon.campingmate.databinding.FragmentBoardBinding
+import timber.log.Timber
 
 class BoardFragment : Fragment() {
 
@@ -15,10 +18,6 @@ class BoardFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val postListAdapter: PostListAdapter by lazy { PostListAdapter() }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -33,6 +32,22 @@ class BoardFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         initView()
+        initListener()
+    }
+
+    private fun initListener() = with(binding) {
+        searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                Timber.d("Search submitted: $query")
+                // TODO: Implement search logic here
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                btnWrite.isVisible = newText.isNullOrEmpty()
+                return false
+            }
+        })
     }
 
     private fun initView() = with(binding) {
@@ -49,11 +64,8 @@ class BoardFragment : Fragment() {
                 PostListItem.Loading,
                 PostListItem.PostItem(),
                 PostListItem.PostItem(),
-
-                )
+            )
         )
-
-
     }
 
     override fun onDestroy() {
