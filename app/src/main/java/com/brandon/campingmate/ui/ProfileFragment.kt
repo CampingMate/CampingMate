@@ -1,10 +1,14 @@
 package com.brandon.campingmate.ui
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.FragmentProfileBinding
 
 class ProfileFragment : Fragment() {
@@ -13,7 +17,7 @@ class ProfileFragment : Fragment() {
     private val binding get() = _binding!!
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -33,14 +37,20 @@ class ProfileFragment : Fragment() {
 //            initLogin()
 //        }
 
+        clickLogout()
+
     }
 
     private fun initLogin() {
         with(binding) {
+
+            //todo.사진설정해주기 (if문 작성으로 저장값이 있으면 불러오기)
+
             tvProfileName.textSize = 24f
             tvProfileName.text = "김수미"
 
             tvProfileEmail.visibility = View.VISIBLE
+
             btnLogout.visibility = View.VISIBLE
 
             btnGoLogin.visibility = View.GONE
@@ -71,9 +81,17 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    private fun clickEditName() {
+        with(binding) {
+            btnEditName.setOnClickListener {
+
+            }
+        }
+    }
+
     private fun clickEditComfirm() {
         //Todo. 이름 사진은 변경값을 다시 데이터베이스에 저장도 해줘야함.
-        with(binding){
+        with(binding) {
             btnEditConfirm.setOnClickListener {
                 tvProfileName.text = etProfileName.text.toString()
 
@@ -92,7 +110,6 @@ class ProfileFragment : Fragment() {
             }
         }
     }
-
 
 
     private fun clickBookmarkedTab() {
@@ -117,11 +134,44 @@ class ProfileFragment : Fragment() {
 
 
     private fun clickLogout() {
-        binding.btnLogout.setOnClickListener {
-            //todo. 로그아웃 다이얼로그 연결
-            //취소-뒤로가기 로그아웃-로그아웃절차수행
+        with(binding) {
+            btnLogout.setOnClickListener {
+
+                val logoutDialog = layoutInflater.inflate(R.layout.dialog_logout, null)
+
+                val dialog = AlertDialog.Builder(requireContext())
+                    .setView(logoutDialog)
+                    .create()
+
+                //다이얼로그 영역(기본값 화이트) 투명화로 둥근 테두리가 묻히지 않고 보이도록 설정
+                dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+                dialog.show()
+
+                dialog.findViewById<TextView>(R.id.btn_logout_cancel)?.setOnClickListener {
+                    dialog.dismiss()
+                }
+
+                dialog.findViewById<TextView>(R.id.btn_logout_comfirm)?.setOnClickListener {
+                    //todo. 실제 로그아웃 절차 수행 <- 수행시 토스트 삭제!
+                    Toast.makeText(requireContext(),"로그아웃 되었습니다.",Toast.LENGTH_SHORT).show()
+
+                    //화면 상에서 비로그인 화면으로 되돌리기
+                    ivProfileImg.setImageResource(R.drawable.ic_camp)
+                    tvProfileName.textSize = 20f
+                    tvProfileName.text = getString(R.string.profile_login_text)
+                    tvProfileEmail.visibility = View.GONE
+                    btnLogout.visibility = View.INVISIBLE
+                    btnGoLogin.visibility = View.VISIBLE
+                    btnProfileEdit.visibility = View.GONE
+
+
+                    dialog.dismiss()
+                }
+            }
+
         }
     }
+
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
