@@ -1,18 +1,11 @@
 package com.brandon.campingmate.ui
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import com.brandon.campingmate.R
+import androidx.fragment.app.Fragment
 import com.brandon.campingmate.databinding.FragmentProfileBinding
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 class ProfileFragment : Fragment() {
 
@@ -44,10 +37,10 @@ class ProfileFragment : Fragment() {
 
     private fun initLogin() {
         with(binding) {
-            tvUserName.textSize = 24f
-            tvUserName.text = "김수미"
+            tvProfileName.textSize = 24f
+            tvProfileName.text = "김수미"
 
-            tvUserEmail.visibility = View.VISIBLE
+            tvProfileEmail.visibility = View.VISIBLE
             btnLogout.visibility = View.VISIBLE
 
             btnGoLogin.visibility = View.GONE
@@ -82,7 +75,7 @@ class ProfileFragment : Fragment() {
         //Todo. 이름 사진은 변경값을 다시 데이터베이스에 저장도 해줘야함.
         with(binding){
             btnEditConfirm.setOnClickListener {
-                tvUserName.text = etUserName.text.toString()
+                tvProfileName.text = etProfileName.text.toString()
 
             }
         }

@@ -98,18 +98,18 @@
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_user_name"
+            android:id="@+id/cl_profile_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginBottom="4dp"
-            app:layout_constraintBottom_toTopOf="@+id/tv_user_email"
+            app:layout_constraintBottom_toTopOf="@+id/tv_profile_email"
             app:layout_constraintStart_toEndOf="@+id/cardView"
             app:layout_constraintTop_toTopOf="@+id/cardView"
             app:layout_constraintVertical_chainStyle="packed" >
 
             <TextView
-                android:id="@+id/tv_user_name"
+                android:id="@+id/tv_profile_name"
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:fontFamily="@font/spoqahansansneo_medium"
@@ -121,7 +121,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
-                android:id="@+id/et_user_name"
+                android:id="@+id/et_profile_name"
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:fontFamily="@font/spoqahansansneo_medium"
@@ -143,14 +143,14 @@
             android:layout_marginStart="4dp"
             android:src="@drawable/ic_edit"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/cl_user_name"
-            app:layout_constraintStart_toEndOf="@+id/cl_user_name"
-            app:layout_constraintTop_toTopOf="@+id/cl_user_name" />
+            app:layout_constraintBottom_toBottomOf="@+id/cl_profile_name"
+            app:layout_constraintStart_toEndOf="@+id/cl_profile_name"
+            app:layout_constraintTop_toTopOf="@+id/cl_profile_name" />
 
 
 
         <TextView
-            android:id="@+id/tv_user_email"
+            android:id="@+id/tv_profile_email"
             android:layout_width="wrap_content"
             android:layout_height="15dp"
             android:layout_marginStart="16dp"
@@ -160,7 +160,7 @@
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/cardView"
             app:layout_constraintStart_toEndOf="@+id/cardView"
-            app:layout_constraintTop_toBottomOf="@+id/cl_user_name" />
+            app:layout_constraintTop_toBottomOf="@+id/cl_profile_name" />
 
         <TextView
             android:id="@+id/btn_logout"
@@ -207,7 +207,6 @@
                 android:visibility="gone" />
 
         </LinearLayout>
-
 
         <!--        <com.google.android.material.tabs.TabLayout-->
         <!--            android:id="@+id/tab_profile"-->

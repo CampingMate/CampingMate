@@ -20,5 +20,7 @@
     <string name="profile_login_text">로그인 후 사용해주세요</string>
     <string name="profile_login">로그인 하러 가기</string>
     <string name="profile_confirm">확인</string>
+    <string name="user_detail_title">상대방 프로필</string>
+    <string name="user_detail_send_message">메시지 보내기</string>
 
 </resources>
