@@ -94,7 +94,7 @@
             app:tint="@color/board_gray" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_campimg"
+            android:id="@+id/rv_campImg"
             android:layout_width="match_parent"
             android:layout_height="90dp"
             android:layout_marginStart="16dp"

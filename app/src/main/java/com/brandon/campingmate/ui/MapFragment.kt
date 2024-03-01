@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isGone
 import com.brandon.campingmate.R
+import com.brandon.campingmate.adapter.DialogImgAdapter
 import com.brandon.campingmate.databinding.FragmentMapBinding
 import com.google.firebase.Firebase
 import com.google.firebase.database.FirebaseDatabase
@@ -42,6 +43,7 @@ class MapFragment : Fragment(),OnMapReadyCallback {
     private var naverMap: NaverMap? = null
     private var maptype : Boolean = true
     private var context : Context? = null
+    private val imgAdapter = DialogImgAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,13 +90,13 @@ class MapFragment : Fragment(),OnMapReadyCallback {
             startActivity(intent)
         }
         //makeAllMarker()
+        binding.rvCampImg.adapter = imgAdapter
     }
 
     override fun onMapReady(p0: NaverMap) {
         naverMap = p0
-        val cameraPosition = CameraPosition(LatLng(37.413294,127.269311),10.0)
+        val cameraPosition = CameraPosition(LatLng(36.60545, 127.9792),6.0)
         naverMap?.cameraPosition = cameraPosition
-
 
         //백그라운드에서 불러온 마커가 저장되는 리스트
         var markers = mutableListOf<Marker>()
@@ -123,11 +125,14 @@ class MapFragment : Fragment(),OnMapReadyCallback {
                         val tag = document.data["induty"] as List<*>
                         val loc = document.data["lctCl"] as List<*>
                         val str = tag.joinToString(", ")+" · "+loc.joinToString(" / ")
+                        imgAdapter.clear()
                         binding.tvDialogtag.text = str
                         binding.tvDialogcampname.text = document.data["facltNm"].toString()
                         binding.tvDialoglocation.text = document.data["addr1"].toString()
-                        //binding.rvCampimg.adapter
                         binding.clMapBottomDialog.isGone=false
+
+                        val list = listOf(document.data["firstImageUrl"].toString())
+                        imgAdapter.submitList(list)
 
                         true
                     }
