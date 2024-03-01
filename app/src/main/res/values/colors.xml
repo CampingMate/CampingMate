@@ -19,4 +19,5 @@
     <color name="search_gray">#F4F4F4</color>
     <color name="search_hint">#727272</color>
     <color name="bottom_gray">#9F9F9F</color>
+    <color name="temp_color">#727272</color>
 </resources>
