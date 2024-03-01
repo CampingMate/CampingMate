@@ -1,6 +1,6 @@
 package com.brandon.campingmate
 
-data class CampModel(
+data class CampingModel(
     val addr1: String,
     val addr2: String,
     val allar: String,
