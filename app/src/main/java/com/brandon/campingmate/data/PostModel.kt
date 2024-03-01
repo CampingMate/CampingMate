@@ -9,6 +9,8 @@ data class PostModel(
     val title: String? = null,
     val content: String? = null,
     val imageUrlList: List<String>? = null,
-    val timestamp: Timestamp? = Timestamp.now() // Firestore의 Timestamp 사용
+    val timestamp: Timestamp? = null //
 )
+
+//    val timestamp: Timestamp? = Timestamp.now() // Firestore의 Timestamp 사용
 

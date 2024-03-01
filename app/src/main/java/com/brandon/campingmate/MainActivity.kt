@@ -3,7 +3,6 @@ package com.brandon.campingmate
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.brandon.campingmate.databinding.ActivityMainBinding
-import com.brandon.campingmate.ui.ViewPager2Adapter
 import nl.joery.animatedbottombar.AnimatedBottomBar
 import timber.log.Timber
 
