@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -79,5 +80,9 @@ dependencies {
 
     // Bottom navigation theme
     implementation ("nl.joery.animatedbottombar:library:1.1.0")
-
+    
+    //네이버 맵
+    implementation("com.naver.maps:map-sdk:3.17.0")
+    //네이버맵 클러스터링
+    implementation ("io.github.ParkSangGwon:tedclustering-naver:1.0.2")
 }
