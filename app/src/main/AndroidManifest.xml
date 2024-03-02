@@ -16,6 +16,9 @@
         android:theme="@style/Theme.CampingMate"
         tools:targetApi="31">
         <activity
+            android:name=".NewActivity"
+            android:exported="false" />
+        <activity
             android:name=".LoginActivity"
             android:exported="false" />
         <activity
