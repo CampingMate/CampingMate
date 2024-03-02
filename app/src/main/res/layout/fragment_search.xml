@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SearchFragment">
+    tools:context=".ui.SearchFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -112,14 +111,13 @@
                     android:textSize="15sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/chip_type_group"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/tv_search_type"
                     app:layout_constraintTop_toBottomOf="@+id/tv_search_type">
 
                     <com.google.android.material.chip.Chip
@@ -213,13 +211,14 @@
                     android:id="@+id/chip_location_group"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="@id/tv_search_location"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_search_location"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_search_location">
+                    android:layout_marginEnd="16dp">
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipSeoul"
-                        style="@style/CustomChipChoice"
+                        style="@style/CustomChipChoiceLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checkable="true"
@@ -227,14 +226,11 @@
                         android:fontFamily="@font/spoqahansansneo_regular"
                         android:text="@string/search_chip_seoul"
                         app:chipCornerRadius="6dp"
-                        app:chipEndPadding="25dp"
-                        app:chipMinHeight="36dp"
-                        app:chipStartPadding="25dp"
                         app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipBusan"
-                        style="@style/CustomChipChoice"
+                        style="@style/CustomChipChoiceLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checkable="true"
@@ -242,14 +238,11 @@
                         android:fontFamily="@font/spoqahansansneo_regular"
                         android:text="@string/search_chip_busan"
                         app:chipCornerRadius="6dp"
-                        app:chipEndPadding="25dp"
-                        app:chipMinHeight="36dp"
-                        app:chipStartPadding="25dp"
                         app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipDaegu"
-                        style="@style/CustomChipChoice"
+                        style="@style/CustomChipChoiceLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checkable="true"
@@ -257,14 +250,11 @@
                         android:fontFamily="@font/spoqahansansneo_regular"
                         android:text="@string/search_chip_dague"
                         app:chipCornerRadius="6dp"
-                        app:chipEndPadding="25dp"
-                        app:chipMinHeight="36dp"
-                        app:chipStartPadding="25dp"
                         app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipIncheon"
-                        style="@style/CustomChipChoice"
+                        style="@style/CustomChipChoiceLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checkable="true"
@@ -272,14 +262,11 @@
                         android:fontFamily="@font/spoqahansansneo_regular"
                         android:text="@string/search_chip_incheon"
                         app:chipCornerRadius="6dp"
-                        app:chipEndPadding="25dp"
-                        app:chipMinHeight="36dp"
-                        app:chipStartPadding="25dp"
                         app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipGwangju"
-                        style="@style/CustomChipChoice"
+                        style="@style/CustomChipChoiceLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checkable="true"
@@ -287,14 +274,11 @@
                         android:fontFamily="@font/spoqahansansneo_regular"
                         android:text="@string/search_chip_gwangju"
                         app:chipCornerRadius="6dp"
-                        app:chipEndPadding="25dp"
-                        app:chipMinHeight="36dp"
-                        app:chipStartPadding="25dp"
                         app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipDaejeon"
-                        style="@style/CustomChipChoice"
+                        style="@style/CustomChipChoiceLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checkable="true"
@@ -302,14 +286,11 @@
                         android:fontFamily="@font/spoqahansansneo_regular"
                         android:text="@string/search_chip_daejeon"
                         app:chipCornerRadius="6dp"
-                        app:chipEndPadding="25dp"
-                        app:chipMinHeight="36dp"
-                        app:chipStartPadding="25dp"
                         app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipUlsan"
-                        style="@style/CustomChipChoice"
+                        style="@style/CustomChipChoiceLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checkable="true"
@@ -317,14 +298,11 @@
                         android:fontFamily="@font/spoqahansansneo_regular"
                         android:text="@string/search_chip_ulsan"
                         app:chipCornerRadius="6dp"
-                        app:chipEndPadding="25dp"
-                        app:chipMinHeight="36dp"
-                        app:chipStartPadding="25dp"
                         app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipSejong"
-                        style="@style/CustomChipChoice"
+                        style="@style/CustomChipChoiceLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checkable="true"
@@ -332,14 +310,11 @@
                         android:fontFamily="@font/spoqahansansneo_regular"
                         android:text="@string/search_chip_sejong"
                         app:chipCornerRadius="6dp"
-                        app:chipEndPadding="25dp"
-                        app:chipMinHeight="36dp"
-                        app:chipStartPadding="25dp"
                         app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipGyeonggi"
-                        style="@style/CustomChipChoice"
+                        style="@style/CustomChipChoiceLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checkable="true"
@@ -347,14 +322,11 @@
                         android:fontFamily="@font/spoqahansansneo_regular"
                         android:text="@string/search_chip_gyeongggi"
                         app:chipCornerRadius="6dp"
-                        app:chipEndPadding="25dp"
-                        app:chipMinHeight="36dp"
-                        app:chipStartPadding="25dp"
                         app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipGangwon"
-                        style="@style/CustomChipChoice"
+                        style="@style/CustomChipChoiceLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checkable="true"
@@ -362,14 +334,11 @@
                         android:fontFamily="@font/spoqahansansneo_regular"
                         android:text="@string/search_chip_gangwon"
                         app:chipCornerRadius="6dp"
-                        app:chipEndPadding="25dp"
-                        app:chipMinHeight="36dp"
-                        app:chipStartPadding="25dp"
                         app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipChungbuk"
-                        style="@style/CustomChipChoice"
+                        style="@style/CustomChipChoiceLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checkable="true"
@@ -377,14 +346,11 @@
                         android:fontFamily="@font/spoqahansansneo_regular"
                         android:text="@string/search_chip_chungbuk"
                         app:chipCornerRadius="6dp"
-                        app:chipEndPadding="25dp"
-                        app:chipMinHeight="36dp"
-                        app:chipStartPadding="25dp"
                         app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipChungnam"
-                        style="@style/CustomChipChoice"
+                        style="@style/CustomChipChoiceLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checkable="true"
@@ -392,14 +358,11 @@
                         android:fontFamily="@font/spoqahansansneo_regular"
                         android:text="@string/search_chip_chungnam"
                         app:chipCornerRadius="6dp"
-                        app:chipEndPadding="25dp"
-                        app:chipMinHeight="36dp"
-                        app:chipStartPadding="25dp"
                         app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipJeonbuk"
-                        style="@style/CustomChipChoice"
+                        style="@style/CustomChipChoiceLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checkable="true"
@@ -407,14 +370,11 @@
                         android:fontFamily="@font/spoqahansansneo_regular"
                         android:text="@string/search_chip_jeonbuk"
                         app:chipCornerRadius="6dp"
-                        app:chipEndPadding="25dp"
-                        app:chipMinHeight="36dp"
-                        app:chipStartPadding="25dp"
                         app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipJeonnam"
-                        style="@style/CustomChipChoice"
+                        style="@style/CustomChipChoiceLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checkable="true"
@@ -422,14 +382,11 @@
                         android:fontFamily="@font/spoqahansansneo_regular"
                         android:text="@string/search_chip_jeonnam"
                         app:chipCornerRadius="6dp"
-                        app:chipEndPadding="25dp"
-                        app:chipMinHeight="36dp"
-                        app:chipStartPadding="25dp"
                         app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipGyeongbuk"
-                        style="@style/CustomChipChoice"
+                        style="@style/CustomChipChoiceLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checkable="true"
@@ -437,14 +394,11 @@
                         android:fontFamily="@font/spoqahansansneo_regular"
                         android:text="@string/search_chip_gyeongbuk"
                         app:chipCornerRadius="6dp"
-                        app:chipEndPadding="25dp"
-                        app:chipMinHeight="36dp"
-                        app:chipStartPadding="25dp"
                         app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipGyeongnam"
-                        style="@style/CustomChipChoice"
+                        style="@style/CustomChipChoiceLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checkable="true"
@@ -452,14 +406,11 @@
                         android:fontFamily="@font/spoqahansansneo_regular"
                         android:text="@string/search_chip_gyeongnam"
                         app:chipCornerRadius="6dp"
-                        app:chipEndPadding="25dp"
-                        app:chipMinHeight="36dp"
-                        app:chipStartPadding="25dp"
                         app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipJeju"
-                        style="@style/CustomChipChoice"
+                        style="@style/CustomChipChoiceLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checkable="true"
@@ -467,9 +418,6 @@
                         android:fontFamily="@font/spoqahansansneo_regular"
                         android:text="@string/search_chip_jeju"
                         app:chipCornerRadius="6dp"
-                        app:chipEndPadding="25dp"
-                        app:chipMinHeight="36dp"
-                        app:chipStartPadding="25dp"
                         app:chipStrokeWidth="1dp" />
 
                 </com.google.android.material.chip.ChipGroup>
@@ -503,8 +451,7 @@
                     android:id="@+id/chip_convenience_group"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/tv_search_convenience"
                     app:layout_constraintTop_toBottomOf="@+id/tv_search_convenience">
 
                     <com.google.android.material.chip.Chip
@@ -515,6 +462,7 @@
                         android:checkable="true"
                         android:clickable="true"
                         android:fontFamily="@font/spoqahansansneo_regular"
+                        android:padding="12dp"
                         android:text="@string/search_chip_bathroom"
                         app:chipCornerRadius="6dp"
                         app:chipStrokeWidth="1dp" />
@@ -694,8 +642,7 @@
                     android:id="@+id/chip_thema_group"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/tv_search_thema"
                     app:layout_constraintTop_toBottomOf="@+id/tv_search_thema">
 
                     <com.google.android.material.chip.Chip
@@ -849,8 +796,7 @@
                     android:id="@+id/chip_bottom_group"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/tv_search_bottom"
                     app:layout_constraintTop_toBottomOf="@+id/tv_search_bottom">
 
                     <com.google.android.material.chip.Chip
@@ -923,8 +869,8 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="50dp"
                     android:background="@drawable/btn_reset"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/chip_bottom_group">
 
                     <ImageView
@@ -940,13 +886,13 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="16sp"
+                        android:layout_marginStart="16dp"
                         android:text="@string/search_reset"
                         android:textColor="@color/reset_text_color"
-                        android:layout_marginStart="16dp"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="@id/iv_reset"
                         app:layout_constraintStart_toEndOf="@id/iv_reset"
-                        app:layout_constraintTop_toTopOf="@id/iv_reset"
-                        app:layout_constraintBottom_toBottomOf="@id/iv_reset"/>
+                        app:layout_constraintTop_toTopOf="@id/iv_reset" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -954,13 +900,13 @@
                     android:id="@+id/btn_apply"
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/search_apply"
                     android:layout_marginStart="20dp"
                     android:background="@drawable/apply_btn"
+                    android:text="@string/search_apply"
                     android:textColor="@color/background"
+                    app:layout_constraintBottom_toBottomOf="@id/btn_reset"
                     app:layout_constraintStart_toEndOf="@id/btn_reset"
-                    app:layout_constraintTop_toTopOf="@id/btn_reset"
-                    app:layout_constraintBottom_toBottomOf="@id/btn_reset"/>
+                    app:layout_constraintTop_toTopOf="@id/btn_reset" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>
