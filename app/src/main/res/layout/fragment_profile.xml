@@ -11,4 +11,12 @@
         android:gravity="center"
         android:text="Profile Fragment" />
 
+    <Button
+        android:id="@+id/btn_login"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom"
+        android:text="login_btn"
+        />
+
 </FrameLayout>
