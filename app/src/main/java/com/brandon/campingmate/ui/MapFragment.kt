@@ -132,42 +132,6 @@ class MapFragment : Fragment(),OnMapReadyCallback {
                             mapY = mapY
                         )
                     )
-
-                // 각 문서에 대한 작업 수행
-                    //Timber.tag("test").d(document.data["facltNm"].toString())
-//                    val marker = Marker()
-//                    marker.icon = MarkerIcons.GREEN
-//                    marker.captionText = ""+document.data["facltNm"]
-//                    marker.captionRequestedWidth = 200
-//                    marker.setCaptionAligns(Align.Top)
-//                    marker.captionOffset = 10
-//                    marker.captionTextSize = 18f
-//                    val mapYString = document.data["mapY"].toString()
-//                    val mapXString = document.data["mapX"].toString()
-//                    if (mapYString.isNotEmpty() && mapXString.isNotEmpty()) {
-//                        val lat: Double = mapYString.toDouble()
-//                        val lng: Double = mapXString.toDouble()
-//                        marker.position = LatLng(lat, lng)
-//                    } else {
-//                        Timber.tag("test").d("누락됨 = ${mapYString}, ${mapXString} ")
-//                        marker.position = LatLng(35.67312, 129.08832)
-//                    }
-//                    marker.setOnClickListener {overlay ->
-//                        val tag = document.data["induty"] as List<*>
-//                        val loc = document.data["lctCl"] as List<*>
-//                        val str = tag.joinToString(", ")+" · "+loc.joinToString(" / ")
-//                        imgAdapter.clear()
-//                        binding.tvDialogtag.text = str
-//                        binding.tvDialogcampname.text = document.data["facltNm"].toString()
-//                        binding.tvDialoglocation.text = document.data["addr1"].toString()
-//                        binding.clMapBottomDialog.isGone=false
-//
-//                        val list = listOf(document.data["firstImageUrl"].toString())
-//                        imgAdapter.submitList(list)
-//
-//                        true
-//                    }
-//                    marker.map = naverMap
                 }
 
                 Timber.tag("test").d("이걸 확인해야함"+campDataList.toString())
@@ -193,6 +157,9 @@ class MapFragment : Fragment(),OnMapReadyCallback {
 
                         val list = listOf(it.firstImageUrl)
                         imgAdapter.submitList(list)
+                    }
+                    .clusterAddedListener { cluster, tedNaverMarker ->
+
                     }
                     .minClusterSize(5)
                     .clusterBuckets(intArrayOf(50,50))
