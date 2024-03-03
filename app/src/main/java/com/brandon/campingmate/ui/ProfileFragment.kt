@@ -1,18 +1,24 @@
 package com.brandon.campingmate.ui
 
+import android.app.Activity
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.FragmentProfileBinding
 
 class ProfileFragment : Fragment() {
 
+    private lateinit var imageLauncher: ActivityResultLauncher<Intent>
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
@@ -25,17 +31,20 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        clickWritingTab()
-        clickBookmarkedTab()
-
-        clickLogin()
-        clickEditProfile()
-        clickEditCancel()
-
 //자동로그인 유지 세션 확인해서 적용
 //        if(uuid != null){
 //            initLogin()
 //        }
+
+        clickWritingTab()
+        clickBookmarkedTab()
+
+        clickLogin()
+        
+        clickEditListener()
+        clickEditProfile()
+        clickEditImg()
+
 
         clickLogout()
 
@@ -47,7 +56,7 @@ class ProfileFragment : Fragment() {
             //todo.사진설정해주기 (if문 작성으로 저장값이 있으면 불러오기)
 
             tvProfileName.textSize = 24f
-            tvProfileName.text = "김수미"
+            tvProfileName.text = "김수미"//DB UserName
 
             tvProfileEmail.visibility = View.VISIBLE
 
@@ -84,33 +93,50 @@ class ProfileFragment : Fragment() {
     private fun clickEditName() {
         with(binding) {
             btnEditName.setOnClickListener {
-
-            }
-        }
-    }
-
-    private fun clickEditComfirm() {
-        //Todo. 이름 사진은 변경값을 다시 데이터베이스에 저장도 해줘야함.
-        with(binding) {
-            btnEditConfirm.setOnClickListener {
                 tvProfileName.text = etProfileName.text.toString()
-
             }
         }
     }
 
-    private fun clickEditCancel() {
+    private fun clickEditImg() {
         with(binding) {
-            btnEditCancel.setOnClickListener {
-                btnEditName.visibility = View.GONE
-                btnEditImg.visibility = View.GONE
-                btnLogout.visibility = View.VISIBLE
-                btnProfileEdit.visibility = View.VISIBLE
-                llEditConfirm.visibility = View.INVISIBLE
+            btnEditImg.setOnClickListener {
+                val intent = Intent(Intent.ACTION_PICK)
+                intent.type = "image/*"
+                imageLauncher.launch(intent)
+            }
+        }
+
+        imageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val img_URI = result.data?.data
+                binding.ivProfileImg.scaleType = ImageView.ScaleType.CENTER_CROP
+                binding.ivProfileImg.setImageURI(img_URI)
             }
         }
     }
 
+    private fun clickEditListener() {
+        with(binding) {
+            btnEditConfirm.setOnClickListener { handleClickEdit(true) }
+            btnEditCancel.setOnClickListener { handleClickEdit(false) }
+        }
+    }
+
+    private fun handleClickEdit(confirm: Boolean) {
+        with(binding) {
+            if (confirm) {
+                //Todo. 이름, 사진은 변경값을 다시 데이터베이스에 넘겨서 저장
+                Toast.makeText(requireContext(), "데이터베이스로 저장!", Toast.LENGTH_SHORT).show()
+            }
+
+            initLogin()
+            btnEditName.visibility = View.GONE
+            btnEditImg.visibility = View.GONE
+            llEditConfirm.visibility = View.INVISIBLE
+        }
+
+    }
 
     private fun clickBookmarkedTab() {
         binding.tabBookmarked.setOnClickListener {
@@ -153,7 +179,7 @@ class ProfileFragment : Fragment() {
 
                 dialog.findViewById<TextView>(R.id.btn_logout_comfirm)?.setOnClickListener {
                     //todo. 실제 로그아웃 절차 수행 <- 수행시 토스트 삭제!
-                    Toast.makeText(requireContext(),"로그아웃 되었습니다.",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
 
                     //화면 상에서 비로그인 화면으로 되돌리기
                     ivProfileImg.setImageResource(R.drawable.ic_camp)
