@@ -18,7 +18,7 @@ class ViewPager2Adapter(
         return when (position){
             0 ->  HomeFragment()
             1 ->  BoardFragment()
-            2 ->  ChatFragment()
+            2 ->  SearchFragment()
             3 -> MapFragment()
             4 ->  ProfileFragment()
             else -> Fragment()
