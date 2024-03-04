@@ -171,8 +171,6 @@ class MapFragment : Fragment(),OnMapReadyCallback {
                 Timber.tag("test").e(exception, "Error getting documents: ")
             }
 
-
-
     }
 
 
@@ -286,7 +284,7 @@ data class NaverItem(var position: LatLng) : TedClusterItem {
       constructor(lat: Double, lng: Double) : this(LatLng(lat, lng)) {
             donm = null
           }
-     
+
       constructor(lat: Double, lng: Double, donm : String?) : this(
         LatLng(lat, lng)
       ) {
