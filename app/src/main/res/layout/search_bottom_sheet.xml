@@ -1,0 +1,899 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/search_bottom_background"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <TextView
+            android:id="@+id/bottom_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="바텀시트확인"
+            android:textSize="30sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/bottom_title">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/tv_search_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="18dp"
+                    android:text="@string/search_type"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chip_type_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_search_type">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipAll"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_all"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipCaravan"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_caravan"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipCar"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_car"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipBase"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_base"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipGlamping"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_glamping"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                </com.google.android.material.chip.ChipGroup>
+
+                <View
+                    android:id="@+id/divider_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="@color/divider_color"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/chip_type_group" />
+
+                <TextView
+                    android:id="@+id/tv_search_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/search_location"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/divider_type" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chip_location_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_search_location">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipSeoul"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_seoul"
+                        app:chipCornerRadius="6dp"
+                        app:chipEndPadding="25dp"
+                        app:chipMinHeight="36dp"
+                        app:chipStartPadding="25dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipBusan"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_busan"
+                        app:chipCornerRadius="6dp"
+                        app:chipEndPadding="25dp"
+                        app:chipMinHeight="36dp"
+                        app:chipStartPadding="25dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipDaegu"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_dague"
+                        app:chipCornerRadius="6dp"
+                        app:chipEndPadding="25dp"
+                        app:chipMinHeight="36dp"
+                        app:chipStartPadding="25dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipIncheon"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_incheon"
+                        app:chipCornerRadius="6dp"
+                        app:chipEndPadding="25dp"
+                        app:chipMinHeight="36dp"
+                        app:chipStartPadding="25dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipGwangju"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_gwangju"
+                        app:chipCornerRadius="6dp"
+                        app:chipEndPadding="25dp"
+                        app:chipMinHeight="36dp"
+                        app:chipStartPadding="25dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipDaejeon"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_daejeon"
+                        app:chipCornerRadius="6dp"
+                        app:chipEndPadding="25dp"
+                        app:chipMinHeight="36dp"
+                        app:chipStartPadding="25dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipUlsan"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_ulsan"
+                        app:chipCornerRadius="6dp"
+                        app:chipEndPadding="25dp"
+                        app:chipMinHeight="36dp"
+                        app:chipStartPadding="25dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipSejong"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_sejong"
+                        app:chipCornerRadius="6dp"
+                        app:chipEndPadding="25dp"
+                        app:chipMinHeight="36dp"
+                        app:chipStartPadding="25dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipGyeonggi"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_gyeongggi"
+                        app:chipCornerRadius="6dp"
+                        app:chipEndPadding="25dp"
+                        app:chipMinHeight="36dp"
+                        app:chipStartPadding="25dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipGangwon"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_gangwon"
+                        app:chipCornerRadius="6dp"
+                        app:chipEndPadding="25dp"
+                        app:chipMinHeight="36dp"
+                        app:chipStartPadding="25dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipChungbuk"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_chungbuk"
+                        app:chipCornerRadius="6dp"
+                        app:chipEndPadding="25dp"
+                        app:chipMinHeight="36dp"
+                        app:chipStartPadding="25dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipChungnam"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_chungnam"
+                        app:chipCornerRadius="6dp"
+                        app:chipEndPadding="25dp"
+                        app:chipMinHeight="36dp"
+                        app:chipStartPadding="25dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipJeonbuk"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_jeonbuk"
+                        app:chipCornerRadius="6dp"
+                        app:chipEndPadding="25dp"
+                        app:chipMinHeight="36dp"
+                        app:chipStartPadding="25dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipJeonnam"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_jeonnam"
+                        app:chipCornerRadius="6dp"
+                        app:chipEndPadding="25dp"
+                        app:chipMinHeight="36dp"
+                        app:chipStartPadding="25dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipGyeongbuk"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_gyeongbuk"
+                        app:chipCornerRadius="6dp"
+                        app:chipEndPadding="25dp"
+                        app:chipMinHeight="36dp"
+                        app:chipStartPadding="25dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipGyeongnam"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_gyeongnam"
+                        app:chipCornerRadius="6dp"
+                        app:chipEndPadding="25dp"
+                        app:chipMinHeight="36dp"
+                        app:chipStartPadding="25dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipJeju"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_jeju"
+                        app:chipCornerRadius="6dp"
+                        app:chipEndPadding="25dp"
+                        app:chipMinHeight="36dp"
+                        app:chipStartPadding="25dp"
+                        app:chipStrokeWidth="1dp" />
+
+                </com.google.android.material.chip.ChipGroup>
+
+                <View
+                    android:id="@+id/divider_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="@color/divider_color"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/chip_location_group" />
+
+                <TextView
+                    android:id="@+id/tv_search_convenience"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/search_convenience"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/divider_location" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chip_convenience_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_search_convenience">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipBathroom"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_bathroom"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipShower"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_shower"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipBrazier"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_brazier"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipElectronic"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_electronic"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipRefrigerator"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_refrigerator"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipFireSee"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_fire_see"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipAircon"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_aircon"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipBed"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_bed"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipTv"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_tv"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipWarmer"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_warmer"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipInnerBathroom"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_inner_bathroom"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipInnerShower"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_inner_shower"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipInternet"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_internet"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                </com.google.android.material.chip.ChipGroup>
+
+                <View
+                    android:id="@+id/divider_convenience"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="@color/divider_color"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/chip_convenience_group" />
+
+                <TextView
+                    android:id="@+id/tv_search_thema"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/search_thema"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/divider_convenience" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chip_thema_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_search_thema">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipSummerWater"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_summer_water"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipFishing"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_fishing"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipAnimal"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_animal"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipWalking"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_walking"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipActivity"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_activity"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipSpringFlower"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_spring_flower"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipFallLeaves"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_fall_leaves"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipWinterSnow"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_winter_snow"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipSunset"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_sunset"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipWaterLeisure"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_water_leisure"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                </com.google.android.material.chip.ChipGroup>
+
+                <View
+                    android:id="@+id/divider_thema"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="@color/divider_color"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/chip_thema_group" />
+
+                <TextView
+                    android:id="@+id/tv_search_bottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/search_bottom_shape"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/divider_thema" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chip_bottom_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_search_bottom">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipGrass"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_grass"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipCrushedStone"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_crushed_stone"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipTech"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_tech"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipGravel"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_gravel"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipSoil"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="@string/search_chip_soil"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                </com.google.android.material.chip.ChipGroup>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/reset_layout"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="50dp"
+                    android:background="@drawable/btn_reset"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/chip_bottom_group">
+
+                    <ImageView
+                        android:id="@+id/iv_reset"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginTop="16dp"
+                        android:src="@drawable/ic_reset"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/search_reset"
+                        android:textColor="@color/reset_text_color"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="@id/iv_reset"
+                        app:layout_constraintStart_toEndOf="@id/iv_reset"
+                        app:layout_constraintTop_toTopOf="@id/iv_reset" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:background="@drawable/apply_btn"
+                    android:text="@string/search_apply"
+                    app:layout_constraintBottom_toBottomOf="@id/reset_layout"
+                    app:layout_constraintStart_toEndOf="@id/reset_layout"
+                    app:layout_constraintTop_toTopOf="@id/reset_layout" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
