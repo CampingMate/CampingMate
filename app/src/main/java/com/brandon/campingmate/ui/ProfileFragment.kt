@@ -1,10 +1,12 @@
 package com.brandon.campingmate.ui
 
+import android.content.Intent
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.brandon.campingmate.LoginActivity
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -13,7 +15,7 @@ import com.brandon.campingmate.databinding.FragmentProfileBinding
 
 class ProfileFragment : Fragment() {
 
-    private var _binding: FragmentProfileBinding? = null
+    private var _binding:FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
 
@@ -64,6 +66,8 @@ class ProfileFragment : Fragment() {
     private fun clickLogin() {
         binding.btnGoLogin.setOnClickListener {
             //todo.로그인 페이지로 이동
+            val intent = Intent(requireContext(), LoginActivity::class.java)
+            startActivity(intent)
             initLogin()
         }
     }

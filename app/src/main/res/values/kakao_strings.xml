@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="kakao_native_app_key">15713e37f798efa70eaee029c610e3cb</string>
+    <string name="kakao_redirection_scheme">kakao15713e37f798efa70eaee029c610e3cb</string>
+</resources>

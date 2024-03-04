@@ -25,4 +25,5 @@
     <color name="reset_text_color">#4A4A4A</color>
     <color name="temp_color">#727272</color>
     <color name="divider_light">#F2F2F2</color>
+    <color name="kakao_yellow">#F8DF02</color>
 </resources>
