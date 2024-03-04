@@ -1,9 +1,10 @@
-package com.brandon.campingmate
+package com.brandon.campingmate.song.presentation.postdetail
 
 import android.os.Build
 import android.os.Bundle
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.ActivityPostDetailBinding
 import com.brandon.campingmate.song.domain.model.PostEntity
 import timber.log.Timber
@@ -19,11 +20,10 @@ class PostDetailActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(binding.root)
 
         val postEntity = intent.getParcelableExtra(EXTRA_POST_ENTITY, PostEntity::class.java)
         Timber.d("수신한 post 객체: $postEntity")
-
-        setContentView(binding.root)
     }
 
     override fun onBackPressed() {

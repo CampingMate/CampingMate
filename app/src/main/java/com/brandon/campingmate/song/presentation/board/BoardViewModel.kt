@@ -129,6 +129,11 @@ class BoardViewModel(
                 Timber.d("불러올 문서 없음!!")
                 _event.tryEmit(BoardEvent.PostListEmpty)
             }
+
+            BoardEvent.MoveToPostWrite -> {
+                Timber.d("Post 쓰기 이동!!")
+                _event.tryEmit(BoardEvent.MoveToPostWrite)
+            }
         }
     }
 

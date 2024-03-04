@@ -13,7 +13,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.brandon.campingmate.PostDetailActivity
+import com.brandon.campingmate.song.presentation.postdetail.PostDetailActivity
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.FragmentBoardBinding
 import com.brandon.campingmate.song.data.model.request.PostRequest
@@ -23,6 +23,7 @@ import com.brandon.campingmate.song.domain.usecase.GetPostsUseCase
 import com.brandon.campingmate.song.network.FireStoreService.fireStoreDB
 import com.brandon.campingmate.song.presentation.board.adapter.PostListAdapter
 import com.brandon.campingmate.song.presentation.board.adapter.PostListItem
+import com.brandon.campingmate.song.presentation.postwrite.PostWriteActivity
 import com.brandon.campingmate.song.utils.UiState
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Timestamp
@@ -40,7 +41,6 @@ class BoardFragment : Fragment() {
             GetPostsUseCase(PostRepositoryImpl(PostRemoteDataSourceImpl(fireStoreDB))),
         )
     }
-
     private val postListAdapter: PostListAdapter by lazy {
         PostListAdapter(onClickItem = { postEntity ->
             viewModel.handleEvent(BoardEvent.OpenContent(postEntity))
@@ -141,7 +141,15 @@ class BoardFragment : Fragment() {
             }
 
             BoardEvent.PostListEmpty -> {
+                // 로디 활성화로 변경
                 Snackbar.make(binding.root, "가져올 문서가 없습니다", Snackbar.LENGTH_SHORT).show()
+            }
+
+            BoardEvent.MoveToPostWrite -> {
+                Intent(requireContext(), PostWriteActivity::class.java).also {
+                    startActivity(it)
+                    activity?.overridePendingTransition(R.anim.slide_in, R.anim.anim_none)
+                }
             }
         }
     }
@@ -199,6 +207,10 @@ class BoardFragment : Fragment() {
                 }
             }
         })
+
+        btnWrite.setOnClickListener {
+            viewModel.handleEvent(BoardEvent.MoveToPostWrite)
+        }
 
     }
 
