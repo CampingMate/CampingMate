@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.brandon.campingmate.data.CampModel
 import com.brandon.campingmate.databinding.ItemBigCampBinding
 import com.bumptech.glide.Glide
 

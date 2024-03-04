@@ -9,10 +9,10 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.brandon.campingmate.CampModel
 import com.brandon.campingmate.R
 import com.brandon.campingmate.SearchListAdapter
 import com.brandon.campingmate.SearchViewModel
+import com.brandon.campingmate.data.CampModel
 import com.brandon.campingmate.databinding.FragmentSearchBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
