@@ -1,14 +1,403 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.ProfileFragment">
+    tools:context=".presentation.profile.ProfileFragment">
 
-    <TextView
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="Profile Fragment" />
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp">
+
+        <LinearLayout
+            android:id="@+id/ll_edit_confirm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/btn_edit_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/spoqahansansneo_medium"
+                android:paddingStart="16dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="8dp"
+                android:text="@string/dialog_cancel"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/btn_edit_confirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/spoqahansansneo_medium"
+                android:paddingStart="16dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="8dp"
+                android:text="@string/profile_confirm"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:backgroundTint="#d9d9d9"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ll_edit_confirm">
+
+            <ImageView
+                android:id="@+id/iv_profile_img"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_camp" />
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/btn_edit_img"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="80dp"
+            android:layout_marginStart="85dp"
+            android:backgroundTint="#d9d9d9"
+            android:visibility="gone"
+            app:cardCornerRadius="30dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/cardView">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_add_image" />
+
+        </androidx.cardview.widget.CardView>
+
+
+        <TextView
+            android:id="@+id/tv_profile_name"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:fontFamily="@font/spoqahansansneo_medium"
+            android:text="@string/profile_login_text"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="4dp"
+            app:layout_constraintBottom_toTopOf="@+id/tv_profile_email"
+            app:layout_constraintStart_toEndOf="@+id/cardView"
+            app:layout_constraintTop_toTopOf="@+id/cardView"
+            app:layout_constraintVertical_chainStyle="packed"/>
+
+
+
+        <ImageView
+            android:id="@+id/btn_edit_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:src="@drawable/ic_edit"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_profile_name"
+            app:layout_constraintStart_toEndOf="@+id/tv_profile_name"
+            app:layout_constraintTop_toTopOf="@+id/tv_profile_name" />
+
+
+
+        <TextView
+            android:id="@+id/tv_profile_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:visibility="gone"
+            android:fontFamily="@font/spoqahansansneo_regular"
+            android:text="1adf466@gmail.com"
+            android:textColor="#848484"
+
+            app:layout_constraintBottom_toBottomOf="@+id/cardView"
+            app:layout_constraintStart_toEndOf="@+id/cardView"
+            app:layout_constraintTop_toBottomOf="@+id/tv_profile_name" />
+
+        <TextView
+            android:id="@+id/btn_logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/spoqahansansneo_regular"
+            android:text="@string/profile_logout"
+            android:textColor="#4d4b4b"
+            android:textSize="14sp"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cardView" />
+
+        <LinearLayout
+            android:id="@+id/ll_btn_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="26dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/btn_logout">
+
+            <TextView
+                android:id="@+id/btn_go_login"
+                android:layout_width="match_parent"
+                android:layout_height="38dp"
+                android:background="@drawable/btn_green"
+                android:fontFamily="@font/spoqahansansneo_medium"
+                android:gravity="center"
+                android:text="@string/profile_login"
+                android:textColor="@color/background"
+                android:textSize="14sp" />
+
+
+            <TextView
+                android:id="@+id/btn_profile_edit"
+                android:layout_width="match_parent"
+                android:layout_height="38dp"
+                android:background="@drawable/btn_border"
+                android:fontFamily="@font/spoqahansansneo_medium"
+                android:gravity="center"
+                android:text="@string/profile_edit"
+                android:textColor="#3b3939"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <!--        <com.google.android.material.tabs.TabLayout-->
+        <!--            android:id="@+id/tab_profile"-->
+        <!--            style="@style/Theme.profile"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="40dp"-->
+        <!--            android:layout_marginTop="26dp"-->
+        <!--            android:background="@color/background"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/textView">-->
+
+        <!--            <com.google.android.material.tabs.TabItem-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:text="북마크 캠핑장" />-->
+
+        <!--            <com.google.android.material.tabs.TabItem-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:text="작성한 글" />-->
+        <!--        </com.google.android.material.tabs.TabLayout>-->
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="26dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/ll_btn_layout">
+
+            <LinearLayout
+                android:id="@+id/tab_bookmarked"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/spoqahansansneo_medium"
+                    android:text="@string/profile_bookmarked_camp"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tv_bookmarked_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:fontFamily="@font/spoqahansansneo_medium"
+                    android:text="30"
+                    android:textColor="#939393"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/tab_writing"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/spoqahansansneo_medium"
+                    android:text="@string/proflie_wiriting"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tv_writing_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:fontFamily="@font/spoqahansansneo_medium"
+                    android:text="1000"
+                    android:textColor="#939393"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="14dp"
+            android:background="#ececec"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+            <View
+                android:id="@+id/line_bookmarked"
+                android:layout_width="wrap_content"
+                android:layout_height="2dp"
+                android:layout_weight="1"
+                android:background="@color/black"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+            <View
+                android:id="@+id/line_writing"
+                android:layout_width="wrap_content"
+                android:layout_height="2dp"
+                android:layout_weight="1"
+                android:background="@color/black"
+                android:visibility="invisible"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ll_rv_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/view">
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_bookmarked"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:itemCount="4"
+                tools:listitem="@layout/item_bookmarked" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_writing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tv_tab_login_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:gravity="center"
+                android:layout_marginTop="200dp"
+                android:text="@string/profile_login_text"
+                android:textColor="@color/board_gray"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_tab_bookmarked"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:gravity="center"
+                android:layout_marginTop="200dp"
+                android:text="@string/profile_tab_bookmarked"
+                android:textColor="@color/board_gray"
+                android:textSize="16sp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_tab_writing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:gravity="center"
+                android:layout_marginTop="200dp"
+                android:text="@string/profile_tab_writing"
+                android:textColor="@color/board_gray"
+                android:textSize="16sp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

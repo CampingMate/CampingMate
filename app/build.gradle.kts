@@ -81,7 +81,18 @@ dependencies {
     // Bottom navigation theme
     implementation ("nl.joery.animatedbottombar:library:1.1.0")
 
+    // Kotlin
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
+
     // coil
     implementation("io.coil-kt:coil:1.4.0")
 
+    //kakao
+    implementation("com.kakao.sdk:v2-user:2.0.1")
+
+    //네이버 맵
+    implementation("com.naver.maps:map-sdk:3.17.0")
+    //네이버맵 클러스터링
+    implementation ("io.github.ParkSangGwon:tedclustering-naver:1.0.2")
 }

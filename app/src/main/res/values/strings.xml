@@ -1,11 +1,86 @@
 <resources>
     <string name="app_name">CampingMate</string>
+
     <!--    Bottom navigation title-->
     <string name="main_nav_home">Home</string>
     <string name="main_nav_board">Board</string>
     <string name="main_nav_chat">Chat</string>
     <string name="main_nav_map">Map</string>
     <string name="main_nav_profile">Profile</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="search_chip_all">전체</string>
+    <string name="search_chip_caravan">카라반</string>
+    <string name="search_chip_car">차박</string>
+    <string name="search_chip_base">일반야영</string>
+    <string name="search_chip_glamping">글램핑</string>
+    <string name="search_search_hint">검색어를 입력해주세요.</string>
+    <string name="search_type">유형</string>
+    <string name="search_location">지역</string>
+    <string name="search_convenience">편의 시설</string>
+    <string name="search_thema">테마 환경</string>
+    <string name="search_bottom_shape">바닥 재질</string>
+    <string name="search_chip_seoul">서울</string>
+    <string name="search_chip_busan">부산</string>
+    <string name="search_chip_dague">대구</string>
+    <string name="search_chip_incheon">인천</string>
+    <string name="search_chip_gwangju">광주</string>
+    <string name="search_chip_daejeon">대전</string>
+    <string name="search_chip_ulsan">울산</string>
+    <string name="search_chip_sejong">세종</string>
+    <string name="search_chip_gyeongggi">경기</string>
+    <string name="search_chip_gangwon">강원</string>
+    <string name="search_chip_chungbuk">충북</string>
+    <string name="search_chip_chungnam">충남</string>
+    <string name="search_chip_jeonbuk">전북</string>
+    <string name="search_chip_jeonnam">전남</string>
+    <string name="search_chip_gyeongbuk">경북</string>
+    <string name="search_chip_gyeongnam">경남</string>
+    <string name="search_chip_jeju">제주</string>
+    <string name="search_chip_bathroom">화장실</string>
+    <string name="search_chip_shower">샤워실</string>
+    <string name="search_chip_brazier">화로대</string>
+    <string name="search_chip_electronic">전기</string>
+    <string name="search_chip_refrigerator">냉장고</string>
+    <string name="search_chip_fire_see">불멍</string>
+    <string name="search_chip_aircon">에어컨</string>
+    <string name="search_chip_bed">침대</string>
+    <string name="search_chip_tv">TV</string>
+    <string name="search_chip_warmer">난방기구</string>
+    <string name="search_chip_inner_bathroom">내부화장실</string>
+    <string name="search_chip_inner_shower">내부샤워실</string>
+    <string name="search_chip_internet">유무선인터넷</string>
+    <string name="search_chip_summer_water">여름물놀이</string>
+    <string name="search_chip_fishing">낚시</string>
+    <string name="search_chip_animal">애견동반</string>
+    <string name="search_chip_walking">걷기길</string>
+    <string name="search_chip_activity">액티비티</string>
+    <string name="search_chip_spring_flower">봄꽃여행</string>
+    <string name="search_chip_fall_leaves">가을단풍명소</string>
+    <string name="search_chip_winter_snow">겨울눈꽃명소</string>
+    <string name="search_chip_sunset">일몰명소</string>
+    <string name="search_chip_water_leisure">수상레저</string>
+    <string name="search_chip_grass">잔디</string>
+    <string name="search_chip_crushed_stone">파쇄석</string>
+    <string name="search_chip_tech">테크</string>
+    <string name="search_chip_gravel">자갈</string>
+    <string name="search_chip_soil">맨흙</string>
+    <string name="search_reset">초기화</string>
+    <string name="search_apply">적용하기</string>
+
+
+    <string name="profile_logout"><u>로그아웃</u></string>
+    <string name="profile_edit">프로필 수정</string>
+    <string name="profile_bookmarked_camp">북마크 캠핑장</string>
+    <string name="proflie_wiriting">작성한 글</string>
+    <string name="dialog_logout">로그아웃</string>
+    <string name="dialog_logout_text">로그아웃 하시면 사용이 제한되는 기능들이 있습니다. \n 정말 로그아웃 하시겠습니까?</string>
+    <string name="dialog_cancel">취소</string>
+    <string name="profile_login_text">로그인 후 사용해주세요</string>
+    <string name="profile_login">로그인 하러 가기</string>
+    <string name="profile_confirm">확인</string>
+    <string name="user_detail_title">상대방 프로필</string>
+    <string name="user_detail_send_message">메시지 보내기</string>
+    <string name="profile_tab_bookmarked">북마크 한 캠핑장이 없습니다.\n좋아하는 캠핑장을 추가해보세요!</string>
+    <string name="profile_tab_writing">작성한 글이 없습니다.\n게시판에서 캠핑 정보를 공유해보세요!</string>
+    <string name="profile_edit_user_name">프로필 이름 편집</string>
 
 </resources>

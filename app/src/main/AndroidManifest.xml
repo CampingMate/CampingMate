@@ -5,6 +5,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:hardwareAccelerated="false"
+        android:largeHeap="true"
+        android:name=".GlobalApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -15,11 +18,32 @@
         android:theme="@style/Theme.CampingMate"
         tools:targetApi="31">
         <activity
-            android:name=".song.presentation.postwrite.PostWriteActivity"
+            android:name=".WebViewActivity"
             android:exported="false" />
         <activity
-            android:name=".song.presentation.postdetail.PostDetailActivity"
+            android:name=".presentation.postwrite.PostWriteActivity"
             android:exported="false" />
+        <activity
+            android:name=".presentation.postdetail.PostDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
+            android:exported="true"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="oauth"
+                    android:scheme="@string/kakao_redirection_scheme" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -29,6 +53,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.naver.maps.map.CLIENT_ID"
+            android:value="nau2iserd5" />
     </application>
 
 </manifest>

@@ -62,7 +62,7 @@
             android:id="@+id/iv_post_image"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:background="@drawable/shape_rounded_corner_background_r10"
+            android:src="@drawable/shape_rounded_corner_background_r10"
             android:clipToOutline="true"
             android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
