@@ -180,6 +180,7 @@ class BoardFragment : Fragment() {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 Timber.d("Search submitted: $query")
                 // Implement search logic here
+                searchView.clearFocus() // SearchView로부터 포커스 제거
                 return false
             }
 
