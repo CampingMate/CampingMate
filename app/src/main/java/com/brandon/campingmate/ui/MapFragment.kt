@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isGone
-import com.brandon.campingmate.CampModel
+import com.brandon.campingmate.data.MapModel
 import com.brandon.campingmate.adapter.DialogImgAdapter
 import com.brandon.campingmate.databinding.FragmentMapBinding
 import com.google.firebase.Firebase
@@ -39,8 +39,8 @@ class MapFragment : Fragment(),OnMapReadyCallback {
     private var maptype : Boolean = true
     private var context : Context? = null
     private val imgAdapter = DialogImgAdapter()
-    private lateinit var tedNaverClustering: TedNaverClustering<CampModel>
-    private var campDataList = mutableListOf<CampModel>()
+    private lateinit var tedNaverClustering: TedNaverClustering<MapModel>
+    private var campDataList = mutableListOf<MapModel>()
     private var naverItems = mutableListOf<NaverItem>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,108 +103,73 @@ class MapFragment : Fragment(),OnMapReadyCallback {
 
         val campsRef = db.collection("camps")
 
-//        campsRef
-//            .limit(100)
-//            .get()
-//            .addOnSuccessListener { documents ->
-//
-//                for (document in documents) {
-//                    val indutyList = document.data["induty"].toString().split(",")
-//                    val lctClList = document.data["lctCl"].toString().split(",")
-//                    val addr1 = if(!document.data["addr1"].toString().isNullOrEmpty()) document.data["addr1"].toString() else "주소없음"
-//                    val doNm = if(!document.data["doNm"].toString().isNullOrEmpty()) document.data["doNm"].toString() else "미분류"
-//                    val facltNm = if(!document.data["facltNm"].toString().isNullOrEmpty()) document.data["facltNm"].toString() else "이름없음"
-//                    val firstImageUrl = if(!document.data["firstImageUrl"].toString().isNullOrEmpty()) document.data["firstImageUrl"].toString() else "https://pbs.twimg.com/media/EgkUVPaUwAAr6K6.jpg"
-//                    val induty = if(! indutyList.isNullOrEmpty()) indutyList else listOf("뷴류없음")
-//                    val lctCl = if(!lctClList.toString().isNullOrEmpty()) lctClList else listOf("뷴류없음")
-//                    val mapX = if(!document.data["mapX"].toString().isNullOrEmpty()) document.data["mapX"].toString() else "129.08832"
-//                    val mapY = if(!document.data["mapY"].toString().isNullOrEmpty()) document.data["mapY"].toString() else "35.67312"
-//
-//                    campDataList.add(
-//                        CampModel(
-//                            addr1 = addr1,
-//                            doNm = doNm ,
-//                            facltNm = facltNm,
-//                            firstImageUrl = firstImageUrl,
-//                            induty =  induty,
-//                            lctCl = lctCl,
-//                            mapX = mapX,
-//                            mapY = mapY
-//                        )
-//                    )
-//
-//                // 각 문서에 대한 작업 수행
-//                    //Timber.tag("test").d(document.data["facltNm"].toString())
-////                    val marker = Marker()
-////                    marker.icon = MarkerIcons.GREEN
-////                    marker.captionText = ""+document.data["facltNm"]
-////                    marker.captionRequestedWidth = 200
-////                    marker.setCaptionAligns(Align.Top)
-////                    marker.captionOffset = 10
-////                    marker.captionTextSize = 18f
-////                    val mapYString = document.data["mapY"].toString()
-////                    val mapXString = document.data["mapX"].toString()
-////                    if (mapYString.isNotEmpty() && mapXString.isNotEmpty()) {
-////                        val lat: Double = mapYString.toDouble()
-////                        val lng: Double = mapXString.toDouble()
-////                        marker.position = LatLng(lat, lng)
-////                    } else {
-////                        Timber.tag("test").d("누락됨 = ${mapYString}, ${mapXString} ")
-////                        marker.position = LatLng(35.67312, 129.08832)
-////                    }
-////                    marker.setOnClickListener {overlay ->
-////                        val tag = document.data["induty"] as List<*>
-////                        val loc = document.data["lctCl"] as List<*>
-////                        val str = tag.joinToString(", ")+" · "+loc.joinToString(" / ")
-////                        imgAdapter.clear()
-////                        binding.tvDialogtag.text = str
-////                        binding.tvDialogcampname.text = document.data["facltNm"].toString()
-////                        binding.tvDialoglocation.text = document.data["addr1"].toString()
-////                        binding.clMapBottomDialog.isGone=false
-////
-////                        val list = listOf(document.data["firstImageUrl"].toString())
-////                        imgAdapter.submitList(list)
-////
-////                        true
-////                    }
-////                    marker.map = naverMap
-//                }
-//
-//                Timber.tag("test").d("이걸 확인해야함"+campDataList.toString())
-//                tedNaverClustering = TedNaverClustering.with<CampModel>(requireContext(), naverMap!!)
-//                    .customMarker {
-//                        Marker().apply {
-//                            captionText = it.facltNm.toString()
-//                            captionRequestedWidth = 200
-//                            setCaptionAligns(Align.Top)
-//                            captionOffset = 10
-//                            captionTextSize = 18f
-//                        }
-//                    }
-//                    .markerClickListener {
-//                        val tag = it.induty
-//                        val loc = it.lctCl
-//                        val str = tag.joinToString(", ")+" · "+loc?.joinToString(" / ")
-//                        imgAdapter.clear()
-//                        binding.tvDialogtag.text = str
-//                        binding.tvDialogcampname.text = it.facltNm
-//                        binding.tvDialoglocation.text = it.addr1
-//                        binding.clMapBottomDialog.isGone=false
-//
-//                        val list = listOf(it.firstImageUrl)
-//                        imgAdapter.submitList(list)
-//                    }
-//                    .minClusterSize(5)
-//                    .clusterBuckets(intArrayOf(50,50))
-//                    .items(campDataList)
-//                    .make()
-//
-//            }
-//            .addOnFailureListener { exception ->
-//                Timber.tag("test").e(exception, "Error getting documents: ")
-//            }
+        campsRef
+            .limit(100)
+            .get()
+            .addOnSuccessListener { documents ->
 
+                for (document in documents) {
+                    val indutyList = document.data["induty"].toString().split(",")
+                    val lctClList = document.data["lctCl"].toString().split(",")
+                    val addr1 = if(!document.data["addr1"].toString().isNullOrEmpty()) document.data["addr1"].toString() else "주소없음"
+                    val doNm = if(!document.data["doNm"].toString().isNullOrEmpty()) document.data["doNm"].toString() else "미분류"
+                    val facltNm = if(!document.data["facltNm"].toString().isNullOrEmpty()) document.data["facltNm"].toString() else "이름없음"
+                    val firstImageUrl = if(!document.data["firstImageUrl"].toString().isNullOrEmpty()) document.data["firstImageUrl"].toString() else "https://pbs.twimg.com/media/EgkUVPaUwAAr6K6.jpg"
+                    val induty = if(! indutyList.isNullOrEmpty()) indutyList else listOf("뷴류없음")
+                    val lctCl = if(!lctClList.toString().isNullOrEmpty()) lctClList else listOf("뷴류없음")
+                    val mapX = if(!document.data["mapX"].toString().isNullOrEmpty()) document.data["mapX"].toString() else "129.08832"
+                    val mapY = if(!document.data["mapY"].toString().isNullOrEmpty()) document.data["mapY"].toString() else "35.67312"
 
+                    campDataList.add(
+                        MapModel(
+                            addr1 = addr1,
+                            doNm = doNm ,
+                            facltNm = facltNm,
+                            firstImageUrl = firstImageUrl,
+                            induty =  induty,
+                            lctCl = lctCl,
+                            mapX = mapX,
+                            mapY = mapY
+                        )
+                    )
+                }
+
+                Timber.tag("test").d("이걸 확인해야함"+campDataList.toString())
+                tedNaverClustering = TedNaverClustering.with<MapModel>(requireContext(), naverMap!!)
+                    .customMarker {
+                        Marker().apply {
+                            captionText = it.facltNm.toString()
+                            captionRequestedWidth = 200
+                            setCaptionAligns(Align.Top)
+                            captionOffset = 10
+                            captionTextSize = 18f
+                        }
+                    }
+                    .markerClickListener {
+                        val tag = it.induty
+                        val loc = it.lctCl
+                        val str = tag.joinToString(", ")+" · "+loc?.joinToString(" / ")
+                        imgAdapter.clear()
+                        binding.tvDialogtag.text = str
+                        binding.tvDialogcampname.text = it.facltNm
+                        binding.tvDialoglocation.text = it.addr1
+                        binding.clMapBottomDialog.isGone=false
+
+                        val list = listOf(it.firstImageUrl)
+                        imgAdapter.submitList(list)
+                    }
+                    .clusterAddedListener { cluster, tedNaverMarker ->
+                        tedNaverMarker.marker.tag
+                    }
+                    .minClusterSize(5)
+                    .clusterBuckets(intArrayOf(50,50))
+                    .items(campDataList)
+                    .make()
+
+            }
+            .addOnFailureListener { exception ->
+                Timber.tag("test").e(exception, "Error getting documents: ")
+            }
 
     }
 
@@ -215,7 +180,7 @@ class MapFragment : Fragment(),OnMapReadyCallback {
 
     fun onClickClusterMarker(donm: String?) {
         // 호출해야 할 데이터가 다른 ArrayList 에서 code 값이 서로 일치하는 데이터만 추출해야 한다.
-        val itemData: CampModel = campDataList.filter { it.doNm.equals(donm) }.single()
+        val itemData: MapModel = campDataList.filter { it.doNm.equals(donm) }.single()
 
     }
 
