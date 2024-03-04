@@ -1,12 +1,18 @@
-package com.brandon.campingmate.ui
+package com.brandon.campingmate.presentation.profile
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -40,11 +46,9 @@ class ProfileFragment : Fragment() {
         clickBookmarkedTab()
 
         clickLogin()
-        
+
         clickEditListener()
         clickEditProfile()
-        clickEditImg()
-
 
         clickLogout()
 
@@ -65,6 +69,9 @@ class ProfileFragment : Fragment() {
             btnGoLogin.visibility = View.GONE
             btnProfileEdit.visibility = View.VISIBLE
 
+            tvTabLoginText.visibility = View.GONE
+            tvTabBookmarked.visibility = View.VISIBLE
+
             //Todo. 북마크사이즈 부여 및 리사이클러뷰아이템가져오기 + 작성글사이즈 부여 및 리사이클러뷰아이템가져오기
 
         }
@@ -72,7 +79,10 @@ class ProfileFragment : Fragment() {
 
     private fun clickLogin() {
         binding.btnGoLogin.setOnClickListener {
-            //todo.로그인 페이지로 이동
+            //noti.로그인 페이지로 이동
+            //val intent = Intent(requireContext(), LoginActivity::class.java)
+            //startActivity(intent)
+
             initLogin()
         }
     }
@@ -87,13 +97,77 @@ class ProfileFragment : Fragment() {
                 btnLogout.visibility = View.GONE
                 btnProfileEdit.visibility = View.INVISIBLE
             }
+
+            clickEditName()
+            clickEditImg()
         }
     }
 
     private fun clickEditName() {
         with(binding) {
             btnEditName.setOnClickListener {
-                tvProfileName.text = etProfileName.text.toString()
+
+                val builder = AlertDialog.Builder(requireContext())
+                val editUserNameDialog = layoutInflater.inflate(R.layout.dialog_edit_user_name, null)
+                builder.setView(editUserNameDialog)
+                val dialog = builder.create()
+
+                //다이얼로그 영역(기본값 화이트) 투명화로 둥근 테두리가 묻히지 않고 보이도록 설정
+                dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+                dialog.show()
+
+                val layoutParams = WindowManager.LayoutParams().apply {
+                    // 다이얼로그의 크기를 화면에 꽉 차게 조절
+                    copyFrom(dialog.window?.attributes)
+                    width = WindowManager.LayoutParams.MATCH_PARENT
+                    height = WindowManager.LayoutParams.MATCH_PARENT
+                    //화면 투명도 설정 (투명0~선명1)
+                    dimAmount = 0.9f
+                }
+                dialog.window?.attributes = layoutParams
+
+                val etEditUserName = dialog.findViewById<EditText>(R.id.et_edit_user_name)
+                etEditUserName.setText(tvProfileName.text.toString())
+                dialog.findViewById<TextView>(R.id.tv_current_length).text = etEditUserName.length().toString()
+
+                //키보드 자동활성화
+                etEditUserName.requestFocus()
+                val inputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+
+                etEditUserName.addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                        //입력 전 호출 메서드 (입력 하여 변화가 생기기 전)
+                    }
+
+                    override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                        //입력 중 호출 메서드 (변화와 동시에 처리)
+                        dialog.findViewById<TextView>(R.id.tv_current_length).text = etEditUserName.length().toString()
+                    }
+
+                    override fun afterTextChanged(p0: Editable?) {
+                        //입력 후 호출 메서드 (입력이 끝났을 때 처리)
+                    }
+
+                })
+
+                with(dialog) {
+                    findViewById<ImageView>(R.id.btn_clear_name).setOnClickListener {
+                        etEditUserName.text.clear()
+                    }
+
+                    findViewById<TextView>(R.id.btn_edit_name_cancel).setOnClickListener {
+                        //화면 취소하면 키보드 없애주기
+                        inputMethodManager.hideSoftInputFromWindow(dialog.window?.decorView?.windowToken, 0)
+                        dialog.dismiss()
+                    }
+
+                    findViewById<TextView>(R.id.btn_edit_name_confirm).setOnClickListener {
+                        tvProfileName.text = etEditUserName.text.toString().replace("\n", "")
+                        inputMethodManager.hideSoftInputFromWindow(dialog.window?.decorView?.windowToken, 0)
+                        dialog.dismiss()
+                    }
+                }
             }
         }
     }
@@ -126,48 +200,63 @@ class ProfileFragment : Fragment() {
     private fun handleClickEdit(confirm: Boolean) {
         with(binding) {
             if (confirm) {
-                //Todo. 이름, 사진은 변경값을 다시 데이터베이스에 넘겨서 저장
                 Toast.makeText(requireContext(), "데이터베이스로 저장!", Toast.LENGTH_SHORT).show()
+                //Todo. 설정된 이름, 사진에 대한 변경값을 다시 데이터베이스에 넘겨서 저장
             }
 
             initLogin()
             btnEditName.visibility = View.GONE
             btnEditImg.visibility = View.GONE
             llEditConfirm.visibility = View.INVISIBLE
+            tvProfileName.visibility = View.VISIBLE
         }
 
     }
 
     private fun clickBookmarkedTab() {
-        binding.tabBookmarked.setOnClickListener {
-            binding.lineBookmarked.visibility = View.VISIBLE
-            binding.lineWriting.visibility = View.INVISIBLE
+        with(binding) {
+            tabBookmarked.setOnClickListener {
+                lineBookmarked.visibility = View.VISIBLE
+                lineWriting.visibility = View.INVISIBLE
 
-            //todo.if(가져올데이터가있으면) size.setText + 리사이클러뷰 어댑터 수행 + 스와이프 아이템 삭제(스낵바undo)
-            //로그인 후 사용해주세요 텍스트 어떻게 되는지 확인하고 아마 View.Gone해줘야할듯
+                //if 가져올 데이터가 없으면
+                tvTabLoginText.visibility = View.GONE
+                tvTabBookmarked.visibility = View.VISIBLE
+                tvTabWriting.visibility = View.GONE
+                //todo.if(가져올데이터가있으면) size.setText + 리사이클러뷰 어댑터 수행 + 스와이프 아이템 삭제(스낵바undo)
+                //로그인 후 사용해주세요 텍스트 어떻게 되는지 확인하고 아마 View.Gone해줘야할듯
+            }
+
         }
+
     }
 
     private fun clickWritingTab() {
-        binding.tabWriting.setOnClickListener {
-            binding.lineBookmarked.visibility = View.INVISIBLE
-            binding.lineWriting.visibility = View.VISIBLE
+        with(binding) {
+            tabWriting.setOnClickListener {
+                lineBookmarked.visibility = View.INVISIBLE
+                lineWriting.visibility = View.VISIBLE
 
-            //todo.if(가져올데이터가있으면) size.setText + 리사이클러뷰 어댑터 수행 + 스와이프 아이템 삭제(스낵바undo)
-            //로그인 후 사용해주세요 텍스트 어떻게 되는지 확인하고 아마 View.Gone해줘야할듯
+                //if 가져올 데이터가 없으면
+                tvTabLoginText.visibility = View.GONE
+                tvTabBookmarked.visibility = View.GONE
+                tvTabWriting.visibility = View.VISIBLE
+                //todo.if(가져올데이터가있으면) size.setText + 리사이클러뷰 어댑터 수행 + 스와이프 아이템 삭제(스낵바undo)
+                //로그인 후 사용해주세요 텍스트 어떻게 되는지 확인하고 아마 View.Gone해줘야할듯
+            }
         }
+
     }
 
 
     private fun clickLogout() {
         with(binding) {
             btnLogout.setOnClickListener {
-
+                val builder = AlertDialog.Builder(requireContext())
                 val logoutDialog = layoutInflater.inflate(R.layout.dialog_logout, null)
 
-                val dialog = AlertDialog.Builder(requireContext())
-                    .setView(logoutDialog)
-                    .create()
+                builder.setView(logoutDialog)
+                val dialog = builder.create()
 
                 //다이얼로그 영역(기본값 화이트) 투명화로 둥근 테두리가 묻히지 않고 보이도록 설정
                 dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
