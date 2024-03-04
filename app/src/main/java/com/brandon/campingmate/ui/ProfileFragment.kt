@@ -27,11 +27,6 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnLogin.setOnClickListener {
-            val intent = Intent(requireContext(), LoginActivity::class.java)
-            startActivity(intent)
-        }
-
         clickWritingTab()
         clickBookmarkedTab()
 
@@ -71,6 +66,8 @@ class ProfileFragment : Fragment() {
     private fun clickLogin() {
         binding.btnGoLogin.setOnClickListener {
             //todo.로그인 페이지로 이동
+            val intent = Intent(requireContext(), LoginActivity::class.java)
+            startActivity(intent)
             initLogin()
         }
     }

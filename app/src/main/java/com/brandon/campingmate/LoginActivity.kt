@@ -69,9 +69,12 @@ class LoginActivity : AppCompatActivity() {
             }
         }
         val kakao_login_button = binding.cvKakao
+        //로그인하기 버튼 클릭시
         kakao_login_button.setOnClickListener{
+            //카카오톡이 설치되어 있으면, 카카오톡로그인
             if(LoginClient.instance.isKakaoTalkLoginAvailable(this)){
                 LoginClient.instance.loginWithKakaoTalk(this, callback = callback)
+            //설치되어 있지 않으면, 카카오 계정 로그인(웹)
             }else{
                 LoginClient.instance.loginWithKakaoAccount(this, callback = callback)
             }
