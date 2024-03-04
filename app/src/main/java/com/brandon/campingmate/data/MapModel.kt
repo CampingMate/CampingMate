@@ -1,4 +1,4 @@
-package com.brandon.campingmate
+package com.brandon.campingmate.data
 
 
 import android.os.Parcelable
@@ -8,7 +8,7 @@ import ted.gun0912.clustering.geometry.TedLatLng
 
 
 @Parcelize
-data class CampModel(
+data class MapModel(
     var addr1: String?="주소없음",
     var doNm:  String?="미분류",
     var facltNm:  String?="이름없음",

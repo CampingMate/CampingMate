@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isGone
-import com.brandon.campingmate.CampModel
+import com.brandon.campingmate.data.MapModel
 import com.brandon.campingmate.adapter.DialogImgAdapter
 import com.brandon.campingmate.databinding.FragmentMapBinding
 import com.google.firebase.Firebase
@@ -39,8 +39,8 @@ class MapFragment : Fragment(),OnMapReadyCallback {
     private var maptype : Boolean = true
     private var context : Context? = null
     private val imgAdapter = DialogImgAdapter()
-    private lateinit var tedNaverClustering: TedNaverClustering<CampModel>
-    private var campDataList = mutableListOf<CampModel>()
+    private lateinit var tedNaverClustering: TedNaverClustering<MapModel>
+    private var campDataList = mutableListOf<MapModel>()
     private var naverItems = mutableListOf<NaverItem>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -121,7 +121,7 @@ class MapFragment : Fragment(),OnMapReadyCallback {
                     val mapY = if(!document.data["mapY"].toString().isNullOrEmpty()) document.data["mapY"].toString() else "35.67312"
 
                     campDataList.add(
-                        CampModel(
+                        MapModel(
                             addr1 = addr1,
                             doNm = doNm ,
                             facltNm = facltNm,
@@ -135,7 +135,7 @@ class MapFragment : Fragment(),OnMapReadyCallback {
                 }
 
                 Timber.tag("test").d("이걸 확인해야함"+campDataList.toString())
-                tedNaverClustering = TedNaverClustering.with<CampModel>(requireContext(), naverMap!!)
+                tedNaverClustering = TedNaverClustering.with<MapModel>(requireContext(), naverMap!!)
                     .customMarker {
                         Marker().apply {
                             captionText = it.facltNm.toString()
@@ -159,7 +159,7 @@ class MapFragment : Fragment(),OnMapReadyCallback {
                         imgAdapter.submitList(list)
                     }
                     .clusterAddedListener { cluster, tedNaverMarker ->
-
+                        tedNaverMarker.marker.tag
                     }
                     .minClusterSize(5)
                     .clusterBuckets(intArrayOf(50,50))
@@ -182,7 +182,7 @@ class MapFragment : Fragment(),OnMapReadyCallback {
 
     fun onClickClusterMarker(donm: String?) {
         // 호출해야 할 데이터가 다른 ArrayList 에서 code 값이 서로 일치하는 데이터만 추출해야 한다.
-        val itemData: CampModel = campDataList.filter { it.doNm.equals(donm) }.single()
+        val itemData: MapModel = campDataList.filter { it.doNm.equals(donm) }.single()
 
     }
 
