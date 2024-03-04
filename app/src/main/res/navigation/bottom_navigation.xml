@@ -28,7 +28,7 @@
         tools:layout="@layout/fragment_map" />
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.brandon.campingmate.ProfileFragment"
+        android:name="com.brandon.campingmate.presentation.profile.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
 </navigation>
