@@ -14,6 +14,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
 import com.google.firebase.Firebase
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 
@@ -33,9 +34,7 @@ class SearchFragment : Fragment() {
     val db = Firebase.firestore
 
     private val activatedChips = mutableListOf<String>()
-    private val indutyList = mutableListOf<String>()
     private val doNmList = mutableListOf<String>()
-    private val themaEnvrnClList = mutableListOf<String>()
 
     companion object{
         var campList = mutableListOf<CampModel>()
@@ -123,35 +122,37 @@ class SearchFragment : Fragment() {
             }
         }
         btnApply.setOnClickListener {
+//            updateFirestore()
             //todo: 활성화된 칩 내용으로 필터링해서 검색
+            doNmList.clear()
             activatedChips.clear()
 
             for(chipId in chipIds){
                 val chip = root.findViewById<Chip>(chipId)
                 if(chip.isChecked){
                     activatedChips.add(chip.text.toString())
-                    if (chip.text.toString() in listOf("카라반", "차박", "일반야영", "글램핑")) {
-                        val value = if(chip.text.toString() == "차박") {
-                            "자동차야영지"
-                        } else if(chip.text.toString() == "일반야영") {
-                            "일반야영지"
-                        } else{
-                            chip.text.toString()
+                    if(chip.text.toString() in listOf("서울", "부산", "대구", "인천", "광주", "대전", "울산", "세종", "경기", "강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주")){
+                        val value = when(chip.text.toString()){
+                            "서울" -> "서울시"
+                            "부산" -> "부산시"
+                            "대구" -> "대구시"
+                            "인천" -> "인천시"
+                            "광주" -> "광주시"
+                            "대전" -> "대전시"
+                            "울산" -> "울산시"
+                            "세종" -> "세종시"
+                            "경기" -> "경기도"
+                            "강원" -> "강원도"
+                            "충북" -> "충청북도"
+                            "충남" -> "충청남도"
+                            "전북" -> "전라북도"
+                            "전남" -> "전라남도"
+                            "경북" -> "경상북도"
+                            "경남" -> "경상남도"
+                            "제주" -> "제주시"
+                            else -> ""
                         }
-                        indutyList.add(value)
-                    } else if(chip.text.toString() in listOf("여름 물놀이", "낚시", "걷기길", "봄꽃여행", "액티비티", "가을 단풍명소", "겨울 눈꽃명소", "일몰명소", "수상레저")){
-                        val value = if(chip.text.toString() == "여름 물놀이") {
-                            "여름물놀이"
-                        } else if(chip.text.toString() == "가을 단풍명소") {
-                            "가을단풍명소"
-                        } else if(chip.text.toString() == "겨울 눈꽃명소") {
-                            "겨울 눈꽃명소"
-                        } else{
-                            chip.text.toString()
-                        }
-                        themaEnvrnClList.add(value)
-                    } else{
-                        doNmList.add(chip.text.toString())
+                        doNmList.add(value)
                     }
                 }
             }
@@ -160,21 +161,180 @@ class SearchFragment : Fragment() {
         }
     }
 
+    private fun updateFirestore() {
+        val campsCollection = db.collection("camps")
+
+        campsCollection.get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    val documentId = document.id
+
+                    // 각 문서에 대해 themaEnvrnCl 필드 확인
+                    val siteBottomCl1 = document.get("siteBottomCl1") as? List<String>
+
+                    if (siteBottomCl1 != null && siteBottomCl1.isNotEmpty()) {
+                        // themaEnvrnCl 리스트에 값이 있을 경우 각 필드에 매핑
+                        val data = hashMapOf<String, String>()
+                        if ("0" in siteBottomCl1) {
+                            data["siteBottomCl1"] = ""
+                        } else{
+                            data["siteBottomCl1"] = "잔디"
+                        }
+
+                        // Firestore 문서 업데이트
+                        campsCollection.document(documentId)
+                            .update(data as Map<String, String>)
+                            .addOnSuccessListener {
+                                // 업데이트 성공 처리
+                            }
+                            .addOnFailureListener { exception ->
+                                // 업데이트 실패 처리
+                                Log.e("SearchFragment", "Error updating document", exception)
+                            }
+                    }
+                    val siteBottomCl2 = document.get("siteBottomCl2") as? List<String>
+
+                    if (siteBottomCl2 != null && siteBottomCl2.isNotEmpty()) {
+                        // themaEnvrnCl 리스트에 값이 있을 경우 각 필드에 매핑
+                        val data = hashMapOf<String, String>()
+                        if ("0" in siteBottomCl2) {
+                            data["siteBottomCl1"] = ""
+                        } else{
+                            data["siteBottomCl2"] = "파쇄석"
+                        }
+
+                        // Firestore 문서 업데이트
+                        campsCollection.document(documentId)
+                            .update(data as Map<String, String>)
+                            .addOnSuccessListener {
+                                // 업데이트 성공 처리
+                            }
+                            .addOnFailureListener { exception ->
+                                // 업데이트 실패 처리
+                                Log.e("SearchFragment", "Error updating document", exception)
+                            }
+                    }
+                    val siteBottomCl3 = document.get("siteBottomCl3") as? List<String>
+
+                    if (siteBottomCl3 != null && siteBottomCl3.isNotEmpty()) {
+                        // themaEnvrnCl 리스트에 값이 있을 경우 각 필드에 매핑
+                        val data = hashMapOf<String, String>()
+                        if ("0" in siteBottomCl3) {
+                            data["siteBottomCl1"] = ""
+                        } else{
+                            data["siteBottomCl1"] = "테크"
+                        }
+
+                        // Firestore 문서 업데이트
+                        campsCollection.document(documentId)
+                            .update(data as Map<String, String>)
+                            .addOnSuccessListener {
+                                // 업데이트 성공 처리
+                            }
+                            .addOnFailureListener { exception ->
+                                // 업데이트 실패 처리
+                                Log.e("SearchFragment", "Error updating document", exception)
+                            }
+                    }
+                    val siteBottomCl4 = document.get("siteBottomCl4") as? List<String>
+
+                    if (siteBottomCl4 != null && siteBottomCl4.isNotEmpty()) {
+                        // themaEnvrnCl 리스트에 값이 있을 경우 각 필드에 매핑
+                        val data = hashMapOf<String, String>()
+                        if ("0" in siteBottomCl4) {
+                            data["siteBottomCl1"] = ""
+                        } else{
+                            data["siteBottomCl1"] = "자갈"
+                        }
+
+                        // Firestore 문서 업데이트
+                        campsCollection.document(documentId)
+                            .update(data as Map<String, String>)
+                            .addOnSuccessListener {
+                                // 업데이트 성공 처리
+                            }
+                            .addOnFailureListener { exception ->
+                                // 업데이트 실패 처리
+                                Log.e("SearchFragment", "Error updating document", exception)
+                            }
+                    }
+                    val siteBottomCl5 = document.get("siteBottomCl5") as? List<String>
+
+                    if (siteBottomCl5 != null && siteBottomCl5.isNotEmpty()) {
+                        // themaEnvrnCl 리스트에 값이 있을 경우 각 필드에 매핑
+                        val data = hashMapOf<String, String>()
+                        if ("0" in siteBottomCl5) {
+                            data["siteBottomCl1"] = ""
+                        } else{
+                            data["siteBottomCl1"] = "맨흙"
+                        }
+
+                        // Firestore 문서 업데이트
+                        campsCollection.document(documentId)
+                            .update(data as Map<String, String>)
+                            .addOnSuccessListener {
+                                // 업데이트 성공 처리
+                            }
+                            .addOnFailureListener { exception ->
+                                // 업데이트 실패 처리
+                                Log.e("SearchFragment", "Error updating document", exception)
+                            }
+                    }
+                }
+            }
+            .addOnFailureListener { exception ->
+                // 오류 처리
+                Log.e("SearchFragment", "Error getting documents", exception)
+            }
+    }
+
     private fun callData() {
         var baseQuery: Query = db.collection("camps")
-        // "카라반" 인덕션 필터
-        val chipCaravanQuery = baseQuery.whereArrayContains("induty", "카라반")
-        val middleQuery = chipCaravanQuery.whereArrayContains("themaEnvrnCl", "여름물놀이")
-        val finalQuery = chipCaravanQuery.whereEqualTo("doNm", "강원도")
-        val checking = baseQuery.whereArrayContains("induty", "카라반").whereEqualTo("doNm", "강원도")
-        Log.d("dasdf", "$indutyList")
-        val asdf = baseQuery.whereIn("doNm", listOf("강원도", "경기도"))
-        val sdfg = asdf.whereIn("doNm", listOf("충청북도", "충청남도"))
-//        val indutyFilter = baseQuery.whereIn("induty", listOf("카라반", "글램핑"))
-//        val themaFilter = indutyFilter.whereIn("themaEnvrnCl", themaEnvrnClList)
-//        val doNmFilter = themaFilter.whereIn("doNm", doNmList)
+        var result = if(doNmList.isNotEmpty()){
+            baseQuery.whereIn("doNm", doNmList)
+        } else{
+            baseQuery
+        }
 
-        checking.limit(5)
+        for(chip in activatedChips){
+            when(chip){
+                "글램핑" -> result = result.whereIn("induty1", listOf("글램핑"))
+                "일반야영" -> result = result.whereIn("induty2", listOf("일반야영장"))
+                "차박" -> result = result.whereIn("induty3", listOf("자동차야영장"))
+                "글램핑" -> result = result.whereIn("induty4", listOf("글램핑"))
+                "화장실" -> result = result.whereIn("bathroom", listOf("화장실"))
+                "샤워실" -> result = result.whereIn("shower", listOf("샤워실"))
+                "화로대" -> result = result.whereIn("fire", listOf("화로대"))
+                "전기" -> result = result.whereIn("electronic", listOf("전기"))
+                "냉장고" -> result = result.whereIn("refrigerator", listOf("냉장고"))
+                "불멍" -> result = result.whereIn("firesee", listOf("불멍"))
+                "에어컨" -> result = result.whereIn("aircon", listOf("에어컨"))
+                "침대" -> result = result.whereIn("bed", listOf("침대"))
+                "TV" -> result = result.whereIn("tv", listOf("TV"))
+                "난방기구" -> result = result.whereIn("warmer", listOf("난방기구"))
+                "내부화장실" -> result = result.whereIn("innerBathroom", listOf("내부화장실"))
+                "내부샤워실" -> result = result.whereIn("innerShower", listOf("내부샤워실"))
+                "유무선인터넷" -> result = result.whereIn("internet", listOf("유무선인터넷"))
+                "애견동반" -> result = result.whereIn("animalCmgCl", listOf("가능", "가능(소형견)"))
+                "여름물놀이" -> result = result.whereIn("summerPlay", listOf("여름물놀이"))
+                "낚시" -> result = result.whereIn("fishing", listOf("낚시"))
+                "걷기길" -> result = result.whereIn("walking", listOf("걷기길"))
+                "액티비티" -> result = result.whereIn("activity", listOf("액티비티"))
+                "봄꽃여행" -> result = result.whereIn("springFlower", listOf("봄꽃여행"))
+                "가을단풍명소" -> result = result.whereIn("fallLeaves", listOf("가을단풍명소"))
+                "겨울눈꽃명소" -> result = result.whereIn("winterSnow", listOf("겨울눈꽃명소"))
+                "일몰명소" -> result = result.whereIn("sunset", listOf("일몰명소"))
+                "수상레저" -> result = result.whereIn("waterLeisure", listOf("수상레저"))
+                "잔디" -> result = result.whereIn("siteBottomCl1", listOf("잔디"))
+                "파쇄석" -> result = result.whereIn("siteBottomCl2", listOf("파쇄석"))
+                "테크" -> result = result.whereIn("siteBottomCl3", listOf("테크"))
+                "자갈" -> result = result.whereIn("siteBottomCl4", listOf("자갈"))
+                "맨흙" -> result = result.whereIn("siteBottomCl5", listOf("맨흙"))
+                else -> Unit
+            }
+        }
+
+        result.limit(1)
             .get()
             .addOnSuccessListener { documents ->
                 val campList = mutableListOf<CampModel>()
@@ -188,43 +348,6 @@ class SearchFragment : Fragment() {
                 // 오류 처리
                 // 예: Log.w("TAG", "Error getting documents.", exception)
             }
-    }
-    private fun applyFilter(query: Query, chipName: String): Query {
-        return when (chipName) {
-            "카라반" -> query.whereArrayContains("induty", "카라반")
-            "차박" -> query.whereArrayContains("induty", "자동차야영지")
-            "일반야영" -> query.whereArrayContains("induty", "일반야영지")
-            "글램핑" -> query.whereArrayContains("induty", "글램핑")
-            "서울" -> query.whereArrayContains("doNm", "서울시")
-            "부산" -> query.whereArrayContains("doNm", "부산시")
-            "대구" -> query.whereArrayContains("doNm", "대구시")
-            "인천" -> query.whereArrayContains("doNm", "인천시")
-            "광주" -> query.whereArrayContains("doNm", "광주시")
-            "대전" -> query.whereArrayContains("doNm", "대전시")
-            "울산" -> query.whereArrayContains("doNm", "울산시")
-            "세종" -> query.whereArrayContains("doNm", "세종시")
-            "경기" -> query.whereArrayContains("doNm", "경기도")
-            "강원" -> query.whereArrayContains("doNm", "강원도")
-            "충북" -> query.whereArrayContains("doNm", "충청북도")
-            "충남" -> query.whereArrayContains("doNm", "충청남도")
-            "전북" -> query.whereArrayContains("doNm", "전라북도")
-            "전남" -> query.whereArrayContains("doNm", "전라남도")
-            "경북" -> query.whereArrayContains("doNm", "경상북도")
-            "경남" -> query.whereArrayContains("doNm", "경상남도")
-            "제주" -> query.whereArrayContains("doNm", "제주시")
-
-            "여름 물놀이" -> query.whereArrayContains("themaEnvrnCl", "여름물놀이")
-            "낚시" -> query.whereArrayContains("themaEnvrnCl", "낚시")
-            "애견동반" -> query.whereArrayContains("animalCmgCl", "가능")
-            "걷기길" -> query.whereArrayContains("themaEnvrnCl", "걷기길")
-            "액티비티" -> query.whereArrayContains("themaEnvrnCl", "액티비티")
-            "봄꽃여행" -> query.whereArrayContains("themaEnvrnCl", "봄꽃여행")
-            "가을 단풍명소" -> query.whereArrayContains("themaEnvrnCl", "가을단풍명소")
-            "겨울 눈꽃명소" -> query.whereArrayContains("themaEnvrnCl", "겨울눈꽃명소")
-            "일몰명소" -> query.whereArrayContains("themaEnvrnCl", "일몰명소")
-            "수상레저" -> query.whereArrayContains("themaEnvrnCl", "수상레저")
-            else -> query
-        }
     }
 
     private fun bottomSheet() {
