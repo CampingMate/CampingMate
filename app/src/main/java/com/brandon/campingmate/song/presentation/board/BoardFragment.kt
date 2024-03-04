@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.brandon.campingmate.PostWriteActivity
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.FragmentBoardBinding
@@ -21,7 +22,9 @@ import com.brandon.campingmate.song.data.source.remote.impl.PostRemoteDataSource
 import com.brandon.campingmate.song.domain.usecase.GetPostsUseCase
 import com.brandon.campingmate.song.network.FireStoreService.fireStoreDB
 import com.brandon.campingmate.song.presentation.board.adapter.PostListAdapter
+import com.brandon.campingmate.song.presentation.board.adapter.PostListItem
 import com.brandon.campingmate.song.utils.UiState
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -39,12 +42,8 @@ class BoardFragment : Fragment() {
     }
 
     private val postListAdapter: PostListAdapter by lazy {
-        PostListAdapter(onClickItem = {
-            // Intent for PostDetailActivity
-            Intent(requireContext(), PostWriteActivity::class.java).also {
-                startActivity(it)
-                activity?.overridePendingTransition(R.anim.slide_in, R.anim.anim_none)
-            }
+        PostListAdapter(onClickItem = { postEntity ->
+            viewModel.handleEvent(BoardEvent.OpenContent(postEntity))
         })
     }
 
@@ -65,6 +64,9 @@ class BoardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Timber.d("BoardFragment onViewCreated")
+
+//        upLoadFakePosts(15)
+
         initView()
         initListener()
         initViewModel()
@@ -107,23 +109,54 @@ class BoardFragment : Fragment() {
         // 데이터의 일관성을 유지해줌
         // Flow 는 Lifecycle-Aware Components 가 아니다
         lifecycleScope.launch {
-            uiState.flowWithLifecycle(lifecycle)
-                .collectLatest { state ->
-                    onBind(state)
+            uiState.flowWithLifecycle(lifecycle).collectLatest { state ->
+                onBind(state)
+            }
+        }
+
+        lifecycleScope.launch {
+            event.flowWithLifecycle(lifecycle).collectLatest { event ->
+                onEvent(event)
+            }
+        }
+    }
+
+    private fun onEvent(event: BoardEvent) {
+        when (event) {
+            is BoardEvent.LoadMoreItems -> {
+                viewModel.loadPosts()
+            }
+
+            BoardEvent.ShowSnackbar -> {
+                Snackbar.make(binding.root, "문서의 끝에 도달했습니다", Snackbar.LENGTH_SHORT).show()
+            }
+
+            is BoardEvent.OpenContent -> {
+                Intent(requireContext(), PostWriteActivity::class.java).also {
+                    startActivity(it)
+                    activity?.overridePendingTransition(R.anim.slide_in, R.anim.anim_none)
                 }
+            }
         }
     }
 
     private fun onBind(state: BoardUiState) = with(binding) {
         when (val postsState = state.posts) {
             is UiState.Success -> {
-                val posts = postsState.data
-                postListAdapter.submitList(posts)
+                // isPostsLoading 상태가 viewModel 에서 변경됨에 따라 로딩 아이템 추가/삭제
+                val newPosts =
+                    postsState.data + if (state.isPostsLoading) listOf(PostListItem.Loading) else emptyList()
+
+                postListAdapter.submitList(newPosts)
             }
 
-            is UiState.Error -> Unit
-            UiState.Loading -> Unit
-            UiState.Empty -> Unit
+            is UiState.Error -> {
+                // TODO show 에러 애니메이션
+            }
+
+            UiState.Empty -> {
+                // TODO 빈 화면 애니메이션
+            }
         }
     }
 
@@ -141,25 +174,34 @@ class BoardFragment : Fragment() {
                 return false
             }
         })
+
+        rvPostList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                // 스크롤 내릴 때 양수, 올릴 때 음수
+                if (dy > 0) {
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                    val totalItemCount = layoutManager.itemCount
+                    val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+
+                    // 마지막으로 보이는 아이템의 위치가 전체 아이템 수에 근접하면 더 많은 아이템을 로드
+                    Timber.tag("Scroll").d("${!recyclerView.canScrollVertically(1)}")
+                    if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition + 1 >= totalItemCount) {
+                        // 무한 스크롤 이벤트 발생
+                        Timber.tag("Kimchi").e("스크롤 끝 도달!!")
+                        viewModel.handleEvent(BoardEvent.LoadMoreItems)
+                    }
+                }
+            }
+        })
+
     }
 
     private fun initView() = with(binding) {
         // View initialization logic
         rvPostList.adapter = postListAdapter
         rvPostList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-
-        // Todo: Remove
-//        postListAdapter.submitList(
-//            listOf(
-//                PostListItem.PostItem(),
-//                PostListItem.PostItem(),
-//                PostListItem.PostItem(),
-//                PostListItem.PostItem(),
-//                PostListItem.Loading,
-//                PostListItem.PostItem(),
-//                PostListItem.PostItem(),
-//            )
-//        )
     }
 
 
@@ -170,8 +212,8 @@ class BoardFragment : Fragment() {
 
 
     // Todo: Remove
-    private fun upLoadFakePosts() {
-        val fakePosts = generateFakePosts()
+    private fun upLoadFakePosts(pageSize: Int) {
+        val fakePosts = generateFakePosts(pageSize)
         Timber.d("Generated FakeData: $fakePosts")
         uploadPostsToFirestore(fakePosts)
     }
@@ -183,20 +225,18 @@ class BoardFragment : Fragment() {
             Timber.d("Pre-generated Id: ${db.document().id}")
             // Set id
             val newPostWithId = post.copy(id = postId)
-            db.document(postId).set(newPostWithId)
-                .addOnSuccessListener {
-                    Timber.d("Post successfully uploaded: $postId")
-                }
-                .addOnFailureListener { e ->
-                    Timber.e(e, "Error uploading post: $postId")
-                }
+            db.document(postId).set(newPostWithId).addOnSuccessListener {
+                Timber.d("Post successfully uploaded: $postId")
+            }.addOnFailureListener { e ->
+                Timber.e(e, "Error uploading post: $postId")
+            }
         }
     }
     // Todo: Remove
-    private fun generateFakePosts(): List<PostRequest> {
+    private fun generateFakePosts(dataSize: Int): List<PostRequest> {
         val fakePosts = mutableListOf<PostRequest>()
-        for (i in 1..15) {
-            Thread.sleep(1000)
+        for (i in 1..dataSize) {
+            Thread.sleep(100)
             fakePosts.add(
                 PostRequest(
                     id = null,

@@ -11,6 +11,8 @@ import coil.load
 import com.brandon.campingmate.databinding.ItemPostBinding
 import com.brandon.campingmate.databinding.ItemPostLoadingBinding
 import com.brandon.campingmate.databinding.ItemPostUnknownBinding
+import com.brandon.campingmate.song.domain.model.PostEntity
+import com.brandon.campingmate.song.presentation.mapper.toPostEntity
 import com.brandon.campingmate.song.utils.FirebaseUtils.toFormattedString
 
 /**
@@ -31,7 +33,7 @@ import com.brandon.campingmate.song.utils.FirebaseUtils.toFormattedString
  *
  * ViewType 의 확장성을 고려한 type 처리
  */
-class PostListAdapter(private val onClickItem: (PostListItem) -> Unit) :
+class PostListAdapter(private val onClickItem: (PostEntity) -> Unit) :
     ListAdapter<PostListItem, PostListAdapter.PostViewHolder>(
         object : DiffUtil.ItemCallback<PostListItem>() {
             override fun areItemsTheSame(oldItem: PostListItem, newItem: PostListItem): Boolean {
@@ -59,7 +61,7 @@ class PostListAdapter(private val onClickItem: (PostListItem) -> Unit) :
 
     class PostItemViewHolder(
         private val binding: ItemPostBinding,
-        private val onClickItem: (PostListItem) -> Unit
+        private val onClickItem: (PostEntity) -> Unit
     ) : PostViewHolder(binding.root) {
         override fun onBind(item: PostListItem) = with(binding) {
             if (item is PostListItem.PostItem) {
@@ -71,6 +73,11 @@ class PostListAdapter(private val onClickItem: (PostListItem) -> Unit) :
                     ivPostImage.isVisible = false
                 } else {
                     ivPostImage.load(imageUrl)
+                }
+            }
+            binding.root.setOnClickListener {
+                if (item is PostListItem.PostItem) {
+                    onClickItem(item.toPostEntity())
                 }
             }
         }

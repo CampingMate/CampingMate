@@ -5,7 +5,7 @@ import com.google.firebase.Timestamp
 sealed class PostListItem {
 
     data class PostItem(
-        val postId: String? = null, // PostModel 에서 변환 시 document 의 id(key) 를 넣어줘야 함
+        val postId: String? = null,
         val author: String? = null,
         val authorId: String? = null,
         val authorProfileImageUrl: String? = null,

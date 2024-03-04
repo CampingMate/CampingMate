@@ -7,7 +7,7 @@ import com.brandon.campingmate.song.presentation.board.adapter.PostListItem
 fun List<PostEntity>.toPostListItem(): List<PostListItem> {
     return this.map { postEntity ->
         PostListItem.PostItem(
-            postId = postEntity.id,
+            postId = postEntity.postId,
             author = postEntity.author,
             authorId = postEntity.authorId,
             authorProfileImageUrl = postEntity.authorProfileImageUrl,
@@ -17,4 +17,17 @@ fun List<PostEntity>.toPostListItem(): List<PostListItem> {
             timestamp = postEntity.timestamp
         )
     }
+}
+
+fun PostListItem.PostItem.toPostEntity(): PostEntity {
+    return PostEntity(
+        postId = this.postId,
+        author = this.author,
+        authorId = this.authorId,
+        authorProfileImageUrl = this.authorProfileImageUrl,
+        title = this.title,
+        content = this.content,
+        imageUrlList = this.imageUrlList,
+        timestamp = this.timestamp
+    )
 }
