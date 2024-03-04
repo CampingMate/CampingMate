@@ -1,8 +1,12 @@
-package com.brandon.campingmate.data
+package com.brandon.campingmate.song.data.model.response
 
 import com.google.firebase.Timestamp
 
-data class PostCommentModel(
+/**
+ * firestore 환경에서는 불필요함
+ */
+data class PostCommentResponse(
+    val id: String? = null,
     val author: String? = null,
     val comment: String? = null,
     val timestamp: Timestamp? = Timestamp.now() // Firestore의 Timestamp 사용

@@ -1,16 +1,17 @@
-package com.brandon.campingmate.ui
+package com.brandon.campingmate.song.presentation.board.adapter
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.brandon.campingmate.data.PostListItem
-import com.brandon.campingmate.data.PostListViewType
+import coil.load
 import com.brandon.campingmate.databinding.ItemPostBinding
 import com.brandon.campingmate.databinding.ItemPostLoadingBinding
 import com.brandon.campingmate.databinding.ItemPostUnknownBinding
+import com.brandon.campingmate.song.utils.FirebaseUtils.toFormattedString
 
 /**
  * 1. PostListAdapter
@@ -60,18 +61,23 @@ class PostListAdapter(private val onClickItem: (PostListItem) -> Unit) :
         private val binding: ItemPostBinding,
         private val onClickItem: (PostListItem) -> Unit
     ) : PostViewHolder(binding.root) {
-        override fun onBind(item: PostListItem) {
-            binding.root.setOnClickListener {
-                onClickItem(item)
+        override fun onBind(item: PostListItem) = with(binding) {
+            if (item is PostListItem.PostItem) {
+                tvTitle.text = item.title
+                tvContent.text = item.content
+                tvTimestamp.text = item.timestamp.toFormattedString()
+                val imageUrl = item.imageUrlList?.firstOrNull()
+                if (imageUrl == null) {
+                    ivPostImage.isVisible = false
+                } else {
+                    ivPostImage.load(imageUrl)
+                }
             }
-
         }
     }
 
     class PostLoadingViewHolder(private val binding: ItemPostLoadingBinding) : PostViewHolder(binding.root) {
-        override fun onBind(item: PostListItem) {
-
-        }
+        override fun onBind(item: PostListItem) = Unit
     }
 
     class PostUnknownViewHolder(binding: ItemPostUnknownBinding) : PostViewHolder(binding.root) {

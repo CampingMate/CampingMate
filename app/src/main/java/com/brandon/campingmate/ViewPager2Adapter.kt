@@ -4,7 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.brandon.campingmate.ui.BoardFragment
+import com.brandon.campingmate.song.presentation.board.BoardFragment
 import com.brandon.campingmate.ui.ChatFragment
 import com.brandon.campingmate.ui.HomeFragment
 import com.brandon.campingmate.ui.MapFragment
