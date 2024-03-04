@@ -26,8 +26,7 @@ class BoardViewModel(
 
     // 플로우 버퍼 공간 10개, 이후 가장 최근 발행된 이벤트 버리고 새로운 이벤트 추가
     private val _event = MutableSharedFlow<BoardEvent>(
-        extraBufferCapacity = 10,
-        onBufferOverflow = BufferOverflow.DROP_LATEST
+        extraBufferCapacity = 10, onBufferOverflow = BufferOverflow.DROP_LATEST
     )
     val event: SharedFlow<BoardEvent> = _event.asSharedFlow()
 
@@ -55,7 +54,23 @@ class BoardViewModel(
                 // Success 처리
                 result.data?.let { data ->
                     Timber.d("Posts loaded successfully")
-                    if(data.posts.isEmpty()) handleEvent(BoardEvent.ShowSnackbar)
+
+                    when (_uiState.value.posts) {
+                        UiState.Empty -> {
+                            if (data.posts.isEmpty()) handleEvent(
+                                BoardEvent.PostListEmpty
+                            )
+                        }
+
+                        is UiState.Success -> {
+                            if (data.posts.isEmpty()) handleEvent(
+                                BoardEvent.ScrollEndEvent
+                            )
+                        }
+
+                        else -> {}
+                    }
+
                     val newPosts = if (_uiState.value.posts is UiState.Success) {
                         (_uiState.value.posts as UiState.Success).data + data.posts.toPostListItem()
                     } else {
@@ -80,8 +95,7 @@ class BoardViewModel(
                     it.copy(
                         posts = UiState.Error(
                             exception.message ?: "An unknown error occurred"
-                        ),
-                        isPostsLoading = false
+                        ), isPostsLoading = false
                     )
                 }
             }
@@ -101,14 +115,19 @@ class BoardViewModel(
                 _event.tryEmit(BoardEvent.LoadMoreItems)
             }
 
-            BoardEvent.ShowSnackbar -> {
+            BoardEvent.ScrollEndEvent -> {
                 Timber.d("문서의 끝 이벤트 발생!!")
-                _event.tryEmit(BoardEvent.ShowSnackbar)
+                _event.tryEmit(BoardEvent.ScrollEndEvent)
             }
 
             is BoardEvent.OpenContent -> {
-                Timber.d("문서의 끝 이벤트 발생!!")
+                Timber.d("문서 열기 이벤트 발생!!")
                 _event.tryEmit(BoardEvent.OpenContent(event.postEntity))
+            }
+
+            BoardEvent.PostListEmpty -> {
+                Timber.d("불러올 문서 없음!!")
+                _event.tryEmit(BoardEvent.PostListEmpty)
             }
         }
     }

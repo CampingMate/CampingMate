@@ -32,9 +32,6 @@ class PostRemoteDataSourceImpl(private val db: FirebaseFirestore) : PostRemoteDa
             val posts = snapshot.documents.mapNotNull {
                 it.toObject(PostResponse::class.java).apply { this?.id = it.id }
             }
-//            Timber.tag("Kimchi").d("Fateh posts size: ${posts.size}")
-//            Timber.tag("Kimchi").d("Snapshot's document size: ${snapshot.documents.size}")
-//            Timber.tag("Kimchi").d("Last visible document ID: ${lastVisibleDoc?.id}")
             /**
              * 문서 끝에 도달한 경우 lastVisibleDoc 를 업데이트 하지 않는다
              */

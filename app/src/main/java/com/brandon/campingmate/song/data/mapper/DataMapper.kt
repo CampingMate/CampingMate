@@ -6,7 +6,7 @@ import com.google.firebase.Timestamp
 
 fun PostEntity.toPostRequest(): PostRequest{
     return PostRequest(
-        id = this.id ?: "",
+        id = this.postId ?: "",
         author = this.author ?: "",
         authorId = this.authorId ?: "",
         authorProfileImageUrl = this.authorProfileImageUrl ?: "",

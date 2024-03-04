@@ -13,7 +13,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.brandon.campingmate.PostWriteActivity
+import com.brandon.campingmate.PostDetailActivity
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.FragmentBoardBinding
 import com.brandon.campingmate.song.data.model.request.PostRequest
@@ -127,23 +127,31 @@ class BoardFragment : Fragment() {
                 viewModel.loadPosts()
             }
 
-            BoardEvent.ShowSnackbar -> {
+            BoardEvent.ScrollEndEvent -> {
                 Snackbar.make(binding.root, "문서의 끝에 도달했습니다", Snackbar.LENGTH_SHORT).show()
             }
 
             is BoardEvent.OpenContent -> {
-                Intent(requireContext(), PostWriteActivity::class.java).also {
+                Intent(requireContext(), PostDetailActivity::class.java).apply {
+                    putExtra(PostDetailActivity.EXTRA_POST_ENTITY, event.postEntity)
+                }.also {
                     startActivity(it)
                     activity?.overridePendingTransition(R.anim.slide_in, R.anim.anim_none)
                 }
+            }
+
+            BoardEvent.PostListEmpty -> {
+                Snackbar.make(binding.root, "가져올 문서가 없습니다", Snackbar.LENGTH_SHORT).show()
             }
         }
     }
 
     private fun onBind(state: BoardUiState) = with(binding) {
+        Timber.d("$state")
         when (val postsState = state.posts) {
             is UiState.Success -> {
                 // isPostsLoading 상태가 viewModel 에서 변경됨에 따라 로딩 아이템 추가/삭제
+                // TODO 빈화면, 에러 화면 애니메이션 끄기
                 val newPosts =
                     postsState.data + if (state.isPostsLoading) listOf(PostListItem.Loading) else emptyList()
 
@@ -151,12 +159,10 @@ class BoardFragment : Fragment() {
             }
 
             is UiState.Error -> {
-                // TODO show 에러 애니메이션
+                // TODO show 에러 애니메이션, 빈화면 애니메이션 끄기
             }
 
-            UiState.Empty -> {
-                // TODO 빈 화면 애니메이션
-            }
+            is UiState.Empty -> {}
         }
     }
 
@@ -186,10 +192,8 @@ class BoardFragment : Fragment() {
                     val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
 
                     // 마지막으로 보이는 아이템의 위치가 전체 아이템 수에 근접하면 더 많은 아이템을 로드
-                    Timber.tag("Scroll").d("${!recyclerView.canScrollVertically(1)}")
                     if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition + 1 >= totalItemCount) {
                         // 무한 스크롤 이벤트 발생
-                        Timber.tag("Kimchi").e("스크롤 끝 도달!!")
                         viewModel.handleEvent(BoardEvent.LoadMoreItems)
                     }
                 }
