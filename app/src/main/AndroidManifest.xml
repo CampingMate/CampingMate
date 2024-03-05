@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:hardwareAccelerated="false"
+        android:largeHeap="true"
         android:name=".GlobalApplication"
         android:hardwareAccelerated="false"
         android:largeHeap="true"
@@ -21,7 +23,10 @@
             android:name=".WebViewActivity"
             android:exported="false" />
         <activity
-            android:name=".NewActivity"
+            android:name=".presentation.postwrite.PostWriteActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.postdetail.PostDetailActivity"
             android:exported="false" />
         <activity
             android:name=".LoginActivity"

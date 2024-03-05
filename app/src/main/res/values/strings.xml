@@ -44,18 +44,18 @@
     <string name="search_chip_aircon">에어컨</string>
     <string name="search_chip_bed">침대</string>
     <string name="search_chip_tv">TV</string>
-    <string name="search_chip_warmer">난방기</string>
+    <string name="search_chip_warmer">난방기구</string>
     <string name="search_chip_inner_bathroom">내부화장실</string>
     <string name="search_chip_inner_shower">내부샤워실</string>
     <string name="search_chip_internet">유무선인터넷</string>
-    <string name="search_chip_summer_water">여름 물놀이</string>
+    <string name="search_chip_summer_water">여름물놀이</string>
     <string name="search_chip_fishing">낚시</string>
     <string name="search_chip_animal">애견동반</string>
     <string name="search_chip_walking">걷기길</string>
     <string name="search_chip_activity">액티비티</string>
     <string name="search_chip_spring_flower">봄꽃여행</string>
-    <string name="search_chip_fall_leaves">가을 단풍명소</string>
-    <string name="search_chip_winter_snow">겨울 눈꽃명소</string>
+    <string name="search_chip_fall_leaves">가을단풍명소</string>
+    <string name="search_chip_winter_snow">겨울눈꽃명소</string>
     <string name="search_chip_sunset">일몰명소</string>
     <string name="search_chip_water_leisure">수상레저</string>
     <string name="search_chip_grass">잔디</string>
@@ -79,5 +79,8 @@
     <string name="profile_confirm">확인</string>
     <string name="user_detail_title">상대방 프로필</string>
     <string name="user_detail_send_message">메시지 보내기</string>
+    <string name="profile_tab_bookmarked">북마크 한 캠핑장이 없습니다.\n좋아하는 캠핑장을 추가해보세요!</string>
+    <string name="profile_tab_writing">작성한 글이 없습니다.\n게시판에서 캠핑 정보를 공유해보세요!</string>
+    <string name="profile_edit_user_name">프로필 이름 편집</string>
 
 </resources>

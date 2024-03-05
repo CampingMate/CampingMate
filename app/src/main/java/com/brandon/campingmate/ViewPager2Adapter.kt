@@ -4,6 +4,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.brandon.campingmate.presentation.profile.ProfileFragment
+import com.brandon.campingmate.presentation.board.BoardFragment
 
 class ViewPager2Adapter(
     fragmentManager: FragmentManager,
@@ -18,7 +20,7 @@ class ViewPager2Adapter(
         return when (position){
             0 ->  HomeFragment()
             1 ->  BoardFragment()
-            2 ->  ChatFragment()
+            2 ->  SearchFragment()
             3 -> MapFragment()
             4 ->  ProfileFragment()
             else -> Fragment()
