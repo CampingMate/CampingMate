@@ -28,7 +28,7 @@ class PostDetailActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        overridePendingTransition(R.anim.anim_none, R.anim.slide_out);
+        overridePendingTransition(R.anim.anim_none, R.anim.slide_out)
     }
 
 }
