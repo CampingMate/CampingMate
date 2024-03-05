@@ -3,6 +3,7 @@ package com.brandon.campingmate.presentation.board
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
@@ -13,16 +14,16 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.brandon.campingmate.presentation.postdetail.PostDetailActivity
 import com.brandon.campingmate.R
-import com.brandon.campingmate.databinding.FragmentBoardBinding
 import com.brandon.campingmate.data.model.request.PostRequest
 import com.brandon.campingmate.data.repository.PostRepositoryImpl
 import com.brandon.campingmate.data.source.network.impl.PostRemoteDataSourceImpl
+import com.brandon.campingmate.databinding.FragmentBoardBinding
 import com.brandon.campingmate.domain.usecase.GetPostsUseCase
 import com.brandon.campingmate.network.firestore.FireStoreService.fireStoreDB
 import com.brandon.campingmate.presentation.board.adapter.PostListAdapter
 import com.brandon.campingmate.presentation.board.adapter.PostListItem
+import com.brandon.campingmate.presentation.postdetail.PostDetailActivity
 import com.brandon.campingmate.presentation.postwrite.PostWriteActivity
 import com.brandon.campingmate.utils.UiState
 import com.google.android.material.snackbar.Snackbar
@@ -90,6 +91,7 @@ class BoardFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         Timber.d("BoardFragment onStop")
+        hideKeyboard()
     }
 
     override fun onDestroyView() {
@@ -101,6 +103,65 @@ class BoardFragment : Fragment() {
         super.onDestroy()
         Timber.d("BoardFragment onDestroy")
         _binding = null
+    }
+
+    private fun initListener() = with(binding) {
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                Timber.d("Search submitted: $query")
+                // Implement search logic here
+                searchView.clearFocus() // SearchView로부터 포커스 제거
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                btnWrite.isVisible = newText.isNullOrEmpty()
+                return false
+            }
+        })
+
+        rvPostList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                // 스크롤 내릴 때 양수, 올릴 때 음수
+                if (dy > 0) {
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                    val totalItemCount = layoutManager.itemCount
+                    val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+
+                    // 마지막으로 보이는 아이템의 위치가 전체 아이템 수에 근접하면 더 많은 아이템을 로드
+                    if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition + 1 >= totalItemCount) {
+                        // 무한 스크롤 이벤트 발생
+                        viewModel.handleEvent(BoardEvent.LoadMoreItems)
+                    }
+                }
+            }
+        })
+
+        btnWrite.setOnClickListener {
+            viewModel.handleEvent(BoardEvent.MoveToPostWrite)
+        }
+
+        rvPostList.addOnItemTouchListener(object : RecyclerView.OnScrollListener(),
+            RecyclerView.OnItemTouchListener {
+            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                hideKeyboard()
+                return false
+            }
+
+            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}
+
+            override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
+
+        })
+
+    }
+
+    private fun initView() = with(binding) {
+        // View initialization logic
+        rvPostList.adapter = postListAdapter
+        rvPostList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
     }
 
     private fun initViewModel() = with(viewModel) {
@@ -155,7 +216,6 @@ class BoardFragment : Fragment() {
     }
 
     private fun onBind(state: BoardUiState) = with(binding) {
-        Timber.d("$state")
         when (val postsState = state.posts) {
             is UiState.Success -> {
                 // isPostsLoading 상태가 viewModel 에서 변경됨에 따라 로딩 아이템 추가/삭제
@@ -174,59 +234,14 @@ class BoardFragment : Fragment() {
         }
     }
 
-
-    private fun initListener() = with(binding) {
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                Timber.d("Search submitted: $query")
-                // Implement search logic here
-                searchView.clearFocus() // SearchView로부터 포커스 제거
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                btnWrite.isVisible = newText.isNullOrEmpty()
-                return false
-            }
-        })
-
-        rvPostList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-
-                // 스크롤 내릴 때 양수, 올릴 때 음수
-                if (dy > 0) {
-                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-                    val totalItemCount = layoutManager.itemCount
-                    val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
-
-                    // 마지막으로 보이는 아이템의 위치가 전체 아이템 수에 근접하면 더 많은 아이템을 로드
-                    if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition + 1 >= totalItemCount) {
-                        // 무한 스크롤 이벤트 발생
-                        viewModel.handleEvent(BoardEvent.LoadMoreItems)
-                    }
-                }
-            }
-        })
-
-        btnWrite.setOnClickListener {
-            viewModel.handleEvent(BoardEvent.MoveToPostWrite)
-        }
-
-    }
-
-    private fun initView() = with(binding) {
-        // View initialization logic
-        rvPostList.adapter = postListAdapter
-        rvPostList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-    }
-
-
     companion object {
         @JvmStatic
         fun newInstance() = BoardFragment()
     }
 
+    private fun hideKeyboard() {
+        binding.searchView.clearFocus()
+    }
 
     // Todo: Remove
     private fun upLoadFakePosts(pageSize: Int) {
