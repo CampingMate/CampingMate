@@ -88,32 +88,3 @@ data class CampModel(
     val wtrplCo: String? = "",
     val zipcode: String? = "",
 ) : Parcelable
-
-@Parcelize
-data class CampDetailModel(
-    val contentId: String?, //id
-    val facltNm: String?, //야영장이름
-    val wtrplCo: String?, //개수대
-    val brazierCl: String?,//화로대
-    val sbrsCl: String?,//부대시설
-    val posblFcltyCl: String?, //주변이용가능시설
-    val hvofBgnde: String?, //휴장기간, 휴무기간 시작일
-    val hvofEnddle: String?, //종료일
-    val toiletCo: String?, //화장실개수
-    val swrmCo: String?, //샤워실개수
-    val featureNm: String?, //특징
-    val induty: String?, //업종
-    val addr1: String?, //주소
-    val tel: String?, //전화
-    val homepage: String?, //홈페이지
-    val resveUrl: String?, //예약페이지
-    val siteBottomCl1: String?, //잔디
-    val siteBottomCl2: String?, //파쇄석
-    val siteBottomCl3: String?, //테크
-    val siteBottomCl4: String?, //자갈
-    val siteBottomCl5: String?, //맨흙
-    val glampInnerFclty: String?, //글램핑내부시설
-    val caravInnerFclty: String?, //카라반내부시설
-    val intro: String?, //소개
-    val themaEnvrnCl: String?, //테마환경
-) : Parcelable
