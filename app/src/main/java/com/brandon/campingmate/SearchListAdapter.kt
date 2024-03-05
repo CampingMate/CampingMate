@@ -58,7 +58,8 @@ class SearchListAdapter(
             ivBigItem.clipToOutline = true
 
             binding.root.setOnClickListener {
-                val myData = CampModel(addr1=item.addr1, contentId = item.contentId, facltNm = item.facltNm,
+                val myData = CampModel(
+                    addr1 =item.addr1, contentId = item.contentId, facltNm = item.facltNm,
                     wtrplCo = item.wtrplCo, brazierCl = item.brazierCl, sbrsCl = item.sbrsCl, posblFcltyCl = item.posblFcltyCl,
                     hvofBgnde = item.hvofBgnde, hvofEnddle = item.hvofEnddle, toiletCo = item.toiletCo, swrmCo = item.swrmCo,
                     featureNm = item.featureNm, induty = item.induty, tel = item.tel, homepage = item.homepage, resveCl = item.resveCl,
