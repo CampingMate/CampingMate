@@ -7,6 +7,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
+import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -47,6 +48,7 @@ class BoardFragment : Fragment() {
             viewModel.handleEvent(BoardEvent.OpenContent(postEntity))
         })
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -196,8 +198,8 @@ class BoardFragment : Fragment() {
                 Intent(requireContext(), PostDetailActivity::class.java).apply {
                     putExtra(PostDetailActivity.EXTRA_POST_ENTITY, event.postEntity)
                 }.also {
-                    startActivity(it)
-                    activity?.overridePendingTransition(R.anim.slide_in, R.anim.anim_none)
+                    val options = ActivityOptionsCompat.makeCustomAnimation(requireContext(), R.anim.slide_in, R.anim.anim_none).toBundle()
+                    startActivity(it, options)
                 }
             }
 
@@ -208,8 +210,8 @@ class BoardFragment : Fragment() {
 
             BoardEvent.MoveToPostWrite -> {
                 Intent(requireContext(), PostWriteActivity::class.java).also {
-                    startActivity(it)
-                    activity?.overridePendingTransition(R.anim.slide_in, R.anim.anim_none)
+                    val options = ActivityOptionsCompat.makeCustomAnimation(requireContext(), R.anim.slide_in, R.anim.anim_none).toBundle()
+                    startActivity(it, options)
                 }
             }
         }

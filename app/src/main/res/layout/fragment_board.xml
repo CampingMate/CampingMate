@@ -29,7 +29,6 @@
             android:layout_height="0dp"
             android:layout_marginVertical="2dp"
             android:layout_marginStart="8dp"
-            android:background="@drawable/shape_btn_bg_r10_stroke1"
             android:gravity="center"
             android:paddingHorizontal="16dp"
             android:text="글쓰기"
