@@ -30,7 +30,6 @@ class SearchFragment : Fragment() {
     }
 
     lateinit var behavior: BottomSheetBehavior<ConstraintLayout>
-    val firebaseDatabase = FirebaseDatabase.getInstance()
     val db = Firebase.firestore
 
     private val activatedChips = mutableListOf<String>()

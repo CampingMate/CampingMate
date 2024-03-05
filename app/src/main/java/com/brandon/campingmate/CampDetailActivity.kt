@@ -30,7 +30,7 @@ class CampDetailActivity : AppCompatActivity() {
         imageResult.observe(this@CampDetailActivity){
             if(it.isNotEmpty()){
                 val firstImageUrl = it[0]
-                Glide.with(binding.root).load(firstImageUrl).into(binding.ivDetail)
+                Glide.with(applicationContext).load(firstImageUrl).into(binding.ivDetail)
             }
         }
     }
@@ -59,7 +59,7 @@ class CampDetailActivity : AppCompatActivity() {
             tvConvenienceThema.text = "테마 - ${myData.themaEnvrnCl}"
             tvConvenienceNear.text = "주변이용가능시설 - ${myData.posblFcltyCl}"
             tvConvenienceFeature.text = "특징 - ${myData.featureNm}"
-//            viewModel.setUpParkParameter(contentId)
+            viewModel.setUpParkParameter(contentId)
         }
         ivArrowBack.setOnClickListener {
             finish()

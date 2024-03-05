@@ -1,11 +1,10 @@
 package com.brandon.campingmate
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
-import com.bumptech.glide.Glide
 import kotlinx.coroutines.launch
 
 class CampDetailViewModel : ViewModel() {
@@ -31,15 +30,18 @@ class CampDetailViewModel : ViewModel() {
     fun communicateNetWork(param: HashMap<String, String>?) {
         viewModelScope.launch {
             val responseData = param?.let { NetWorkClient.imageNetWork.getImage(it) }
-            val items = responseData?.response?.campBody?.campImageItem!!
+            val items = responseData?.response?.campBody?.campImageItems?.campImageItem
             val imageUrls = mutableListOf<String>()
-            for(item in items){
-                val imageUrl = item.imageurl
-                if (imageUrl != null) {
-                    imageUrls.add(imageUrl)
+            if (items != null) {
+                for(item in items){
+                    Log.d("woojinCheck", "contentId : ${item.contentId} serialnum : ${item.serialnum} imageURL : ${item.imageurl}")
+                    val imageUrl = item.imageurl
+                    if (imageUrl != null) {
+                        imageUrls.add(imageUrl)
+                    }
                 }
             }
-            _imageResult.value =imageUrls
+            _imageResult.value = imageUrls
         }
     }
 }

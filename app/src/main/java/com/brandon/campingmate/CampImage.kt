@@ -18,7 +18,11 @@ data class CampBody(
     val pageNo: Int?,
     val numOfRows: Int?,
     @SerializedName("items")
-    val campImageItem: MutableList<CampImageItem>?,
+    val campImageItems: CampImageItems?,
+)
+data class CampImageItems(
+    @SerializedName("item")
+    val campImageItem: List<CampImageItem>?
 )
 data class CampImageItem(
     val contentId: Int?,
