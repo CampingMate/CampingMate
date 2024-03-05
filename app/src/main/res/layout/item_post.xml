@@ -58,13 +58,12 @@
             app:layout_constraintStart_toStartOf="@id/tv_title" />
 
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/iv_post_image"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:src="@drawable/shape_rounded_corner_background_r10"
-            android:clipToOutline="true"
             android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/roundedImageView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/tv_title"
@@ -75,7 +74,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="12dp"
-        android:background="@color/board_gray" />
+        android:background="@color/divider_light" />
 
 
 </LinearLayout>
