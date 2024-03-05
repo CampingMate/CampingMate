@@ -7,6 +7,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -117,7 +118,18 @@ class BoardFragment : Fragment() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                btnWrite.isVisible = newText.isNullOrEmpty()
+                newText.isNullOrEmpty().let {
+                    btnWrite.isVisible = it
+                    val params = searchView.layoutParams as ConstraintLayout.LayoutParams
+                    if (it) {
+                        params.marginEnd = 0 // 마진 제거
+                    } else {
+                        val marginInDp = 16 // 마진 값 DP 단위로 설정
+                        val marginInPx = (marginInDp * resources.displayMetrics.density).toInt() // DP를 픽셀로 변환
+                        params.marginEnd = marginInPx // 마진 생성
+                    }
+                    searchView.layoutParams = params // 변경된 마진을 적용
+                }
                 return false
             }
         })
