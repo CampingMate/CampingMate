@@ -1,4 +1,4 @@
-package com.brandon.campingmate
+package com.brandon.campingmate.presentation.board.adapter
 
 enum class PostListViewType {
     POSTITEM,

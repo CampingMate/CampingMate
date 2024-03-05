@@ -21,7 +21,10 @@
             android:name=".WebViewActivity"
             android:exported="false" />
         <activity
-            android:name=".NewActivity"
+            android:name=".presentation.postwrite.PostWriteActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.postdetail.PostDetailActivity"
             android:exported="false" />
         <activity
             android:name=".LoginActivity"

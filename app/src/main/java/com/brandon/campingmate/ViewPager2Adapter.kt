@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.brandon.campingmate.presentation.profile.ProfileFragment
+import com.brandon.campingmate.presentation.board.BoardFragment
 
 class ViewPager2Adapter(
     fragmentManager: FragmentManager,
