@@ -122,8 +122,6 @@ class SearchFragment : Fragment() {
             }
         }
         btnApply.setOnClickListener {
-//            updateFirestore()
-            //todo: 활성화된 칩 내용으로 필터링해서 검색
             doNmList.clear()
             activatedChips.clear()
 
@@ -159,133 +157,6 @@ class SearchFragment : Fragment() {
             callData()
             behavior.state = BottomSheetBehavior.STATE_HIDDEN
         }
-    }
-
-    private fun updateFirestore() {
-        val campsCollection = db.collection("camps")
-
-        campsCollection.get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    val documentId = document.id
-
-                    // 각 문서에 대해 themaEnvrnCl 필드 확인
-                    val siteBottomCl1 = document.get("siteBottomCl1") as? List<String>
-
-                    if (siteBottomCl1 != null && siteBottomCl1.isNotEmpty()) {
-                        // themaEnvrnCl 리스트에 값이 있을 경우 각 필드에 매핑
-                        val data = hashMapOf<String, String>()
-                        if ("0" in siteBottomCl1) {
-                            data["siteBottomCl1"] = ""
-                        } else{
-                            data["siteBottomCl1"] = "잔디"
-                        }
-
-                        // Firestore 문서 업데이트
-                        campsCollection.document(documentId)
-                            .update(data as Map<String, String>)
-                            .addOnSuccessListener {
-                                // 업데이트 성공 처리
-                            }
-                            .addOnFailureListener { exception ->
-                                // 업데이트 실패 처리
-                                Log.e("SearchFragment", "Error updating document", exception)
-                            }
-                    }
-                    val siteBottomCl2 = document.get("siteBottomCl2") as? List<String>
-
-                    if (siteBottomCl2 != null && siteBottomCl2.isNotEmpty()) {
-                        // themaEnvrnCl 리스트에 값이 있을 경우 각 필드에 매핑
-                        val data = hashMapOf<String, String>()
-                        if ("0" in siteBottomCl2) {
-                            data["siteBottomCl1"] = ""
-                        } else{
-                            data["siteBottomCl2"] = "파쇄석"
-                        }
-
-                        // Firestore 문서 업데이트
-                        campsCollection.document(documentId)
-                            .update(data as Map<String, String>)
-                            .addOnSuccessListener {
-                                // 업데이트 성공 처리
-                            }
-                            .addOnFailureListener { exception ->
-                                // 업데이트 실패 처리
-                                Log.e("SearchFragment", "Error updating document", exception)
-                            }
-                    }
-                    val siteBottomCl3 = document.get("siteBottomCl3") as? List<String>
-
-                    if (siteBottomCl3 != null && siteBottomCl3.isNotEmpty()) {
-                        // themaEnvrnCl 리스트에 값이 있을 경우 각 필드에 매핑
-                        val data = hashMapOf<String, String>()
-                        if ("0" in siteBottomCl3) {
-                            data["siteBottomCl1"] = ""
-                        } else{
-                            data["siteBottomCl1"] = "테크"
-                        }
-
-                        // Firestore 문서 업데이트
-                        campsCollection.document(documentId)
-                            .update(data as Map<String, String>)
-                            .addOnSuccessListener {
-                                // 업데이트 성공 처리
-                            }
-                            .addOnFailureListener { exception ->
-                                // 업데이트 실패 처리
-                                Log.e("SearchFragment", "Error updating document", exception)
-                            }
-                    }
-                    val siteBottomCl4 = document.get("siteBottomCl4") as? List<String>
-
-                    if (siteBottomCl4 != null && siteBottomCl4.isNotEmpty()) {
-                        // themaEnvrnCl 리스트에 값이 있을 경우 각 필드에 매핑
-                        val data = hashMapOf<String, String>()
-                        if ("0" in siteBottomCl4) {
-                            data["siteBottomCl1"] = ""
-                        } else{
-                            data["siteBottomCl1"] = "자갈"
-                        }
-
-                        // Firestore 문서 업데이트
-                        campsCollection.document(documentId)
-                            .update(data as Map<String, String>)
-                            .addOnSuccessListener {
-                                // 업데이트 성공 처리
-                            }
-                            .addOnFailureListener { exception ->
-                                // 업데이트 실패 처리
-                                Log.e("SearchFragment", "Error updating document", exception)
-                            }
-                    }
-                    val siteBottomCl5 = document.get("siteBottomCl5") as? List<String>
-
-                    if (siteBottomCl5 != null && siteBottomCl5.isNotEmpty()) {
-                        // themaEnvrnCl 리스트에 값이 있을 경우 각 필드에 매핑
-                        val data = hashMapOf<String, String>()
-                        if ("0" in siteBottomCl5) {
-                            data["siteBottomCl1"] = ""
-                        } else{
-                            data["siteBottomCl1"] = "맨흙"
-                        }
-
-                        // Firestore 문서 업데이트
-                        campsCollection.document(documentId)
-                            .update(data as Map<String, String>)
-                            .addOnSuccessListener {
-                                // 업데이트 성공 처리
-                            }
-                            .addOnFailureListener { exception ->
-                                // 업데이트 실패 처리
-                                Log.e("SearchFragment", "Error updating document", exception)
-                            }
-                    }
-                }
-            }
-            .addOnFailureListener { exception ->
-                // 오류 처리
-                Log.e("SearchFragment", "Error getting documents", exception)
-            }
     }
 
     private fun callData() {
@@ -337,7 +208,6 @@ class SearchFragment : Fragment() {
         result.limit(1)
             .get()
             .addOnSuccessListener { documents ->
-                val campList = mutableListOf<CampModel>()
                 for (document in documents) {
                     val camp = document.toObject(CampModel::class.java)
                     campList.add(camp)
