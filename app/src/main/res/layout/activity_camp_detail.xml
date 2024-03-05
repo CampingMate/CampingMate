@@ -424,7 +424,6 @@
                 app:layout_constraintTop_toBottomOf="@id/divider_4"
                 app:layout_constraintStart_toStartOf="parent"/>
 
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>

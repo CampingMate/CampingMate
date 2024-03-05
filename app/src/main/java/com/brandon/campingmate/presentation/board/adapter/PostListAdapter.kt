@@ -1,14 +1,20 @@
-package com.brandon.campingmate
+package com.brandon.campingmate.presentation.board.adapter
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.brandon.campingmate.databinding.ItemPostBinding
 import com.brandon.campingmate.databinding.ItemPostLoadingBinding
 import com.brandon.campingmate.databinding.ItemPostUnknownBinding
+import com.brandon.campingmate.domain.model.PostEntity
+import com.brandon.campingmate.presentation.mapper.toPostEntity
+import com.brandon.campingmate.utils.FirebaseUtils.toFormattedString
+import com.bumptech.glide.Glide
 
 /**
  * 1. PostListAdapter
@@ -18,6 +24,9 @@ import com.brandon.campingmate.databinding.ItemPostUnknownBinding
  * 5. getItemViewType
  * 6. onCreateViewHolder
  * 7. onBindViewHolder
+ * 8. onClickItem lambda
+ * 9. Edit onCreateViewHolder
+ * 10. Edit ItemViewHolder
  *
  * type - POSTITEM, LOADING, UNKNOWN
  * item - PostItem, Loading, (Unknown 없음)
@@ -25,41 +34,58 @@ import com.brandon.campingmate.databinding.ItemPostUnknownBinding
  *
  * ViewType 의 확장성을 고려한 type 처리
  */
-class PostListAdapter : ListAdapter<PostListItem, PostListAdapter.PostViewHolder>(
-    object : DiffUtil.ItemCallback<PostListItem>() {
-        override fun areItemsTheSame(oldItem: PostListItem, newItem: PostListItem): Boolean {
-            return when {
-                oldItem is PostListItem.PostItem && newItem is PostListItem.PostItem -> oldItem == newItem  // 모든 필드 비교
-                oldItem is PostListItem.Loading && newItem is PostListItem.Loading -> true  // Loading 은 object(싱글턴 객체)로 항상 같다
-                else -> false
+class PostListAdapter(private val onClickItem: (PostEntity) -> Unit) :
+    ListAdapter<PostListItem, PostListAdapter.PostViewHolder>(
+        object : DiffUtil.ItemCallback<PostListItem>() {
+            override fun areItemsTheSame(oldItem: PostListItem, newItem: PostListItem): Boolean {
+                return when {
+                    oldItem is PostListItem.PostItem && newItem is PostListItem.PostItem -> oldItem == newItem  // 모든 필드 비교
+                    oldItem is PostListItem.Loading && newItem is PostListItem.Loading -> true  // Loading 은 object(싱글턴 객체)로 항상 같다
+                    else -> false
+                }
             }
-        }
 
-        override fun areContentsTheSame(oldItem: PostListItem, newItem: PostListItem): Boolean {
-            return when {
-                oldItem is PostListItem.PostItem && newItem is PostListItem.PostItem -> true    // 앞서 모든 필드 비교로 체크
-                oldItem is PostListItem.Loading && newItem is PostListItem.Loading -> true
-                else -> false
+            override fun areContentsTheSame(oldItem: PostListItem, newItem: PostListItem): Boolean {
+                return when {
+                    oldItem is PostListItem.PostItem && newItem is PostListItem.PostItem -> true    // 앞서 모든 필드 비교로 체크
+                    oldItem is PostListItem.Loading && newItem is PostListItem.Loading -> true
+                    else -> false
+                }
             }
         }
-    }
-) {
+    ) {
 
 
     abstract class PostViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun onBind(item: PostListItem)
     }
 
-    class PostItemViewHolder(private val binding: ItemPostBinding) : PostViewHolder(binding.root) {
-        override fun onBind(item: PostListItem) {
-
+    class PostItemViewHolder(
+        private val binding: ItemPostBinding,
+        private val onClickItem: (PostEntity) -> Unit
+    ) : PostViewHolder(binding.root) {
+        override fun onBind(item: PostListItem) = with(binding) {
+            if (item is PostListItem.PostItem) {
+                tvTitle.text = item.title
+                tvContent.text = item.content
+                tvTimestamp.text = item.timestamp.toFormattedString()
+                val imageUrl = item.imageUrlList?.firstOrNull()
+                if (imageUrl == null) {
+                    ivPostImage.isVisible = false
+                } else {
+                    ivPostImage.load(imageUrl)
+                }
+            }
+            binding.root.setOnClickListener {
+                if (item is PostListItem.PostItem) {
+                    onClickItem(item.toPostEntity())
+                }
+            }
         }
     }
 
     class PostLoadingViewHolder(private val binding: ItemPostLoadingBinding) : PostViewHolder(binding.root) {
-        override fun onBind(item: PostListItem) {
-
-        }
+        override fun onBind(item: PostListItem) = Unit
     }
 
     class PostUnknownViewHolder(binding: ItemPostUnknownBinding) : PostViewHolder(binding.root) {
@@ -81,7 +107,8 @@ class PostListAdapter : ListAdapter<PostListItem, PostListAdapter.PostViewHolder
                     LayoutInflater.from(parent.context),
                     parent,
                     false
-                )
+                ),
+                onClickItem
             )
 
             PostListViewType.LOADING -> PostLoadingViewHolder(

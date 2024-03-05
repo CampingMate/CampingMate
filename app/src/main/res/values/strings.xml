@@ -82,4 +82,12 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="profile_tab_bookmarked">북마크 한 캠핑장이 없습니다.\n좋아하는 캠핑장을 추가해보세요!</string>
+    <string name="profile_tab_writing">작성한 글이 없습니다.\n게시판에서 캠핑 정보를 공유해보세요!</string>
+    <string name="profile_edit_user_name">프로필 이름 편집</string>
+
+
 </resources>
