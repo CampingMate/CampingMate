@@ -5,13 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:background="?android:attr/selectableItemBackground"
     android:paddingTop="12dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-
         <TextView
             android:id="@+id/tv_title"
             android:layout_width="0dp"
