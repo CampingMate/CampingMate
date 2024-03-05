@@ -2,8 +2,10 @@ package com.brandon.campingmate.presentation.postdetail
 
 import android.os.Build
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.ActivityPostDetailBinding
 import com.brandon.campingmate.domain.model.PostEntity
@@ -24,11 +26,19 @@ class PostDetailActivity : AppCompatActivity() {
 
         val postEntity = intent.getParcelableExtra(EXTRA_POST_ENTITY, PostEntity::class.java)
         Timber.d("수신한 post 객체: $postEntity")
+
+        setupOnBackPressedHandling()
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        overridePendingTransition(R.anim.anim_none, R.anim.slide_out);
+    private fun setupOnBackPressedHandling() {
+        val onBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // 여기에서 애니메이션 적용 후 활동 종료
+                ActivityCompat.finishAfterTransition(this@PostDetailActivity)
+                overridePendingTransition(R.anim.anim_none, R.anim.slide_out)
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
     }
 
 }
