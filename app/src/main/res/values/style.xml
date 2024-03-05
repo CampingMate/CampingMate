@@ -50,9 +50,19 @@
         <item name="queryHint">검색어를 입력하세요</item>
     </style>
 
-    <style name="roundedImageView">
+    <style name="ImageViewR10">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">10dp</item>
+    </style>
+
+    <style name="ImageViewR8">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="ImageViewCircle">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
     </style>
 
 </resources>
