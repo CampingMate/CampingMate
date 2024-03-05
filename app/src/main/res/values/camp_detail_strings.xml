@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="camp_detail_reservation">예약하기</string>
+    <string name="camp_detail_information">기본정보</string>
+    <string name="camp_detail_introduce">캠핑장 소개</string>
+    <string name="camp_detail_convenience">편의시설</string>
+    <string name="camp_detail_convenience_lesure">편의 시설 및 레저</string>
+    <string name="camp_detail_map">지도</string>
+    <string name="camp_detail_comment">댓글</string>
+</resources>
