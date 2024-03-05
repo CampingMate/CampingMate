@@ -2,19 +2,17 @@ package com.brandon.campingmate
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.brandon.campingmate.databinding.FragmentSearchBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
 import com.google.firebase.Firebase
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 
@@ -30,38 +28,40 @@ class SearchFragment : Fragment() {
     }
 
     lateinit var behavior: BottomSheetBehavior<ConstraintLayout>
-    val firebaseDatabase = FirebaseDatabase.getInstance()
     val db = Firebase.firestore
 
     private val activatedChips = mutableListOf<String>()
     private val doNmList = mutableListOf<String>()
 
-    companion object{
+    companion object {
         var campList = mutableListOf<CampModel>()
-    }
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
         initView()
         initViewModel()
         return binding.root
     }
 
-    private fun initViewModel() =with(viewModel){
-//        resetBtn.observe(viewLifecycleOwner){
-
+    private fun initViewModel() = with(viewModel) {
+        keywordParam.observe(viewLifecycleOwner) {
+            communicateNetWork(it)
         }
+        keyword.observe(viewLifecycleOwner) {
+//            listAdapter.submitList(it)
+        }
+    }
 
-    private fun initView() =with(binding){
+    private fun initView() = with(binding) {
         bottomSheet()
+        scrollTab()
         recyclerView.adapter = listAdapter
-        recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        recyclerView.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
         val chipIds = arrayOf(
             R.id.chipAll,
@@ -116,23 +116,40 @@ class SearchFragment : Fragment() {
             R.id.chipSoil
         )
         btnReset.setOnClickListener {
-            for(chipId in chipIds){
+            for (chipId in chipIds) {
                 val chip = root.findViewById<Chip>(chipId)
                 chip.isChecked = false
             }
         }
         btnApply.setOnClickListener {
-//            updateFirestore()
-            //todo: 활성화된 칩 내용으로 필터링해서 검색
             doNmList.clear()
             activatedChips.clear()
 
-            for(chipId in chipIds){
+            for (chipId in chipIds) {
                 val chip = root.findViewById<Chip>(chipId)
-                if(chip.isChecked){
+                if (chip.isChecked) {
                     activatedChips.add(chip.text.toString())
-                    if(chip.text.toString() in listOf("서울", "부산", "대구", "인천", "광주", "대전", "울산", "세종", "경기", "강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주")){
-                        val value = when(chip.text.toString()){
+                    if (chip.text.toString() in listOf(
+                            "서울",
+                            "부산",
+                            "대구",
+                            "인천",
+                            "광주",
+                            "대전",
+                            "울산",
+                            "세종",
+                            "경기",
+                            "강원",
+                            "충북",
+                            "충남",
+                            "전북",
+                            "전남",
+                            "경북",
+                            "경남",
+                            "제주"
+                        )
+                    ) {
+                        val value = when (chip.text.toString()) {
                             "서울" -> "서울시"
                             "부산" -> "부산시"
                             "대구" -> "대구시"
@@ -158,6 +175,10 @@ class SearchFragment : Fragment() {
             }
             callData()
             behavior.state = BottomSheetBehavior.STATE_HIDDEN
+        }
+        binding.ivSearch.setOnClickListener {
+            val searchText = binding.tvEdit.text.toString()
+            viewModel.setUpParkParameter(searchText)
         }
     }
 
@@ -290,14 +311,14 @@ class SearchFragment : Fragment() {
 
     private fun callData() {
         var baseQuery: Query = db.collection("camps")
-        var result = if(doNmList.isNotEmpty()){
+        var result = if (doNmList.isNotEmpty()) {
             baseQuery.whereIn("doNm", doNmList)
-        } else{
+        } else {
             baseQuery
         }
 
-        for(chip in activatedChips){
-            when(chip){
+        for (chip in activatedChips) {
+            when (chip) {
                 "글램핑" -> result = result.whereIn("induty1", listOf("글램핑"))
                 "일반야영" -> result = result.whereIn("induty2", listOf("일반야영장"))
                 "차박" -> result = result.whereIn("induty3", listOf("자동차야영장"))
@@ -337,7 +358,6 @@ class SearchFragment : Fragment() {
         result.limit(1)
             .get()
             .addOnSuccessListener { documents ->
-                val campList = mutableListOf<CampModel>()
                 for (document in documents) {
                     val camp = document.toObject(CampModel::class.java)
                     campList.add(camp)
@@ -350,18 +370,40 @@ class SearchFragment : Fragment() {
             }
     }
 
+    private fun scrollTab() = with(binding) {
+        searchType.setOnClickListener {
+            scrollToView(tvSearchType)
+        }
+        searchConvenience.setOnClickListener {
+            scrollToView(tvSearchConvenience)
+        }
+        searchThema.setOnClickListener {
+            scrollToView(tvSearchThema)
+        }
+        searchBottom.setOnClickListener {
+            scrollToView(tvSearchBottom)
+        }
+    }
+
+    private fun scrollToView(view: View) {
+        binding.scrollView.post {
+            binding.scrollView.smoothScrollTo(0, view.top)
+        }
+    }
+
     private fun bottomSheet() {
 
         behavior = BottomSheetBehavior.from(binding.bottomSheet)
         behavior.isHideable = true //이게 없었다.
         behavior.state = BottomSheetBehavior.STATE_HIDDEN // 초기 상태 설정
 
-        binding.ivSetting.setOnClickListener{
+        binding.ivSetting.setOnClickListener {
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
         behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
             }
+
             override fun onStateChanged(bottomSheet: View, newState: Int) {
             }
         })

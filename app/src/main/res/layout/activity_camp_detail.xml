@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CampDetailActivity">
+
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/iv_detail"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:src="@drawable/ic_filter"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/iv_arrow_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:src="@drawable/ic_arrow_back"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/iv_arrow_bookmark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_bookmark"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="뷰페이지인디케이터"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@id/iv_detail"
+                app:layout_constraintStart_toStartOf="@id/iv_detail"
+                app:layout_constraintTop_toBottomOf="@id/iv_detail" />
+
+            <TextView
+                android:id="@+id/tv_camp_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/spoqahansansneo_bold"
+                android:text="여기는 캠핑장 이름이 들어갈 곳입니다."
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/indicator" />
+
+            <ImageView
+                android:id="@+id/iv_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:src="@drawable/ic_location"
+                app:layout_constraintStart_toStartOf="@id/tv_camp_name"
+                app:layout_constraintTop_toBottomOf="@id/tv_camp_name" />
+
+            <TextView
+                android:id="@+id/tv_addr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:text="여기는 캠핑장 위치에요"
+                android:textSize="11sp"
+                app:layout_constraintBottom_toBottomOf="@id/iv_location"
+                app:layout_constraintStart_toEndOf="@id/iv_location"
+                app:layout_constraintTop_toTopOf="@id/iv_location" />
+
+            <ImageView
+                android:id="@+id/iv_call"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:src="@drawable/ic_call"
+                app:layout_constraintEnd_toEndOf="@id/iv_location"
+                app:layout_constraintStart_toStartOf="@id/iv_location"
+                app:layout_constraintTop_toBottomOf="@id/iv_location" />
+
+            <TextView
+                android:id="@+id/tv_call"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:text="캠핑장 전화번호"
+                android:textSize="11sp"
+                app:layout_constraintBottom_toBottomOf="@id/iv_call"
+                app:layout_constraintStart_toEndOf="@id/iv_call"
+                app:layout_constraintTop_toTopOf="@id/iv_call" />
+
+            <ImageView
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:src="@drawable/ic_arrow_forward"
+                app:layout_constraintBottom_toBottomOf="@id/tv_call"
+                app:layout_constraintStart_toEndOf="@id/tv_call"
+                app:layout_constraintTop_toTopOf="@id/tv_call" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="78dp"
+                android:layout_height="34dp"
+                android:layout_marginTop="100dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/apply_btn"
+                android:text="@string/camp_detail_reservation"
+                android:textColor="@color/white"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/iv_detail" />
+
+            <TextView
+                android:id="@+id/tv_information_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:text="@string/camp_detail_information"
+                android:textColor="@color/camp_detail_tap"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="@id/iv_call"
+                app:layout_constraintTop_toBottomOf="@id/iv_call" />
+
+            <TextView
+                android:id="@+id/tv_introduce_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:text="@string/camp_detail_introduce"
+                android:textColor="@color/camp_detail_tap"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_information_tab"
+                app:layout_constraintStart_toEndOf="@+id/tv_information_tab"
+                app:layout_constraintTop_toTopOf="@+id/tv_information_tab" />
+
+            <TextView
+                android:id="@+id/tv_convenience_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:text="@string/camp_detail_convenience"
+                android:textColor="@color/camp_detail_tap"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_introduce_tab"
+                app:layout_constraintStart_toEndOf="@+id/tv_introduce_tab"
+                app:layout_constraintTop_toTopOf="@+id/tv_introduce_tab" />
+
+            <TextView
+                android:id="@+id/tv_map_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:text="@string/camp_detail_map"
+                android:textColor="@color/camp_detail_tap"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_convenience_tab"
+                app:layout_constraintStart_toEndOf="@+id/tv_convenience_tab"
+                app:layout_constraintTop_toTopOf="@+id/tv_convenience_tab" />
+
+            <TextView
+                android:id="@+id/tv_comment_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:text="@string/camp_detail_comment"
+                android:textColor="@color/camp_detail_tap"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_map_tab"
+                app:layout_constraintStart_toEndOf="@+id/tv_map_tab"
+                app:layout_constraintTop_toTopOf="@+id/tv_map_tab" />
+
+            <View
+                android:id="@+id/divider_dark"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="16dp"
+                android:background="@color/divider_dark"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_information_tab" />
+
+            <TextView
+                android:id="@+id/tv_information"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/spoqahansansneo_bold"
+                android:text="@string/camp_detail_information"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider_dark" />
+
+            <TextView
+                android:id="@+id/tv_homepage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:text="홈페이지 - "
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="@id/tv_information"
+                app:layout_constraintTop_toBottomOf="@id/tv_information" />
+
+            <TextView
+                android:id="@+id/tv_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:text="면적 - "
+                app:layout_constraintStart_toStartOf="@id/tv_homepage"
+                app:layout_constraintTop_toBottomOf="@id/tv_homepage" />
+
+            <TextView
+                android:id="@+id/tv_rest_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:text="휴장기간 - "
+                app:layout_constraintStart_toStartOf="@id/tv_size"
+                app:layout_constraintTop_toBottomOf="@id/tv_size" />
+
+            <TextView
+                android:id="@+id/tv_play_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:text="운영기간 - "
+                app:layout_constraintStart_toStartOf="@id/tv_rest_time"
+                app:layout_constraintTop_toBottomOf="@id/tv_rest_time" />
+
+            <TextView
+                android:id="@+id/tv_bottom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:text="바닥재질 - "
+                app:layout_constraintStart_toStartOf="@id/tv_play_time"
+                app:layout_constraintTop_toBottomOf="@id/tv_play_time" />
+
+            <View
+                android:id="@+id/divider_1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="35dp"
+                android:layout_marginEnd="16dp"
+                android:background="@color/divider_light"
+                app:layout_constraintTop_toBottomOf="@id/tv_bottom" />
+
+            <TextView
+                android:id="@+id/tv_introduce"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/spoqahansansneo_bold"
+                android:text="@string/camp_detail_introduce"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider_1" />
+
+            <TextView
+                android:id="@+id/tv_introduce_comment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:text="캠핑장 소개가 들어갈 내용입니다."
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="@id/tv_introduce"
+                app:layout_constraintTop_toBottomOf="@id/tv_introduce" />
+
+            <View
+                android:id="@+id/divider_2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="35dp"
+                android:layout_marginEnd="16dp"
+                android:background="@color/divider_light"
+                app:layout_constraintTop_toBottomOf="@id/tv_introduce_comment" />
+
+            <TextView
+                android:id="@+id/tv_convenience"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/spoqahansansneo_bold"
+                android:text="@string/camp_detail_convenience_lesure"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider_2" />
+
+            <TextView
+                android:id="@+id/tv_convenience_comment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:text="편의시설 - 화장실: 1, 샤워실: 1, 개수대:1, 화로대-개별"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="@id/tv_convenience"
+                app:layout_constraintTop_toBottomOf="@id/tv_convenience" />
+
+            <TextView
+                android:id="@+id/tv_convenience_comment2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:text="부대시설 - "
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="@id/tv_convenience_comment"
+                app:layout_constraintTop_toBottomOf="@id/tv_convenience_comment" />
+
+            <TextView
+                android:id="@+id/tv_convenience_thema"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:text="테마 - 낚시, 여름물놀이"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="@id/tv_convenience_comment2"
+                app:layout_constraintTop_toBottomOf="@id/tv_convenience_comment2" />
+
+            <TextView
+                android:id="@+id/tv_convenience_near"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:text="주변이용가능시설 - 운동장,강/물놀이, 농어촌체험시설"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="@id/tv_convenience_thema"
+                app:layout_constraintTop_toBottomOf="@id/tv_convenience_thema" />
+
+            <TextView
+                android:id="@+id/tv_convenience_feature"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:text="특징 - 물놀이 시설이 잘 갖추어짐"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="@id/tv_convenience_near"
+                app:layout_constraintTop_toBottomOf="@id/tv_convenience_near" />
+
+            <View
+                android:id="@+id/divider_3"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="35dp"
+                android:layout_marginEnd="16dp"
+                android:background="@color/divider_light"
+                app:layout_constraintTop_toBottomOf="@id/tv_convenience_feature" />
+
+            <TextView
+                android:id="@+id/tv_map"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/spoqahansansneo_bold"
+                android:text="@string/camp_detail_map"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider_3" />
+
+            <ImageView
+                android:id="@+id/iv_map"
+                android:layout_width="300dp"
+                android:layout_height="300dp"
+                android:src="@drawable/ic_bookmark"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_map" />
+
+            <View
+                android:id="@+id/divider_4"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="35dp"
+                android:layout_marginEnd="16dp"
+                android:background="@color/divider_light"
+                app:layout_constraintTop_toBottomOf="@id/iv_map" />
+
+            <TextView
+                android:id="@+id/tv_comment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/spoqahansansneo_bold"
+                android:text="@string/camp_detail_comment"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider_4" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

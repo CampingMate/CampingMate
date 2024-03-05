@@ -2,7 +2,6 @@ package com.brandon.campingmate
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import java.util.UUID
 
 @Parcelize
 data class CampModel(

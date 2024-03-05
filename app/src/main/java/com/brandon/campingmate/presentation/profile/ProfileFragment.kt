@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment
 import com.brandon.campingmate.LoginActivity
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.FragmentProfileBinding
+import com.kakao.sdk.user.UserApiClient
 
 class ProfileFragment : Fragment() {
 
@@ -270,6 +271,21 @@ class ProfileFragment : Fragment() {
                 dialog.findViewById<TextView>(R.id.btn_logout_comfirm)?.setOnClickListener {
                     //todo. 실제 로그아웃 절차 수행 <- 수행시 토스트 삭제!
                     Toast.makeText(requireContext(), "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
+                    //By.sounghyun
+                    UserApiClient.instance.logout { error ->
+                        if (error != null) {
+                            Toast.makeText(requireContext(), "로그아웃 실패 $error", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(requireContext(), "로그아웃 성공", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+//                    UserApiClient.instance.unlink { error ->
+//                        if (error != null) {
+//                            Toast.makeText(requireContext(), "회원 탈퇴 실패 $error", Toast.LENGTH_SHORT).show()
+//                        }else {
+//                            Toast.makeText(requireContext(), "회원 탈퇴 성공", Toast.LENGTH_SHORT).show()
+//                        }
+//                    }
 
                     //화면 상에서 비로그인 화면으로 되돌리기
                     ivProfileImg.setImageResource(R.drawable.ic_camp)
