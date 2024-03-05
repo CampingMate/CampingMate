@@ -122,8 +122,6 @@ class SearchFragment : Fragment() {
             }
         }
         btnApply.setOnClickListener {
-//            updateFirestore()
-            //todo: 활성화된 칩 내용으로 필터링해서 검색
             doNmList.clear()
             activatedChips.clear()
 
@@ -337,7 +335,6 @@ class SearchFragment : Fragment() {
         result.limit(1)
             .get()
             .addOnSuccessListener { documents ->
-                val campList = mutableListOf<CampModel>()
                 for (document in documents) {
                     val camp = document.toObject(CampModel::class.java)
                     campList.add(camp)
