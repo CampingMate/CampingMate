@@ -13,7 +13,7 @@
         tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/boardFragment"
-        android:name="com.brandon.campingmate.BoardFragment"
+        android:name="com.brandon.campingmate.presentation.board.BoardFragment"
         android:label="fragment_board"
         tools:layout="@layout/fragment_board" />
     <fragment
