@@ -264,7 +264,7 @@
                 app:layout_constraintStart_toEndOf="@id/tv_bigtitle_district"
                 app:layout_constraintTop_toTopOf="@id/tv_bigtitle_district" />
 
-            <LinearLayout
+            <com.google.android.material.chip.ChipGroup
                 android:id="@+id/lo_district_chip"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -276,74 +276,66 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_bigtitle_district">
 
-                <androidx.cardview.widget.CardView
-                    android:layout_width="60dp"
-                    android:layout_height="39dp"
-                    app:cardCornerRadius="6dp"
-                    app:cardElevation="0dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/green15"
-                        android:fontFamily="@font/spoqahansansneo_medium"
-                        android:gravity="center"
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipCapital"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
                         android:text="수도권"
-                        android:textSize="13sp" />
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
 
-                </androidx.cardview.widget.CardView>
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipCaravan"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="충청권"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
 
-                <androidx.cardview.widget.CardView
-                    android:layout_width="60dp"
-                    android:layout_height="39dp"
-                    app:cardCornerRadius="6dp"
-                    app:cardElevation="0dp">
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipCar"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="강원권"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/green15"
-                        android:fontFamily="@font/spoqahansansneo_medium"
-                        android:gravity="center"
-                        android:text="강원도"
-                        android:textSize="13sp" />
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipBase"
+                        style="@style/CustomChipChoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="경상도"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipBas"
+                    style="@style/CustomChipChoice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    android:clickable="true"
+                    android:fontFamily="@font/spoqahansansneo_regular"
+                    android:text="전라도"
+                    app:chipCornerRadius="6dp"
+                    app:chipStrokeWidth="1dp" />
 
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="60dp"
-                    android:layout_height="39dp"
-                    app:cardCornerRadius="6dp"
-                    app:cardElevation="0dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/green15"
-                        android:fontFamily="@font/spoqahansansneo_medium"
-                        android:gravity="center"
-                        android:text="충청도"
-                        android:textSize="13sp" />
-
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="60dp"
-                    android:layout_height="39dp"
-                    app:cardCornerRadius="6dp"
-                    app:cardElevation="0dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/green15"
-                        android:fontFamily="@font/spoqahansansneo_medium"
-                        android:gravity="center"
-                        android:text="전라도"
-                        android:textSize="13sp" />
-
-                </androidx.cardview.widget.CardView>
-            </LinearLayout>
+            </com.google.android.material.chip.ChipGroup>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_district_item"
@@ -430,7 +422,7 @@
 
             </HorizontalScrollView>
 
-            <LinearLayout
+            <com.google.android.material.chip.ChipGroup
                 android:id="@+id/lo_theme_chip"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -442,74 +434,65 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_bigtitle_theme">
 
-                <androidx.cardview.widget.CardView
-                    android:layout_width="60dp"
-                    android:layout_height="39dp"
-                    app:cardCornerRadius="6dp"
-                    app:cardElevation="0dp">
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip1"
+                    style="@style/CustomChipChoice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    android:clickable="true"
+                    android:fontFamily="@font/spoqahansansneo_regular"
+                    android:text="수도권"
+                    app:chipCornerRadius="6dp"
+                    app:chipStrokeWidth="1dp" />
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/green15"
-                        android:fontFamily="@font/spoqahansansneo_medium"
-                        android:gravity="center"
-                        android:text="수도권"
-                        android:textSize="13sp" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip2"
+                    style="@style/CustomChipChoice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    android:clickable="true"
+                    android:fontFamily="@font/spoqahansansneo_regular"
+                    android:text="충청권"
+                    app:chipCornerRadius="6dp"
+                    app:chipStrokeWidth="1dp" />
 
-                </androidx.cardview.widget.CardView>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip3"
+                    style="@style/CustomChipChoice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    android:clickable="true"
+                    android:fontFamily="@font/spoqahansansneo_regular"
+                    android:text="강원권"
+                    app:chipCornerRadius="6dp"
+                    app:chipStrokeWidth="1dp" />
 
-                <androidx.cardview.widget.CardView
-                    android:layout_width="60dp"
-                    android:layout_height="39dp"
-                    app:cardCornerRadius="6dp"
-                    app:cardElevation="0dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/green15"
-                        android:fontFamily="@font/spoqahansansneo_medium"
-                        android:gravity="center"
-                        android:text="수도권"
-                        android:textSize="13sp" />
-
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="60dp"
-                    android:layout_height="39dp"
-                    app:cardCornerRadius="6dp"
-                    app:cardElevation="0dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/green15"
-                        android:fontFamily="@font/spoqahansansneo_medium"
-                        android:gravity="center"
-                        android:text="수도권"
-                        android:textSize="13sp" />
-
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="60dp"
-                    android:layout_height="39dp"
-                    app:cardCornerRadius="6dp"
-                    app:cardElevation="0dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/green15"
-                        android:fontFamily="@font/spoqahansansneo_medium"
-                        android:gravity="center"
-                        android:text="수도권"
-                        android:textSize="13sp" />
-
-                </androidx.cardview.widget.CardView>
-            </LinearLayout>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip4"
+                    style="@style/CustomChipChoice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    android:clickable="true"
+                    android:fontFamily="@font/spoqahansansneo_regular"
+                    android:text="경상도"
+                    app:chipCornerRadius="6dp"
+                    app:chipStrokeWidth="1dp" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip5"
+                    style="@style/CustomChipChoice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    android:clickable="true"
+                    android:fontFamily="@font/spoqahansansneo_regular"
+                    android:text="전라도"
+                    app:chipCornerRadius="6dp"
+                    app:chipStrokeWidth="1dp" />
+            </com.google.android.material.chip.ChipGroup>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_theme_item"

@@ -7,13 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.brandon.campingmate.R
 import com.brandon.campingmate.presentation.search.SearchFragment
 import com.brandon.campingmate.databinding.FragmentProfileBinding
 import com.brandon.campingmate.databinding.ItemSmallCampBinding
+import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.home.HomeDistrictThemeModel
 import com.bumptech.glide.Glide
 
-class HomeAdapter(private val mContext: Context, var mItems: MutableList<HomeDistrictThemeModel?>): RecyclerView.Adapter<HomeAdapter.Holder>() {
+class HomeAdapter(private val mContext: Context, var mItems: MutableList<CampEntity?>): RecyclerView.Adapter<HomeAdapter.Holder>() {
 
     interface ItemClick {
         fun onClick(view : View, position : Int)
@@ -30,11 +32,15 @@ class HomeAdapter(private val mContext: Context, var mItems: MutableList<HomeDis
         holder.itemView.setOnClickListener {
             itemClick?.onClick(it,position)
         }
-        Glide.with(mContext)
-            .load(mItems[position]?.campImg)
-            .into(holder.campImg)
+        if(mItems[position]?.firstImageUrl=="")
+            holder.campImg.setImageResource(R.drawable.ic_login_img)
+        else{
+            Glide.with(mContext)
+                .load(mItems[position]?.firstImageUrl)
+                .into(holder.campImg)
+        }
 
-        holder.campName.text=mItems[position]?.campName
+        holder.campName.text=mItems[position]?.facltNm
     }
 
     override fun getItemCount() = mItems.size

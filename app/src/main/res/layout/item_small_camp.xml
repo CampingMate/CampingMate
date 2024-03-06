@@ -12,16 +12,17 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_item_img"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="153dp"
         app:layout_constraintTop_toTopOf="parent"
         app:cardCornerRadius="12dp"
+        app:cardBackgroundColor="@color/brandColor"
         >
         <ImageView
             android:id="@+id/iv_home_camp_img"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:layout_margin="1dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
             />
     </androidx.cardview.widget.CardView>
 
