@@ -3,23 +3,24 @@ package com.brandon.campingmate.presentation.map
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isGone
 import com.brandon.campingmate.DialogImgAdapter
-import com.brandon.campingmate.data.model.response.MapModel
+import com.brandon.campingmate.domain.model.MapModel
 import com.brandon.campingmate.databinding.FragmentMapBinding
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
-import com.naver.maps.map.overlay.Marker
 import ted.gun0912.clustering.clustering.TedClusterItem
 import ted.gun0912.clustering.geometry.TedLatLng
 import ted.gun0912.clustering.naver.TedNaverClustering
+import timber.log.Timber
 
 class MapFragment : Fragment(),OnMapReadyCallback {
     private var _binding : FragmentMapBinding? = null
@@ -46,6 +47,7 @@ class MapFragment : Fragment(),OnMapReadyCallback {
         mapView = binding.mvMap
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync(this)
+        Timber.tag("mapfragment").d("mapview getMapAsync()")
         return binding.root
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -87,7 +89,7 @@ class MapFragment : Fragment(),OnMapReadyCallback {
         naverMap?.cameraPosition = cameraPosition
 
         //백그라운드에서 불러온 마커가 저장되는 리스트
-        var markers = mutableListOf<Marker>()
+ //       var markers = mutableListOf<Marker>()
 
 //        val firebaseDatabase = FirebaseDatabase.getInstance()
 //        val db = Firebase.firestore
@@ -178,37 +180,44 @@ class MapFragment : Fragment(),OnMapReadyCallback {
     override fun onStart() {
         super.onStart()
         mapView?.onStart()
+        Timber.tag("mapfragment").d("mapview onStart()")
     }
 
     override fun onResume() {
         super.onResume()
         mapView?.onResume()
+        Timber.tag("mapfragment").d("mapview onResume()")
     }
 
     override fun onPause() {
         super.onPause()
         mapView?.onPause()
+        Timber.tag("mapfragment").d("mapview onPause()")
     }
 
     override fun onStop() {
         super.onStop()
         mapView?.onStop()
+        Timber.tag("mapfragment").d("mapview onStop()")
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         mapView?.onDestroy()
         _binding = null
+        Timber.tag("mapfragment").d("mapview onDestroyView()")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         mapView?.onSaveInstanceState(outState)
+        Timber.tag("mapfragment").d("mapview onSaveInstanceState()")
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
         mapView?.onLowMemory()
+        Timber.tag("mapfragment").d("mapview onLowMemory()")
     }
 
 }

@@ -1,4 +1,4 @@
-package com.brandon.campingmate.data.model.response
+package com.brandon.campingmate.domain.model
 
 
 import android.os.Parcelable
