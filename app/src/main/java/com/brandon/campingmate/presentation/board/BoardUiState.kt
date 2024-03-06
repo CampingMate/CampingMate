@@ -8,13 +8,15 @@ data class BoardUiState(
     val posts: UiState<List<PostListItem>>,
     val lastVisibleDoc: DocumentSnapshot?,
     val isPostsLoading: Boolean,
+    val isReturningFromPostCreation: Boolean
     // 다른 UiState 도 관리 가능
 ) {
     companion object {
         fun init() = BoardUiState(
             posts = UiState.Empty,
             lastVisibleDoc = null,
-            isPostsLoading = false
+            isPostsLoading = false,
+            isReturningFromPostCreation = false
         )
     }
 }

@@ -4,7 +4,7 @@ import com.brandon.campingmate.domain.model.PostEntity
 
 sealed class BoardEvent {
     object LoadMoreItems : BoardEvent()
-    object ScrollEndEvent : BoardEvent()
+    object ScrollEndReached : BoardEvent()
     object PostListEmpty : BoardEvent()
     object MoveToPostWrite : BoardEvent()
     data class OpenContent(

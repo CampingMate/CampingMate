@@ -204,7 +204,7 @@ class BoardFragment : Fragment() {
                 viewModel.loadPosts()
             }
 
-            BoardEvent.ScrollEndEvent -> {
+            BoardEvent.ScrollEndReached -> {
                 Snackbar.make(binding.root, "문서의 끝에 도달했습니다", Snackbar.LENGTH_SHORT).show()
             }
 

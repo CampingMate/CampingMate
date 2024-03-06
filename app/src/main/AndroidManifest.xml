@@ -5,7 +5,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:hardwareAccelerated="false"
         android:largeHeap="true"
         android:name=".GlobalApplication"
         android:allowBackup="true"

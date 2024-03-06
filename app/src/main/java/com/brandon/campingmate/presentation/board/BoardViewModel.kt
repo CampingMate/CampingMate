@@ -63,7 +63,7 @@ class BoardViewModel(
 
                         is UiState.Success -> {
                             if (data.posts.isEmpty()) handleEvent(
-                                BoardEvent.ScrollEndEvent
+                                BoardEvent.ScrollEndReached
                             )
                         }
 
@@ -114,9 +114,9 @@ class BoardViewModel(
                 _event.tryEmit(BoardEvent.LoadMoreItems)
             }
 
-            BoardEvent.ScrollEndEvent -> {
+            BoardEvent.ScrollEndReached -> {
                 Timber.d("문서의 끝 이벤트 발생!!")
-                _event.tryEmit(BoardEvent.ScrollEndEvent)
+                _event.tryEmit(BoardEvent.ScrollEndReached)
             }
 
             is BoardEvent.OpenContent -> {
