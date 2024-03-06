@@ -1,16 +1,15 @@
-package com.brandon.campingmate
+package com.brandon.campingmate.presentation.search
 
 import android.content.Intent
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.brandon.campingmate.SearchFragment.Companion.campList
+import com.brandon.campingmate.CampModel
 import com.brandon.campingmate.databinding.ItemBigCampBinding
+import com.brandon.campingmate.presentation.campdetail.CampDetailActivity
 import com.bumptech.glide.Glide
 
 class SearchListAdapter(
