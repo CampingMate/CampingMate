@@ -17,7 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.brandon.campingmate.R
-import com.brandon.campingmate.data.model.request.PostRequest
+import com.brandon.campingmate.data.model.request.PostDTO
 import com.brandon.campingmate.data.repository.PostRepositoryImpl
 import com.brandon.campingmate.data.source.network.impl.PostRemoteDataSourceImpl
 import com.brandon.campingmate.databinding.FragmentBoardBinding
@@ -84,6 +84,8 @@ class BoardFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         Timber.d("BoardFragment onResume")
+
+        // TODO 게시물 작성 후 돌아온 상황. 이때 list 업데이트 해야함.
     }
 
     override fun onPause() {
@@ -210,7 +212,11 @@ class BoardFragment : Fragment() {
                 Intent(requireContext(), PostDetailActivity::class.java).apply {
                     putExtra(PostDetailActivity.EXTRA_POST_ENTITY, event.postEntity)
                 }.also {
-                    val options = ActivityOptionsCompat.makeCustomAnimation(requireContext(), R.anim.slide_in, R.anim.anim_none).toBundle()
+                    val options = ActivityOptionsCompat.makeCustomAnimation(
+                        requireContext(),
+                        R.anim.slide_in,
+                        R.anim.anim_none
+                    ).toBundle()
                     startActivity(it, options)
                 }
             }
@@ -222,7 +228,12 @@ class BoardFragment : Fragment() {
 
             BoardEvent.MoveToPostWrite -> {
                 Intent(requireContext(), PostWriteActivity::class.java).also {
-                    val options = ActivityOptionsCompat.makeCustomAnimation(requireContext(), R.anim.slide_in, R.anim.anim_none).toBundle()
+                    // 최신 애니메이션 적용 화면 이동 방법
+                    val options = ActivityOptionsCompat.makeCustomAnimation(
+                        requireContext(),
+                        R.anim.slide_in,
+                        R.anim.anim_none
+                    ).toBundle()
                     startActivity(it, options)
                 }
             }
@@ -264,13 +275,13 @@ class BoardFragment : Fragment() {
         uploadPostsToFirestore(fakePosts)
     }
     // Todo: Remove
-    private fun uploadPostsToFirestore(posts: List<PostRequest>) {
+    private fun uploadPostsToFirestore(posts: List<PostDTO>) {
         val db = fireStoreDB.collection("posts")
         posts.forEach { post ->
-            val postId = post.id ?: db.document().id // id가 null이면 새 문서 ID 생성
+            val postId = post.postId ?: db.document().id // id가 null이면 새 문서 ID 생성
             Timber.d("Pre-generated Id: ${db.document().id}")
             // Set id
-            val newPostWithId = post.copy(id = postId)
+            val newPostWithId = post.copy(postId = postId)
             db.document(postId).set(newPostWithId).addOnSuccessListener {
                 Timber.d("Post successfully uploaded: $postId")
             }.addOnFailureListener { e ->
@@ -279,14 +290,14 @@ class BoardFragment : Fragment() {
         }
     }
     // Todo: Remove
-    private fun generateFakePosts(dataSize: Int): List<PostRequest> {
-        val fakePosts = mutableListOf<PostRequest>()
+    private fun generateFakePosts(dataSize: Int): List<PostDTO> {
+        val fakePosts = mutableListOf<PostDTO>()
         for (i in 1..dataSize) {
             Thread.sleep(100)
             fakePosts.add(
-                PostRequest(
-                    id = null,
-                    author = "Author$i",
+                PostDTO(
+                    postId = null,
+                    authorName = "Author$i",
                     authorId = "AuthorId$i",
                     authorProfileImageUrl = "https://example.com/profile$i.jpg",
                     title = "Title $i",
