@@ -48,7 +48,6 @@ class BoardViewModel(
 
             runCatching {
                 Timber.d("Attempting to load posts")
-                Timber.tag("Kimchi").d("마지막 문서: ${_uiState.value.lastVisibleDoc?.id}")
                 getPostUseCase(pageSize, _uiState.value.lastVisibleDoc)
             }.onSuccess { result ->
                 // Success 처리

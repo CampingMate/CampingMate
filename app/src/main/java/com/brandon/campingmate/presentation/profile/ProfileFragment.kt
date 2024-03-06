@@ -21,9 +21,9 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import com.brandon.campingmate.presentation.login.LoginActivity
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.FragmentProfileBinding
+import com.brandon.campingmate.presentation.login.LoginActivity
 import com.google.firebase.firestore.FirebaseFirestore
 import com.kakao.sdk.user.UserApiClient
 
@@ -34,7 +34,11 @@ class ProfileFragment : Fragment() {
     private val binding get() = _binding!!
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -64,7 +68,7 @@ class ProfileFragment : Fragment() {
     fun checkLogin() {
         UserApiClient.instance.me { user, error ->
             if (user?.id != null) {
-                Log.d("프로필체크로그인검사", "${user?.id}")
+                Log.d("프로필체크로그인검사", "${user.id}")
                 initLogin()
             } else initLogout()
         }

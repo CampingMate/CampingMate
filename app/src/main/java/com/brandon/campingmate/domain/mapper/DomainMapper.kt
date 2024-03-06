@@ -14,7 +14,7 @@ fun PostListResponse.toPostsEntity(): PostsEntity = PostsEntity(
 fun PostResponse.toPostEntity(): PostEntity {
     return PostEntity(
         postId = this.id ?: "",
-        author = this.author ?: "",
+        authorName = this.author ?: "",
         authorId = this.authorId ?: "",
         authorProfileImageUrl = this.authorProfileImageUrl ?: "",
         title = this.title ?: "",
