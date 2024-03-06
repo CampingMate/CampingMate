@@ -16,12 +16,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/iv_detail"
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/view_pager"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:src="@drawable/ic_filter"
+                android:scaleType="centerCrop"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -29,9 +30,9 @@
                 android:id="@+id/iv_arrow_back"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_back"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:src="@drawable/ic_arrow_back"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -39,23 +40,28 @@
                 android:id="@+id/iv_arrow_bookmark"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:src="@drawable/ic_bookmark"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:src="@drawable/ic_bookmark"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/indicator"
+            <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
+                android:id="@+id/spring_dots_indicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:dampingRatio="0.5"
                 android:layout_marginTop="16dp"
-                android:text="뷰페이지인디케이터"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@id/iv_detail"
-                app:layout_constraintStart_toStartOf="@id/iv_detail"
-                app:layout_constraintTop_toBottomOf="@id/iv_detail" />
+                app:dotsColor="@color/brandColor"
+                app:dotsCornerRadius="10dp"
+                app:dotsSize="8dp"
+                app:dotsSpacing="3dp"
+                app:dotsStrokeColor="@color/indicator_gray"
+                app:dotsStrokeWidth="2dp"
+                app:layout_constraintEnd_toEndOf="@id/view_pager"
+                app:layout_constraintStart_toStartOf="@id/view_pager"
+                app:layout_constraintTop_toBottomOf="@id/view_pager"
+                app:stiffness="300" />
 
             <TextView
                 android:id="@+id/tv_camp_name"
@@ -63,12 +69,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
-                android:fontFamily="@font/spoqahansansneo_bold"
                 android:text="여기는 캠핑장 이름이 들어갈 곳입니다."
+                android:fontFamily="@font/spoqahansansneo_bold"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/indicator" />
+                app:layout_constraintTop_toBottomOf="@id/spring_dots_indicator" />
 
             <ImageView
                 android:id="@+id/iv_location"
@@ -84,8 +90,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:fontFamily="@font/spoqahansansneo_regular"
                 android:text="여기는 캠핑장 위치에요"
+                android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="11sp"
                 app:layout_constraintBottom_toBottomOf="@id/iv_location"
                 app:layout_constraintStart_toEndOf="@id/iv_location"
@@ -106,14 +112,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="7dp"
-                android:fontFamily="@font/spoqahansansneo_regular"
                 android:text="캠핑장 전화번호"
+                android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="11sp"
                 app:layout_constraintBottom_toBottomOf="@id/iv_call"
                 app:layout_constraintStart_toEndOf="@id/iv_call"
                 app:layout_constraintTop_toTopOf="@id/iv_call" />
 
             <ImageView
+                android:id="@+id/iv_call_camping"
                 android:layout_width="10dp"
                 android:layout_height="10dp"
                 android:src="@drawable/ic_arrow_forward"
@@ -122,6 +129,7 @@
                 app:layout_constraintTop_toTopOf="@id/tv_call" />
 
             <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_reserve"
                 android:layout_width="78dp"
                 android:layout_height="34dp"
                 android:layout_marginTop="100dp"
@@ -131,15 +139,15 @@
                 android:textColor="@color/white"
                 android:textSize="13sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/iv_detail" />
+                app:layout_constraintTop_toBottomOf="@id/view_pager" />
 
             <TextView
                 android:id="@+id/tv_information_tab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:fontFamily="@font/spoqahansansneo_regular"
                 android:text="@string/camp_detail_information"
+                android:fontFamily="@font/spoqahansansneo_regular"
                 android:textColor="@color/camp_detail_tap"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="@id/iv_call"
@@ -150,8 +158,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="18dp"
-                android:fontFamily="@font/spoqahansansneo_regular"
                 android:text="@string/camp_detail_introduce"
+                android:fontFamily="@font/spoqahansansneo_regular"
                 android:textColor="@color/camp_detail_tap"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_information_tab"
@@ -163,8 +171,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="18dp"
-                android:fontFamily="@font/spoqahansansneo_regular"
                 android:text="@string/camp_detail_convenience"
+                android:fontFamily="@font/spoqahansansneo_regular"
                 android:textColor="@color/camp_detail_tap"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_introduce_tab"
@@ -176,8 +184,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="18dp"
-                android:fontFamily="@font/spoqahansansneo_regular"
                 android:text="@string/camp_detail_map"
+                android:fontFamily="@font/spoqahansansneo_regular"
                 android:textColor="@color/camp_detail_tap"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_convenience_tab"
@@ -189,8 +197,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="18dp"
-                android:fontFamily="@font/spoqahansansneo_regular"
                 android:text="@string/camp_detail_comment"
+                android:fontFamily="@font/spoqahansansneo_regular"
                 android:textColor="@color/camp_detail_tap"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_map_tab"
@@ -215,11 +223,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="12dp"
                 android:fontFamily="@font/spoqahansansneo_bold"
-                android:text="@string/camp_detail_information"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:layout_marginTop="12dp"
+                android:text="@string/camp_detail_information"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/divider_dark" />
 
@@ -227,10 +235,10 @@
                 android:id="@+id/tv_homepage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:fontFamily="@font/spoqahansansneo_regular"
                 android:text="홈페이지 - "
+                android:layout_marginTop="12dp"
                 android:textSize="14sp"
+                android:fontFamily="@font/spoqahansansneo_regular"
                 app:layout_constraintStart_toStartOf="@id/tv_information"
                 app:layout_constraintTop_toBottomOf="@id/tv_information" />
 
@@ -238,8 +246,8 @@
                 android:id="@+id/tv_size"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/spoqahansansneo_regular"
                 android:text="면적 - "
+                android:fontFamily="@font/spoqahansansneo_regular"
                 app:layout_constraintStart_toStartOf="@id/tv_homepage"
                 app:layout_constraintTop_toBottomOf="@id/tv_homepage" />
 
@@ -247,8 +255,8 @@
                 android:id="@+id/tv_rest_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/spoqahansansneo_regular"
                 android:text="휴장기간 - "
+                android:fontFamily="@font/spoqahansansneo_regular"
                 app:layout_constraintStart_toStartOf="@id/tv_size"
                 app:layout_constraintTop_toBottomOf="@id/tv_size" />
 
@@ -256,8 +264,8 @@
                 android:id="@+id/tv_play_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/spoqahansansneo_regular"
                 android:text="운영기간 - "
+                android:fontFamily="@font/spoqahansansneo_regular"
                 app:layout_constraintStart_toStartOf="@id/tv_rest_time"
                 app:layout_constraintTop_toBottomOf="@id/tv_rest_time" />
 
@@ -265,8 +273,8 @@
                 android:id="@+id/tv_bottom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/spoqahansansneo_regular"
                 android:text="바닥재질 - "
+                android:fontFamily="@font/spoqahansansneo_regular"
                 app:layout_constraintStart_toStartOf="@id/tv_play_time"
                 app:layout_constraintTop_toBottomOf="@id/tv_play_time" />
 
@@ -276,8 +284,8 @@
                 android:layout_height="1dp"
                 android:layout_gravity="center"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="35dp"
                 android:layout_marginEnd="16dp"
+                android:layout_marginTop="35dp"
                 android:background="@color/divider_light"
                 app:layout_constraintTop_toBottomOf="@id/tv_bottom" />
 
@@ -285,12 +293,12 @@
                 android:id="@+id/tv_introduce"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:fontFamily="@font/spoqahansansneo_bold"
                 android:text="@string/camp_detail_introduce"
+                android:layout_marginStart="16dp"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/spoqahansansneo_bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/divider_1" />
 
@@ -299,11 +307,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/spoqahansansneo_regular"
                 android:text="캠핑장 소개가 들어갈 내용입니다."
+                android:layout_marginTop="12dp"
                 android:textSize="14sp"
+                android:layout_marginEnd="16dp"
                 app:layout_constraintStart_toStartOf="@id/tv_introduce"
                 app:layout_constraintTop_toBottomOf="@id/tv_introduce" />
 
@@ -313,8 +321,8 @@
                 android:layout_height="1dp"
                 android:layout_gravity="center"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="35dp"
                 android:layout_marginEnd="16dp"
+                android:layout_marginTop="35dp"
                 android:background="@color/divider_light"
                 app:layout_constraintTop_toBottomOf="@id/tv_introduce_comment" />
 
@@ -322,62 +330,72 @@
                 android:id="@+id/tv_convenience"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:fontFamily="@font/spoqahansansneo_bold"
                 android:text="@string/camp_detail_convenience_lesure"
+                android:layout_marginStart="16dp"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/spoqahansansneo_bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/divider_2" />
 
             <TextView
                 android:id="@+id/tv_convenience_comment"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="12dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/spoqahansansneo_regular"
-                android:text="편의시설 - 화장실: 1, 샤워실: 1, 개수대:1, 화로대-개별"
                 android:textSize="14sp"
+                android:text="편의시설 - 화장실: 1, 샤워실: 1, 개수대:1, 화로대-개별"
                 app:layout_constraintStart_toStartOf="@id/tv_convenience"
                 app:layout_constraintTop_toBottomOf="@id/tv_convenience" />
 
             <TextView
                 android:id="@+id/tv_convenience_comment2"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/spoqahansansneo_regular"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:text="부대시설 - "
+                android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="@id/tv_convenience_comment"
                 app:layout_constraintTop_toBottomOf="@id/tv_convenience_comment" />
 
             <TextView
                 android:id="@+id/tv_convenience_thema"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/spoqahansansneo_regular"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:text="테마 - 낚시, 여름물놀이"
+                android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="@id/tv_convenience_comment2"
                 app:layout_constraintTop_toBottomOf="@id/tv_convenience_comment2" />
 
             <TextView
                 android:id="@+id/tv_convenience_near"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/spoqahansansneo_regular"
                 android:text="주변이용가능시설 - 운동장,강/물놀이, 농어촌체험시설"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="@id/tv_convenience_thema"
                 app:layout_constraintTop_toBottomOf="@id/tv_convenience_thema" />
 
             <TextView
                 android:id="@+id/tv_convenience_feature"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/spoqahansansneo_regular"
                 android:text="특징 - 물놀이 시설이 잘 갖추어짐"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="@id/tv_convenience_near"
                 app:layout_constraintTop_toBottomOf="@id/tv_convenience_near" />
@@ -388,8 +406,8 @@
                 android:layout_height="1dp"
                 android:layout_gravity="center"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="35dp"
                 android:layout_marginEnd="16dp"
+                android:layout_marginTop="35dp"
                 android:background="@color/divider_light"
                 app:layout_constraintTop_toBottomOf="@id/tv_convenience_feature" />
 
@@ -398,11 +416,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
                 android:fontFamily="@font/spoqahansansneo_bold"
-                android:text="@string/camp_detail_map"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:layout_marginTop="16dp"
+                android:text="@string/camp_detail_map"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/divider_3" />
 
@@ -420,8 +438,8 @@
                 android:layout_height="1dp"
                 android:layout_gravity="center"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="35dp"
                 android:layout_marginEnd="16dp"
+                android:layout_marginTop="35dp"
                 android:background="@color/divider_light"
                 app:layout_constraintTop_toBottomOf="@id/iv_map" />
 
@@ -429,12 +447,12 @@
                 android:id="@+id/tv_comment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:fontFamily="@font/spoqahansansneo_bold"
                 android:text="@string/camp_detail_comment"
+                android:layout_marginStart="16dp"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/spoqahansansneo_bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/divider_4" />
 

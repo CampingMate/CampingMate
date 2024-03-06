@@ -31,7 +31,7 @@ data class CampImageItems(
 data class CampItem(
     val contentId: Int?,
     val serialnum: Int?,
-    val imageurl: String?,
+    val imageUrl: String?,
     val createdtime: String?,
     val modifiedtime: String?,
 )

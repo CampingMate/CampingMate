@@ -1,10 +1,14 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
     id("kotlin-parcelize")
 }
-
+fun getApiKey(propertyKey: String): String {
+    return gradleLocalProperties(rootDir).getProperty(propertyKey)
+}
 android {
     namespace = "com.brandon.campingmate"
     compileSdk = 34
@@ -15,7 +19,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
+        buildConfigField("String", "camp_data_key", getApiKey("camp_data_key"))
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -95,5 +99,8 @@ dependencies {
     //네이버 맵
     implementation("com.naver.maps:map-sdk:3.17.0")
     //네이버맵 클러스터링
-    implementation ("io.github.ParkSangGwon:tedclustering-naver:1.0.2")
+    implementation("io.github.ParkSangGwon:tedclustering-naver:1.0.2")
+    //인디케이터
+    implementation("com.tbuonomo:dotsindicator:5.0")
+
 }

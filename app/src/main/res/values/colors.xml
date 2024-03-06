@@ -29,4 +29,5 @@
     <color name="kakao_yellow">#F8DF02</color>
     <color name="brandColor_trans50">#80399D74</color>
     <color name="boardwite_add">#5A5A5A</color>
+    <color name="indicator_gray">#E6E6E4</color>
 </resources>

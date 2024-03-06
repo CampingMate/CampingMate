@@ -1,12 +1,17 @@
 package com.brandon.campingmate.presentation.campdetail
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.viewpager2.widget.ViewPager2
+import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.ActivityCampDetailBinding
 import com.brandon.campingmate.domain.model.CampEntity
-import com.bumptech.glide.Glide
+import com.brandon.campingmate.presentation.campdetail.adapter.ViewPagerAdapter
 
 class CampDetailActivity : AppCompatActivity() {
 
@@ -14,7 +19,7 @@ class CampDetailActivity : AppCompatActivity() {
     private val viewModel by lazy {
         ViewModelProvider(this)[CampDetailViewModel::class.java]
     }
-
+    private val imageUrls = mutableListOf<String>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -23,14 +28,24 @@ class CampDetailActivity : AppCompatActivity() {
         initViewModel()
     }
 
+    private fun initViewPager() {
+        binding.viewPager.adapter = ViewPagerAdapter(imageUrls)
+        binding.viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+        binding.springDotsIndicator.attachTo(binding.viewPager)
+    }
+
+    private fun getImageList(): ArrayList<Int> {
+        return arrayListOf(R.drawable.ic_arrow_back, R.drawable.ic_arrow_forward, R.drawable.ic_arrow_upward)
+    }
+
     private fun initViewModel() = with(viewModel) {
         imageParam.observe(this@CampDetailActivity) {
             viewModel.communicateNetWork(it)
         }
         imageResult.observe(this@CampDetailActivity) {
             if (it.isNotEmpty()) {
-                val firstImageUrl = it[0]
-                Glide.with(applicationContext).load(firstImageUrl).into(binding.ivDetail)
+                imageUrls.addAll(it)
+                initViewPager()
             }
         }
     }
@@ -65,6 +80,19 @@ class CampDetailActivity : AppCompatActivity() {
         ivArrowBack.setOnClickListener {
             finish()
         }
+        ivCallCamping.setOnClickListener {
+            val callNum = myData?.tel
+            // 전화를 걸기 위한 Intent 생성
+            val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$callNum"))
+            startActivity(intent)
+        }
+        btnReserve.setOnClickListener {
+            if (myData != null) {
+                val reserveUrl = myData.resveUrl
+                Log.d("asdfas", "$reserveUrl")
+            }
+        }
+
         scrollTab()
     }
 

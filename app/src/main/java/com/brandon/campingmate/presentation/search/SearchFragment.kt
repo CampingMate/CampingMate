@@ -1,7 +1,6 @@
 package com.brandon.campingmate.presentation.search
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,9 +13,6 @@ import com.brandon.campingmate.databinding.FragmentSearchBinding
 import com.brandon.campingmate.domain.model.CampEntity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.firestore
 
 class SearchFragment : Fragment() {
 
@@ -30,12 +26,11 @@ class SearchFragment : Fragment() {
     }
 
     lateinit var behavior: BottomSheetBehavior<ConstraintLayout>
-    val db = Firebase.firestore
 
-    private val activatedChips = mutableListOf<String>()
-    private val doNmList = mutableListOf<String>()
 
     companion object {
+        var activatedChips = mutableListOf<String>()
+        var doNmList = mutableListOf<String>()
         var campList = mutableListOf<CampEntity>()
     }
 
@@ -55,6 +50,9 @@ class SearchFragment : Fragment() {
         }
         keyword.observe(viewLifecycleOwner) {
 //            listAdapter.submitList(it)
+        }
+        myList.observe(viewLifecycleOwner) {
+            listAdapter.submitList(it)
         }
     }
 
@@ -175,201 +173,13 @@ class SearchFragment : Fragment() {
                     }
                 }
             }
-            callData()
+            viewModel.callData()
             behavior.state = BottomSheetBehavior.STATE_HIDDEN
         }
         binding.ivSearch.setOnClickListener {
             val searchText = binding.tvEdit.text.toString()
             viewModel.setUpParkParameter(searchText)
         }
-    }
-
-    private fun updateFirestore() {
-        val campsCollection = db.collection("camps")
-
-        campsCollection.get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    val documentId = document.id
-
-                    // 각 문서에 대해 themaEnvrnCl 필드 확인
-                    val siteBottomCl1 = document.get("siteBottomCl1") as? List<String>
-
-                    if (siteBottomCl1 != null && siteBottomCl1.isNotEmpty()) {
-                        // themaEnvrnCl 리스트에 값이 있을 경우 각 필드에 매핑
-                        val data = hashMapOf<String, String>()
-                        if ("0" in siteBottomCl1) {
-                            data["siteBottomCl1"] = ""
-                        } else{
-                            data["siteBottomCl1"] = "잔디"
-                        }
-
-                        // Firestore 문서 업데이트
-                        campsCollection.document(documentId)
-                            .update(data as Map<String, String>)
-                            .addOnSuccessListener {
-                                // 업데이트 성공 처리
-                            }
-                            .addOnFailureListener { exception ->
-                                // 업데이트 실패 처리
-                                Log.e("SearchFragment", "Error updating document", exception)
-                            }
-                    }
-                    val siteBottomCl2 = document.get("siteBottomCl2") as? List<String>
-
-                    if (siteBottomCl2 != null && siteBottomCl2.isNotEmpty()) {
-                        // themaEnvrnCl 리스트에 값이 있을 경우 각 필드에 매핑
-                        val data = hashMapOf<String, String>()
-                        if ("0" in siteBottomCl2) {
-                            data["siteBottomCl1"] = ""
-                        } else{
-                            data["siteBottomCl2"] = "파쇄석"
-                        }
-
-                        // Firestore 문서 업데이트
-                        campsCollection.document(documentId)
-                            .update(data as Map<String, String>)
-                            .addOnSuccessListener {
-                                // 업데이트 성공 처리
-                            }
-                            .addOnFailureListener { exception ->
-                                // 업데이트 실패 처리
-                                Log.e("SearchFragment", "Error updating document", exception)
-                            }
-                    }
-                    val siteBottomCl3 = document.get("siteBottomCl3") as? List<String>
-
-                    if (siteBottomCl3 != null && siteBottomCl3.isNotEmpty()) {
-                        // themaEnvrnCl 리스트에 값이 있을 경우 각 필드에 매핑
-                        val data = hashMapOf<String, String>()
-                        if ("0" in siteBottomCl3) {
-                            data["siteBottomCl1"] = ""
-                        } else{
-                            data["siteBottomCl1"] = "테크"
-                        }
-
-                        // Firestore 문서 업데이트
-                        campsCollection.document(documentId)
-                            .update(data as Map<String, String>)
-                            .addOnSuccessListener {
-                                // 업데이트 성공 처리
-                            }
-                            .addOnFailureListener { exception ->
-                                // 업데이트 실패 처리
-                                Log.e("SearchFragment", "Error updating document", exception)
-                            }
-                    }
-                    val siteBottomCl4 = document.get("siteBottomCl4") as? List<String>
-
-                    if (siteBottomCl4 != null && siteBottomCl4.isNotEmpty()) {
-                        // themaEnvrnCl 리스트에 값이 있을 경우 각 필드에 매핑
-                        val data = hashMapOf<String, String>()
-                        if ("0" in siteBottomCl4) {
-                            data["siteBottomCl1"] = ""
-                        } else{
-                            data["siteBottomCl1"] = "자갈"
-                        }
-
-                        // Firestore 문서 업데이트
-                        campsCollection.document(documentId)
-                            .update(data as Map<String, String>)
-                            .addOnSuccessListener {
-                                // 업데이트 성공 처리
-                            }
-                            .addOnFailureListener { exception ->
-                                // 업데이트 실패 처리
-                                Log.e("SearchFragment", "Error updating document", exception)
-                            }
-                    }
-                    val siteBottomCl5 = document.get("siteBottomCl5") as? List<String>
-
-                    if (siteBottomCl5 != null && siteBottomCl5.isNotEmpty()) {
-                        // themaEnvrnCl 리스트에 값이 있을 경우 각 필드에 매핑
-                        val data = hashMapOf<String, String>()
-                        if ("0" in siteBottomCl5) {
-                            data["siteBottomCl1"] = ""
-                        } else{
-                            data["siteBottomCl1"] = "맨흙"
-                        }
-
-                        // Firestore 문서 업데이트
-                        campsCollection.document(documentId)
-                            .update(data as Map<String, String>)
-                            .addOnSuccessListener {
-                                // 업데이트 성공 처리
-                            }
-                            .addOnFailureListener { exception ->
-                                // 업데이트 실패 처리
-                                Log.e("SearchFragment", "Error updating document", exception)
-                            }
-                    }
-                }
-            }
-            .addOnFailureListener { exception ->
-                // 오류 처리
-                Log.e("SearchFragment", "Error getting documents", exception)
-            }
-    }
-
-    private fun callData() {
-        var baseQuery: Query = db.collection("camps")
-        var result = if (doNmList.isNotEmpty()) {
-            baseQuery.whereIn("doNm", doNmList)
-        } else {
-            baseQuery
-        }
-
-        for (chip in activatedChips) {
-            when (chip) {
-                "글램핑" -> result = result.whereIn("induty1", listOf("글램핑"))
-                "일반야영" -> result = result.whereIn("induty2", listOf("일반야영장"))
-                "차박" -> result = result.whereIn("induty3", listOf("자동차야영장"))
-                "글램핑" -> result = result.whereIn("induty4", listOf("글램핑"))
-                "화장실" -> result = result.whereIn("bathroom", listOf("화장실"))
-                "샤워실" -> result = result.whereIn("shower", listOf("샤워실"))
-                "화로대" -> result = result.whereIn("fire", listOf("화로대"))
-                "전기" -> result = result.whereIn("electronic", listOf("전기"))
-                "냉장고" -> result = result.whereIn("refrigerator", listOf("냉장고"))
-                "불멍" -> result = result.whereIn("firesee", listOf("불멍"))
-                "에어컨" -> result = result.whereIn("aircon", listOf("에어컨"))
-                "침대" -> result = result.whereIn("bed", listOf("침대"))
-                "TV" -> result = result.whereIn("tv", listOf("TV"))
-                "난방기구" -> result = result.whereIn("warmer", listOf("난방기구"))
-                "내부화장실" -> result = result.whereIn("innerBathroom", listOf("내부화장실"))
-                "내부샤워실" -> result = result.whereIn("innerShower", listOf("내부샤워실"))
-                "유무선인터넷" -> result = result.whereIn("internet", listOf("유무선인터넷"))
-                "애견동반" -> result = result.whereIn("animalCmgCl", listOf("가능", "가능(소형견)"))
-                "여름물놀이" -> result = result.whereIn("summerPlay", listOf("여름물놀이"))
-                "낚시" -> result = result.whereIn("fishing", listOf("낚시"))
-                "걷기길" -> result = result.whereIn("walking", listOf("걷기길"))
-                "액티비티" -> result = result.whereIn("activity", listOf("액티비티"))
-                "봄꽃여행" -> result = result.whereIn("springFlower", listOf("봄꽃여행"))
-                "가을단풍명소" -> result = result.whereIn("fallLeaves", listOf("가을단풍명소"))
-                "겨울눈꽃명소" -> result = result.whereIn("winterSnow", listOf("겨울눈꽃명소"))
-                "일몰명소" -> result = result.whereIn("sunset", listOf("일몰명소"))
-                "수상레저" -> result = result.whereIn("waterLeisure", listOf("수상레저"))
-                "잔디" -> result = result.whereIn("siteBottomCl1", listOf("잔디"))
-                "파쇄석" -> result = result.whereIn("siteBottomCl2", listOf("파쇄석"))
-                "테크" -> result = result.whereIn("siteBottomCl3", listOf("테크"))
-                "자갈" -> result = result.whereIn("siteBottomCl4", listOf("자갈"))
-                "맨흙" -> result = result.whereIn("siteBottomCl5", listOf("맨흙"))
-                else -> Unit
-            }
-        }
-
-        result.limit(1)
-            .get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    val camp = document.toObject(CampEntity::class.java)
-                    campList.add(camp)
-                }
-                listAdapter.submitList(campList)
-            }
-            .addOnFailureListener { exception ->
-                // 오류 처리
-                // 예: Log.w("TAG", "Error getting documents.", exception)
-            }
     }
 
     private fun scrollTab() = with(binding) {
