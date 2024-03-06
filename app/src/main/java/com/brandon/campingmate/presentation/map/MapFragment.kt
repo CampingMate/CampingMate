@@ -3,14 +3,14 @@ package com.brandon.campingmate.presentation.map
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isGone
-import com.brandon.campingmate.presentation.map.adapter.DialogImgAdapter
-import com.brandon.campingmate.domain.model.MapEntity
+import androidx.fragment.app.Fragment
 import com.brandon.campingmate.databinding.FragmentMapBinding
+import com.brandon.campingmate.domain.model.MapEntity
+import com.brandon.campingmate.presentation.map.adapter.DialogImgAdapter
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.MapView
@@ -21,28 +21,24 @@ import ted.gun0912.clustering.geometry.TedLatLng
 import ted.gun0912.clustering.naver.TedNaverClustering
 import timber.log.Timber
 
-class MapFragment : Fragment(),OnMapReadyCallback {
-    private var _binding : FragmentMapBinding? = null
-    private val binding  get() = _binding!!
+class MapFragment : Fragment(), OnMapReadyCallback {
+    private var _binding: FragmentMapBinding? = null
+    private val binding get() = _binding!!
     private var mapView: MapView? = null
     private var naverMap: NaverMap? = null
-    private var maptype : Boolean = true
-    private var context : Context? = null
+    private var maptype: Boolean = true
+    private var context: Context? = null
     private val imgAdapter = DialogImgAdapter()
     private lateinit var tedNaverClustering: TedNaverClustering<MapEntity>
     private var campDataList = mutableListOf<MapEntity>()
     private var naverItems = mutableListOf<NaverItem>()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         context = container?.context
-        _binding = FragmentMapBinding.inflate(inflater,container,false)
+        _binding = FragmentMapBinding.inflate(inflater, container, false)
         mapView = binding.mvMap
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync(this)
@@ -53,13 +49,13 @@ class MapFragment : Fragment(),OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState)
 
         binding.btnSattel.setOnClickListener {
-            if(maptype){
+            if (maptype) {
                 naverMap?.mapType = NaverMap.MapType.Satellite
-                maptype=false
+                maptype = false
                 binding.btnSattel.text = "지형도"
-            }else{
+            } else {
                 naverMap?.mapType = NaverMap.MapType.Terrain
-                maptype=true
+                maptype = true
                 binding.btnSattel.text = "위성"
             }
         }
@@ -81,14 +77,13 @@ class MapFragment : Fragment(),OnMapReadyCallback {
     }
 
 
-    
     override fun onMapReady(p0: NaverMap) {
         naverMap = p0
         val cameraPosition = CameraPosition(LatLng(36.60545, 127.9792), 6.0)
         naverMap?.cameraPosition = cameraPosition
 
         //백그라운드에서 불러온 마커가 저장되는 리스트
- //       var markers = mutableListOf<Marker>()
+        //       var markers = mutableListOf<Marker>()
 
 //        val firebaseDatabase = FirebaseDatabase.getInstance()
 //        val db = Firebase.firestore
@@ -164,10 +159,6 @@ class MapFragment : Fragment(),OnMapReadyCallback {
 //            }
 
     }
-
-
-
-
 
 
     fun onClickClusterMarker(donm: String?) {

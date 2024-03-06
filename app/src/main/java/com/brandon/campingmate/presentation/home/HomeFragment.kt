@@ -3,10 +3,10 @@ package com.brandon.campingmate.presentation.home
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.brandon.campingmate.databinding.FragmentHomeBinding
 import com.brandon.campingmate.domain.model.CampEntity
@@ -42,7 +42,7 @@ class HomeFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -73,7 +73,7 @@ class HomeFragment : Fragment() {
         initView(dataSwim)
 
         //반려동물
-        val dataPet = allCity.whereEqualTo("animalCmgCl","").limit(30)
+        val dataPet = allCity.whereEqualTo("animalCmgCl", "").limit(30)
 
 //        dataCapital.get().addOnSuccessListener { it ->
 //            for(document in it.documents){
@@ -136,19 +136,19 @@ class HomeFragment : Fragment() {
     }
 
     private fun initView(data: Query) {
-        var limitData=data
+        var limitData = data
         var view = binding.rvDistrictItem
         if (data == allCity)
-            limitData =data.limit(10)
+            limitData = data.limit(10)
 
         limitData.get().addOnSuccessListener { it ->
-            for(document in it.documents){
+            for (document in it.documents) {
                 val dataList = document.toObject(CampEntity::class.java)
                 dataItem.add(dataList)
 //                Log.d("Home","item : $dataItem")
             }
-            view = when(data){
-                dataSwim, dataWalk, dataActivity, dataSpringFlower, dataWinterFlower, dataFallFlower, dataSunset ->binding.rvThemeItem
+            view = when (data) {
+                dataSwim, dataWalk, dataActivity, dataSpringFlower, dataWinterFlower, dataFallFlower, dataSunset -> binding.rvThemeItem
                 else -> view
             }
             homeAdapter = HomeAdapter(requireContext(), dataItem)
@@ -167,18 +167,16 @@ class HomeFragment : Fragment() {
     }
 
     private fun selectChip(data: Query): MutableList<CampEntity?> {
-        var item=mutableListOf<CampEntity?>()
+        var item = mutableListOf<CampEntity?>()
         data.get().addOnSuccessListener { it ->
-            for(document in it.documents){
+            for (document in it.documents) {
                 val dataList = document.toObject(CampEntity::class.java)
                 item.add(dataList)
-                Log.d("Home","item : $item")
+                Log.d("Home", "item : $item")
             }
         }
         return item
     }
 
-    companion object {
-
-    }
+    companion object
 }

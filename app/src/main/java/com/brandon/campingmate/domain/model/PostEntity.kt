@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class PostEntity(
     val postId: String? = null,
-    val author: String? = null,
+    val authorName: String? = null,
     val authorId: String? = null,
     val authorProfileImageUrl: String? = null,
     val title: String? = null,

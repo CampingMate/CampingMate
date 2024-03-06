@@ -7,7 +7,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.brandon.campingmate.R
 import com.bumptech.glide.Glide
 
-class ViewPagerAdapter(imageList: MutableList<String>) : RecyclerView.Adapter<ViewPagerAdapter.PagerViewHolder>() {
+class ViewPagerAdapter(imageList: MutableList<String>) :
+    RecyclerView.Adapter<ViewPagerAdapter.PagerViewHolder>() {
     var item = imageList
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = PagerViewHolder((parent))
@@ -23,7 +24,7 @@ class ViewPagerAdapter(imageList: MutableList<String>) : RecyclerView.Adapter<Vi
     }
 
     inner class PagerViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder
-        (LayoutInflater.from(parent.context).inflate(R.layout.item_camp_image, parent, false)){
+        (LayoutInflater.from(parent.context).inflate(R.layout.item_camp_image, parent, false)) {
 
         val image = itemView.findViewById<ImageView>(R.id.imageCamp)
     }
