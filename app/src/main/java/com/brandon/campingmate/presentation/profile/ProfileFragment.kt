@@ -21,8 +21,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.viewpager2.widget.ViewPager2
-import com.brandon.campingmate.LoginActivity
+import com.brandon.campingmate.presentation.login.LoginActivity
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.FragmentProfileBinding
 import com.google.firebase.firestore.FirebaseFirestore

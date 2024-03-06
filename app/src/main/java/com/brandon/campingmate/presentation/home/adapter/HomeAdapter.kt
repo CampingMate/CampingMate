@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.brandon.campingmate.SearchFragment
+import com.brandon.campingmate.presentation.search.SearchFragment
 import com.brandon.campingmate.databinding.FragmentProfileBinding
 import com.brandon.campingmate.databinding.ItemSmallCampBinding
 import com.brandon.campingmate.presentation.home.HomeDistrictThemeModel

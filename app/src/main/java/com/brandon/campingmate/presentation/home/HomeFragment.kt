@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
-import com.brandon.campingmate.SearchFragment
+import com.brandon.campingmate.presentation.search.SearchFragment
 import com.brandon.campingmate.databinding.FragmentHomeBinding
 import com.brandon.campingmate.presentation.home.adapter.HomeAdapter
 import com.google.firebase.Firebase
