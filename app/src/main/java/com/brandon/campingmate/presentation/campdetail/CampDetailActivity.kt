@@ -1,10 +1,11 @@
-package com.brandon.campingmate
+package com.brandon.campingmate.presentation.campdetail
 
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.brandon.campingmate.databinding.ActivityCampDetailBinding
+import com.brandon.campingmate.domain.model.CampEntity
 import com.bumptech.glide.Glide
 
 class CampDetailActivity : AppCompatActivity() {
@@ -35,7 +36,7 @@ class CampDetailActivity : AppCompatActivity() {
     }
 
     private fun initView() = with(binding) {
-        val myData = intent.getParcelableExtra("campData") as? CampModel
+        val myData = intent.getParcelableExtra("campData") as? CampEntity
         if (myData != null) {
             val contentId = myData.contentId.toString()
             tvCampName.text = myData.facltNm
@@ -84,7 +85,6 @@ class CampDetailActivity : AppCompatActivity() {
             scrollToView(tvComment)
         }
     }
-
     private fun scrollToView(view: View) {
         binding.scrollView.post {
             binding.scrollView.smoothScrollTo(0, view.top)

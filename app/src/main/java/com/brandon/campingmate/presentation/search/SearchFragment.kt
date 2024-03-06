@@ -1,4 +1,4 @@
-package com.brandon.campingmate
+package com.brandon.campingmate.presentation.search
 
 import android.os.Bundle
 import android.util.Log
@@ -9,7 +9,9 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.FragmentSearchBinding
+import com.brandon.campingmate.domain.model.CampEntity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
 import com.google.firebase.Firebase
@@ -34,7 +36,7 @@ class SearchFragment : Fragment() {
     private val doNmList = mutableListOf<String>()
 
     companion object {
-        var campList = mutableListOf<CampModel>()
+        var campList = mutableListOf<CampEntity>()
     }
 
     override fun onCreateView(
@@ -359,7 +361,7 @@ class SearchFragment : Fragment() {
             .get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
-                    val camp = document.toObject(CampModel::class.java)
+                    val camp = document.toObject(CampEntity::class.java)
                     campList.add(camp)
                 }
                 listAdapter.submitList(campList)

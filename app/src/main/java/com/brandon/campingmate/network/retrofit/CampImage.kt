@@ -1,4 +1,4 @@
-package com.brandon.campingmate
+package com.brandon.campingmate.network.retrofit
 
 import com.google.gson.annotations.SerializedName
 

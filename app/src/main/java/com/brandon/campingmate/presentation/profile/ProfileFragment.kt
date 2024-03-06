@@ -4,9 +4,11 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,9 +21,10 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import com.brandon.campingmate.LoginActivity
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.FragmentProfileBinding
+import com.brandon.campingmate.presentation.login.LoginActivity
+import com.google.firebase.firestore.FirebaseFirestore
 import com.kakao.sdk.user.UserApiClient
 
 class ProfileFragment : Fragment() {
@@ -31,18 +34,24 @@ class ProfileFragment : Fragment() {
     private val binding get() = _binding!!
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onStart() {
+        super.onStart()
+        checkLogin()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//자동로그인 유지 세션 확인해서 적용
-//        if(uuid != null){
-//            initLogin()
-//        }
+        //checkLogin()
 
         clickWritingTab()
         clickBookmarkedTab()
@@ -56,13 +65,54 @@ class ProfileFragment : Fragment() {
 
     }
 
-    private fun initLogin() {
+    fun checkLogin() {
+        UserApiClient.instance.me { user, error ->
+            if (user?.id != null) {
+                Log.d("프로필체크로그인검사", "${user.id}")
+                initLogin()
+            } else initLogout()
+        }
+
+    }
+
+
+    private fun initLogout() {
+
+        with(binding) {
+            //화면 상에서 비로그인 화면으로 되돌리기
+            ivProfileImg.setImageResource(R.drawable.ic_camp)
+            tvProfileName.textSize = 20f
+            tvProfileName.text = getString(R.string.profile_login_text)
+            tvProfileEmail.visibility = View.GONE
+            btnLogout.visibility = View.INVISIBLE
+            btnGoLogin.visibility = View.VISIBLE
+            btnProfileEdit.visibility = View.GONE
+            tvTabLoginText.visibility = View.VISIBLE
+            tvTabBookmarked.visibility = View.GONE
+            tvTabWriting.visibility = View.GONE
+        }
+    }
+
+    fun initLogin() {
+
+        val db = FirebaseFirestore.getInstance()
         with(binding) {
 
-            //todo.사진설정해주기 (if문 작성으로 저장값이 있으면 불러오기)
+            UserApiClient.instance.me { user, error ->
+                Log.d("다큐먼트검사", "kakao${user?.id}")
+                val docRef = db.collection("users").document("Kakao${user?.id}")
 
-            tvProfileName.textSize = 24f
-            tvProfileName.text = "김수미"//DB UserName
+
+                docRef.get().addOnSuccessListener {
+                    if (it.getString("profileImage") != null) {
+                        ivProfileImg.setImageURI(Uri.parse(it.getString("profileImage")))
+                    }
+                    tvProfileName.textSize = 24f
+                    tvProfileName.text = it.getString("nickName").toString()
+                    tvProfileEmail.text = it.getString("userEmail").toString()
+                }
+            }
+
 
             tvProfileEmail.visibility = View.VISIBLE
 
@@ -81,11 +131,9 @@ class ProfileFragment : Fragment() {
 
     private fun clickLogin() {
         binding.btnGoLogin.setOnClickListener {
-            //noti.로그인 페이지로 이동
+            //로그인 페이지로 이동
             val intent = Intent(requireContext(), LoginActivity::class.java)
             startActivity(intent)
-
-            initLogin()
         }
     }
 
@@ -288,18 +336,7 @@ class ProfileFragment : Fragment() {
 //                    }
 
                     //화면 상에서 비로그인 화면으로 되돌리기
-                    ivProfileImg.setImageResource(R.drawable.ic_camp)
-                    tvProfileName.textSize = 20f
-                    tvProfileName.text = getString(R.string.profile_login_text)
-                    tvProfileEmail.visibility = View.GONE
-                    btnLogout.visibility = View.INVISIBLE
-                    btnGoLogin.visibility = View.VISIBLE
-                    btnProfileEdit.visibility = View.GONE
-                    tvTabLoginText.visibility = View.VISIBLE
-                    tvTabBookmarked.visibility = View.GONE
-                    tvTabWriting.visibility = View.GONE
-
-
+                    initLogout()
                     dialog.dismiss()
                 }
             }
@@ -307,8 +344,8 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
     }
 

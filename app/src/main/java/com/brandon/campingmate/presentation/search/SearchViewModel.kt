@@ -1,9 +1,11 @@
-package com.brandon.campingmate
+package com.brandon.campingmate.presentation.search
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.brandon.campingmate.network.retrofit.NetWorkClient
+import com.brandon.campingmate.network.retrofit.SearchItem
 import kotlinx.coroutines.launch
 
 class SearchViewModel: ViewModel() {
@@ -25,7 +27,6 @@ class SearchViewModel: ViewModel() {
             "keyword" to text
         )
     }
-
     fun communicateNetWork(param: HashMap<String, String>?) {
         viewModelScope.launch {
             val responseData = param?.let { NetWorkClient.imageNetWork.getSearch(it) }

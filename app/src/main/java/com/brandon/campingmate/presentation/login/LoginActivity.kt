@@ -1,9 +1,8 @@
-package com.brandon.campingmate
+package com.brandon.campingmate.presentation.login
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.brandon.campingmate.databinding.ActivityLoginBinding
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
@@ -18,27 +17,6 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-
-        UserApiClient.instance.accessTokenInfo{ tokenInfo, error ->
-            if (error != null) {
-                Toast.makeText(this, "토큰 정보 보기 실패", Toast.LENGTH_SHORT).show()
-            }
-            else if (tokenInfo != null) {
-                Toast.makeText(this, "토큰 정보 보기 성공", Toast.LENGTH_SHORT).show()
-//                val intent = Intent(this, MainActivity::class.java)
-//                startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
-                val db = Firebase.firestore
-                UserApiClient.instance.me { user, error ->
-                    val userModel = hashMapOf(
-                        "nickName" to "${user?.kakaoAccount?.profile?.nickname}",
-                        "profileImage" to "${user?.kakaoAccount?.profile?.profileImageUrl}",
-                        "userEmail" to "${user?.kakaoAccount?.email}",
-                    )
-                    db.collection("users").add(userModel)
-                }
-                finish()
-            }
-        }
 
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             if (error != null) {
@@ -82,8 +60,10 @@ class LoginActivity : AppCompatActivity() {
                         "nickName" to "${user?.kakaoAccount?.profile?.nickname}",
                         "profileImage" to "${user?.kakaoAccount?.profile?.profileImageUrl}",
                         "userEmail" to "${user?.kakaoAccount?.email}",
+                        "boomarked" to null,
+                        "writing" to null
                     )
-                    db.collection("users").add(userModel)
+                    db.collection("users").document("Kakao${user?.id}").set(userModel)
                 }
                 finish()
             }

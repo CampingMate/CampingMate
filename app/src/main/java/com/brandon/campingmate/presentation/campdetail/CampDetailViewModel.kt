@@ -1,10 +1,11 @@
-package com.brandon.campingmate
+package com.brandon.campingmate.presentation.campdetail
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.brandon.campingmate.network.retrofit.NetWorkClient
 import kotlinx.coroutines.launch
 
 class CampDetailViewModel : ViewModel() {
