@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
-import com.brandon.campingmate.CampModel
+import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.databinding.ActivityCampDetailBinding
 import com.bumptech.glide.Glide
 
@@ -35,7 +35,7 @@ class CampDetailActivity : AppCompatActivity() {
     }
 
     private fun initView() =with(binding) {
-        val myData = intent.getParcelableExtra("campData") as? CampModel
+        val myData = intent.getParcelableExtra("campData") as? CampEntity
         if(myData != null){
             val contentId = myData.contentId.toString()
             tvCampName.text = myData.facltNm
