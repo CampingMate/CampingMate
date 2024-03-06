@@ -1,13 +1,12 @@
-package com.brandon.campingmate
+package com.brandon.campingmate.presentation.campdetail
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
+import com.brandon.campingmate.CampModel
 import com.brandon.campingmate.databinding.ActivityCampDetailBinding
 import com.bumptech.glide.Glide
-import kotlinx.coroutines.launch
 
 class CampDetailActivity : AppCompatActivity() {
 
