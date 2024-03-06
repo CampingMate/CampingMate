@@ -16,14 +16,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/iv_detail"
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/view_pager"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:src="@drawable/ic_filter"
+                android:scaleType="centerCrop"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
             <ImageView
                 android:id="@+id/iv_arrow_back"
                 android:layout_width="wrap_content"
@@ -43,17 +45,22 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
-            <TextView
-                android:id="@+id/indicator"
+            <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
+                android:id="@+id/spring_dots_indicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:dampingRatio="0.5"
                 android:layout_marginTop="16dp"
-                android:text="뷰페이지인디케이터"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@id/iv_detail"
-                app:layout_constraintStart_toStartOf="@id/iv_detail"
-                app:layout_constraintTop_toBottomOf="@id/iv_detail" />
+                app:dotsColor="@color/brandColor"
+                app:dotsStrokeColor="@color/indicator_gray"
+                app:dotsCornerRadius="10dp"
+                app:dotsSize="8dp"
+                app:dotsSpacing="3dp"
+                app:dotsStrokeWidth="2dp"
+                app:stiffness="300"
+                app:layout_constraintEnd_toEndOf="@id/view_pager"
+                app:layout_constraintStart_toStartOf="@id/view_pager"
+                app:layout_constraintTop_toBottomOf="@id/view_pager" />
 
             <TextView
                 android:id="@+id/tv_camp_name"
@@ -66,7 +73,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/indicator" />
+                app:layout_constraintTop_toBottomOf="@id/spring_dots_indicator" />
 
             <ImageView
                 android:id="@+id/iv_location"
@@ -112,6 +119,7 @@
                 app:layout_constraintTop_toTopOf="@id/iv_call" />
 
             <ImageView
+                android:id="@+id/iv_call_camping"
                 android:layout_width="10dp"
                 android:layout_height="10dp"
                 android:src="@drawable/ic_arrow_forward"
@@ -120,6 +128,7 @@
                 app:layout_constraintTop_toTopOf="@id/tv_call" />
 
             <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_reserve"
                 android:layout_width="78dp"
                 android:layout_height="34dp"
                 android:layout_marginTop="100dp"
@@ -129,7 +138,7 @@
                 android:textColor="@color/white"
                 android:textSize="13sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/iv_detail" />
+                app:layout_constraintTop_toBottomOf="@id/view_pager" />
 
             <TextView
                 android:id="@+id/tv_information_tab"
@@ -324,8 +333,10 @@
                 app:layout_constraintStart_toStartOf="parent"/>
             <TextView
                 android:id="@+id/tv_convenience_comment"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:text="편의시설 - 화장실: 1, 샤워실: 1, 개수대:1, 화로대-개별"
                 android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
@@ -334,36 +345,44 @@
                 app:layout_constraintStart_toStartOf="@id/tv_convenience"/>
             <TextView
                 android:id="@+id/tv_convenience_comment2"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="부대시설 - "
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
                 app:layout_constraintTop_toBottomOf="@id/tv_convenience_comment"
                 app:layout_constraintStart_toStartOf="@id/tv_convenience_comment"/>
             <TextView
                 android:id="@+id/tv_convenience_thema"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="테마 - 낚시, 여름물놀이"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
                 app:layout_constraintTop_toBottomOf="@id/tv_convenience_comment2"
                 app:layout_constraintStart_toStartOf="@id/tv_convenience_comment2"/>
             <TextView
                 android:id="@+id/tv_convenience_near"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="주변이용가능시설 - 운동장,강/물놀이, 농어촌체험시설"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
                 app:layout_constraintTop_toBottomOf="@id/tv_convenience_thema"
                 app:layout_constraintStart_toStartOf="@id/tv_convenience_thema"/>
             <TextView
                 android:id="@+id/tv_convenience_feature"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="특징 - 물놀이 시설이 잘 갖추어짐"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
                 app:layout_constraintTop_toBottomOf="@id/tv_convenience_near"
