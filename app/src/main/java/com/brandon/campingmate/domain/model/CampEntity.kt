@@ -1,11 +1,10 @@
-package com.brandon.campingmate
+package com.brandon.campingmate.domain.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import java.util.UUID
 
 @Parcelize
-data class CampModel(
+data class CampEntity(
     val addr1: String? = "",
     val addr2: String? = "",
     val allar: String? = "",
