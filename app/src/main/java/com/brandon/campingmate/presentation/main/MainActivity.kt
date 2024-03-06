@@ -1,9 +1,11 @@
 package com.brandon.campingmate.presentation.main
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 
 import com.brandon.campingmate.databinding.ActivityMainBinding
+import com.kakao.sdk.common.util.Utility
 import nl.joery.animatedbottombar.AnimatedBottomBar
 import timber.log.Timber
 
@@ -15,6 +17,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+//        var keyHash = Utility.getKeyHash(this)
+//        Log.d("keyHash", "$keyHash")
 
         Timber.plant(Timber.DebugTree())
 

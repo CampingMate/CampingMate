@@ -1,11 +1,9 @@
-package com.brandon.campingmate
+package com.brandon.campingmate.presentation.login
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import com.brandon.campingmate.databinding.ActivityLoginBinding
-import com.brandon.campingmate.presentation.profile.ProfileFragment
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.kakao.sdk.auth.LoginClient
