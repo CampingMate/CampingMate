@@ -1,4 +1,4 @@
-package com.brandon.campingmate
+package com.brandon.campingmate.presentation.map.adapter
 
 import android.content.Context
 import android.view.LayoutInflater

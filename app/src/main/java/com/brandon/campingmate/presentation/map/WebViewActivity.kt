@@ -1,4 +1,4 @@
-package com.brandon.campingmate
+package com.brandon.campingmate.presentation.map
 
 import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity

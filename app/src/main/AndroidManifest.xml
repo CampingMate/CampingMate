@@ -21,7 +21,7 @@
             android:name=".presentation.campdetail.CampDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".WebViewActivity"
+            android:name=".presentation.map.WebViewActivity"
             android:exported="false" />
         <activity
             android:name=".presentation.postwrite.PostWriteActivity"

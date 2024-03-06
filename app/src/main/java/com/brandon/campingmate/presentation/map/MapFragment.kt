@@ -1,20 +1,27 @@
-package com.brandon.campingmate
+package com.brandon.campingmate.presentation.map
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isGone
+import com.brandon.campingmate.presentation.map.adapter.DialogImgAdapter
+import com.brandon.campingmate.domain.model.MapEntity
 import com.brandon.campingmate.databinding.FragmentMapBinding
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
+import com.naver.maps.map.OnMapReadyCallback
 import ted.gun0912.clustering.clustering.TedClusterItem
 import ted.gun0912.clustering.geometry.TedLatLng
 import ted.gun0912.clustering.naver.TedNaverClustering
+import timber.log.Timber
 
-class MapFragment : Fragment() {
+class MapFragment : Fragment(),OnMapReadyCallback {
     private var _binding : FragmentMapBinding? = null
     private val binding  get() = _binding!!
     private var mapView: MapView? = null
@@ -22,8 +29,8 @@ class MapFragment : Fragment() {
     private var maptype : Boolean = true
     private var context : Context? = null
     private val imgAdapter = DialogImgAdapter()
-    private lateinit var tedNaverClustering: TedNaverClustering<MapModel>
-    private var campDataList = mutableListOf<MapModel>()
+    private lateinit var tedNaverClustering: TedNaverClustering<MapEntity>
+    private var campDataList = mutableListOf<MapEntity>()
     private var naverItems = mutableListOf<NaverItem>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,51 +43,53 @@ class MapFragment : Fragment() {
     ): View? {
         context = container?.context
         _binding = FragmentMapBinding.inflate(inflater,container,false)
-//        mapView = binding.mvMap
-//        mapView?.onCreate(savedInstanceState)
-//        mapView?.getMapAsync(this)
+        mapView = binding.mvMap
+        mapView?.onCreate(savedInstanceState)
+        mapView?.getMapAsync(this)
+        Timber.tag("mapfragment").d("mapview getMapAsync()")
         return binding.root
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//
-//        binding.btnSattel.setOnClickListener {
-//            if(maptype){
-//                naverMap?.mapType = NaverMap.MapType.Satellite
-//                maptype=false
-//                binding.btnSattel.text = "지형도"
-//            }else{
-//                naverMap?.mapType = NaverMap.MapType.Terrain
-//                maptype=true
-//                binding.btnSattel.text = "위성"
-//            }
-//        }
-//
-//        binding.ivDialogclose.setOnClickListener {
-//            binding.clMapBottomDialog.isGone = true
-//        }
-//
-//        binding.tvDialogcampname.setOnClickListener {
-//            //캠프디테일로 이동
-//        }
-//
-//        binding.button.setOnClickListener {
-//            val intent = Intent(context,WebViewActivity::class.java)
-//            startActivity(intent)
-//        }
-//        //makeAllMarker()
-//        binding.rvCampImg.adapter = imgAdapter
+
+        binding.btnSattel.setOnClickListener {
+            if(maptype){
+                naverMap?.mapType = NaverMap.MapType.Satellite
+                maptype=false
+                binding.btnSattel.text = "지형도"
+            }else{
+                naverMap?.mapType = NaverMap.MapType.Terrain
+                maptype=true
+                binding.btnSattel.text = "위성"
+            }
+        }
+
+        binding.ivDialogclose.setOnClickListener {
+            binding.clMapBottomDialog.isGone = true
+        }
+
+        binding.tvDialogcampname.setOnClickListener {
+            //캠프디테일로 이동
+        }
+
+        binding.button.setOnClickListener {
+            val intent = Intent(context, WebViewActivity::class.java)
+            startActivity(intent)
+        }
+        //makeAllMarker()
+        binding.rvCampImg.adapter = imgAdapter
     }
 
-//    override fun onMapReady(p0: NaverMap) {
-//        naverMap = p0
-//        val cameraPosition = CameraPosition(LatLng(36.60545, 127.9792), 6.0)
-//        naverMap?.cameraPosition = cameraPosition
-//
-//        //백그라운드에서 불러온 마커가 저장되는 리스트
-//        var markers = mutableListOf<Marker>()
-//
+
+    
+    override fun onMapReady(p0: NaverMap) {
+        naverMap = p0
+        val cameraPosition = CameraPosition(LatLng(36.60545, 127.9792), 6.0)
+        naverMap?.cameraPosition = cameraPosition
+
+        //백그라운드에서 불러온 마커가 저장되는 리스트
+ //       var markers = mutableListOf<Marker>()
+
 //        val firebaseDatabase = FirebaseDatabase.getInstance()
 //        val db = Firebase.firestore
 //
@@ -153,8 +162,8 @@ class MapFragment : Fragment() {
 //            .addOnFailureListener { exception ->
 //                Timber.tag("test").e(exception, "Error getting documents: ")
 //            }
-//
-//    }
+
+    }
 
 
 
@@ -163,99 +172,52 @@ class MapFragment : Fragment() {
 
     fun onClickClusterMarker(donm: String?) {
         // 호출해야 할 데이터가 다른 ArrayList 에서 code 값이 서로 일치하는 데이터만 추출해야 한다.
-        val itemData: MapModel = campDataList.filter { it.doNm.equals(donm) }.single()
+        val itemData: MapEntity = campDataList.filter { it.doNm.equals(donm) }.single()
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        mapView?.onStart()
+        Timber.tag("mapfragment").d("mapview onStart()")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mapView?.onResume()
+        Timber.tag("mapfragment").d("mapview onResume()")
     }
 
     override fun onPause() {
         super.onPause()
-//        mapView?.onPause()
+        mapView?.onPause()
+        Timber.tag("mapfragment").d("mapview onPause()")
     }
 
     override fun onStop() {
         super.onStop()
-//        mapView?.onStop()
+        mapView?.onStop()
+        Timber.tag("mapfragment").d("mapview onStop()")
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-//        mapView?.onDestroy()
+        mapView?.onDestroy()
         _binding = null
+        Timber.tag("mapfragment").d("mapview onDestroyView()")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-//        mapView?.onSaveInstanceState(outState)
+        mapView?.onSaveInstanceState(outState)
+        Timber.tag("mapfragment").d("mapview onSaveInstanceState()")
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-//        mapView?.onLowMemory()
+        mapView?.onLowMemory()
+        Timber.tag("mapfragment").d("mapview onLowMemory()")
     }
-
-
-    //백그라운드에서 불러온 마커를 저장하고 메인스레드에서 뿌려주는 메소드 . 작동하지 않아서 수정 필요
-//    private fun makeAllMarker() {
-//
-//        CoroutineScope(Dispatchers.IO).launch {
-//
-//
-//            //백그라운드에서 불러온 마커가 저장되는 리스트
-//            var markers = mutableListOf<Marker>()
-//
-//            val firebaseDatabase = FirebaseDatabase.getInstance()
-//            val db = Firebase.firestore
-//
-//            val campsRef = db.collection("camps")
-//
-//            campsRef
-//                .limit(10)
-//                .get()
-//                .addOnSuccessListener { documents ->
-//                    for (document in documents) {
-//                        // 각 문서에 대한 작업 수행
-//                        Timber.tag("test").d(document.data["facltNm"].toString())
-//                        val marker = Marker()
-//                        marker.icon = MarkerIcons.GREEN
-//                        marker.captionText = "" + document.data["facltNm"]
-//                        marker.captionRequestedWidth = 200
-//                        marker.setCaptionAligns(Align.Top)
-//                        marker.captionOffset = 10
-//                        marker.captionTextSize = 18f
-//                        marker.position = LatLng(
-//                            document.data["mapY"].toString().toDouble(),
-//                            document.data["mapX"].toString().toDouble()
-//                        )
-//                        marker.setOnClickListener { overlay ->
-//                            val tag = document.data["induty"] as List<*>
-//                            val loc = document.data["lctCl"] as List<*>
-//                            val str =
-//                                tag.joinToString(", ") + " · " + loc.joinToString(" / ")
-//                            binding.tvDialogtag.text = str
-//                            binding.tvDialogcampname.text =
-//                                document.data["facltNm"].toString()
-//                            binding.tvDialoglocation.text =
-//                                document.data["addr1"].toString()
-//                            //binding.rvCampimg.adapter
-//                            binding.clMapBottomDialog.isGone = false
-//                            true
-//                        }
-//                        markers?.add(marker)
-//                    }
-//                }
-//                .addOnFailureListener { exception ->
-//                    Timber.tag("test").e(exception, "Error getting documents: ")
-//                }
-//            withContext(Dispatchers.Main) {
-//                // 메인 스레드
-//                markers.forEach { marker ->
-//                    marker.map = naverMap
-//                }
-//            }
-//
-//        }
-//    }
-
 
 }
 data class NaverItem(var position: LatLng) : TedClusterItem {

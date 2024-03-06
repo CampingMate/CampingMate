@@ -23,7 +23,7 @@
         tools:layout="@layout/fragment_search" />
     <fragment
         android:id="@+id/mapFragment"
-        android:name="com.brandon.campingmate.MapFragment"
+        android:name="com.brandon.campingmate.presentation.map.MapFragment"
         android:label="fragment_map"
         tools:layout="@layout/fragment_map" />
     <fragment
