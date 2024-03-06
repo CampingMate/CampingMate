@@ -3,14 +3,13 @@ package com.brandon.campingmate.presentation.map
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isGone
-import com.brandon.campingmate.DialogImgAdapter
-import com.brandon.campingmate.domain.model.MapModel
+import com.brandon.campingmate.presentation.map.adapter.DialogImgAdapter
+import com.brandon.campingmate.domain.model.MapEntity
 import com.brandon.campingmate.databinding.FragmentMapBinding
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
@@ -30,8 +29,8 @@ class MapFragment : Fragment(),OnMapReadyCallback {
     private var maptype : Boolean = true
     private var context : Context? = null
     private val imgAdapter = DialogImgAdapter()
-    private lateinit var tedNaverClustering: TedNaverClustering<MapModel>
-    private var campDataList = mutableListOf<MapModel>()
+    private lateinit var tedNaverClustering: TedNaverClustering<MapEntity>
+    private var campDataList = mutableListOf<MapEntity>()
     private var naverItems = mutableListOf<NaverItem>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -173,7 +172,7 @@ class MapFragment : Fragment(),OnMapReadyCallback {
 
     fun onClickClusterMarker(donm: String?) {
         // 호출해야 할 데이터가 다른 ArrayList 에서 code 값이 서로 일치하는 데이터만 추출해야 한다.
-        val itemData: MapModel = campDataList.filter { it.doNm.equals(donm) }.single()
+        val itemData: MapEntity = campDataList.filter { it.doNm.equals(donm) }.single()
 
     }
 

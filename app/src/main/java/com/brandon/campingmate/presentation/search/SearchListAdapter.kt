@@ -7,30 +7,30 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.brandon.campingmate.CampModel
+import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.databinding.ItemBigCampBinding
 import com.brandon.campingmate.presentation.campdetail.CampDetailActivity
 import com.bumptech.glide.Glide
 
 class SearchListAdapter(
-) : ListAdapter<CampModel, SearchListAdapter.SearchViewHolder>(
-    object : DiffUtil.ItemCallback<CampModel>(){
+) : ListAdapter<CampEntity, SearchListAdapter.SearchViewHolder>(
+    object : DiffUtil.ItemCallback<CampEntity>(){
         override fun areItemsTheSame(
-            oldItem: CampModel,
-            newItem: CampModel
-        ): Boolean = if(oldItem is CampModel && newItem is CampModel){
+            oldItem: CampEntity,
+            newItem: CampEntity
+        ): Boolean = if(oldItem is CampEntity && newItem is CampEntity){
             oldItem.contentId == newItem.contentId
         } else{
             oldItem == newItem
         }
         override fun areContentsTheSame(
-            oldItem: CampModel,
-            newItem: CampModel
+            oldItem: CampEntity,
+            newItem: CampEntity
         ): Boolean = oldItem == newItem
     }
 ){
     abstract class SearchViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        abstract fun onBind(item: CampModel)
+        abstract fun onBind(item: CampEntity)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder =
@@ -45,8 +45,8 @@ class SearchListAdapter(
     class SearchItemViewHolder(
         private val binding: ItemBigCampBinding,
     ) : SearchViewHolder(binding.root){
-        override fun onBind(item: CampModel) = with(binding){
-            if(item !is CampModel) {
+        override fun onBind(item: CampEntity) = with(binding){
+            if(item !is CampEntity) {
                 return@with
             }
             Glide.with(binding.root).load(item.firstImageUrl).into(binding.ivBigItem)
@@ -57,7 +57,7 @@ class SearchListAdapter(
             ivBigItem.clipToOutline = true
 
             binding.root.setOnClickListener {
-                val myData = CampModel(
+                val myData = CampEntity(
                     addr1 =item.addr1, contentId = item.contentId, facltNm = item.facltNm,
                     wtrplCo = item.wtrplCo, brazierCl = item.brazierCl, sbrsCl = item.sbrsCl, posblFcltyCl = item.posblFcltyCl,
                     hvofBgnde = item.hvofBgnde, hvofEnddle = item.hvofEnddle, toiletCo = item.toiletCo, swrmCo = item.swrmCo,

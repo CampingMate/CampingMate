@@ -1,9 +1,11 @@
 package com.brandon.campingmate.presentation.main
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 
 import com.brandon.campingmate.databinding.ActivityMainBinding
+import com.kakao.sdk.common.util.Utility
 import nl.joery.animatedbottombar.AnimatedBottomBar
 import timber.log.Timber
 
@@ -16,11 +18,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+//        var keyHash = Utility.getKeyHash(this)
+//        Log.d("keyHash", "$keyHash")
+
         Timber.plant(Timber.DebugTree())
 
         binding.viewPager.adapter = ViewPager2Adapter(supportFragmentManager, lifecycle)
         binding.viewPager.isUserInputEnabled = false
-        binding.viewPager.offscreenPageLimit = 4
+        binding.viewPager.offscreenPageLimit = 1
         binding.bottomNavigation.setupWithViewPager2(binding.viewPager)
 
         binding.bottomNavigation.setOnTabSelectListener(object: AnimatedBottomBar.OnTabSelectListener{

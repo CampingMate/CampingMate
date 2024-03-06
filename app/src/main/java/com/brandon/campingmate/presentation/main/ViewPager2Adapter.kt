@@ -4,11 +4,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.brandon.campingmate.HomeFragment
+import com.brandon.campingmate.presentation.home.HomeFragment
+import com.brandon.campingmate.presentation.map.MapFragment
 import com.brandon.campingmate.presentation.search.SearchFragment
 import com.brandon.campingmate.presentation.profile.ProfileFragment
 import com.brandon.campingmate.presentation.board.BoardFragment
-import com.brandon.campingmate.presentation.map.MapFragment
 
 class ViewPager2Adapter(
     fragmentManager: FragmentManager,
