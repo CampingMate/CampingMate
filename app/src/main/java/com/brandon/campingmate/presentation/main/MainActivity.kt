@@ -1,4 +1,4 @@
-package com.brandon.campingmate
+package com.brandon.campingmate.presentation.main
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

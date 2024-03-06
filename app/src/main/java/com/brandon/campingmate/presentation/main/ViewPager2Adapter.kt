@@ -1,9 +1,12 @@
-package com.brandon.campingmate
+package com.brandon.campingmate.presentation.main
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.brandon.campingmate.HomeFragment
+import com.brandon.campingmate.MapFragment
+import com.brandon.campingmate.presentation.search.SearchFragment
 import com.brandon.campingmate.presentation.profile.ProfileFragment
 import com.brandon.campingmate.presentation.board.BoardFragment
 

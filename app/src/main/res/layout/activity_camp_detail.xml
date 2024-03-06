@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CampDetailActivity">
+    tools:context=".presentation.campdetail.CampDetailActivity">
 
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -24,6 +25,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
             <ImageView
+                android:id="@+id/iv_arrow_back"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_arrow_back"
@@ -32,6 +34,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"/>
             <ImageView
+                android:id="@+id/iv_arrow_bookmark"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_bookmark"
@@ -75,6 +78,7 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_camp_name" />
 
             <TextView
+                android:id="@+id/tv_addr"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -284,12 +288,14 @@
                 app:layout_constraintStart_toStartOf="parent"/>
             <TextView
                 android:id="@+id/tv_introduce_comment"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="캠핑장 소개가 들어갈 내용입니다."
                 android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
                 android:layout_marginTop="12dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 app:layout_constraintTop_toBottomOf="@id/tv_introduce"
                 app:layout_constraintStart_toStartOf="@id/tv_introduce"/>
 
@@ -386,7 +392,37 @@
                 android:layout_marginStart="16dp"
                 app:layout_constraintTop_toBottomOf="@id/divider_3"
                 app:layout_constraintStart_toStartOf="parent"/>
+            <ImageView
+                android:id="@+id/iv_map"
+                android:layout_width="300dp"
+                android:layout_height="300dp"
+                android:src="@drawable/ic_bookmark"
+                app:layout_constraintTop_toBottomOf="@id/tv_map"
+                app:layout_constraintStart_toStartOf="parent"/>
 
+            <View
+                android:id="@+id/divider_4"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="35dp"
+                android:background="@color/divider_light"
+                app:layout_constraintTop_toBottomOf="@id/iv_map"/>
+
+            <TextView
+                android:id="@+id/tv_comment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/camp_detail_comment"
+                android:fontFamily="@font/spoqahansansneo_bold"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                app:layout_constraintTop_toBottomOf="@id/divider_4"
+                app:layout_constraintStart_toStartOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
