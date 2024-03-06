@@ -35,8 +35,8 @@ class CampDetailViewModel : ViewModel() {
             val imageUrls = mutableListOf<String>()
             if (items != null) {
                 for(item in items){
-                    Log.d("woojinCheck", "contentId : ${item.contentId} serialnum : ${item.serialnum} imageURL : ${item.imageurl}")
-                    val imageUrl = item.imageurl
+                    Log.d("woojinCheck", "contentId : ${item.contentId} serialnum : ${item.serialnum} imageURL : ${item.imageUrl}")
+                    val imageUrl = item.imageUrl
                     if (imageUrl != null) {
                         imageUrls.add(imageUrl)
                     }

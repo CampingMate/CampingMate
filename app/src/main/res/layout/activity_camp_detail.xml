@@ -324,8 +324,10 @@
                 app:layout_constraintStart_toStartOf="parent"/>
             <TextView
                 android:id="@+id/tv_convenience_comment"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:text="편의시설 - 화장실: 1, 샤워실: 1, 개수대:1, 화로대-개별"
                 android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
@@ -334,36 +336,44 @@
                 app:layout_constraintStart_toStartOf="@id/tv_convenience"/>
             <TextView
                 android:id="@+id/tv_convenience_comment2"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="부대시설 - "
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
                 app:layout_constraintTop_toBottomOf="@id/tv_convenience_comment"
                 app:layout_constraintStart_toStartOf="@id/tv_convenience_comment"/>
             <TextView
                 android:id="@+id/tv_convenience_thema"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="테마 - 낚시, 여름물놀이"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
                 app:layout_constraintTop_toBottomOf="@id/tv_convenience_comment2"
                 app:layout_constraintStart_toStartOf="@id/tv_convenience_comment2"/>
             <TextView
                 android:id="@+id/tv_convenience_near"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="주변이용가능시설 - 운동장,강/물놀이, 농어촌체험시설"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
                 app:layout_constraintTop_toBottomOf="@id/tv_convenience_thema"
                 app:layout_constraintStart_toStartOf="@id/tv_convenience_thema"/>
             <TextView
                 android:id="@+id/tv_convenience_feature"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="특징 - 물놀이 시설이 잘 갖추어짐"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
                 app:layout_constraintTop_toBottomOf="@id/tv_convenience_near"
