@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.brandon.campingmate.R
@@ -87,9 +88,13 @@ class CampDetailActivity : AppCompatActivity() {
             startActivity(intent)
         }
         btnReserve.setOnClickListener{
-            if(myData != null){
-                val reserveUrl = myData.resveUrl
-                Log.d("asdfas", "$reserveUrl")
+            val reserveUrl = myData?.tel
+            Log.d("asdfasdf", "$reserveUrl")
+            if(!reserveUrl.isNullOrBlank()){
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(reserveUrl))
+                startActivity(intent)
+            } else{
+                Toast.makeText(this@CampDetailActivity, "등록된 홈페이지가 없습니다.", Toast.LENGTH_SHORT).show()
             }
         }
 

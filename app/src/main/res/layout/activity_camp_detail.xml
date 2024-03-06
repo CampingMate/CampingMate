@@ -131,7 +131,7 @@
                 android:id="@+id/btn_reserve"
                 android:layout_width="78dp"
                 android:layout_height="34dp"
-                android:layout_marginTop="100dp"
+                android:layout_marginTop="80dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/apply_btn"
                 android:text="@string/camp_detail_reservation"
