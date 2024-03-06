@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SearchFragment">
+    tools:context=".presentation.search.SearchFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -23,7 +23,7 @@
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="270dp"
-            android:layout_height="36dp"
+            android:layout_height="45dp"
             android:layout_marginTop="20dp"
             android:background="@drawable/search_selector"
             android:orientation="horizontal"
@@ -32,19 +32,21 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
+                android:id="@+id/iv_search"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginStart="8dp"
                 android:src="@drawable/ic_search" />
 
-            <TextView
+            <EditText
+                android:id="@+id/tv_edit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginStart="8dp"
                 android:fontFamily="@font/spoqahansansneo_regular"
-                android:text="@string/search_search_hint"
+                android:hint="@string/search_search_hint"
                 android:textSize="16sp" />
 
         </LinearLayout>
@@ -81,21 +83,53 @@
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <TextView
-            android:id="@+id/bottom_title"
+            android:id="@+id/search_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="바텀시트확인"
-            android:textSize="30sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:text="@string/search_type"
+            android:layout_marginTop="22dp"
+            android:layout_marginStart="42dp"
+            android:textSize="15sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+        <TextView
+            android:id="@+id/search_convenience"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/search_convenience"
+            android:layout_marginStart="30dp"
+            android:textSize="15sp"
+            app:layout_constraintStart_toEndOf="@id/search_type"
+            app:layout_constraintTop_toTopOf="@id/search_type"
+            app:layout_constraintBottom_toBottomOf="@id/search_type"/>
+        <TextView
+            android:id="@+id/search_thema"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/search_thema"
+            android:layout_marginStart="30dp"
+            android:textSize="15sp"
+            app:layout_constraintStart_toEndOf="@id/search_convenience"
+            app:layout_constraintTop_toTopOf="@id/search_convenience"
+            app:layout_constraintBottom_toBottomOf="@id/search_convenience"/>
+        <TextView
+            android:id="@+id/search_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/search_bottom_shape"
+            android:layout_marginStart="30dp"
+            android:textSize="15sp"
+            app:layout_constraintStart_toEndOf="@id/search_thema"
+            app:layout_constraintTop_toTopOf="@id/search_thema"
+            app:layout_constraintBottom_toBottomOf="@id/search_thema"/>
 
         <ScrollView
+            android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/bottom_title">
+            app:layout_constraintTop_toBottomOf="@id/search_type">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -111,7 +145,7 @@
                     android:textSize="15sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"/>
 
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/chip_type_group"

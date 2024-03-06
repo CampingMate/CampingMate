@@ -5,6 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import com.brandon.campingmate.databinding.ActivityLoginBinding
+import com.brandon.campingmate.presentation.profile.ProfileFragment
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import com.kakao.sdk.auth.LoginClient
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.AuthErrorCause
@@ -16,18 +19,6 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-
-        UserApiClient.instance.accessTokenInfo{ tokenInfo, error ->
-            if (error != null) {
-                Toast.makeText(this, "토큰 정보 보기 실패", Toast.LENGTH_SHORT).show()
-            }
-            else if (tokenInfo != null) {
-                Toast.makeText(this, "토큰 정보 보기 성공", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
-                finish()
-            }
-        }
 
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             if (error != null) {
@@ -63,8 +54,19 @@ class LoginActivity : AppCompatActivity() {
             }
             else if (token != null) {
                 Toast.makeText(this, "로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+//                val intent = Intent(this, MainActivity::class.java)
+//                startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+                val db = Firebase.firestore
+                UserApiClient.instance.me { user, error ->
+                    val userModel = hashMapOf(
+                        "nickName" to "${user?.kakaoAccount?.profile?.nickname}",
+                        "profileImage" to "${user?.kakaoAccount?.profile?.profileImageUrl}",
+                        "userEmail" to "${user?.kakaoAccount?.email}",
+                        "boomarked" to null,
+                        "writing" to null
+                    )
+                    db.collection("users").document("Kakao${user?.id}").set(userModel)
+                }
                 finish()
             }
         }
@@ -74,7 +76,7 @@ class LoginActivity : AppCompatActivity() {
             //카카오톡이 설치되어 있으면, 카카오톡로그인
             if(LoginClient.instance.isKakaoTalkLoginAvailable(this)){
                 LoginClient.instance.loginWithKakaoTalk(this, callback = callback)
-            //설치되어 있지 않으면, 카카오 계정 로그인(웹)
+                //설치되어 있지 않으면, 카카오 계정 로그인(웹)
             }else{
                 LoginClient.instance.loginWithKakaoAccount(this, callback = callback)
             }
