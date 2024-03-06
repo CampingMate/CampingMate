@@ -1,4 +1,4 @@
-package com.brandon.campingmate
+package com.brandon.campingmate.presentation.search
 
 import android.os.Bundle
 import android.util.Log
@@ -9,12 +9,12 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.brandon.campingmate.CampModel
+import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.FragmentSearchBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
 import com.google.firebase.Firebase
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 

@@ -1,4 +1,4 @@
-package com.brandon.campingmate
+package com.brandon.campingmate.network.retrofit
 
 import retrofit2.http.GET
 import retrofit2.http.QueryMap
