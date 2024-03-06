@@ -7,6 +7,7 @@ import com.brandon.campingmate.data.source.network.PostRemoteDataSource
 import com.brandon.campingmate.utils.Resource
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -17,10 +18,12 @@ class PostRemoteDataSourceImpl(private val firestore: FirebaseFirestore) : PostR
     ): Resource<PostListResponse> = withContext(IO) {
         runCatching {
             val query = if (lastVisibleDoc == null) {
-                firestore.collection("posts").orderBy("timestamp").limit(pageSize.toLong())
+                firestore.collection("posts").orderBy("timestamp", Query.Direction.DESCENDING)
+                    .limit(pageSize.toLong())
             } else {
                 // 이전 페이지 로딩이 있었던 경우
-                firestore.collection("posts").orderBy("timestamp").startAfter(lastVisibleDoc)
+                firestore.collection("posts").orderBy("timestamp", Query.Direction.DESCENDING)
+                    .startAfter(lastVisibleDoc)
                     .limit(pageSize.toLong())
             }
             // 데이터 호출

@@ -70,7 +70,6 @@ class PostWriteViewModel(
                     postEntity = postEntity,
                     onSuccess = { postId ->
                         Timber.d("Post successfully uploaded: $postId")
-                        // TODO 문서 업로드 성공! PostDetail 화면 이동
                         handleEvent(PostWriteEvent.PostUploadSuccess(postId))
                     },
                     onFailure = { exception ->
