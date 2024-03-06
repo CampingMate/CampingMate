@@ -15,6 +15,7 @@ class PostDetailActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_POST_ENTITY = "extra_post_entity"
+        const val EXTRA_POST_ID = "extra_post_id"
     }
 
     private val binding: ActivityPostDetailBinding by lazy { ActivityPostDetailBinding.inflate(layoutInflater) }

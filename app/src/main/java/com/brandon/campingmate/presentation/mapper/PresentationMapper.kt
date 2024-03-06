@@ -7,7 +7,7 @@ fun List<PostEntity>.toPostListItem(): List<PostListItem> {
     return this.map { postEntity ->
         PostListItem.PostItem(
             postId = postEntity.postId,
-            author = postEntity.author,
+            author = postEntity.authorName,
             authorId = postEntity.authorId,
             authorProfileImageUrl = postEntity.authorProfileImageUrl,
             title = postEntity.title,
@@ -21,7 +21,7 @@ fun List<PostEntity>.toPostListItem(): List<PostListItem> {
 fun PostListItem.PostItem.toPostEntity(): PostEntity {
     return PostEntity(
         postId = this.postId,
-        author = this.author,
+        authorName = this.author,
         authorId = this.authorId,
         authorProfileImageUrl = this.authorProfileImageUrl,
         title = this.title,

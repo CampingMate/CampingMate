@@ -31,10 +31,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_arrow_back"
-                android:layout_marginTop="16dp"
                 android:layout_marginStart="16dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"/>
+                android:layout_marginTop="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <ImageView
                 android:id="@+id/iv_arrow_bookmark"
                 android:layout_width="wrap_content"
@@ -42,8 +43,8 @@
                 android:src="@drawable/ic_bookmark"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
                 android:id="@+id/spring_dots_indicator"
@@ -52,15 +53,15 @@
                 app:dampingRatio="0.5"
                 android:layout_marginTop="16dp"
                 app:dotsColor="@color/brandColor"
-                app:dotsStrokeColor="@color/indicator_gray"
                 app:dotsCornerRadius="10dp"
                 app:dotsSize="8dp"
                 app:dotsSpacing="3dp"
+                app:dotsStrokeColor="@color/indicator_gray"
                 app:dotsStrokeWidth="2dp"
-                app:stiffness="300"
                 app:layout_constraintEnd_toEndOf="@id/view_pager"
                 app:layout_constraintStart_toStartOf="@id/view_pager"
-                app:layout_constraintTop_toBottomOf="@id/view_pager" />
+                app:layout_constraintTop_toBottomOf="@id/view_pager"
+                app:stiffness="300" />
 
             <TextView
                 android:id="@+id/tv_camp_name"
@@ -202,7 +203,7 @@
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_map_tab"
                 app:layout_constraintStart_toEndOf="@+id/tv_map_tab"
-                app:layout_constraintTop_toTopOf="@+id/tv_map_tab"/>
+                app:layout_constraintTop_toTopOf="@+id/tv_map_tab" />
 
             <View
                 android:id="@+id/divider_dark"
@@ -221,56 +222,61 @@
                 android:id="@+id/tv_information"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/camp_detail_information"
+                android:layout_marginStart="16dp"
                 android:fontFamily="@font/spoqahansansneo_bold"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginTop="12dp"
-                android:layout_marginStart="16dp"
-                app:layout_constraintTop_toBottomOf="@id/divider_dark"
-                app:layout_constraintStart_toStartOf="parent"/>
+                android:text="@string/camp_detail_information"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider_dark" />
+
             <TextView
                 android:id="@+id/tv_homepage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="홈페이지 - "
-                android:fontFamily="@font/spoqahansansneo_regular"
-                android:textSize="14sp"
                 android:layout_marginTop="12dp"
-                app:layout_constraintTop_toBottomOf="@id/tv_information"
-                app:layout_constraintStart_toStartOf="@id/tv_information"/>
+                android:textSize="14sp"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                app:layout_constraintStart_toStartOf="@id/tv_information"
+                app:layout_constraintTop_toBottomOf="@id/tv_information" />
+
             <TextView
                 android:id="@+id/tv_size"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="면적 - "
                 android:fontFamily="@font/spoqahansansneo_regular"
-                app:layout_constraintTop_toBottomOf="@id/tv_homepage"
-                app:layout_constraintStart_toStartOf="@id/tv_homepage"/>
+                app:layout_constraintStart_toStartOf="@id/tv_homepage"
+                app:layout_constraintTop_toBottomOf="@id/tv_homepage" />
+
             <TextView
                 android:id="@+id/tv_rest_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="휴장기간 - "
                 android:fontFamily="@font/spoqahansansneo_regular"
-                app:layout_constraintTop_toBottomOf="@id/tv_size"
-                app:layout_constraintStart_toStartOf="@id/tv_size"/>
+                app:layout_constraintStart_toStartOf="@id/tv_size"
+                app:layout_constraintTop_toBottomOf="@id/tv_size" />
+
             <TextView
                 android:id="@+id/tv_play_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="운영기간 - "
                 android:fontFamily="@font/spoqahansansneo_regular"
-                app:layout_constraintTop_toBottomOf="@id/tv_rest_time"
-                app:layout_constraintStart_toStartOf="@id/tv_rest_time"/>
+                app:layout_constraintStart_toStartOf="@id/tv_rest_time"
+                app:layout_constraintTop_toBottomOf="@id/tv_rest_time" />
+
             <TextView
                 android:id="@+id/tv_bottom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="바닥재질 - "
                 android:fontFamily="@font/spoqahansansneo_regular"
-                app:layout_constraintTop_toBottomOf="@id/tv_play_time"
-                app:layout_constraintStart_toStartOf="@id/tv_play_time"/>
+                app:layout_constraintStart_toStartOf="@id/tv_play_time"
+                app:layout_constraintTop_toBottomOf="@id/tv_play_time" />
 
             <View
                 android:id="@+id/divider_1"
@@ -281,32 +287,33 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="35dp"
                 android:background="@color/divider_light"
-                app:layout_constraintTop_toBottomOf="@id/tv_bottom"/>
+                app:layout_constraintTop_toBottomOf="@id/tv_bottom" />
 
             <TextView
                 android:id="@+id/tv_introduce"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/camp_detail_introduce"
-                android:fontFamily="@font/spoqahansansneo_bold"
+                android:layout_marginStart="16dp"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginTop="16dp"
-                android:layout_marginStart="16dp"
-                app:layout_constraintTop_toBottomOf="@id/divider_1"
-                app:layout_constraintStart_toStartOf="parent"/>
+                android:fontFamily="@font/spoqahansansneo_bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider_1" />
+
             <TextView
                 android:id="@+id/tv_introduce_comment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="캠핑장 소개가 들어갈 내용입니다."
-                android:fontFamily="@font/spoqahansansneo_regular"
-                android:textSize="14sp"
-                android:layout_marginTop="12dp"
                 android:layout_marginStart="16dp"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:text="캠핑장 소개가 들어갈 내용입니다."
+                android:layout_marginTop="12dp"
+                android:textSize="14sp"
                 android:layout_marginEnd="16dp"
-                app:layout_constraintTop_toBottomOf="@id/tv_introduce"
-                app:layout_constraintStart_toStartOf="@id/tv_introduce"/>
+                app:layout_constraintStart_toStartOf="@id/tv_introduce"
+                app:layout_constraintTop_toBottomOf="@id/tv_introduce" />
 
             <View
                 android:id="@+id/divider_2"
@@ -317,54 +324,58 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="35dp"
                 android:background="@color/divider_light"
-                app:layout_constraintTop_toBottomOf="@id/tv_introduce_comment"/>
+                app:layout_constraintTop_toBottomOf="@id/tv_introduce_comment" />
 
             <TextView
                 android:id="@+id/tv_convenience"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/camp_detail_convenience_lesure"
-                android:fontFamily="@font/spoqahansansneo_bold"
+                android:layout_marginStart="16dp"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginTop="16dp"
-                android:layout_marginStart="16dp"
-                app:layout_constraintTop_toBottomOf="@id/divider_2"
-                app:layout_constraintStart_toStartOf="parent"/>
+                android:fontFamily="@font/spoqahansansneo_bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider_2" />
+
             <TextView
                 android:id="@+id/tv_convenience_comment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
                 android:layout_marginEnd="16dp"
-                android:text="편의시설 - 화장실: 1, 샤워실: 1, 개수대:1, 화로대-개별"
                 android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
-                android:layout_marginTop="12dp"
-                app:layout_constraintTop_toBottomOf="@id/tv_convenience"
-                app:layout_constraintStart_toStartOf="@id/tv_convenience"/>
+                android:text="편의시설 - 화장실: 1, 샤워실: 1, 개수대:1, 화로대-개별"
+                app:layout_constraintStart_toStartOf="@id/tv_convenience"
+                app:layout_constraintTop_toBottomOf="@id/tv_convenience" />
+
             <TextView
                 android:id="@+id/tv_convenience_comment2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="부대시설 - "
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
+                android:text="부대시설 - "
                 android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
-                app:layout_constraintTop_toBottomOf="@id/tv_convenience_comment"
-                app:layout_constraintStart_toStartOf="@id/tv_convenience_comment"/>
+                app:layout_constraintStart_toStartOf="@id/tv_convenience_comment"
+                app:layout_constraintTop_toBottomOf="@id/tv_convenience_comment" />
+
             <TextView
                 android:id="@+id/tv_convenience_thema"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="테마 - 낚시, 여름물놀이"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
+                android:text="테마 - 낚시, 여름물놀이"
                 android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
-                app:layout_constraintTop_toBottomOf="@id/tv_convenience_comment2"
-                app:layout_constraintStart_toStartOf="@id/tv_convenience_comment2"/>
+                app:layout_constraintStart_toStartOf="@id/tv_convenience_comment2"
+                app:layout_constraintTop_toBottomOf="@id/tv_convenience_comment2" />
+
             <TextView
                 android:id="@+id/tv_convenience_near"
                 android:layout_width="match_parent"
@@ -374,8 +385,9 @@
                 android:layout_marginEnd="16dp"
                 android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
-                app:layout_constraintTop_toBottomOf="@id/tv_convenience_thema"
-                app:layout_constraintStart_toStartOf="@id/tv_convenience_thema"/>
+                app:layout_constraintStart_toStartOf="@id/tv_convenience_thema"
+                app:layout_constraintTop_toBottomOf="@id/tv_convenience_thema" />
+
             <TextView
                 android:id="@+id/tv_convenience_feature"
                 android:layout_width="match_parent"
@@ -385,8 +397,8 @@
                 android:layout_marginEnd="16dp"
                 android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
-                app:layout_constraintTop_toBottomOf="@id/tv_convenience_near"
-                app:layout_constraintStart_toStartOf="@id/tv_convenience_near"/>
+                app:layout_constraintStart_toStartOf="@id/tv_convenience_near"
+                app:layout_constraintTop_toBottomOf="@id/tv_convenience_near" />
 
             <View
                 android:id="@+id/divider_3"
@@ -397,27 +409,28 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="35dp"
                 android:background="@color/divider_light"
-                app:layout_constraintTop_toBottomOf="@id/tv_convenience_feature"/>
+                app:layout_constraintTop_toBottomOf="@id/tv_convenience_feature" />
 
             <TextView
                 android:id="@+id/tv_map"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/camp_detail_map"
+                android:layout_marginStart="16dp"
                 android:fontFamily="@font/spoqahansansneo_bold"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginTop="16dp"
-                android:layout_marginStart="16dp"
-                app:layout_constraintTop_toBottomOf="@id/divider_3"
-                app:layout_constraintStart_toStartOf="parent"/>
+                android:text="@string/camp_detail_map"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider_3" />
+
             <ImageView
                 android:id="@+id/iv_map"
                 android:layout_width="300dp"
                 android:layout_height="300dp"
                 android:src="@drawable/ic_bookmark"
-                app:layout_constraintTop_toBottomOf="@id/tv_map"
-                app:layout_constraintStart_toStartOf="parent"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_map" />
 
             <View
                 android:id="@+id/divider_4"
@@ -428,20 +441,20 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="35dp"
                 android:background="@color/divider_light"
-                app:layout_constraintTop_toBottomOf="@id/iv_map"/>
+                app:layout_constraintTop_toBottomOf="@id/iv_map" />
 
             <TextView
                 android:id="@+id/tv_comment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/camp_detail_comment"
-                android:fontFamily="@font/spoqahansansneo_bold"
+                android:layout_marginStart="16dp"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginTop="16dp"
-                android:layout_marginStart="16dp"
-                app:layout_constraintTop_toBottomOf="@id/divider_4"
-                app:layout_constraintStart_toStartOf="parent"/>
+                android:fontFamily="@font/spoqahansansneo_bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider_4" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

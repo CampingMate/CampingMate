@@ -42,7 +42,7 @@ class SearchViewModel: ViewModel() {
             val items = responseData?.response?.searchBody?.items
             val myList = mutableListOf<SearchItem>()
             if (items != null) {
-                for(item in items){
+                for (item in items) {
                     var value = SearchItem(
                         firstImageUrl = item.firstImageUrl,
                         siteMg3Vrticl = item.siteMg3Vrticl,

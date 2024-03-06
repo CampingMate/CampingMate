@@ -1,22 +1,18 @@
 package com.brandon.campingmate.presentation.search
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.FragmentSearchBinding
+import com.brandon.campingmate.domain.model.CampEntity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.firestore
 
 class SearchFragment : Fragment() {
 
@@ -38,14 +34,10 @@ class SearchFragment : Fragment() {
         var campList = mutableListOf<CampEntity>()
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
         initView()
         initViewModel()
@@ -56,10 +48,10 @@ class SearchFragment : Fragment() {
         keywordParam.observe(viewLifecycleOwner) {
             communicateNetWork(it)
         }
-        keyword.observe(viewLifecycleOwner){
+        keyword.observe(viewLifecycleOwner) {
 //            listAdapter.submitList(it)
         }
-        myList.observe(viewLifecycleOwner){
+        myList.observe(viewLifecycleOwner) {
             listAdapter.submitList(it)
         }
     }
@@ -189,7 +181,8 @@ class SearchFragment : Fragment() {
             viewModel.setUpParkParameter(searchText)
         }
     }
-    private fun scrollTab() =with(binding){
+
+    private fun scrollTab() = with(binding) {
         searchType.setOnClickListener {
             scrollToView(tvSearchType)
         }

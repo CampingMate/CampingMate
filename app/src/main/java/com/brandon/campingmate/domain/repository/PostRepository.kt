@@ -6,6 +6,15 @@ import com.brandon.campingmate.utils.Resource
 import com.google.firebase.firestore.DocumentSnapshot
 
 interface PostRepository {
-    suspend fun getPosts(pageSize: Int, lastVisibleDoc: DocumentSnapshot?) : Resource<PostsEntity>
-    suspend fun uploadPost(post: PostEntity) : Resource<String>
+
+    suspend fun getPosts(
+        pageSize: Int,
+        lastVisibleDoc: DocumentSnapshot?
+    ): Resource<PostsEntity>
+
+    suspend fun uploadPost(
+        postEntity: PostEntity,
+        onSuccess: (String) -> Unit,
+        onFailure: (Exception) -> Unit
+    )
 }
