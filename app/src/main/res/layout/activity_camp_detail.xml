@@ -347,7 +347,6 @@
                 android:text="편의시설 - 화장실: 1, 샤워실: 1, 개수대:1, 화로대-개별"
                 android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
-                android:text="편의시설 - 화장실: 1, 샤워실: 1, 개수대:1, 화로대-개별"
                 app:layout_constraintStart_toStartOf="@id/tv_convenience"
                 app:layout_constraintTop_toBottomOf="@id/tv_convenience" />
 
@@ -358,8 +357,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:text="부대시설 - "
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="@id/tv_convenience_comment"
@@ -372,8 +369,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:text="테마 - 낚시, 여름물놀이"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="@id/tv_convenience_comment2"
