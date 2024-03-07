@@ -1,10 +1,12 @@
 package com.brandon.campingmate.presentation.campdetail
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.brandon.campingmate.BuildConfig
+import com.brandon.campingmate.R
 import com.brandon.campingmate.network.retrofit.NetWorkClient
 import kotlinx.coroutines.launch
 
@@ -37,9 +39,11 @@ class CampDetailViewModel : ViewModel() {
                         imageUrls.add(imageUrl)
                     }
                 }
-            } else{
-
             }
+            if(imageUrls.isEmpty()){
+                imageUrls.add("android.resource://${BuildConfig.APPLICATION_ID}/${R.drawable.default_camping}")
+            }
+            Log.d("campDetailViewModel", "$imageUrls")
             _imageResult.value = imageUrls
         }
     }
