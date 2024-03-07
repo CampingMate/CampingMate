@@ -88,6 +88,7 @@ class PostWriteActivity : AppCompatActivity() {
     }
 
     private fun initListener() = with(binding) {
+        // TODO 어쩌다 터치 두번되는 문제 있음
         btnPostUpload.setOnClickListener {
             val title = binding.tvTitle.text.toString()
             val content = binding.tvContent.text.toString()

@@ -35,7 +35,7 @@ class PostRemoteDataSourceImpl(private val firestore: FirebaseFirestore) : PostR
 
             // 데이터 response 객체로 변환
             val posts = snapshot.documents.mapNotNull {
-                it.toObject(PostResponse::class.java).apply { this?.id = it.id }
+                it.toObject(PostResponse::class.java).apply { this?.postId = it.id }
             }
             /**
              * 문서 끝에 도달한 경우 lastVisibleDoc 를 업데이트 하지 않는다

@@ -121,7 +121,6 @@ class BoardViewModel(
                 // Success 처리
                 result.data?.let { data ->
                     Timber.d("Posts loaded successfully")
-                    Timber.tag("Song").d("post: ${data.posts.map { it.title }}")
 
                     when (_uiState.value.posts) {
                         UiState.Empty -> {
@@ -155,7 +154,6 @@ class BoardViewModel(
                         data.posts.toPostListItem()
                     }
                     val lastVisibleDoc = data.lastVisibleDoc
-                    Timber.tag("Song").d("데이터 업데이트 발생!")
                     when (trigger) {
                         PostLoadTrigger.SCROLL -> {
                             _uiState.update {
@@ -164,7 +162,6 @@ class BoardViewModel(
                                     lastVisibleDoc = lastVisibleDoc,
                                 )
                             }
-                            Timber.tag("Song").d("스크롤 로딩")
                         }
 
                         PostLoadTrigger.REFRESH -> {
@@ -175,7 +172,6 @@ class BoardViewModel(
                                     isNeedScroll = true,
                                 )
                             }
-                            Timber.tag("Song").d("-------새로고침 로딩---------")
                         }
                     }
 
