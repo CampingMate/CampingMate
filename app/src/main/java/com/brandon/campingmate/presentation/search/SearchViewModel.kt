@@ -39,7 +39,7 @@ class SearchViewModel: ViewModel() {
     fun communicateNetWork(param: HashMap<String, String>?) {
         viewModelScope.launch {
             val responseData = param?.let { NetWorkClient.imageNetWork.getSearch(it) }
-            val items = responseData?.response?.searchBody?.items?.item
+            val items = responseData?.response?.searchBody?.searchItems?.item
             val contentIds = mutableListOf<String>()
             if (items != null) {
                 for(item in items){
@@ -50,7 +50,9 @@ class SearchViewModel: ViewModel() {
                 }
                 Log.d("checkList", "${contentIds}")
             }
-            callKeywordData(contentIds)
+            if (contentIds.isNotEmpty()){
+                callKeywordData(contentIds)
+            }
         }
     }
 
