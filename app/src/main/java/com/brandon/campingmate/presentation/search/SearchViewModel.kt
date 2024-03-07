@@ -12,13 +12,12 @@ import com.brandon.campingmate.presentation.search.SearchFragment.Companion.acti
 import com.brandon.campingmate.presentation.search.SearchFragment.Companion.campList
 import com.brandon.campingmate.presentation.search.SearchFragment.Companion.doNmList
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.launch
 
 class SearchViewModel: ViewModel() {
-    private val _keywordParam: MutableLiveData<HashMap<String, String>> = MutableLiveData()
-    val keywordParam: LiveData<HashMap<String, String>> get() = _keywordParam
     private val _keyword: MutableLiveData<MutableList<CampEntity>> = MutableLiveData()
     val keyword: LiveData<MutableList<CampEntity>> get() = _keyword
     private val _myList: MutableLiveData<MutableList<CampEntity>> = MutableLiveData()
@@ -27,7 +26,7 @@ class SearchViewModel: ViewModel() {
     fun setUpParkParameter(text: String) {
         val authKey =
             "wDP6fsVX3kKuaOD7OKrRHaAgPUNtxYUy387PNJRBAW/F6GUdZgv5LyyIAkVXED3leDg3aUD+TFIgBHWCgMBdzQ=="
-        _keywordParam.value = hashMapOf(
+        communicateNetWork(hashMapOf(
             "numOfRows" to "10",
             "pageNo" to "1",
             "MobileOS" to "AND",
@@ -35,7 +34,7 @@ class SearchViewModel: ViewModel() {
             "serviceKey" to authKey,
             "_type" to "json",
             "keyword" to text
-        )
+        ))
     }
     fun communicateNetWork(param: HashMap<String, String>?) {
         viewModelScope.launch {
@@ -117,7 +116,8 @@ class SearchViewModel: ViewModel() {
             }
         }
 
-        result.limit(5)
+        result
+            .limit(5)
             .get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
@@ -130,5 +130,8 @@ class SearchViewModel: ViewModel() {
                 // 오류 처리
                 // 예: Log.w("TAG", "Error getting documents.", exception)
             }
+    }
+    fun clearCampList(){
+        campList.clear()
     }
 }
