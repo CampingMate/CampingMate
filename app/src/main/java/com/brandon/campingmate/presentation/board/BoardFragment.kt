@@ -186,7 +186,6 @@ class BoardFragment : Fragment() {
 
         })
 
-
     }
 
     private fun initView() = with(binding) {
@@ -274,9 +273,7 @@ class BoardFragment : Fragment() {
                     if (state.isNeedScroll) {
                         scrollToTop()
                         viewModel.handleEvent(BoardEvent.ScrollPerformed)
-                    } else {
-
-                    }
+                    } 
                 }
             }
 

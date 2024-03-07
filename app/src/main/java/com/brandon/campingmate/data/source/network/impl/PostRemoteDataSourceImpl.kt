@@ -26,8 +26,7 @@ class PostRemoteDataSourceImpl(private val firestore: FirebaseFirestore) : PostR
                 Timber.d("더보기 요청")
                 // 이전 페이지 로딩이 있었던 경우
                 firestore.collection("posts").orderBy("timestamp", Query.Direction.DESCENDING)
-                    .startAfter(lastVisibleDoc)
-                    .limit(pageSize.toLong())
+                    .startAfter(lastVisibleDoc).limit(pageSize.toLong())
             }
 
             // 데이터 호출
@@ -66,9 +65,23 @@ class PostRemoteDataSourceImpl(private val firestore: FirebaseFirestore) : PostR
             // 생성된 ID 를 포함하여 PostDTO 복사
             val newPost = postDto.copy(postId = postId)
 
-            postsCollection.document(postId).set(newPost)
-                .addOnSuccessListener { onSuccess(postId) }
+            postsCollection.document(postId).set(newPost).addOnSuccessListener { onSuccess(postId) }
                 .addOnFailureListener { exception -> onFailure(exception) }
+        }
+    }
+
+    override suspend fun getPostById(postId: String): Resource<PostResponse> = withContext(IO) {
+        runCatching {
+            val query = firestore.collection("posts").document(postId)
+            val snapshot = query.get().await()
+            val post = snapshot.toObject(PostResponse::class.java)
+            if (post != null) {
+                Resource.Success(post)
+            } else {
+                Resource.Error("Data is null")
+            }
+        }.getOrElse { exception ->
+            Resource.Error(exception.message ?: "Unknown error")
         }
     }
 }
