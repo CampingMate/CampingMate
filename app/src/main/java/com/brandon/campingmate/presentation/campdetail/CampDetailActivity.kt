@@ -2,6 +2,7 @@ package com.brandon.campingmate.presentation.campdetail
 
 import android.content.Intent
 import android.net.Uri
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -25,8 +26,6 @@ class CampDetailActivity : AppCompatActivity() {
     private val viewModel by lazy {
         ViewModelProvider(this)[CampDetailViewModel::class.java]
     }
-    private var myData: CampEntity? = null
-    private val db = FirebaseFirestore.getInstance()
     private val imageUrls = mutableListOf<String>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,10 +47,16 @@ class CampDetailActivity : AppCompatActivity() {
         return arrayListOf(R.drawable.ic_arrow_back, R.drawable.ic_arrow_forward, R.drawable.ic_arrow_upward)
     }
 
+    private fun initViewPager() {
+        binding.viewPager.adapter = ViewPagerAdapter(imageUrls)
+        binding.viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+        binding.springDotsIndicator.attachTo(binding.viewPager)
+    }
+    private fun getImageList(): ArrayList<Int> {
+        return arrayListOf(R.drawable.ic_arrow_back, R.drawable.ic_arrow_forward, R.drawable.ic_arrow_upward)
+    }
+
     private fun initViewModel() =with(viewModel) {
-        imageParam.observe(this@CampDetailActivity){
-            viewModel.communicateNetWork(it)
-        }
         imageResult.observe(this@CampDetailActivity){
             if(it.isNotEmpty()){
                 imageUrls.addAll(it)
