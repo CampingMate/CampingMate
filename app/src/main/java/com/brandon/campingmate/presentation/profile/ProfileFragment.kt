@@ -1,6 +1,5 @@
 package com.brandon.campingmate.presentation.profile
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -19,14 +18,17 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.FragmentProfileBinding
+import com.brandon.campingmate.domain.model.CampEntity
+import com.brandon.campingmate.presentation.campdetail.CampDetailActivity
 import com.brandon.campingmate.presentation.login.LoginActivity
+import com.brandon.campingmate.presentation.profile.adapter.ProfileBookmarkAdapter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.kakao.sdk.user.UserApiClient
-import timber.log.Timber
 
 class ProfileFragment : Fragment() {
 
@@ -34,8 +36,9 @@ class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private var img_URI: Uri? = null
     private val binding get() = _binding!!
+    private val adapter: ProfileBookmarkAdapter by lazy { ProfileBookmarkAdapter() }
+    private val viewModel by lazy { ViewModelProvider(this)[ProfileViewModel::class.java] }
     val db = FirebaseFirestore.getInstance()
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,8 +49,12 @@ class ProfileFragment : Fragment() {
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
+//    override fun onStart() {
+//        super.onStart()
+//        checkLogin()
+//    }
+    override fun onResume() {
+        super.onResume()
         checkLogin()
     }
 
@@ -56,8 +63,8 @@ class ProfileFragment : Fragment() {
 
         //checkLogin()
 
-        clickWritingTab()
-        clickBookmarkedTab()
+        //clickWritingTab()
+        //clickBookmarkedTab()
 
         clickLogin()
 
@@ -66,15 +73,38 @@ class ProfileFragment : Fragment() {
 
         clickLogout()
 
+
+
+
     }
 
     fun checkLogin() {
         UserApiClient.instance.me { user, error ->
             if (user?.id != null) {
                 initLogin()
+                setBookmarkedAdapter(user?.id.toString())
             } else initLogout()
         }
 
+    }
+
+    private fun setBookmarkedAdapter(userId : String) = with(binding) {
+        rvBookmarked.adapter = adapter
+        rvBookmarked.layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
+        viewModel.getBookmark(userId)
+        viewModel.bookmarkedList.observe(viewLifecycleOwner){
+            adapter.submitList(it)
+            if(it.isNotEmpty()) {
+                tvBookmarkedSize.visibility =View.VISIBLE
+                tvTabBookmarked.visibility =View.GONE
+                rvBookmarked.visibility = View.VISIBLE
+                tvBookmarkedSize.text = it.size.toString()
+            } else{
+                tvTabBookmarked.visibility =View.VISIBLE
+                rvBookmarked.visibility = View.GONE
+                tvBookmarkedSize.text = it.size.toString()
+            }
+        }
     }
 
 
@@ -82,8 +112,10 @@ class ProfileFragment : Fragment() {
         with(binding) {
             //화면 상에서 비로그인 화면으로 되돌리기
             ivProfileImg.setImageResource(R.drawable.ic_camp)
+            ivProfileImg.visibility = View.VISIBLE
             tvProfileName.textSize = 20f
             tvProfileName.text = getString(R.string.profile_login_text)
+            tvProfileName.visibility = View.VISIBLE
             tvProfileEmail.visibility = View.GONE
             btnLogout.visibility = View.INVISIBLE
             btnGoLogin.visibility = View.VISIBLE
@@ -91,6 +123,9 @@ class ProfileFragment : Fragment() {
             tvTabLoginText.visibility = View.VISIBLE
             tvTabBookmarked.visibility = View.GONE
             tvTabWriting.visibility = View.GONE
+            tvBookmarkedSize.visibility = View.GONE
+            rvBookmarked.visibility = View.GONE
+            tvTabLoginText.visibility = View.VISIBLE
         }
     }
 
@@ -257,7 +292,7 @@ class ProfileFragment : Fragment() {
                 //Todo. 사진에 대한 변경값을 다시 스토리지를 통헤 데이터베이스에 넘겨서 저장
                 UserApiClient.instance.me { user, error ->
                     val documentRef = db.collection("users").document("Kakao${user?.id}")
-                    val updateNickname = hashMapOf<String,Any>("nickName" to "${tvProfileName.text}")
+                    val updateNickname = hashMapOf<String, Any>("nickName" to "${tvProfileName.text}")
                     //val updateProfileImg = hashMapOf<String,Any>("profileImage" to img_URI.toString())
                     documentRef.get().addOnSuccessListener {
                         documentRef.update(updateNickname)
@@ -266,55 +301,58 @@ class ProfileFragment : Fragment() {
                 }
                 tvProfileName.text = tvProfileName.text
                 //ivProfileImg.setImageURI(img_URI)
-            } else{
-                tvProfileName.text =""
+            } else {
+                tvProfileName.text = ""
                 initLogin()
             }
 
             btnEditName.visibility = View.GONE
             btnEditImg.visibility = View.GONE
             btnLogout.visibility = View.VISIBLE
-            btnProfileEdit.visibility  = View.VISIBLE
+            btnProfileEdit.visibility = View.VISIBLE
             llEditConfirm.visibility = View.INVISIBLE
             tvProfileName.visibility = View.VISIBLE
-        }
-
-    }
-
-    private fun clickBookmarkedTab() {
-        with(binding) {
-            tabBookmarked.setOnClickListener {
-                lineBookmarked.visibility = View.VISIBLE
-                lineWriting.visibility = View.INVISIBLE
-
-                //if 가져올 데이터가 없으면
-                tvTabLoginText.visibility = View.GONE
-                tvTabBookmarked.visibility = View.VISIBLE
-                tvTabWriting.visibility = View.GONE
-                //todo.if(가져올데이터가있으면) size.setText + 리사이클러뷰 어댑터 수행 + 스와이프 아이템 삭제(스낵바undo)
-                //로그인 후 사용해주세요 텍스트 어떻게 되는지 확인하고 아마 View.Gone해줘야할듯
-            }
-
-        }
-
-    }
-
-    private fun clickWritingTab() {
-        with(binding) {
-            tabWriting.setOnClickListener {
-                lineBookmarked.visibility = View.INVISIBLE
-                lineWriting.visibility = View.VISIBLE
-
-                //if 가져올 데이터가 없으면
-                tvTabLoginText.visibility = View.GONE
+            if(rvBookmarked.visibility == View.VISIBLE){
                 tvTabBookmarked.visibility = View.GONE
-                tvTabWriting.visibility = View.VISIBLE
-                //todo.if(가져올데이터가있으면) size.setText + 리사이클러뷰 어댑터 수행 + 스와이프 아이템 삭제(스낵바undo)
-                //로그인 후 사용해주세요 텍스트 어떻게 되는지 확인하고 아마 View.Gone해줘야할듯
             }
         }
 
     }
+
+//    private fun clickBookmarkedTab() {
+//        with(binding) {
+//            tabBookmarked.setOnClickListener {
+//                lineBookmarked.visibility = View.VISIBLE
+//                lineWriting.visibility = View.INVISIBLE
+//
+//                //if 가져올 데이터가 없으면
+//                tvTabLoginText.visibility = View.GONE
+//                tvTabBookmarked.visibility = View.VISIBLE
+//                tvTabWriting.visibility = View.GONE
+//                //todo.if(가져올데이터가있으면) size.setText + 리사이클러뷰 어댑터 수행 + 스와이프 아이템 삭제(스낵바undo)
+//                //로그인 후 사용해주세요 텍스트 어떻게 되는지 확인하고 아마 View.Gone해줘야할듯
+//            }
+//
+//        }
+//
+//    }
+
+//    private fun clickWritingTab() {
+//        with(binding) {
+//            tabWriting.setOnClickListener {
+//                lineBookmarked.visibility = View.INVISIBLE
+//                lineWriting.visibility = View.VISIBLE
+//
+//                //if 가져올 데이터가 없으면
+//                tvTabLoginText.visibility = View.GONE
+//                tvTabBookmarked.visibility = View.GONE
+//                tvTabWriting.visibility = View.VISIBLE
+//                //todo.if(가져올데이터가있으면) size.setText + 리사이클러뷰 어댑터 수행 + 스와이프 아이템 삭제(스낵바undo)
+//                //로그인 후 사용해주세요 텍스트 어떻게 되는지 확인하고 아마 View.Gone해줘야할듯
+//            }
+//        }
+//
+//    }
 
 
     private fun clickLogout() {
