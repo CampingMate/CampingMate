@@ -12,7 +12,6 @@ import com.brandon.campingmate.R
 import com.brandon.campingmate.data.repository.PostRepositoryImpl
 import com.brandon.campingmate.data.source.network.impl.PostRemoteDataSourceImpl
 import com.brandon.campingmate.databinding.ActivityPostDetailBinding
-import com.brandon.campingmate.domain.model.PostEntity
 import com.brandon.campingmate.domain.usecase.GetPostByIdUseCase
 import com.brandon.campingmate.network.firestore.FireStoreService
 
@@ -39,7 +38,7 @@ class PostDetailActivity : AppCompatActivity() {
 
         initView()
 
-        val postEntity = intent.getParcelableExtra(EXTRA_POST_ENTITY, PostEntity::class.java)
+//        val postEntity = intent.getParcelableExtra(EXTRA_POST_ENTITY, PostEntity::class.java)
 
 
         initView()
