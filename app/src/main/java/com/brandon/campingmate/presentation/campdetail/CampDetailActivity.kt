@@ -13,6 +13,7 @@ import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.ActivityCampDetailBinding
 import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.campdetail.adapter.ViewPagerAdapter
+import com.brandon.campingmate.presentation.common.SnackbarUtil
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.kakao.sdk.user.UserApiClient
@@ -142,6 +143,8 @@ class CampDetailActivity : AppCompatActivity() {
                         ivArrowBookmark.setImageResource(R.drawable.ic_bookmark)
                     }
                 }
+            } else {
+                ivArrowBookmark.setImageResource(R.drawable.ic_bookmark)
             }
         }
     }
@@ -149,7 +152,7 @@ class CampDetailActivity : AppCompatActivity() {
         ivArrowBookmark.setOnClickListener {
             UserApiClient.instance.me { user, error ->
                 if (user?.id == null) {
-                    Toast.makeText(binding.root.context, "로그인 후 사용해주세요", Toast.LENGTH_SHORT).show()
+                    SnackbarUtil.showSnackBar(it)
                 } else {
                     val userDocRef = db.collection("users").document("Kakao${user?.id}")
                     userDocRef.get().addOnSuccessListener { document ->
