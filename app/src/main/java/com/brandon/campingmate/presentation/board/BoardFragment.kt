@@ -186,6 +186,11 @@ class BoardFragment : Fragment() {
 
         })
 
+        swipeRefreshLayout.setOnRefreshListener {
+            viewModel.handleEvent(BoardEvent.RequestPostList(BoardViewModel.PostLoadTrigger.REFRESH))
+            binding.swipeRefreshLayout.isRefreshing = false
+        }
+
     }
 
     private fun initView() = with(binding) {
@@ -259,7 +264,6 @@ class BoardFragment : Fragment() {
     }
 
     private fun onBind(state: BoardUiState) = with(binding) {
-        Timber.tag("All").d("현재 상태 isNeedRefresh :${state.isNeedScroll}")
         when (val postsState = state.posts) {
             is UiState.Success -> {
                 // isPostsLoading 상태가 viewModel 에서 변경됨에 따라 로딩 아이템 추가/삭제
