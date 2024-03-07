@@ -2,6 +2,7 @@ package com.brandon.campingmate.presentation.campdetail
 
 import android.content.Intent
 import android.net.Uri
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -10,9 +11,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.brandon.campingmate.R
-import com.brandon.campingmate.databinding.ActivityCampDetailBinding
 import com.brandon.campingmate.domain.model.CampEntity
+import com.brandon.campingmate.databinding.ActivityCampDetailBinding
 import com.brandon.campingmate.presentation.campdetail.adapter.ViewPagerAdapter
+import com.bumptech.glide.Glide
+import com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
 import com.brandon.campingmate.presentation.common.SnackbarUtil
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -44,17 +47,16 @@ class CampDetailActivity : AppCompatActivity() {
         binding.viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
         binding.springDotsIndicator.attachTo(binding.viewPager)
     }
-
     private fun getImageList(): ArrayList<Int> {
         return arrayListOf(R.drawable.ic_arrow_back, R.drawable.ic_arrow_forward, R.drawable.ic_arrow_upward)
     }
 
-    private fun initViewModel() = with(viewModel) {
-        imageParam.observe(this@CampDetailActivity) {
+    private fun initViewModel() =with(viewModel) {
+        imageParam.observe(this@CampDetailActivity){
             viewModel.communicateNetWork(it)
         }
-        imageResult.observe(this@CampDetailActivity) {
-            if (it.isNotEmpty()) {
+        imageResult.observe(this@CampDetailActivity){
+            if(it.isNotEmpty()){
                 imageUrls.addAll(it)
                 initViewPager()
             }
@@ -97,10 +99,14 @@ class CampDetailActivity : AppCompatActivity() {
             val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$callNum"))
             startActivity(intent)
         }
-        btnReserve.setOnClickListener {
-            if (myData != null) {
-                val reserveUrl = myData?.resveUrl
-                Log.d("asdfas", "$reserveUrl")
+        btnReserve.setOnClickListener{
+            val reserveUrl = myData?.resveUrl
+            Log.d("asdf", "$reserveUrl")
+            if(!reserveUrl.isNullOrBlank()){
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(reserveUrl))
+                startActivity(intent)
+            } else{
+                Toast.makeText(this@CampDetailActivity, "등록된 홈페이지가 없습니다.", Toast.LENGTH_SHORT).show()
             }
         }
 

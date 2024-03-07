@@ -6,6 +6,7 @@ plugins {
     id("com.google.gms.google-services")
     id("kotlin-parcelize")
 }
+fun getApiKey(propertyKey: String): String{
 fun getApiKey(propertyKey: String): String {
     return gradleLocalProperties(rootDir).getProperty(propertyKey)
 }

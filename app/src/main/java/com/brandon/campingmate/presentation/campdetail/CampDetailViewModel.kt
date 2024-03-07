@@ -33,7 +33,7 @@ class CampDetailViewModel : ViewModel() {
             val items = responseData?.response?.campBody?.campImageItems?.campImageItem
             val imageUrls = mutableListOf<String>()
             if (items != null) {
-                for (item in items) {
+                for(item in items){
                     val imageUrl = item.imageUrl
                     if (imageUrl != null) {
                         imageUrls.add(imageUrl)
