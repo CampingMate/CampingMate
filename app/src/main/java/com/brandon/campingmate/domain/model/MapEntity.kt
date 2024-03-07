@@ -64,7 +64,7 @@ data class LocationBasedListItem(
     val wtrplCo	: String?,
     val brazierCl	: String?,
     val featureNm	: String?,
-    val induty	: String?,
+    val induty	: String?,  //list
     val caravAcmpnyAt	: String?,
     val toiletCo	: String?,
     val swrmCo	: String?,
@@ -80,7 +80,7 @@ data class LocationBasedListItem(
     val extshrCo	: String?,
     val frprvtWrppCo	: String?,
     val frprvtSandCo	: String?,
-    val caravInnerFclty	: String?,
+    val caravInnerFclty	: String?, //list
     val prmisnDe	: String?,
     val operPdCl	: String?,
     val operDeCl	: String?,
@@ -102,7 +102,7 @@ data class LocationBasedListItem(
     val siteBottomCl2	: String?,
     val fireSensorCo	: String?,
     val themaEnvrnCl	: String?,
-    val eqpmnLendCl	: String?,
+    val eqpmnLendCl	: String?,   //list
     val animalCmgCl	: String?,
     val tourEraCl	: String?,
     val firstImageUrl	: String?="https://pbs.twimg.com/media/EgkUVPaUwAAr6K6.jpg",
@@ -136,7 +136,7 @@ data class LocationBasedListItem(
     val siteBottomCl4	: String?,
     val siteBottomCl5	: String?,
     val tooltip	: String?,
-    val glampInnerFclty	: String?,
+    val glampInnerFclty	: String?,  //list
     val contentId	: String?,
     val facltNm	: String?="이름없음",
     val lineIntro	: String?,

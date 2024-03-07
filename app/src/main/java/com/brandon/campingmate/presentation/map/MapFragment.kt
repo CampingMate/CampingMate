@@ -17,9 +17,6 @@ import com.brandon.campingmate.databinding.FragmentMapBinding
 import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.domain.model.NaverItem
 import com.brandon.campingmate.presentation.campdetail.CampDetailActivity
-import com.google.firebase.Firebase
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.firestore.firestore
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.MapView
@@ -130,7 +127,90 @@ class MapFragment : Fragment(),OnMapReadyCallback {
                         binding.clMapBottomDialog.isGone=false
                         binding.tvDialogcampname.setOnClickListener { view ->
                             val intent = Intent(requireContext(),CampDetailActivity::class.java)
-                            intent.putExtra("contentId",it)
+                            var data = CampEntity(
+                                firstImageUrl = it.firstImageUrl,
+                                siteMg3Vrticl = it.siteMg3Vrticl,
+                                siteMg2Vrticl = it.siteMg2Vrticl,
+                                siteMg1Co = it.siteMg1Co,
+                                siteMg2Co = it.siteMg2Co,
+                                siteMg3Co = it.siteMg3Co,
+                                siteBottomCl1 = it.siteBottomCl1,
+                                siteBottomCl2 = it.siteBottomCl2,
+                                siteBottomCl3 = it.siteBottomCl3,
+                                siteBottomCl4 = it.siteBottomCl4,
+                                fireSensorCo = it.fireSensorCo,
+                                themaEnvrnCl = it.themaEnvrnCl?.split(","),
+                                eqpmnLendCl = it.eqpmnLendCl?.split(","),
+                                animalCmgCl = it.animalCmgCl,
+                                tooltip = it.tooltip,
+                                glampInnerFclty = it.glampInnerFclty?.split(","),
+                                caravInnerFclty = it.caravInnerFclty?.split(","),
+                                prmisnDe = it.prmisnDe,
+                                operPdCl = it.operPdCl,
+                                operDeCl = it.operDeCl,
+                                trlerAcmpnyAt = it.trlerAcmpnyAt,
+                                caravAcmpnyAt = it.caravAcmpnyAt,
+                                toiletCo = it.toiletCo,
+                                frprvtWrppCo = it.frprvtWrppCo,
+                                frprvtSandCo = it.frprvtSandCo,
+                                induty = it.induty?.split(","),
+                                siteMg1Vrticl = it.siteMg1Vrticl,
+                                posblFcltyEtc = it.posblFcltyEtc,
+                                clturEventAt = it.clturEventAt,
+                                clturEvent = it.clturEvent,
+                                exprnProgrmAt = it.exprnProgrmAt,
+                                exprnProgrm = it.exprnProgrm,
+                                extshrCo = it.extshrCo,
+                                manageSttus = it.manageSttus,
+                                hvofBgnde = it.hvofBgnde,
+                                hvofEnddle = it.hvofEnddle,
+                                trsagntNo = it.trsagntNo,
+                                bizrno = it.bizrno,
+                                facltDivNm = it.facltDivNm,
+                                mangeDivNm = it.mangeDivNm,
+                                mgcDiv = it.mgcDiv,
+                                tourEraCl = it.tourEraCl,
+                                lctCl = it.lctCl?.split(","),
+                                doNm = it.doNm,
+                                sigunguNm = it.sigunguNm,
+                                zipcode = it.zipcode,
+                                addr1 = it.addr1,
+                                addr2 = it.addr2,
+                                mapX = it.mapX,
+                                mapY = it.mapY,
+                                direction = it.direction,
+                                tel = it.tel,
+                                homepage = it.homepage,
+                                contentId = it.contentId,
+                                swrmCo = it.swrmCo,
+                                wtrplCo = it.wtrplCo,
+                                brazierCl = it.brazierCl,
+                                sbrsCl = it.sbrsCl?.split(","),
+                                sbrsEtc = it.sbrsEtc,
+                                modifiedtime = it.modifiedtime,
+                                facltNm = it.facltNm,
+                                lineIntro = it.lineIntro,
+                                intro = it.intro,
+                                allar = it.allar,
+                                insrncAt = it.insrncAt,
+                                resveUrl = it.resveUrl,
+                                resveCl = it.resveCl,
+                                manageNmpr = it.manageNmpr,
+                                gnrlSiteCo = it.gnrlSiteCo,
+                                autoSiteCo = it.autoSiteCo,
+                                glampSiteCo = it.glampSiteCo,
+                                caravSiteCo = it.caravSiteCo,
+                                indvdlCaravSiteCo = it.indvdlCaravSiteCo,
+                                sitedStnc = it.sitedStnc,
+                                siteMg1Width = it.siteMg1Width,
+                                siteMg2Width = it.siteMg2Width,
+                                siteMg3Width = it.siteMg3Width,
+                                createdtime = it.createdtime,
+                                posblFcltyCl = it.posblFcltyCl?.split(","),
+                                featureNm = it.featureNm,
+                                siteBottomCl5 = it.siteBottomCl5
+                            )
+                            intent.putExtra("campData",data)
                             startActivity(intent)
                         }
 

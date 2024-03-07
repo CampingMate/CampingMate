@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.domain.model.NaverItem
 import com.brandon.campingmate.domain.model.LocationBasedListItem
 import com.brandon.campingmate.network.retrofit.NetWorkClient
