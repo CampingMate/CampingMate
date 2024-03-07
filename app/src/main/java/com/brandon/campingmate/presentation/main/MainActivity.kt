@@ -1,8 +1,10 @@
 package com.brandon.campingmate.presentation.main
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.brandon.campingmate.databinding.ActivityMainBinding
+import com.kakao.sdk.common.util.Utility
 import nl.joery.animatedbottombar.AnimatedBottomBar
 import timber.log.Timber
 
