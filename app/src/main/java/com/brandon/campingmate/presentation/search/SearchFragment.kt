@@ -48,10 +48,10 @@ class SearchFragment : Fragment() {
         keywordParam.observe(viewLifecycleOwner) {
             communicateNetWork(it)
         }
-        keyword.observe(viewLifecycleOwner) {
-//            listAdapter.submitList(it)
+        keyword.observe(viewLifecycleOwner){
+            listAdapter.submitList(it)
         }
-        myList.observe(viewLifecycleOwner) {
+        myList.observe(viewLifecycleOwner){
             listAdapter.submitList(it)
         }
     }
@@ -181,8 +181,7 @@ class SearchFragment : Fragment() {
             viewModel.setUpParkParameter(searchText)
         }
     }
-
-    private fun scrollTab() = with(binding) {
+    private fun scrollTab() =with(binding){
         searchType.setOnClickListener {
             scrollToView(tvSearchType)
         }
