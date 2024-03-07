@@ -1,5 +1,7 @@
 package com.brandon.campingmate.network.retrofit
 
+import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
 
 data class Response(val response: CampImageResponse)
@@ -18,8 +20,21 @@ data class CampBody(
     val pageNo: Int?,
     val numOfRows: Int?,
     @SerializedName("items")
-    val campImageItems: CampImageItems?,
-)
+    private val items: JsonElement? // JsonElement 타입으로 변경
+) {
+    val campImageItems: CampImageItems
+        get() {
+            return when {
+                items == null || items.isJsonNull -> CampImageItems(emptyList())
+                items.isJsonPrimitive && items.asJsonPrimitive.isString && items.asString.isEmpty() -> CampImageItems(emptyList())
+                items.isJsonObject || items.isJsonArray -> {
+                    // JsonElement가 객체나 배열인 경우, Gson을 사용하여 파싱
+                    Gson().fromJson(items, CampImageItems::class.java)
+                }
+                else -> CampImageItems(emptyList())
+            }
+        }
+}
 data class CampImageItems(
     @SerializedName("item")
     val campImageItem: List<CampItem>?

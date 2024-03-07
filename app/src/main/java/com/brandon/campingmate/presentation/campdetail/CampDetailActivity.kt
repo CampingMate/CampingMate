@@ -41,9 +41,6 @@ class CampDetailActivity : AppCompatActivity() {
     }
 
     private fun initViewModel() =with(viewModel) {
-        imageParam.observe(this@CampDetailActivity){
-            viewModel.communicateNetWork(it)
-        }
         imageResult.observe(this@CampDetailActivity){
             if(it.isNotEmpty()){
                 imageUrls.addAll(it)
