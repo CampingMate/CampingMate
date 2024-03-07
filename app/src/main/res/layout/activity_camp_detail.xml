@@ -40,7 +40,6 @@
                 android:id="@+id/iv_arrow_bookmark"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_bookmark"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -53,15 +52,15 @@
                 app:dampingRatio="0.5"
                 android:layout_marginTop="16dp"
                 app:dotsColor="@color/brandColor"
+                app:dotsStrokeColor="@color/indicator_gray"
                 app:dotsCornerRadius="10dp"
                 app:dotsSize="8dp"
                 app:dotsSpacing="3dp"
-                app:dotsStrokeColor="@color/indicator_gray"
                 app:dotsStrokeWidth="2dp"
+                app:stiffness="300"
                 app:layout_constraintEnd_toEndOf="@id/view_pager"
                 app:layout_constraintStart_toStartOf="@id/view_pager"
-                app:layout_constraintTop_toBottomOf="@id/view_pager"
-                app:stiffness="300" />
+                app:layout_constraintTop_toBottomOf="@id/view_pager" />
 
             <TextView
                 android:id="@+id/tv_camp_name"
@@ -132,7 +131,7 @@
                 android:id="@+id/btn_reserve"
                 android:layout_width="78dp"
                 android:layout_height="34dp"
-                android:layout_marginTop="100dp"
+                android:layout_marginTop="80dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/apply_btn"
                 android:text="@string/camp_detail_reservation"
@@ -344,11 +343,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="12dp"
                 android:layout_marginEnd="16dp"
+                android:text="편의시설 - 화장실: 1, 샤워실: 1, 개수대:1, 화로대-개별"
                 android:fontFamily="@font/spoqahansansneo_regular"
                 android:textSize="14sp"
-                android:text="편의시설 - 화장실: 1, 샤워실: 1, 개수대:1, 화로대-개별"
                 app:layout_constraintStart_toStartOf="@id/tv_convenience"
                 app:layout_constraintTop_toBottomOf="@id/tv_convenience" />
 
