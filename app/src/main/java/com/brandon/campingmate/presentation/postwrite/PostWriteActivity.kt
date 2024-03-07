@@ -1,5 +1,6 @@
 package com.brandon.campingmate.presentation.postwrite
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -68,7 +69,9 @@ class PostWriteActivity : AppCompatActivity() {
                     R.anim.slide_up,
                     R.anim.anim_none
                 ).toBundle()
+                setResult(Activity.RESULT_OK)
                 startActivity(intent, options)
+//                startActivityForResult(intent, POST_WRITE_REQUEST_CODE, options)
                 ActivityCompat.finishAfterTransition(this)
             }
 

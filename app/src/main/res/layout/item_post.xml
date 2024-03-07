@@ -57,15 +57,14 @@
             app:layout_constraintStart_toStartOf="@id/tv_title" />
 
 
-        <com.google.android.material.imageview.ShapeableImageView
+        <ImageView
             android:id="@+id/iv_post_image"
             android:layout_width="80dp"
             android:layout_height="80dp"
+            android:background="@drawable/shape_rounded_corner_background_r8"
             android:scaleType="centerCrop"
-            app:shapeAppearanceOverlay="@style/ImageViewR10"
+            android:clipToOutline="true"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/tv_title"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
