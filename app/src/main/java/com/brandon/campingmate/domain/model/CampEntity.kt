@@ -2,6 +2,8 @@ package com.brandon.campingmate.domain.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import ted.gun0912.clustering.clustering.TedClusterItem
+import ted.gun0912.clustering.geometry.TedLatLng
 
 @Parcelize
 data class CampEntity(
