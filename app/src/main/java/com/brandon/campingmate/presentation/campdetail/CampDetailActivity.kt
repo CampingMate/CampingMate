@@ -2,7 +2,6 @@ package com.brandon.campingmate.presentation.campdetail
 
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -11,11 +10,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.brandon.campingmate.R
-import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.databinding.ActivityCampDetailBinding
+import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.campdetail.adapter.ViewPagerAdapter
-import com.bumptech.glide.Glide
-import com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
 import com.brandon.campingmate.presentation.common.SnackbarUtil
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
