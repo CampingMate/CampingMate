@@ -62,7 +62,7 @@ class LoginActivity : AppCompatActivity() {
 //                val intent = Intent(this, MainActivity::class.java)
 //                startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
                 val db = Firebase.firestore
-                UserApiClient.instance.me { user, error ->
+                UserApiClient.instance.me { user, _ ->
                     val userModel = hashMapOf(
                         "nickName" to "${user?.kakaoAccount?.profile?.nickname}",
                         "profileImage" to "${user?.kakaoAccount?.profile?.profileImageUrl}",
@@ -90,6 +90,10 @@ class LoginActivity : AppCompatActivity() {
             } else {
                 LoginClient.instance.loginWithKakaoAccount(this, callback = callback)
             }
+        }
+
+        binding.tvNoLogin.setOnClickListener {
+            finish()
         }
     }
 }

@@ -121,7 +121,7 @@ class BoardViewModel(
                 // Success 처리
                 result.data?.let { data ->
                     Timber.d("Posts loaded successfully")
-                    Timber.tag("Song").d("post: ${data.posts.map { it.title }}")
+//                    Timber.tag("Song").d("post: ${data.posts.map { it.title }}")
 
                     when (_uiState.value.posts) {
                         UiState.Empty -> {
