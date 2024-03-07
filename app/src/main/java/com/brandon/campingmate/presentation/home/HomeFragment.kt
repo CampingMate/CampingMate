@@ -251,4 +251,8 @@ class HomeFragment : Fragment() {
         }
         binding.chipThemeGroup.setOnCheckedChangeListener(chipGroup)
     }
+    override fun onDestroy() {
+        _binding = null
+        super.onDestroy()
+    }
 }
