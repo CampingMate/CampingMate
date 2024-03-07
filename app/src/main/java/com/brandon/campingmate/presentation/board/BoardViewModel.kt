@@ -21,6 +21,10 @@ class BoardViewModel(
     private val getPostUseCase: GetPostsUseCase,
 ) : ViewModel() {
 
+    enum class PostLoadTrigger {
+        SCROLL, REFRESH
+    }
+
     private val _uiState = MutableStateFlow(BoardUiState.init())
     val uiState: StateFlow<BoardUiState> = _uiState.asStateFlow()
 
@@ -33,110 +37,175 @@ class BoardViewModel(
 
     init {
         Timber.d("Initializing BoardViewModel")
-        loadPosts(20)   // 초기 20개 이후 10개씩 추가로 가져옴
+        loadPosts(PostLoadTrigger.REFRESH, pageSize = 20)   // 초기 20개 이후 10개씩 추가로 가져옴
     }
 
-    fun loadPosts(pageSize: Int = 10) {
+    fun handleEvent(event: BoardEvent) {
+        when (event) {
+            is BoardEvent.RequestPostList -> {
+                /**
+                 * event 버퍼를 10개 유지중이므로 event 가 쌓이면 loading 상태가 업데이트 되고난 후
+                 * event 가 소진되며 리스트를 계속 불러올 수 있으니 로딩 중일 때는 event 를 발생시키지 않음
+                 * tryEmit 는 MutableSharedFlow 의 정책(버퍼 사이즈, 초과시 처리 방침 등을 고려한다)
+                 */
+                if (uiState.value.isLoadingNext && uiState.value.isRefreshing) return
+                loadPosts(trigger = event.trigger)
+                when (val trigger = event.trigger) {
+                    PostLoadTrigger.SCROLL -> {
+                        Timber.tag("Kimchi").d("데이터 요청 이벤트 발생!!(스크롤)")
+                    }
+
+                    PostLoadTrigger.REFRESH -> {
+                        Timber.tag("Kimchi").d("데이터 요청 이벤트 발생!!(새로고침)")
+                    }
+                }
+            }
+
+            BoardEvent.NothingToFetchMore -> {
+                Timber.d("문서의 끝 이벤트 발생!!")
+                _event.tryEmit(BoardEvent.NothingToFetchMore)
+            }
+
+            is BoardEvent.ViewPostDetail -> {
+                Timber.d("문서 열기 이벤트 발생!!")
+                _event.tryEmit(BoardEvent.ViewPostDetail(event.postEntity))
+            }
+
+            BoardEvent.NoPostsAvailable -> {
+                Timber.d("불러올 문서 없음 이벤트 발생!!")
+                _event.tryEmit(BoardEvent.NoPostsAvailable)
+            }
+
+            BoardEvent.NavigateToPostCreation -> {
+                Timber.d("Post 쓰기 이동 이벤트 발생!!")
+                _event.tryEmit(BoardEvent.NavigateToPostCreation)
+            }
+
+            BoardEvent.NothingToFetch -> {
+                Timber.d("Post 리스트 새로고침 이벤트 발생!!")
+                loadPosts(PostLoadTrigger.REFRESH)
+            }
+
+            BoardEvent.ScrollPerformed -> {
+                _uiState.update { it.copy(isNeedScroll = false) }
+            }
+        }
+    }
+
+    private fun loadPosts(trigger: PostLoadTrigger, pageSize: Int = 10) {
         viewModelScope.launch {
+            Timber.d(" loadPosts - $trigger 이벤트 발생!!")
+
             // Event 수준에서 먼저 예외처리 되어있음
-            if (_uiState.value.isPostsLoading) {
-                return@launch
+            when (trigger) {
+                PostLoadTrigger.SCROLL -> if (_uiState.value.isLoadingNext) return@launch
+                PostLoadTrigger.REFRESH -> if (_uiState.value.isRefreshing) return@launch
             }
 
             Timber.d("Emitting loading state")
-            _uiState.update { it.copy(isPostsLoading = true) }
+            updateLoadingState(true, trigger)
 
             runCatching {
                 Timber.d("Attempting to load posts")
-                getPostUseCase(pageSize, _uiState.value.lastVisibleDoc)
+                when (trigger) {
+                    PostLoadTrigger.SCROLL -> {
+                        getPostUseCase(pageSize, _uiState.value.lastVisibleDoc)
+                    }
+
+                    PostLoadTrigger.REFRESH -> {
+                        _uiState.update { it.copy(posts = UiState.Empty) }
+                        getPostUseCase(pageSize, null)
+                    }
+                }
             }.onSuccess { result ->
                 // Success 처리
                 result.data?.let { data ->
                     Timber.d("Posts loaded successfully")
+                    Timber.tag("Song").d("post: ${data.posts.map { it.title }}")
 
                     when (_uiState.value.posts) {
                         UiState.Empty -> {
-                            if (data.posts.isEmpty()) handleEvent(
-                                BoardEvent.PostListEmpty
-                            )
+                            if (data.posts.isEmpty()) handleEvent(BoardEvent.NoPostsAvailable)
                         }
 
                         is UiState.Success -> {
-                            if (data.posts.isEmpty()) handleEvent(
-                                BoardEvent.ScrollEndReached
-                            )
+                            when (trigger) {
+                                PostLoadTrigger.SCROLL -> {
+                                    if (data.posts.isEmpty()) handleEvent(
+                                        BoardEvent.NothingToFetchMore
+                                    )
+                                }
+
+                                PostLoadTrigger.REFRESH -> {
+                                    if (data.posts.isEmpty()) handleEvent(
+                                        BoardEvent.NothingToFetch
+                                    )
+                                }
+                            }
+
                         }
 
                         else -> {}
                     }
 
                     val newPosts = if (_uiState.value.posts is UiState.Success) {
+                        // 역전 옵션 설정
                         (_uiState.value.posts as UiState.Success).data + data.posts.toPostListItem()
                     } else {
                         data.posts.toPostListItem()
                     }
                     val lastVisibleDoc = data.lastVisibleDoc
-                    _uiState.update {
-                        it.copy(
-                            posts = UiState.Success(newPosts),
-                            lastVisibleDoc = lastVisibleDoc,
-                            isPostsLoading = false
-                        )
+                    Timber.tag("Song").d("데이터 업데이트 발생!")
+                    when (trigger) {
+                        PostLoadTrigger.SCROLL -> {
+                            _uiState.update {
+                                it.copy(
+                                    posts = UiState.Success(newPosts),
+                                    lastVisibleDoc = lastVisibleDoc,
+                                )
+                            }
+                            Timber.tag("Song").d("스크롤 로딩")
+                        }
+
+                        PostLoadTrigger.REFRESH -> {
+                            _uiState.update {
+                                it.copy(
+                                    posts = UiState.Success(newPosts),
+                                    lastVisibleDoc = lastVisibleDoc,
+                                    isNeedScroll = true,
+                                )
+                            }
+                            Timber.tag("Song").d("-------새로고침 로딩---------")
+                        }
                     }
+
                 } ?: run {
                     Timber.e("Failed to load posts, data is null")
-                    _uiState.update { it.copy(posts = UiState.Error("Data is null"), isPostsLoading = false) }
+                    _uiState.update { it.copy(posts = UiState.Error("Data is null"), isLoadingNext = false) }
                 }
             }.onFailure { exception ->
-                // Failure 처리
                 Timber.e("Error loading posts: ${exception.message}")
                 _uiState.update {
                     it.copy(
                         posts = UiState.Error(
                             exception.message ?: "An unknown error occurred"
-                        ), isPostsLoading = false
+                        ), isLoadingNext = false, isRefreshing = false
                     )
                 }
+            }.also {
+                updateLoadingState(false, trigger)
             }
         }
     }
 
-    fun handleEvent(event: BoardEvent) {
-        when (event) {
-            BoardEvent.LoadMoreItems -> {
-                /**
-                 * event 버퍼를 10개 유지중이므로 event 가 쌓이면 loading 상태가 업데이트 되고난 후
-                 * event 가 소진되며 리스트를 계속 불러올 수 있으니 로딩 중일 때는 event 를 발생시키지 않음
-                 * tryEmit 는 MutableSharedFlow 의 정책(버퍼 사이즈, 초과시 처리 방침 등을 고려한다)
-                 */
-                if (uiState.value.isPostsLoading) return
-                Timber.tag("Kimchi").d("데이터 요청 이벤트 발생!!")
-                _event.tryEmit(BoardEvent.LoadMoreItems)
-            }
-
-            BoardEvent.ScrollEndReached -> {
-                Timber.d("문서의 끝 이벤트 발생!!")
-                _event.tryEmit(BoardEvent.ScrollEndReached)
-            }
-
-            is BoardEvent.OpenContent -> {
-                Timber.d("문서 열기 이벤트 발생!!")
-                _event.tryEmit(BoardEvent.OpenContent(event.postEntity))
-            }
-
-            BoardEvent.PostListEmpty -> {
-                Timber.d("불러올 문서 없음!!")
-                _event.tryEmit(BoardEvent.PostListEmpty)
-            }
-
-            BoardEvent.MoveToPostWrite -> {
-                Timber.d("Post 쓰기 이동!!")
-                _event.tryEmit(BoardEvent.MoveToPostWrite)
+    private fun updateLoadingState(isLoading: Boolean, trigger: PostLoadTrigger) {
+        _uiState.update { currentState ->
+            when (trigger) {
+                PostLoadTrigger.SCROLL -> currentState.copy(isLoadingNext = isLoading)
+                PostLoadTrigger.REFRESH -> currentState.copy(isRefreshing = isLoading)
             }
         }
     }
-
-
 }
 
 class BoardViewModelFactory(

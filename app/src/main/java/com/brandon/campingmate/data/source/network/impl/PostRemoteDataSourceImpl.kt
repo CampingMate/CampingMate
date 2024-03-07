@@ -11,6 +11,7 @@ import com.google.firebase.firestore.Query
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 class PostRemoteDataSourceImpl(private val firestore: FirebaseFirestore) : PostRemoteDataSource {
     override suspend fun getPosts(
@@ -18,14 +19,17 @@ class PostRemoteDataSourceImpl(private val firestore: FirebaseFirestore) : PostR
     ): Resource<PostListResponse> = withContext(IO) {
         runCatching {
             val query = if (lastVisibleDoc == null) {
+                Timber.d("시작 요청")
                 firestore.collection("posts").orderBy("timestamp", Query.Direction.DESCENDING)
                     .limit(pageSize.toLong())
             } else {
+                Timber.d("더보기 요청")
                 // 이전 페이지 로딩이 있었던 경우
                 firestore.collection("posts").orderBy("timestamp", Query.Direction.DESCENDING)
                     .startAfter(lastVisibleDoc)
                     .limit(pageSize.toLong())
             }
+
             // 데이터 호출
             val snapshot = query.get().await()
 
@@ -36,9 +40,10 @@ class PostRemoteDataSourceImpl(private val firestore: FirebaseFirestore) : PostR
             /**
              * 문서 끝에 도달한 경우 lastVisibleDoc 를 업데이트 하지 않는다
              */
+            Timber.d("현재 요청된 마지막 문서: ${lastVisibleDoc?.id}")
+            Timber.d("받아온 posts: ${posts.map { it.title }}")
             val newLastVisibleDoc =
                 if (snapshot.documents.isNotEmpty()) snapshot.documents.lastOrNull() else lastVisibleDoc
-
             Resource.Success(
                 PostListResponse(
                     posts = posts, lastVisibleDoc = newLastVisibleDoc
