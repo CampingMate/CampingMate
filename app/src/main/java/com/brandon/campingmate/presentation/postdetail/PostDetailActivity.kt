@@ -30,6 +30,7 @@ class PostDetailActivity : AppCompatActivity() {
         )
     }
 
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +40,8 @@ class PostDetailActivity : AppCompatActivity() {
 
         val postEntity = intent.getParcelableExtra(EXTRA_POST_ENTITY, PostEntity::class.java)
 
+
+        initView()
 
         setupOnBackPressedHandling()
     }

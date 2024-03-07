@@ -160,7 +160,6 @@ class BoardFragment : Fragment() {
                     val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
 //                    Timber.d("dy: $dy, scrollVertical: ${recyclerView.canScrollVertically(1)}, lastVisibleItemPosition+1: ${lastVisibleItemPosition + 1},  totalItemCount: $totalItemCount} ")
 
-                    //TODO 리스트가 역순이여서 끝을 탐색하는 다른 로직 필요
 //                    if (!recyclerView.canScrollVertically(1) && layoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
                     if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition + 1 >= totalItemCount) {
                         // 무한 스크롤 이벤트 발생
@@ -185,9 +184,6 @@ class BoardFragment : Fragment() {
 
             override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
 
-        })
-
-        postListAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
         })
 
     }
@@ -263,6 +259,7 @@ class BoardFragment : Fragment() {
     }
 
     private fun onBind(state: BoardUiState) = with(binding) {
+        Timber.tag("All").d("현재 상태 isNeedRefresh :${state.isNeedScroll}")
         when (val postsState = state.posts) {
             is UiState.Success -> {
                 // isPostsLoading 상태가 viewModel 에서 변경됨에 따라 로딩 아이템 추가/삭제
@@ -276,8 +273,7 @@ class BoardFragment : Fragment() {
                     if (state.isNeedScroll) {
                         scrollToTop()
                         viewModel.handleEvent(BoardEvent.ScrollPerformed)
-                    } else {
-                    }
+                    } 
                 }
             }
 
