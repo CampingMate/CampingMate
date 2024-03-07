@@ -54,9 +54,6 @@ class SearchFragment : Fragment() {
         myList.observe(viewLifecycleOwner){
             listAdapter.submitList(it)
         }
-        myList.observe(viewLifecycleOwner) {
-            listAdapter.submitList(it)
-        }
     }
 
     private fun initView() = with(binding) {
