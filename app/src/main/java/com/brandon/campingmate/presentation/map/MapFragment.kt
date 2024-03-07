@@ -33,7 +33,7 @@ class MapFragment : Fragment(),OnMapReadyCallback {
     private val binding  get() = _binding!!
     private var mapView: MapView? = null
     private var naverMap: NaverMap? = null
-    private var maptype : Boolean = true
+    private var maptype : Int = 1
     private var context : Context? = null
     private val imgAdapter = DialogImgAdapter()
     private lateinit var tedNaverClustering: TedNaverClustering<LocationBasedListItem>
@@ -70,14 +70,22 @@ class MapFragment : Fragment(),OnMapReadyCallback {
 
     private fun initView() = with(binding){
         btnSattel.setOnClickListener {
-            if(maptype){
-                naverMap?.mapType = NaverMap.MapType.Satellite
-                maptype=false
-                btnSattel.text = "지형도"
-            }else{
-                naverMap?.mapType = NaverMap.MapType.Terrain
-                maptype=true
-                btnSattel.text = "위성"
+            when(maptype){
+                1 -> {
+                    naverMap?.mapType = NaverMap.MapType.Satellite
+                    maptype+=1
+                    btnSattel.text = "위성도"
+                }
+                2 -> {
+                    naverMap?.mapType = NaverMap.MapType.Terrain
+                    maptype+=1
+                    btnSattel.text = "지형도"
+                }
+                3 -> {
+                    naverMap?.mapType = NaverMap.MapType.Basic
+                    maptype=1
+                    btnSattel.text = "기본"
+                }
             }
         }
 
@@ -89,10 +97,10 @@ class MapFragment : Fragment(),OnMapReadyCallback {
             //캠프디테일로 이동
         }
 
-        button.setOnClickListener {
-            val intent = Intent(context, WebViewActivity::class.java)
-            startActivity(intent)
-        }
+//        button.setOnClickListener {
+//            val intent = Intent(context, WebViewActivity::class.java)
+//            startActivity(intent)
+//        }
         //makeAllMarker()
         rvCampImg.adapter = imgAdapter
 
