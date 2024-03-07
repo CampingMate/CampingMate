@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.brandon.campingmate.R
@@ -26,6 +25,8 @@ class CampDetailActivity : AppCompatActivity() {
     private val viewModel by lazy {
         ViewModelProvider(this)[CampDetailViewModel::class.java]
     }
+    private var myData: CampEntity? = null
+    private val db = FirebaseFirestore.getInstance()
     private val imageUrls = mutableListOf<String>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,18 +43,6 @@ class CampDetailActivity : AppCompatActivity() {
         binding.viewPager.adapter = ViewPagerAdapter(imageUrls)
         binding.viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
         binding.springDotsIndicator.attachTo(binding.viewPager)
-    }
-    private fun getImageList(): ArrayList<Int> {
-        return arrayListOf(R.drawable.ic_arrow_back, R.drawable.ic_arrow_forward, R.drawable.ic_arrow_upward)
-    }
-
-    private fun initViewPager() {
-        binding.viewPager.adapter = ViewPagerAdapter(imageUrls)
-        binding.viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-        binding.springDotsIndicator.attachTo(binding.viewPager)
-    }
-    private fun getImageList(): ArrayList<Int> {
-        return arrayListOf(R.drawable.ic_arrow_back, R.drawable.ic_arrow_forward, R.drawable.ic_arrow_upward)
     }
 
     private fun initViewModel() =with(viewModel) {
