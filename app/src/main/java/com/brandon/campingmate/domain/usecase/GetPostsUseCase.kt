@@ -12,12 +12,7 @@ class GetPostsUseCase(
         pageSize: Int = 10,
         lastVisibleDoc: DocumentSnapshot? = null
     ): Resource<PostsEntity> {
-        return runCatching {
-            // 성공, 실패 반환 가능
-            postRepository.getPosts(pageSize, lastVisibleDoc)
-        }.getOrElse { exception ->
-            Resource.Error("Failed to load posts: ${exception.localizedMessage}", null)
-        }
+        return postRepository.getPosts(pageSize, lastVisibleDoc)
     }
 
 }

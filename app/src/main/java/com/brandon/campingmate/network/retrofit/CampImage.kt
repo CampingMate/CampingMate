@@ -11,10 +11,12 @@ data class CampImageResponse(
     @SerializedName("body")
     val campBody: CampBody,
 )
+
 data class CampHeader(
     val resultCode: Int?,
     val resultMsg: String?,
 )
+
 data class CampBody(
     val totalCount: Int?,
     val pageNo: Int?,
@@ -39,6 +41,7 @@ data class CampImageItems(
     @SerializedName("item")
     val campImageItem: List<CampItem>?
 )
+
 data class CampItem(
     val contentId: Int?,
     val serialnum: Int?,
@@ -55,10 +58,12 @@ data class SearchResponse(
     @SerializedName("body")
     val searchBody: SearchBody,
 )
+
 data class SearchHeader(
     val resultCode: String?,
     val resultMsg: String?,
 )
+
 data class SearchBody(
     val numOfRows: Int?,
     val pageNo: Int?,
@@ -70,6 +75,7 @@ data class SearchItems(
     @SerializedName("item")
     val item: MutableList<SearchItem>?,
 )
+
 data class SearchItem(
     val firstImageUrl: String?,
     val siteMg3Vrticl: String?,

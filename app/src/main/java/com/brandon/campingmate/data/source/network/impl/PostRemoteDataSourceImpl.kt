@@ -1,9 +1,9 @@
 package com.brandon.campingmate.data.source.network.impl
 
+import com.brandon.campingmate.data.model.request.PostDTO
 import com.brandon.campingmate.data.model.response.PostListResponse
 import com.brandon.campingmate.data.model.response.PostResponse
 import com.brandon.campingmate.data.source.network.PostRemoteDataSource
-import com.brandon.campingmate.domain.model.PostEntity
 import com.brandon.campingmate.utils.Resource
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
@@ -11,17 +11,16 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-class PostRemoteDataSourceImpl(private val db: FirebaseFirestore) : PostRemoteDataSource {
+class PostRemoteDataSourceImpl(private val firestore: FirebaseFirestore) : PostRemoteDataSource {
     override suspend fun getPosts(
-        pageSize: Int,
-        lastVisibleDoc: DocumentSnapshot?
+        pageSize: Int, lastVisibleDoc: DocumentSnapshot?
     ): Resource<PostListResponse> = withContext(IO) {
         runCatching {
             val query = if (lastVisibleDoc == null) {
-                db.collection("posts").orderBy("timestamp").limit(pageSize.toLong())
+                firestore.collection("posts").orderBy("timestamp").limit(pageSize.toLong())
             } else {
                 // 이전 페이지 로딩이 있었던 경우
-                db.collection("posts").orderBy("timestamp").startAfter(lastVisibleDoc)
+                firestore.collection("posts").orderBy("timestamp").startAfter(lastVisibleDoc)
                     .limit(pageSize.toLong())
             }
             // 데이터 호출
@@ -39,8 +38,7 @@ class PostRemoteDataSourceImpl(private val db: FirebaseFirestore) : PostRemoteDa
 
             Resource.Success(
                 PostListResponse(
-                    posts = posts,
-                    lastVisibleDoc = newLastVisibleDoc
+                    posts = posts, lastVisibleDoc = newLastVisibleDoc
                 )
             )
         }.getOrElse { exception ->
@@ -48,41 +46,21 @@ class PostRemoteDataSourceImpl(private val db: FirebaseFirestore) : PostRemoteDa
         }
     }
 
-    override suspend fun uploadPost(postEntity: PostEntity): Resource<String> {
-        TODO("Not yet implemented")
+    override suspend fun uploadPost(
+        postDto: PostDTO, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit
+    ) {
+        withContext(IO) {
+            val postsCollection = firestore.collection("posts")
+            val newPostRef = postsCollection.document() // Firestore 에서 자동으로 ID 할당
+
+            val postId = newPostRef.id
+
+            // 생성된 ID 를 포함하여 PostDTO 복사
+            val newPost = postDto.copy(postId = postId)
+
+            postsCollection.document(postId).set(newPost)
+                .addOnSuccessListener { onSuccess(postId) }
+                .addOnFailureListener { exception -> onFailure(exception) }
+        }
     }
-    //    override suspend fun getPosts(startAfter: DocumentSnapshot? = null): PostListResponse {
-//        val query = db.collection("posts")
-//            .limit(10)
-//            .let { if(startAfter != null) it.startAfter(startAfter) else it }
-//
-//        val snapshot = query.get().asDeferred().await()
-//        val PostResponse
-//        PostListResponse(
-//            posts =
-//        )
-//    }
-//
-//    override suspend fun uploadPost(postEntity: PostEntity): String {
-//        TODO("Not yet implemented")
-//    }
-    //    override suspend fun getPosts(): Resource<List<PostResponse>> = withContext(Dispatchers.IO) {
-//        runCatching {
-//            val task = db.collection("posts").get()
-//            val snapshot = task.asDeferred().await()
-////            val posts = snapshot.toObjects(PostResponse::class.java)
-//            val posts = snapshot.documents.mapNotNull { it.toObject(PostResponse::class.java) }
-//
-//        }.getOrElse { e ->
-//        }
-//    }
-//
-//    override suspend fun uploadPost(post: PostEntity): Resource<String> = withContext(Dispatchers.IO) {
-//        runCatching {
-//            val documentRef = db.collection("posts").add(post).asDeferred().await()
-//            Result.success(documentRef.id)
-//        }.getOrElse { e ->
-//            Result.failure(e)
-//        }
-//    }
 }

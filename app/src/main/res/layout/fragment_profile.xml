@@ -64,6 +64,7 @@
             android:backgroundTint="#d9d9d9"
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
+            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ll_edit_confirm">
 
@@ -102,11 +103,11 @@
             android:layout_width="wrap_content"
             android:layout_height="35dp"
             android:fontFamily="@font/spoqahansansneo_medium"
-            android:text="@string/profile_login_text"
             android:textColor="@color/black"
             android:textSize="20sp"
             android:layout_marginStart="16dp"
             android:layout_marginBottom="4dp"
+            android:visibility="invisible"
             app:layout_constraintBottom_toTopOf="@+id/tv_profile_email"
             app:layout_constraintStart_toEndOf="@+id/cardView"
             app:layout_constraintTop_toTopOf="@+id/cardView"
@@ -125,8 +126,6 @@
             app:layout_constraintStart_toEndOf="@+id/tv_profile_name"
             app:layout_constraintTop_toTopOf="@+id/tv_profile_name" />
 
-
-
         <TextView
             android:id="@+id/tv_profile_email"
             android:layout_width="wrap_content"
@@ -134,9 +133,7 @@
             android:layout_marginStart="16dp"
             android:visibility="gone"
             android:fontFamily="@font/spoqahansansneo_regular"
-            android:text="1adf466@gmail.com"
             android:textColor="#848484"
-
             app:layout_constraintBottom_toBottomOf="@+id/cardView"
             app:layout_constraintStart_toEndOf="@+id/cardView"
             app:layout_constraintTop_toBottomOf="@+id/tv_profile_name" />
@@ -169,6 +166,7 @@
                 android:fontFamily="@font/spoqahansansneo_medium"
                 android:gravity="center"
                 android:text="@string/profile_login"
+                android:visibility="invisible"
                 android:textColor="@color/background"
                 android:textSize="14sp" />
 

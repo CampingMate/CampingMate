@@ -1,6 +1,6 @@
 package com.brandon.campingmate.network.retrofit
 
-import com.brandon.campingmate.BuildConfig
+import com.getkeepsafe.relinker.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit

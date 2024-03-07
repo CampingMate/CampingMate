@@ -1,11 +1,8 @@
 package com.brandon.campingmate.presentation.main
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-
 import com.brandon.campingmate.databinding.ActivityMainBinding
-import com.kakao.sdk.common.util.Utility
 import nl.joery.animatedbottombar.AnimatedBottomBar
 import timber.log.Timber
 
@@ -28,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         binding.viewPager.offscreenPageLimit = 1
         binding.bottomNavigation.setupWithViewPager2(binding.viewPager)
 
-        binding.bottomNavigation.setOnTabSelectListener(object: AnimatedBottomBar.OnTabSelectListener{
+        binding.bottomNavigation.setOnTabSelectListener(object : AnimatedBottomBar.OnTabSelectListener {
             override fun onTabSelected(
                 lastIndex: Int,
                 lastTab: AnimatedBottomBar.Tab?,
