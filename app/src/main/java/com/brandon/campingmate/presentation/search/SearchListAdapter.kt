@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.brandon.campingmate.R
 import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.databinding.ItemBigCampBinding
-import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.campdetail.CampDetailActivity
 import com.bumptech.glide.Glide
 

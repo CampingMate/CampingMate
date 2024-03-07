@@ -6,7 +6,6 @@ plugins {
     id("com.google.gms.google-services")
     id("kotlin-parcelize")
 }
-fun getApiKey(propertyKey: String): String{
 fun getApiKey(propertyKey: String): String {
     return gradleLocalProperties(rootDir).getProperty(propertyKey)
 }
@@ -16,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId = "com.brandon.campingmate"
-        minSdk = 31
+        minSdk = 29
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"

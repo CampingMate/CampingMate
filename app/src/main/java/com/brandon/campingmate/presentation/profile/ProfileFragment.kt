@@ -101,19 +101,26 @@ class ProfileFragment : Fragment() {
             UserApiClient.instance.me { user, error ->
                 Log.d("다큐먼트검사", "kakao${user?.id}")
                 val docRef = db.collection("users").document("Kakao${user?.id}")
-
-
                 docRef.get().addOnSuccessListener {
-                    if (it.getString("profileImage") != null) {
-                        ivProfileImg.setImageURI(Uri.parse(it.getString("profileImage")))
+                    if (!it.exists()) {
+                        ivProfileImg.setImageURI(Uri.parse(user?.kakaoAccount?.profile?.profileImageUrl))
+                        tvProfileName.textSize = 24f
+                        tvProfileName.text = user?.kakaoAccount?.profile?.nickname
+                        tvProfileEmail.text = user?.kakaoAccount?.email
+                    } else {
+                        if (it.getString("profileImage") != null) {
+                            ivProfileImg.setImageURI(Uri.parse(it.getString("profileImage")))
+                        }
+                        tvProfileName.textSize = 24f
+                        tvProfileName.text = it.getString("nickName").toString()
+                        tvProfileEmail.text = it.getString("userEmail").toString()
+
                     }
-                    tvProfileName.textSize = 24f
-                    tvProfileName.text = it.getString("nickName").toString()
-                    tvProfileEmail.text = it.getString("userEmail").toString()
                 }
             }
 
-
+            cardView.visibility =View.VISIBLE
+            tvProfileName.visibility = View.VISIBLE
             tvProfileEmail.visibility = View.VISIBLE
 
             btnLogout.visibility = View.VISIBLE
