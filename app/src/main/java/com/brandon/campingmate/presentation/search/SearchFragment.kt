@@ -8,7 +8,6 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
@@ -51,9 +50,6 @@ class SearchFragment : Fragment() {
     }
 
     private fun initViewModel() = with(viewModel) {
-        keywordParam.observe(viewLifecycleOwner) {
-            communicateNetWork(it)
-        }
         keyword.observe(viewLifecycleOwner){
             listAdapter.submitList(it)
         }
@@ -137,6 +133,7 @@ class SearchFragment : Fragment() {
         btnApply.setOnClickListener {
             doNmList.clear()
             activatedChips.clear()
+//            viewModel.clearCampList()
 
             for (chipId in chipIds) {
                 val chip = root.findViewById<Chip>(chipId)
@@ -194,6 +191,7 @@ class SearchFragment : Fragment() {
          */
         tvEdit.setOnKeyListener{_, KeyCode, event ->
             if((event.action==KeyEvent.ACTION_DOWN) && (KeyCode==KeyEvent.KEYCODE_ENTER)){
+//                viewModel.clearCampList()
                 val searchText = binding.tvEdit.text.toString()
                 viewModel.setUpParkParameter(searchText)
                 binding.root.hideKeyboard()
