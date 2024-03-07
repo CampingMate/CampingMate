@@ -59,19 +59,19 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:backgroundTint="#d9d9d9"
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
-            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ll_edit_confirm">
 
             <ImageView
                 android:id="@+id/iv_profile_img"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:visibility="invisible"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_camp" />
 
@@ -204,6 +204,13 @@
         <!--                android:layout_height="wrap_content"-->
         <!--                android:text="작성한 글" />-->
         <!--        </com.google.android.material.tabs.TabLayout>-->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#ececec"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout" />
 
         <LinearLayout
             android:id="@+id/linearLayout"
@@ -211,63 +218,82 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="26dp"
             android:orientation="horizontal"
+            android:gravity="center"
             app:layout_constraintTop_toBottomOf="@+id/ll_btn_layout">
 
-            <LinearLayout
-                android:id="@+id/tab_bookmarked"
-                android:layout_width="0dp"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="horizontal">
+                android:fontFamily="@font/spoqahansansneo_medium"
+                android:textSize="16sp"
+                android:text="@string/profile_bookmarked_camp"
+                android:gravity="center"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/spoqahansansneo_medium"
-                    android:text="@string/profile_bookmarked_camp"
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tv_bookmarked_size"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:fontFamily="@font/spoqahansansneo_medium"
-                    android:text="30"
-                    android:textColor="#939393"
-                    android:textSize="14sp"
-                    android:visibility="gone" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/tab_writing"
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/tv_bookmarked_size"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="horizontal">
+                android:layout_marginStart="5dp"
+                android:fontFamily="@font/spoqahansansneo_medium"
+                android:text="0"
+                android:textColor="#939393"
+                android:textSize="14sp"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/spoqahansansneo_medium"
-                    android:text="@string/proflie_wiriting"
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
+<!--            <LinearLayout-->
+<!--                android:id="@+id/tab_bookmarked"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:gravity="center"-->
+<!--                android:orientation="horizontal">-->
 
-                <TextView
-                    android:id="@+id/tv_writing_size"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:fontFamily="@font/spoqahansansneo_medium"
-                    android:text="1000"
-                    android:textColor="#939393"
-                    android:textSize="14sp"
-                    android:visibility="gone" />
-            </LinearLayout>
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:fontFamily="@font/spoqahansansneo_medium"-->
+<!--                    android:text="@string/profile_bookmarked_camp"-->
+<!--                    android:textColor="@color/black"-->
+<!--                    android:textSize="16sp" />-->
+
+<!--                <TextView-->
+<!--                    android:id="@+id/tv_bookmarked_size"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginStart="5dp"-->
+<!--                    android:fontFamily="@font/spoqahansansneo_medium"-->
+<!--                    android:text="30"-->
+<!--                    android:textColor="#939393"-->
+<!--                    android:textSize="14sp"-->
+<!--                    android:visibility="gone" />-->
+<!--            </LinearLayout>-->
+
+<!--            <LinearLayout-->
+<!--                android:id="@+id/tab_writing"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:gravity="center"-->
+<!--                android:orientation="horizontal">-->
+
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:fontFamily="@font/spoqahansansneo_medium"-->
+<!--                    android:text="@string/proflie_wiriting"-->
+<!--                    android:textColor="@color/black"-->
+<!--                    android:textSize="16sp" />-->
+
+<!--                <TextView-->
+<!--                    android:id="@+id/tv_writing_size"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginStart="5dp"-->
+<!--                    android:fontFamily="@font/spoqahansansneo_medium"-->
+<!--                    android:text="1000"-->
+<!--                    android:textColor="#939393"-->
+<!--                    android:textSize="14sp"-->
+<!--                    android:visibility="gone" />-->
+<!--            </LinearLayout>-->
 
         </LinearLayout>
 
@@ -291,6 +317,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="2dp"
                 android:layout_weight="1"
+                android:visibility="invisible"
                 android:background="@color/black"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 

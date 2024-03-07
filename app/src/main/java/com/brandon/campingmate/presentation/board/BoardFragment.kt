@@ -1,11 +1,14 @@
 package com.brandon.campingmate.presentation.board
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityOptionsCompat
@@ -46,10 +49,13 @@ class BoardFragment : Fragment() {
     }
     private val postListAdapter: PostListAdapter by lazy {
         PostListAdapter(onClickItem = { postEntity ->
-            viewModel.handleEvent(BoardEvent.OpenContent(postEntity))
+            viewModel.handleEvent(BoardEvent.ViewPostDetail(postEntity))
         })
     }
 
+    private lateinit var linearLayoutManager: LinearLayoutManager
+
+    private lateinit var postWriteResultLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,10 +76,19 @@ class BoardFragment : Fragment() {
         Timber.d("BoardFragment onViewCreated")
 
 //        upLoadFakePosts(35)
-
+        initResultLauncher()
         initView()
         initListener()
         initViewModel()
+    }
+
+    private fun initResultLauncher() {
+        postWriteResultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    viewModel.handleEvent(BoardEvent.NothingToFetch)
+                }
+            }
     }
 
     override fun onStart() {
@@ -84,8 +99,7 @@ class BoardFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         Timber.d("BoardFragment onResume")
-
-        // TODO 게시물 작성 후 돌아온 상황. 이때 list 업데이트 해야함.
+        viewModel.handleEvent(BoardEvent.RequestPostList(BoardViewModel.PostLoadTrigger.REFRESH))
     }
 
     override fun onPause() {
@@ -139,24 +153,24 @@ class BoardFragment : Fragment() {
         rvPostList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-
                 // 스크롤 내릴 때 양수, 올릴 때 음수
                 if (dy > 0) {
                     val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                     val totalItemCount = layoutManager.itemCount
                     val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+//                    Timber.d("dy: $dy, scrollVertical: ${recyclerView.canScrollVertically(1)}, lastVisibleItemPosition+1: ${lastVisibleItemPosition + 1},  totalItemCount: $totalItemCount} ")
 
-                    // 마지막으로 보이는 아이템의 위치가 전체 아이템 수에 근접하면 더 많은 아이템을 로드
+//                    if (!recyclerView.canScrollVertically(1) && layoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
                     if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition + 1 >= totalItemCount) {
                         // 무한 스크롤 이벤트 발생
-                        viewModel.handleEvent(BoardEvent.LoadMoreItems)
+                        viewModel.handleEvent(BoardEvent.RequestPostList(BoardViewModel.PostLoadTrigger.SCROLL))
                     }
                 }
             }
         })
 
         btnWrite.setOnClickListener {
-            viewModel.handleEvent(BoardEvent.MoveToPostWrite)
+            viewModel.handleEvent(BoardEvent.NavigateToPostCreation)
         }
 
         rvPostList.addOnItemTouchListener(object : RecyclerView.OnScrollListener(),
@@ -177,7 +191,9 @@ class BoardFragment : Fragment() {
     private fun initView() = with(binding) {
         // View initialization logic
         rvPostList.adapter = postListAdapter
-        rvPostList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+
+        linearLayoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        rvPostList.layoutManager = linearLayoutManager
     }
 
     private fun initViewModel() = with(viewModel) {
@@ -200,55 +216,65 @@ class BoardFragment : Fragment() {
 
     private fun onEvent(event: BoardEvent) {
         when (event) {
-            is BoardEvent.LoadMoreItems -> {
-                viewModel.loadPosts()
-            }
+            is BoardEvent.RequestPostList -> {}
 
-            BoardEvent.ScrollEndEvent -> {
+            BoardEvent.NothingToFetchMore -> {
                 Snackbar.make(binding.root, "문서의 끝에 도달했습니다", Snackbar.LENGTH_SHORT).show()
             }
 
-            is BoardEvent.OpenContent -> {
+            is BoardEvent.ViewPostDetail -> {
                 Intent(requireContext(), PostDetailActivity::class.java).apply {
                     putExtra(PostDetailActivity.EXTRA_POST_ENTITY, event.postEntity)
                 }.also {
                     val options = ActivityOptionsCompat.makeCustomAnimation(
-                        requireContext(),
-                        R.anim.slide_in,
-                        R.anim.anim_none
+                        requireContext(), R.anim.slide_in, R.anim.anim_none
                     ).toBundle()
                     startActivity(it, options)
                 }
             }
 
-            BoardEvent.PostListEmpty -> {
+            BoardEvent.NoPostsAvailable -> {
                 // 로디 활성화로 변경
                 Snackbar.make(binding.root, "가져올 문서가 없습니다", Snackbar.LENGTH_SHORT).show()
             }
 
-            BoardEvent.MoveToPostWrite -> {
+            BoardEvent.NavigateToPostCreation -> {
                 Intent(requireContext(), PostWriteActivity::class.java).also {
-                    // 최신 애니메이션 적용 화면 이동 방법
+                    // 애니메이션 적용 + 결과 돌려받기
                     val options = ActivityOptionsCompat.makeCustomAnimation(
-                        requireContext(),
-                        R.anim.slide_in,
-                        R.anim.anim_none
-                    ).toBundle()
-                    startActivity(it, options)
+                        requireContext(), R.anim.slide_in, R.anim.anim_none
+                    )
+                    postWriteResultLauncher.launch(it, options)
                 }
             }
+
+            BoardEvent.NothingToFetch -> {
+
+            }
+
+            // TODO: ViewModel 에서 끝나는 이벤트와 그렇지 않은 이벤트를 구분할 수는 없을까?
+            BoardEvent.ScrollPerformed -> {}
+
         }
     }
 
     private fun onBind(state: BoardUiState) = with(binding) {
+        Timber.tag("All").d("현재 상태 isNeedRefresh :${state.isNeedScroll}")
         when (val postsState = state.posts) {
             is UiState.Success -> {
                 // isPostsLoading 상태가 viewModel 에서 변경됨에 따라 로딩 아이템 추가/삭제
                 // TODO 빈화면, 에러 화면 애니메이션 끄기
-                val newPosts =
-                    postsState.data + if (state.isPostsLoading) listOf(PostListItem.Loading) else emptyList()
-
-                postListAdapter.submitList(newPosts)
+                val newPosts = if (state.isLoadingNext) {
+                    postsState.data + listOf(PostListItem.Loading)
+                } else {
+                    postsState.data
+                }
+                postListAdapter.submitList(newPosts) {
+                    if (state.isNeedScroll) {
+                        scrollToTop()
+                        viewModel.handleEvent(BoardEvent.ScrollPerformed)
+                    } 
+                }
             }
 
             is UiState.Error -> {
@@ -257,6 +283,8 @@ class BoardFragment : Fragment() {
 
             is UiState.Empty -> {}
         }
+
+
     }
 
     companion object {
@@ -266,6 +294,13 @@ class BoardFragment : Fragment() {
 
     private fun hideKeyboard() {
         binding.searchView.clearFocus()
+    }
+
+    private fun scrollToTop() {
+        binding.rvPostList.post {
+            val layoutManager = linearLayoutManager
+            layoutManager.scrollToPositionWithOffset(0, 0)
+        }
     }
 
     // Todo: Remove

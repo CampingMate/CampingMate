@@ -1,11 +1,8 @@
 package com.brandon.campingmate.presentation.campdetail
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -69,14 +66,8 @@ class CampDetailActivity : AppCompatActivity(),OnMapReadyCallback {
         binding.viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
         binding.springDotsIndicator.attachTo(binding.viewPager)
     }
-    private fun getImageList(): ArrayList<Int> {
-        return arrayListOf(R.drawable.ic_arrow_back, R.drawable.ic_arrow_forward, R.drawable.ic_arrow_upward)
-    }
 
     private fun initViewModel() =with(viewModel) {
-        imageParam.observe(this@CampDetailActivity){
-            viewModel.communicateNetWork(it)
-        }
         imageResult.observe(this@CampDetailActivity){
             if(it.isNotEmpty()){
                 imageUrls.addAll(it)
@@ -84,7 +75,6 @@ class CampDetailActivity : AppCompatActivity(),OnMapReadyCallback {
             }
         }
     }
-
 
     private fun initView() = with(binding) {
         myData = intent.getParcelableExtra("campData") as? CampEntity
@@ -288,4 +278,3 @@ class CampDetailActivity : AppCompatActivity(),OnMapReadyCallback {
 
 
 }
-

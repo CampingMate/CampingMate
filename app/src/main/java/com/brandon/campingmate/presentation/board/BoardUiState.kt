@@ -7,14 +7,18 @@ import com.google.firebase.firestore.DocumentSnapshot
 data class BoardUiState(
     val posts: UiState<List<PostListItem>>,
     val lastVisibleDoc: DocumentSnapshot?,
-    val isPostsLoading: Boolean,
+    val isLoadingNext: Boolean,
+    val isRefreshing: Boolean,
+    val isNeedScroll: Boolean,
     // 다른 UiState 도 관리 가능
 ) {
     companion object {
         fun init() = BoardUiState(
             posts = UiState.Empty,
             lastVisibleDoc = null,
-            isPostsLoading = false
+            isLoadingNext = false,
+            isRefreshing = false,
+            isNeedScroll = false
         )
     }
 }

@@ -17,4 +17,8 @@ interface PostRepository {
         onSuccess: (String) -> Unit,
         onFailure: (Exception) -> Unit
     )
+
+    suspend fun getPostById(
+        postId: String
+    ): Resource<PostEntity>
 }
