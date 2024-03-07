@@ -86,6 +86,8 @@
     <string name="profile_tab_bookmarked">북마크 한 캠핑장이 없습니다.\n좋아하는 캠핑장을 추가해보세요!</string>
     <string name="profile_tab_writing">작성한 글이 없습니다.\n게시판에서 캠핑 정보를 공유해보세요!</string>
     <string name="profile_edit_user_name">프로필 이름 편집</string>
+    <string name="snackbar_login">로그인</string>
+    <string name="snackbar_login_text">다양한 기능을 사용하시려면\n로그인 후 이용해주세요</string>
 
 
 </resources>
