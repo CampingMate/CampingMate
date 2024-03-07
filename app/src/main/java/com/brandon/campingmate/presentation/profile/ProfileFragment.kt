@@ -26,12 +26,15 @@ import com.brandon.campingmate.databinding.FragmentProfileBinding
 import com.brandon.campingmate.presentation.login.LoginActivity
 import com.google.firebase.firestore.FirebaseFirestore
 import com.kakao.sdk.user.UserApiClient
+import timber.log.Timber
 
 class ProfileFragment : Fragment() {
 
     private lateinit var imageLauncher: ActivityResultLauncher<Intent>
     private var _binding: FragmentProfileBinding? = null
+    private var img_URI: Uri? = null
     private val binding get() = _binding!!
+    val db = FirebaseFirestore.getInstance()
 
 
     override fun onCreateView(
@@ -68,7 +71,6 @@ class ProfileFragment : Fragment() {
     fun checkLogin() {
         UserApiClient.instance.me { user, error ->
             if (user?.id != null) {
-                Log.d("프로필체크로그인검사", "${user.id}")
                 initLogin()
             } else initLogout()
         }
@@ -77,7 +79,6 @@ class ProfileFragment : Fragment() {
 
 
     private fun initLogout() {
-
         with(binding) {
             //화면 상에서 비로그인 화면으로 되돌리기
             ivProfileImg.setImageResource(R.drawable.ic_camp)
@@ -94,12 +95,8 @@ class ProfileFragment : Fragment() {
     }
 
     fun initLogin() {
-
-        val db = FirebaseFirestore.getInstance()
         with(binding) {
-
             UserApiClient.instance.me { user, error ->
-                Log.d("다큐먼트검사", "kakao${user?.id}")
                 val docRef = db.collection("users").document("Kakao${user?.id}")
                 docRef.get().addOnSuccessListener {
                     if (!it.exists()) {
@@ -109,6 +106,7 @@ class ProfileFragment : Fragment() {
                         tvProfileEmail.text = user?.kakaoAccount?.email
                     } else {
                         if (it.getString("profileImage") != null) {
+                            //resolveUri failed on bad bitmap uri:
                             ivProfileImg.setImageURI(Uri.parse(it.getString("profileImage")))
                         }
                         tvProfileName.textSize = 24f
@@ -119,7 +117,6 @@ class ProfileFragment : Fragment() {
                 }
             }
 
-            cardView.visibility =View.VISIBLE
             tvProfileName.visibility = View.VISIBLE
             tvProfileEmail.visibility = View.VISIBLE
 
@@ -149,14 +146,14 @@ class ProfileFragment : Fragment() {
         with(binding) {
             btnProfileEdit.setOnClickListener {
                 llEditConfirm.visibility = View.VISIBLE
-                btnEditName.visibility = View.VISIBLE //todo.이름 수정 제한 10자 넘어가는 프래그먼트 생성 (생성 시에 기존 유저네임이 기본값)
-                btnEditImg.visibility = View.VISIBLE //todo.사진고르는 인텐트로 넘어가기, 사진 찍을건지?인텐트.. 연결..?
+                btnEditName.visibility = View.VISIBLE
+                //btnEditImg.visibility = View.VISIBLE
                 btnLogout.visibility = View.GONE
                 btnProfileEdit.visibility = View.INVISIBLE
             }
 
             clickEditName()
-            clickEditImg()
+            //clickEditImg()
         }
     }
 
@@ -229,23 +226,23 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    private fun clickEditImg() {
-        with(binding) {
-            btnEditImg.setOnClickListener {
-                val intent = Intent(Intent.ACTION_PICK)
-                intent.type = "image/*"
-                imageLauncher.launch(intent)
-            }
-        }
-
-        imageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val img_URI = result.data?.data
-                binding.ivProfileImg.scaleType = ImageView.ScaleType.CENTER_CROP
-                binding.ivProfileImg.setImageURI(img_URI)
-            }
-        }
-    }
+//    private fun clickEditImg() {
+//        with(binding) {
+//            btnEditImg.setOnClickListener {
+//                val intent = Intent(Intent.ACTION_PICK)
+//                intent.type = "image/*"
+//                imageLauncher.launch(intent)
+//            }
+//        }
+//
+//        imageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+//            if (result.resultCode == Activity.RESULT_OK) {
+//                img_URI = result.data?.data
+//                binding.ivProfileImg.scaleType = ImageView.ScaleType.CENTER_CROP
+//                binding.ivProfileImg.setImageURI(img_URI)
+//            }
+//        }
+//    }
 
     private fun clickEditListener() {
         with(binding) {
@@ -257,13 +254,27 @@ class ProfileFragment : Fragment() {
     private fun handleClickEdit(confirm: Boolean) {
         with(binding) {
             if (confirm) {
-                Toast.makeText(requireContext(), "데이터베이스로 저장!", Toast.LENGTH_SHORT).show()
-                //Todo. 설정된 이름, 사진에 대한 변경값을 다시 데이터베이스에 넘겨서 저장
+                //Todo. 사진에 대한 변경값을 다시 스토리지를 통헤 데이터베이스에 넘겨서 저장
+                UserApiClient.instance.me { user, error ->
+                    val documentRef = db.collection("users").document("Kakao${user?.id}")
+                    val updateNickname = hashMapOf<String,Any>("nickName" to "${tvProfileName.text}")
+                    //val updateProfileImg = hashMapOf<String,Any>("profileImage" to img_URI.toString())
+                    documentRef.get().addOnSuccessListener {
+                        documentRef.update(updateNickname)
+                        //documentRef.update(updateProfileImg)
+                    }
+                }
+                tvProfileName.text = tvProfileName.text
+                //ivProfileImg.setImageURI(img_URI)
+            } else{
+                tvProfileName.text =""
+                initLogin()
             }
 
-            initLogin()
             btnEditName.visibility = View.GONE
             btnEditImg.visibility = View.GONE
+            btnLogout.visibility = View.VISIBLE
+            btnProfileEdit.visibility  = View.VISIBLE
             llEditConfirm.visibility = View.INVISIBLE
             tvProfileName.visibility = View.VISIBLE
         }
@@ -324,7 +335,6 @@ class ProfileFragment : Fragment() {
                 }
 
                 dialog.findViewById<TextView>(R.id.btn_logout_comfirm)?.setOnClickListener {
-                    //todo. 실제 로그아웃 절차 수행 <- 수행시 토스트 삭제!
                     Toast.makeText(requireContext(), "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
                     //By.sounghyun
                     UserApiClient.instance.logout { error ->
