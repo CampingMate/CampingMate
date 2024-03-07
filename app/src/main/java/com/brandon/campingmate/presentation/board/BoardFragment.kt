@@ -85,7 +85,6 @@ class BoardFragment : Fragment() {
     private fun initResultLauncher() {
         postWriteResultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                Timber.d("문서 작성 완료!")
                 if (result.resultCode == Activity.RESULT_OK) {
                     viewModel.handleEvent(BoardEvent.NothingToFetch)
                 }
@@ -161,11 +160,9 @@ class BoardFragment : Fragment() {
                     val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
 //                    Timber.d("dy: $dy, scrollVertical: ${recyclerView.canScrollVertically(1)}, lastVisibleItemPosition+1: ${lastVisibleItemPosition + 1},  totalItemCount: $totalItemCount} ")
 
-                    //TODO 리스트가 역순이여서 끝을 탐색하는 다른 로직 필요
 //                    if (!recyclerView.canScrollVertically(1) && layoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
                     if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition + 1 >= totalItemCount) {
                         // 무한 스크롤 이벤트 발생
-                        Timber.d("리스트의 끝에 도달")
                         viewModel.handleEvent(BoardEvent.RequestPostList(BoardViewModel.PostLoadTrigger.SCROLL))
                     }
                 }
@@ -189,13 +186,6 @@ class BoardFragment : Fragment() {
 
         })
 
-        postListAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
-            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                super.onItemRangeInserted(positionStart, itemCount)
-                Timber.tag("Song")
-                    .d("onItemRangeInserted: $itemCount items inserted at position $positionStart")
-            }
-        })
 
     }
 
@@ -285,7 +275,7 @@ class BoardFragment : Fragment() {
                         scrollToTop()
                         viewModel.handleEvent(BoardEvent.ScrollPerformed)
                     } else {
-                        Timber.tag("Song").d("스크롤 안해!")
+
                     }
                 }
             }
@@ -310,7 +300,6 @@ class BoardFragment : Fragment() {
     }
 
     private fun scrollToTop() {
-        Timber.tag("Song").d("스크롤 수행!")
         binding.rvPostList.post {
             val layoutManager = linearLayoutManager
             layoutManager.scrollToPositionWithOffset(0, 0)

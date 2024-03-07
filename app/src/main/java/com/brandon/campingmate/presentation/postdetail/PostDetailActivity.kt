@@ -29,7 +29,16 @@ class PostDetailActivity : AppCompatActivity() {
         val postEntity = intent.getParcelableExtra(EXTRA_POST_ENTITY, PostEntity::class.java)
         Timber.d("수신한 post 객체: $postEntity")
 
+        initView()
+
         setupOnBackPressedHandling()
+    }
+
+    private fun initView() = with(binding) {
+        // 툴바 활성화
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false) // 기본 타이틀 숨기기
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)// 뒤로가기 버튼 활성화
     }
 
     private fun setupOnBackPressedHandling() {

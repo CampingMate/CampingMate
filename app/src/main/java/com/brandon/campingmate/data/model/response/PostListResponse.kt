@@ -13,8 +13,8 @@ data class PostListResponse(
 )
 
 data class PostResponse(
-    var id: String? = null, // id 업데이트 필요(초기 업로드 시 id 없음)
-    val author: String? = null,
+    var postId: String? = null, // id 업데이트 필요(초기 업로드 시 id 없음)
+    val authorName: String? = null,
     val authorId: String? = null,
     val authorProfileImageUrl: String? = null,
     val title: String? = null,
