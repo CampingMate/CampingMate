@@ -9,7 +9,7 @@
         android:id="@+id/cardView"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        android:backgroundTint="#E4B166"
+        android:backgroundTint="#00ff0000"
         app:cardCornerRadius="12dp"
         app:cardElevation="0dp"
         android:layout_marginTop="8dp"
@@ -19,7 +19,8 @@
         <ImageView
             android:id="@+id/iv_camp_img"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
 
     </androidx.cardview.widget.CardView>
 
