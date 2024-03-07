@@ -52,9 +52,9 @@ class CampDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun initView() =with(binding) {
+    private fun initView() = with(binding) {
         val myData = intent.getParcelableExtra("campData") as? CampEntity
-        if(myData != null){
+        if (myData != null) {
             val contentId = myData.contentId.toString()
             tvCampName.text = myData.facltNm
             tvAddr.text = myData.addr1
@@ -64,14 +64,15 @@ class CampDetailActivity : AppCompatActivity() {
             tvRestTime.text = "휴장기간 ${myData.hvofBgnde} ~ ${myData.hvofEnddle} "
             tvPlayTime.text = "운영기간 - ${myData.operPdCl}"
             var bottom = ""
-            if(myData.siteBottomCl1 != "0") bottom += "잔디, "
-            if(myData.siteBottomCl2 != "0") bottom += "파쇄석, "
-            if(myData.siteBottomCl3 != "0") bottom += "테크, "
-            if(myData.siteBottomCl4 != "0") bottom += "자갈, "
-            if(myData.siteBottomCl5 != "0") bottom += "맨흙, "
+            if (myData.siteBottomCl1 != "0") bottom += "잔디, "
+            if (myData.siteBottomCl2 != "0") bottom += "파쇄석, "
+            if (myData.siteBottomCl3 != "0") bottom += "테크, "
+            if (myData.siteBottomCl4 != "0") bottom += "자갈, "
+            if (myData.siteBottomCl5 != "0") bottom += "맨흙, "
             tvBottom.text = "바닥재질 - ${bottom}"
             tvIntroduceComment.text = myData.intro
-            tvConvenienceComment.text = "편의시설 - 화장실: ${myData.toiletCo} 샤워실: ${myData.swrmCo} 개수대: ${myData.wtrplCo} 화로대-${myData.brazierCl}"
+            tvConvenienceComment.text =
+                "편의시설 - 화장실: ${myData.toiletCo} 샤워실: ${myData.swrmCo} 개수대: ${myData.wtrplCo} 화로대-${myData.brazierCl}"
             tvConvenienceComment2.text = "부대시설 - ${myData.sbrsCl}"
             tvConvenienceThema.text = "테마 - ${myData.themaEnvrnCl}"
             tvConvenienceNear.text = "주변이용가능시설 - ${myData.posblFcltyCl}"
@@ -101,7 +102,7 @@ class CampDetailActivity : AppCompatActivity() {
         scrollTab()
     }
 
-    private fun scrollTab() =with(binding){
+    private fun scrollTab() = with(binding) {
         tvInformationTab.setOnClickListener {
             scrollToView(tvInformation)
         }

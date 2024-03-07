@@ -2,9 +2,9 @@ package com.brandon.campingmate.data.model.request
 
 import com.google.firebase.Timestamp
 
-data class PostRequest(
-    val id: String? = null,
-    val author: String? = null,
+data class PostDTO(
+    val postId: String? = null,
+    val authorName: String? = null,
     val authorId: String? = null,
     val authorProfileImageUrl: String? = null,
     val title: String? = null,

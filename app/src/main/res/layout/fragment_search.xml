@@ -86,42 +86,45 @@
             android:id="@+id/search_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/search_type"
-            android:layout_marginTop="22dp"
             android:layout_marginStart="42dp"
+            android:layout_marginTop="22dp"
+            android:text="@string/search_type"
             android:textSize="15sp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
             android:id="@+id/search_convenience"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/search_convenience"
             android:layout_marginStart="30dp"
+            android:text="@string/search_convenience"
             android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="@id/search_type"
             app:layout_constraintStart_toEndOf="@id/search_type"
-            app:layout_constraintTop_toTopOf="@id/search_type"
-            app:layout_constraintBottom_toBottomOf="@id/search_type"/>
+            app:layout_constraintTop_toTopOf="@id/search_type" />
+
         <TextView
             android:id="@+id/search_thema"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/search_thema"
             android:layout_marginStart="30dp"
+            android:text="@string/search_thema"
             android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="@id/search_convenience"
             app:layout_constraintStart_toEndOf="@id/search_convenience"
-            app:layout_constraintTop_toTopOf="@id/search_convenience"
-            app:layout_constraintBottom_toBottomOf="@id/search_convenience"/>
+            app:layout_constraintTop_toTopOf="@id/search_convenience" />
+
         <TextView
             android:id="@+id/search_bottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/search_bottom_shape"
             android:layout_marginStart="30dp"
+            android:text="@string/search_bottom_shape"
             android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="@id/search_thema"
             app:layout_constraintStart_toEndOf="@id/search_thema"
-            app:layout_constraintTop_toTopOf="@id/search_thema"
-            app:layout_constraintBottom_toBottomOf="@id/search_thema"/>
+            app:layout_constraintTop_toTopOf="@id/search_thema" />
 
         <ScrollView
             android:id="@+id/scrollView"
