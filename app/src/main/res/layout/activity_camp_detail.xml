@@ -424,9 +424,26 @@
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/fc_map"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:name="com.naver.maps.map.MapFragment" />
+                android:name="com.naver.maps.map.MapFragment"
+                android:layout_width="0dp"
+                android:layout_height="300dp"
+                app:navermap_zoomControlEnabled="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_map"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_detailsattel"
+                android:layout_width="78dp"
+                android:layout_height="34dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/apply_btn"
+                android:text="기본"
+                android:textColor="@color/white"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/fc_map" />
 
             <View
                 android:id="@+id/divider_4"

@@ -1,12 +1,20 @@
 package com.brandon.campingmate.presentation.campdetail
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.AttributeSet
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnTouchListener
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.brandon.campingmate.R
@@ -17,9 +25,16 @@ import com.brandon.campingmate.presentation.common.SnackbarUtil
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.kakao.sdk.user.UserApiClient
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraPosition
+import com.naver.maps.map.MapFragment
+import com.naver.maps.map.NaverMap
+import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.Align
+import com.naver.maps.map.overlay.Marker
 import timber.log.Timber
 
-class CampDetailActivity : AppCompatActivity() {
+class CampDetailActivity : AppCompatActivity(),OnMapReadyCallback {
 
     private val binding by lazy { ActivityCampDetailBinding.inflate(layoutInflater) }
     private val viewModel by lazy {
@@ -28,6 +43,10 @@ class CampDetailActivity : AppCompatActivity() {
     private var myData: CampEntity? = null
     private val db = FirebaseFirestore.getInstance()
     private val imageUrls = mutableListOf<String>()
+    private var mapView: MapFragment? = null
+    private var naverMap: NaverMap? = null
+    private var maptype : Int = 1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -36,6 +55,12 @@ class CampDetailActivity : AppCompatActivity() {
         initViewModel()
         checkBookmarked()
         clickBookmarked()
+        val fm = supportFragmentManager
+        mapView = fm.findFragmentById(R.id.fc_map) as MapFragment?
+            ?: MapFragment.newInstance().also {
+                fm.beginTransaction().add(R.id.fc_map, it).commit()
+            }
+        mapView?.getMapAsync (this)
 
     }
 
@@ -59,6 +84,7 @@ class CampDetailActivity : AppCompatActivity() {
             }
         }
     }
+
 
     private fun initView() = with(binding) {
         myData = intent.getParcelableExtra("campData") as? CampEntity
@@ -108,6 +134,47 @@ class CampDetailActivity : AppCompatActivity() {
         }
 
         scrollTab()
+
+        btnDetailsattel.setOnClickListener {
+            when(maptype){
+                1 -> {
+                    naverMap?.mapType = NaverMap.MapType.Satellite
+                    maptype+=1
+                    btnDetailsattel.text = "위성도"
+                }
+                2 -> {
+                    naverMap?.mapType = NaverMap.MapType.Terrain
+                    maptype+=1
+                    btnDetailsattel.text = "지형도"
+                }
+                3 -> {
+                    naverMap?.mapType = NaverMap.MapType.Basic
+                    maptype=1
+                    btnDetailsattel.text = "기본"
+                }
+            }
+        }
+
+//        fcMap.setOnTouchListener(object : OnTouchListener {
+//            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+//               when(event?.action){
+//                   MotionEvent.ACTION_MOVE -> {
+//                       Log.d("test","mapview: actionmove")
+//                       scrollView.setScrollingEnabled(false)
+//                   //scrollView.requestDisallowInterceptTouchEvent(true)
+//                   }
+//                   MotionEvent.ACTION_UP -> {
+//                       scrollView.setScrollingEnabled(true)
+//                   }
+//                   MotionEvent.ACTION_CANCEL -> {
+//                       scrollView.setScrollingEnabled(true)
+//                   }
+//               }
+//                return onTouchEvent(event)
+//            }
+//        })
+
+
     }
 
     private fun scrollTab() =with(binding){
@@ -199,4 +266,26 @@ class CampDetailActivity : AppCompatActivity() {
                 }
         }
     }
+
+    override fun onMapReady(p0: NaverMap) {
+        naverMap = p0
+        if(myData.toString().isNotEmpty()){
+            val mapY = if(myData?.mapY.isNullOrEmpty()) 45.0 else myData?.mapY!!.toDouble()
+            val mapX = if(myData?.mapX.isNullOrEmpty()) 130.0 else myData?.mapX!!.toDouble()
+            val cameraPosition = CameraPosition(LatLng(mapY, mapX), 10.0)
+            val marker = Marker()
+            Timber.tag("test").d(naverMap.toString())
+            marker.position = LatLng(mapY,mapX)
+            marker.captionText = myData?.facltNm.toString()
+            marker.captionRequestedWidth = 200
+            marker.setCaptionAligns(Align.Top)
+            marker.captionOffset = 10
+            marker.captionTextSize = 18f
+            marker.map = naverMap
+            naverMap?.cameraPosition = cameraPosition
+        }
+    }
+
+
 }
+
