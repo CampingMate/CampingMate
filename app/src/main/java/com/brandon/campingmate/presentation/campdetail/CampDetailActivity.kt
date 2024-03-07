@@ -88,8 +88,8 @@ class CampDetailActivity : AppCompatActivity() {
             startActivity(intent)
         }
         btnReserve.setOnClickListener{
-            val reserveUrl = myData?.tel
-            Log.d("asdfasdf", "$reserveUrl")
+            val reserveUrl = myData?.resveUrl
+            Log.d("asdf", "$reserveUrl")
             if(!reserveUrl.isNullOrBlank()){
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(reserveUrl))
                 startActivity(intent)

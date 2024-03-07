@@ -49,7 +49,11 @@ data class SearchBody(
     val pageNo: Int?,
     val totalCount: Int?,
     @SerializedName("items")
-    val items: MutableList<SearchItem>?,
+    val items: SearchItems?,
+)
+data class SearchItems(
+    @SerializedName("item")
+    val item: MutableList<SearchItem>?,
 )
 data class SearchItem(
     val firstImageUrl: String?,

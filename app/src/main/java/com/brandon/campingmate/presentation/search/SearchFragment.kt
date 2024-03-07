@@ -57,7 +57,7 @@ class SearchFragment : Fragment() {
             communicateNetWork(it)
         }
         keyword.observe(viewLifecycleOwner){
-//            listAdapter.submitList(it)
+            listAdapter.submitList(it)
         }
         myList.observe(viewLifecycleOwner){
             listAdapter.submitList(it)
