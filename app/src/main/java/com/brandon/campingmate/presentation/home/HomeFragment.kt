@@ -18,7 +18,7 @@ import com.google.firebase.firestore.firestore
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
-    private val binding get() = _binding!!
+    private val binding get() = _binding ?: throw IllegalStateException("Attempt to access binding when not set.")
 
     private var dataItem = mutableListOf<CampEntity?>()
     private lateinit var homeAdapter: HomeAdapter

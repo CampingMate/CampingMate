@@ -427,7 +427,6 @@
                 android:name="com.naver.maps.map.MapFragment"
                 android:layout_width="0dp"
                 android:layout_height="300dp"
-                app:navermap_zoomControlEnabled="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_map"/>
