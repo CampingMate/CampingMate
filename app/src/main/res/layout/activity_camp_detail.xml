@@ -7,7 +7,7 @@
     tools:context=".presentation.campdetail.CampDetailActivity">
 
 
-    <ScrollView
+    <com.brandon.campingmate.presentation.campdetail.CustomScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -422,9 +422,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/divider_3" />
 
-            <androidx.fragment.app.FragmentContainerView
+            <com.naver.maps.map.MapView
                 android:id="@+id/fc_map"
-                android:name="com.naver.maps.map.MapFragment"
                 android:layout_width="0dp"
                 android:layout_height="300dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -470,7 +469,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </ScrollView>
+    </com.brandon.campingmate.presentation.campdetail.CustomScrollView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

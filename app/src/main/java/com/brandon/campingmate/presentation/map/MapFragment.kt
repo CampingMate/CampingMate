@@ -118,8 +118,8 @@ class MapFragment : Fragment(),OnMapReadyCallback {
     }
 
     private fun initViewModel() = with(viewModel){
-        val map = getBlParamHashmap()
-        getAllCampList(map)
+//        val map = getBlParamHashmap()
+//        getAllCampList(map)
         paramHashmap.observe(viewLifecycleOwner){
             //getCampList(it)
         }
@@ -240,8 +240,6 @@ class MapFragment : Fragment(),OnMapReadyCallback {
                             intent.putExtra("campData",data)
                             startActivity(intent)
                         }
-                        val param = getImgParamHashmap(it.contentId.toString())
-                        viewModel.getImgList(param)
 
 
                     }
@@ -375,8 +373,6 @@ class MapFragment : Fragment(),OnMapReadyCallback {
                             intent.putExtra("campData",data)
                             startActivity(intent)
                         }
-                        val param = getImgParamHashmap(it.contentId.toString())
-                        viewModel.getImgList(param)
 
 
                     }
@@ -408,8 +404,8 @@ class MapFragment : Fragment(),OnMapReadyCallback {
                 invisibleAllMarker(markers)
                 visibleAllMarker(bookmarkMarkers)
                 bookmark = true
-                val map = viewModel.getBlParamHashmap()
-                viewModel.getAllCampList(map)
+//                val map = viewModel.getBlParamHashmap()
+//                viewModel.getAllCampList(map)
             }
 
         }
