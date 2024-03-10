@@ -55,7 +55,7 @@
         app:layout_constraintTop_toBottomOf="@+id/btn_roadview" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:visibility="visible"
+        android:visibility="gone"
         android:background="@color/background"
         android:id="@+id/cl_map_bottomDialog"
         android:layout_width="match_parent"
@@ -103,8 +103,8 @@
 
         <ImageView
             android:id="@+id/iv_dialogclose"
-            android:layout_width="8dp"
-            android:layout_height="7dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:src="@drawable/ic_close"
