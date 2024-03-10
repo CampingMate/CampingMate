@@ -14,24 +14,19 @@ import com.google.firebase.firestore.DocumentSnapshot
 class PostRepositoryImpl(
     private val postRemoteDataSource: PostRemoteDataSource
 ) : PostRepository {
-    override suspend fun getPosts(pageSize: Int, lastVisibleDoc: DocumentSnapshot?): Resource<PostsEntity> {
-        return runCatching {
-            val result = postRemoteDataSource.getPosts(
-                pageSize = pageSize, lastVisibleDoc = lastVisibleDoc
-            )
-            when (result) {
-                is Resource.Success -> {
-                    // PostsResult 형 변환 후 Resource 에 넣어 반환
-                    val postResult = result.data?.toPostsEntity() ?: PostsEntity(emptyList(), null)
-                    Resource.Success(postResult)
-                }
 
-                is Resource.Error -> Resource.Error(
-                    result.message ?: "Unknown error"
-                )
+    override suspend fun getPosts(
+        pageSize: Int,
+        lastVisibleDoc: DocumentSnapshot?
+    ): Resource<PostsEntity> {
+        return try {
+            when (val result = postRemoteDataSource.getPosts(pageSize, lastVisibleDoc)) {
+                Resource.Empty -> Resource.Empty
+                is Resource.Error -> Resource.Error(result.message)
+                is Resource.Success -> Resource.Success(result.data.toPostsEntity())
             }
-        }.getOrElse { exception ->
-            Resource.Error("Unexpected error: ${exception.localizedMessage}")
+        } catch (e: Exception) {
+            Resource.Error("Unknown Error")
         }
     }
 
@@ -46,20 +41,14 @@ class PostRepositoryImpl(
     }
 
     override suspend fun getPostById(postId: String): Resource<PostEntity> {
-        return runCatching {
-            val result = postRemoteDataSource.getPostById(postId)
-            when (result) {
-                is Resource.Success -> {
-                    val postEntity = result.data?.toPostEntity() ?: PostEntity()
-                    Resource.Success(postEntity)
-                }
-
-                is Resource.Error -> Resource.Error(
-                    result.message ?: "Unknown error"
-                )
+        return try {
+            when (val result = postRemoteDataSource.getPostById(postId)) {
+                Resource.Empty -> Resource.Empty
+                is Resource.Error -> Resource.Error(result.message)
+                is Resource.Success -> Resource.Success(result.data.toPostEntity())
             }
-        }.getOrElse { exception ->
-            Resource.Error("Unexpected error: ${exception.localizedMessage}")
+        } catch (e: Exception) {
+            Resource.Error("Unknown Error")
         }
     }
 }
