@@ -103,10 +103,6 @@ class MapFragment : Fragment(),OnMapReadyCallback {
             clMapBottomDialog.isGone = true
         }
 
-        tvDialogcampname.setOnClickListener {
-            //캠프디테일로 이동
-        }
-
 //        button.setOnClickListener {
 //            val intent = Intent(context, WebViewActivity::class.java)
 //            startActivity(intent)
@@ -118,8 +114,8 @@ class MapFragment : Fragment(),OnMapReadyCallback {
     }
 
     private fun initViewModel() = with(viewModel){
-//        val map = getBlParamHashmap()
-//        getAllCampList(map)
+        val map = getBlParamHashmap()
+        getAllCampList(map)
         paramHashmap.observe(viewLifecycleOwner){
             //getCampList(it)
         }
@@ -147,12 +143,12 @@ class MapFragment : Fragment(),OnMapReadyCallback {
                         val tag = it.induty
                         val loc = it.lctCl
                         imgAdapter.clear()
-                        binding.tvDialogcampname.setOnClickListener(null)
+                        binding.clMapBottomDialog.setOnClickListener(null)
                         binding.tvDialogtag.text = "$tag · $loc"
                         binding.tvDialogcampname.text = it.facltNm
                         binding.tvDialoglocation.text = it.addr1
                         binding.clMapBottomDialog.isGone=false
-                        binding.tvDialogcampname.setOnClickListener { view ->
+                        binding.clMapBottomDialog.setOnClickListener { view ->
                             val intent = Intent(requireContext(),CampDetailActivity::class.java)
                             var data = CampEntity(
                                 firstImageUrl = it.firstImageUrl,
@@ -241,7 +237,8 @@ class MapFragment : Fragment(),OnMapReadyCallback {
                             startActivity(intent)
                         }
 
-
+                        val param = getImgParamHashmap(it.contentId.toString())
+                        viewModel.getImgList(param)
                     }
                     .minClusterSize(10)
                     .clusterBuckets(intArrayOf(50,50))
@@ -373,8 +370,8 @@ class MapFragment : Fragment(),OnMapReadyCallback {
                             intent.putExtra("campData",data)
                             startActivity(intent)
                         }
-
-
+                        val param = getImgParamHashmap(it.contentId.toString())
+                        viewModel.getImgList(param)
                     }
                     .minClusterSize(10)
                     .clusterBuckets(intArrayOf(50,50))

@@ -36,7 +36,7 @@
         android:ellipsize="end"
         android:textColor="@color/black"
         android:fontFamily="@font/spoqahansansneo_regular"
-        android:textSize="13sp"
+        android:textSize="15sp"
         app:layout_constraintTop_toBottomOf="@id/cv_item_img" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

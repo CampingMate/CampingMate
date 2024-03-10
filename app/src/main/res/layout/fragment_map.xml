@@ -55,7 +55,7 @@
         app:layout_constraintTop_toBottomOf="@+id/btn_roadview" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:visibility="gone"
+        android:visibility="visible"
         android:background="@color/background"
         android:id="@+id/cl_map_bottomDialog"
         android:layout_width="match_parent"
@@ -119,6 +119,7 @@
             android:layout_height="90dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="10dp"
+            tools:listitem="@layout/item_map_img"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_dialoglocation" />

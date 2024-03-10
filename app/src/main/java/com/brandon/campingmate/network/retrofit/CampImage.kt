@@ -69,8 +69,20 @@ data class SearchBody(
     val pageNo: Int?,
     val totalCount: Int?,
     @SerializedName("items")
-    val items: SearchItems?,
-)
+    val items: JsonElement? // JsonElement 타입으로 변경
+) {
+    val searchItems: SearchItems
+        get() {
+            return when {
+                items == null || items.isJsonNull -> SearchItems(null)
+                items.isJsonObject || items.isJsonArray -> {
+                    // JsonElement가 객체나 배열인 경우, Gson을 사용하여 파싱
+                    Gson().fromJson(items, SearchItems::class.java)
+                }
+                else -> SearchItems(null)
+            }
+        }
+}
 data class SearchItems(
     @SerializedName("item")
     val item: MutableList<SearchItem>?,
