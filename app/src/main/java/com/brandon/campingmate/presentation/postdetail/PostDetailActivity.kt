@@ -2,6 +2,7 @@ package com.brandon.campingmate.presentation.postdetail
 
 import android.os.Build
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
@@ -11,7 +12,6 @@ import com.brandon.campingmate.R
 import com.brandon.campingmate.data.repository.PostRepositoryImpl
 import com.brandon.campingmate.data.source.network.impl.PostRemoteDataSourceImpl
 import com.brandon.campingmate.databinding.ActivityPostDetailBinding
-import com.brandon.campingmate.domain.model.PostEntity
 import com.brandon.campingmate.domain.usecase.GetPostByIdUseCase
 import com.brandon.campingmate.network.firestore.FireStoreService
 
@@ -38,7 +38,7 @@ class PostDetailActivity : AppCompatActivity() {
 
         initView()
 
-        val postEntity = intent.getParcelableExtra(EXTRA_POST_ENTITY, PostEntity::class.java)
+//        val postEntity = intent.getParcelableExtra(EXTRA_POST_ENTITY, PostEntity::class.java)
 
 
         initView()
@@ -51,6 +51,17 @@ class PostDetailActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false) // 기본 타이틀 숨기기
         supportActionBar?.setDisplayHomeAsUpEnabled(true)// 뒤로가기 버튼 활성화
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressedDispatcher.onBackPressed()
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun setupOnBackPressedHandling() {

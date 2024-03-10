@@ -74,7 +74,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="14dp"
+        android:layout_marginBottom="24dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="0dp"
         app:cardBackgroundColor="@color/kakao_yellow"
