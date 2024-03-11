@@ -8,17 +8,21 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.brandon.campingmate.R
 import com.brandon.campingmate.data.repository.PostRepositoryImpl
 import com.brandon.campingmate.data.source.network.impl.PostRemoteDataSourceImpl
 import com.brandon.campingmate.databinding.ActivityPostDetailBinding
 import com.brandon.campingmate.domain.usecase.GetPostByIdUseCase
 import com.brandon.campingmate.network.firestore.FireStoreService
+import com.brandon.campingmate.utils.toFormattedString
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class PostDetailActivity : AppCompatActivity() {
 
     companion object {
-        const val EXTRA_POST_ENTITY = "extra_post_entity"
         const val EXTRA_POST_ID = "extra_post_id"
     }
 
@@ -36,14 +40,45 @@ class PostDetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+
+        val postId = intent.getStringExtra(EXTRA_POST_ID)
+        viewModel.loadData(postId)
+
         initView()
-
-//        val postEntity = intent.getParcelableExtra(EXTRA_POST_ENTITY, PostEntity::class.java)
-
-
-        initView()
+        initViewModel()
 
         setupOnBackPressedHandling()
+    }
+
+    private fun initViewModel() = with(viewModel) {
+        lifecycleScope.launch {
+            viewModel.uiState.flowWithLifecycle(lifecycle).collectLatest { state ->
+                updateUI(state)
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.event.flowWithLifecycle(lifecycle).collectLatest { event ->
+                handleEvent(event)
+            }
+        }
+    }
+
+    private fun handleEvent(event: PostDetailEvent) {
+        TODO("Not yet implemented")
+    }
+
+    private fun updateUI(state: PostDetailUiState) {
+        state.post?.let {
+            with(binding) {
+                tvUsername.text = it.authorName
+                tvTitle.text = it.title
+                tvCreatedAt.text = it.timestamp.toFormattedString()
+                tvContent.text = it.content
+                // TODO 이미지 리스트
+                // TODO 댓글 목록
+            }
+        }
     }
 
     private fun initView() = with(binding) {
