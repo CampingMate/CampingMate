@@ -83,7 +83,7 @@ class PostListAdapter(private val onClickItem: (PostEntity) -> Unit) :
         }
     }
 
-    class PostLoadingViewHolder(private val binding: ItemPostLoadingBinding) : PostViewHolder(binding.root) {
+    class PostLoadingViewHolder(binding: ItemPostLoadingBinding) : PostViewHolder(binding.root) {
         override fun onBind(item: PostListItem) = Unit
     }
 
