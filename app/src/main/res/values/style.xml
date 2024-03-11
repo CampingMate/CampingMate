@@ -41,7 +41,7 @@
         <item name="chipStartPadding">24dp</item>
         <item name="chipMinHeight">36dp</item>
     </style>
-    <style name="CustomChipChoiceDistrict" parent="@style/Widget.MaterialComponents.Chip.Choice">
+    <style name="CustomChipChoiceHome" parent="@style/Widget.MaterialComponents.Chip.Choice">
         <item name="chipBackgroundColor">@color/chip_bg</item>
         <item name="android:textColor">@color/chip_txt</item>
         <item name="chipStrokeColor">@color/chip_str</item>
