@@ -37,6 +37,10 @@ class PetAdapter(private val mContext: Context, var mItems: MutableList<CampEnti
 
         holder.campName.text = mItems[position]?.facltNm
         holder.campIntro.text = mItems[position]?.lineIntro
+
+        val addr = mItems[position]?.addr1
+        val split = addr?.split(" ")
+        holder.campCity.text = "${split?.get(0)} ${split?.get(1)}"
     }
 
     override fun getItemCount() = mItems.size
@@ -45,8 +49,7 @@ class PetAdapter(private val mContext: Context, var mItems: MutableList<CampEnti
         val campImg = binding.ivCampPetImg
         val campName = binding.tvCampName
         val campIntro = binding.tvLineIntro
-//        //반려동물 캠핑장
-//        val campCity
+        val campCity = binding.tvDistrict
 //        val campLineIntro
     }
 }
