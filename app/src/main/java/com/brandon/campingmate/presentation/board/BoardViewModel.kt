@@ -4,8 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.brandon.campingmate.domain.usecase.GetPostsUseCase
+import com.brandon.campingmate.presentation.board.BoardViewModel.RefreshTrigger.SCROLL
+import com.brandon.campingmate.presentation.board.BoardViewModel.RefreshTrigger.SWIPE
+import com.brandon.campingmate.presentation.board.BoardViewModel.RefreshTrigger.UPLOAD
 import com.brandon.campingmate.presentation.mapper.toPostListItem
-import com.brandon.campingmate.utils.UiState
+import com.brandon.campingmate.utils.Resource
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,188 +24,96 @@ class BoardViewModel(
     private val getPostUseCase: GetPostsUseCase,
 ) : ViewModel() {
 
-    enum class PostLoadTrigger {
-        SCROLL, REFRESH
+    enum class RefreshTrigger {
+        SCROLL, SWIPE, UPLOAD
     }
 
     private val _uiState = MutableStateFlow(BoardUiState.init())
     val uiState: StateFlow<BoardUiState> = _uiState.asStateFlow()
 
-    // 플로우 버퍼 공간 10개, 이후 가장 최근 발행된 이벤트 버리고 새로운 이벤트 추가
-    private val _event = MutableSharedFlow<BoardEvent>(
-        extraBufferCapacity = 10, onBufferOverflow = BufferOverflow.DROP_LATEST
-    )
+    private val _event =
+        MutableSharedFlow<BoardEvent>(extraBufferCapacity = 10, onBufferOverflow = BufferOverflow.DROP_LATEST)
     val event: SharedFlow<BoardEvent> = _event.asSharedFlow()
 
 
     init {
         Timber.d("Initializing BoardViewModel")
-        loadPosts(PostLoadTrigger.REFRESH, pageSize = 20)   // 초기 20개 이후 10개씩 추가로 가져옴
+        loadPosts(SWIPE)
     }
 
     fun handleEvent(event: BoardEvent) {
         when (event) {
-            is BoardEvent.RequestPostList -> {
-                /**
-                 * event 버퍼를 10개 유지중이므로 event 가 쌓이면 loading 상태가 업데이트 되고난 후
-                 * event 가 소진되며 리스트를 계속 불러올 수 있으니 로딩 중일 때는 event 를 발생시키지 않음
-                 * tryEmit 는 MutableSharedFlow 의 정책(버퍼 사이즈, 초과시 처리 방침 등을 고려한다)
-                 */
-                if (uiState.value.isLoadingNext && uiState.value.isRefreshing) return
-                loadPosts(trigger = event.trigger)
-                when (val trigger = event.trigger) {
-                    PostLoadTrigger.SCROLL -> {
-                        Timber.tag("Kimchi").d("데이터 요청 이벤트 발생!!(스크롤)")
-                    }
-
-                    PostLoadTrigger.REFRESH -> {
-                        Timber.tag("Kimchi").d("데이터 요청 이벤트 발생!!(새로고침)")
-                    }
-                }
+            is BoardEvent.LoadPosts -> {
+                Timber.d("데이터 불러오기 이벤트")
+                loadPosts(event.trigger)
             }
 
-            BoardEvent.NothingToFetchMore -> {
-                Timber.d("문서의 끝 이벤트 발생!!")
-                _event.tryEmit(BoardEvent.NothingToFetchMore)
+            is BoardEvent.OpenContent -> {
+                Timber.d("문서 열기 이벤트")
+                _event.tryEmit(BoardEvent.OpenContent(event.postEntity))
             }
 
-            is BoardEvent.ViewPostDetail -> {
-                Timber.d("문서 열기 이벤트 발생!!")
-                _event.tryEmit(BoardEvent.ViewPostDetail(event.postEntity))
+            is BoardEvent.MakeToast -> {
+                Timber.d("토스트 만들기 이벤트")
+                _event.tryEmit(BoardEvent.MakeToast(event.message))
             }
 
-            BoardEvent.NoPostsAvailable -> {
-                Timber.d("불러올 문서 없음 이벤트 발생!!")
-                _event.tryEmit(BoardEvent.NoPostsAvailable)
+            is BoardEvent.NavigateToPostWrite -> {
+                Timber.d("게시물 작성 이벤트")
+                _event.tryEmit(BoardEvent.NavigateToPostWrite)
             }
 
-            BoardEvent.NavigateToPostCreation -> {
-                Timber.d("Post 쓰기 이동 이벤트 발생!!")
-                _event.tryEmit(BoardEvent.NavigateToPostCreation)
-            }
-
-            BoardEvent.NothingToFetch -> {
-                Timber.d("Post 리스트 새로고침 이벤트 발생!!")
-                loadPosts(PostLoadTrigger.REFRESH)
-            }
-
-            BoardEvent.ScrollPerformed -> {
-                _uiState.update { it.copy(isNeedScroll = false) }
-            }
+            else -> {}
         }
     }
 
-    private fun loadPosts(trigger: PostLoadTrigger, pageSize: Int = 10) {
+    private fun loadPosts(trigger: RefreshTrigger, pageSize: Int = 10) {
+        if (uiState.value.isLoading) return
+
         viewModelScope.launch {
-            Timber.d(" loadPosts - $trigger 이벤트 발생!!")
+            _uiState.update { it.copy(isLoading = true) }
 
-            // Event 수준에서 먼저 예외처리 되어있음
-            when (trigger) {
-                PostLoadTrigger.SCROLL -> if (_uiState.value.isLoadingNext) return@launch
-                PostLoadTrigger.REFRESH -> if (_uiState.value.isRefreshing) return@launch
+            if (trigger == SWIPE) handleEvent(BoardEvent.MakeToast("새로고침"))
+
+            val result = when (trigger) {
+                SCROLL -> getPostUseCase(pageSize, _uiState.value.lastVisibleDoc)
+                else -> getPostUseCase(pageSize, null) // SWIPE와 UPLOAD는 처음부터 목록을 로드
             }
 
-            Timber.d("Emitting loading state")
-            updateLoadingState(true, trigger)
 
-            runCatching {
-                Timber.d("Attempting to load posts")
-                when (trigger) {
-                    PostLoadTrigger.SCROLL -> {
-                        getPostUseCase(pageSize, _uiState.value.lastVisibleDoc)
+            _uiState.update { currentState ->
+                when (result) {
+                    is Resource.Empty -> {
+                        if (trigger == SCROLL) {
+                            handleEvent(BoardEvent.MakeToast("더이상 볼 문서가 없습니다."))
+                        }
+                        currentState.copy(isLoading = false)
                     }
+                    // TODO 에러 처리 로직 추가
+                    is Resource.Error -> currentState.copy(isLoading = false)
 
-                    PostLoadTrigger.REFRESH -> {
-                        _uiState.update { it.copy(posts = UiState.Empty) }
-                        getPostUseCase(pageSize, null)
+                    is Resource.Success -> {
+                        val newPosts = if (trigger == SCROLL) {
+                            currentState.posts + result.data.posts.toPostListItem()
+                        } else {
+                            result.data.posts.toPostListItem()
+                        }
+                        currentState.copy(
+                            posts = newPosts,
+                            lastVisibleDoc = result.data.lastVisibleDoc,
+                            isLoading = false,
+                            shouldScrollToTop = trigger == UPLOAD
+                        )
                     }
                 }
-            }.onSuccess { result ->
-                // Success 처리
-                result.data?.let { data ->
-                    Timber.d("Posts loaded successfully")
-//                    Timber.tag("Song").d("post: ${data.posts.map { it.title }}")
-
-                    when (_uiState.value.posts) {
-                        UiState.Empty -> {
-                            if (data.posts.isEmpty()) handleEvent(BoardEvent.NoPostsAvailable)
-                        }
-
-                        is UiState.Success -> {
-                            when (trigger) {
-                                PostLoadTrigger.SCROLL -> {
-                                    if (data.posts.isEmpty()) handleEvent(
-                                        BoardEvent.NothingToFetchMore
-                                    )
-                                }
-
-                                PostLoadTrigger.REFRESH -> {
-                                    if (data.posts.isEmpty()) handleEvent(
-                                        BoardEvent.NothingToFetch
-                                    )
-                                }
-                            }
-
-                        }
-
-                        else -> {}
-                    }
-
-                    val newPosts = if (_uiState.value.posts is UiState.Success) {
-                        // 역전 옵션 설정
-                        (_uiState.value.posts as UiState.Success).data + data.posts.toPostListItem()
-                    } else {
-                        data.posts.toPostListItem()
-                    }
-                    val lastVisibleDoc = data.lastVisibleDoc
-                    when (trigger) {
-                        PostLoadTrigger.SCROLL -> {
-                            _uiState.update {
-                                it.copy(
-                                    posts = UiState.Success(newPosts),
-                                    lastVisibleDoc = lastVisibleDoc,
-                                )
-                            }
-                        }
-
-                        PostLoadTrigger.REFRESH -> {
-                            _uiState.update {
-                                it.copy(
-                                    posts = UiState.Success(newPosts),
-                                    lastVisibleDoc = lastVisibleDoc,
-                                    isNeedScroll = true,
-                                )
-                            }
-                        }
-                    }
-
-                } ?: run {
-                    Timber.e("Failed to load posts, data is null")
-                    _uiState.update { it.copy(posts = UiState.Error("Data is null"), isLoadingNext = false) }
-                }
-            }.onFailure { exception ->
-                Timber.e("Error loading posts: ${exception.message}")
-                _uiState.update {
-                    it.copy(
-                        posts = UiState.Error(
-                            exception.message ?: "An unknown error occurred"
-                        ), isLoadingNext = false, isRefreshing = false
-                    )
-                }
-            }.also {
-                updateLoadingState(false, trigger)
             }
         }
     }
 
-    private fun updateLoadingState(isLoading: Boolean, trigger: PostLoadTrigger) {
-        _uiState.update { currentState ->
-            when (trigger) {
-                PostLoadTrigger.SCROLL -> currentState.copy(isLoadingNext = isLoading)
-                PostLoadTrigger.REFRESH -> currentState.copy(isRefreshing = isLoading)
-            }
-        }
+    fun resetScrollToTopFlag() {
+        _uiState.update { it.copy(shouldScrollToTop = false) }
     }
+
 }
 
 class BoardViewModelFactory(
