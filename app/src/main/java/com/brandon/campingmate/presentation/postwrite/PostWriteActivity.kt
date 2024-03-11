@@ -5,11 +5,15 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -39,14 +43,40 @@ class PostWriteActivity : AppCompatActivity() {
         )
     }
 
+    private lateinit var multipleImagePickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>
+    private lateinit var permissionLauncher: ActivityResultLauncher<String>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        initActivityResults()
         initView()
         initListener()
         initViewModel()
         setupOnBackPressedHandling()
+    }
+
+    private fun initActivityResults() {
+
+        multipleImagePickerLauncher =
+            registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(5)) { uris ->
+                if (uris.isNotEmpty()) {
+                    Timber.d("PhotoPicker", "Number of items selected: ${uris.size}")
+                } else {
+                    Timber.d("PhotoPicker", "No media selected")
+                }
+            }
+
+        // 권한 요청 결과를 처리하는 ActivityResultLauncher 초기화
+        permissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (isGranted) {
+                    pickImageFromGallery()
+                } else {
+                    Toast.makeText(this, "권한이 거부되었습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
     }
 
     private fun initViewModel() = with(viewModel) {
@@ -69,13 +99,10 @@ class PostWriteActivity : AppCompatActivity() {
                     putExtra(EXTRA_POST_ID, event.postId)
                 }
                 val options = ActivityOptionsCompat.makeCustomAnimation(
-                    this,
-                    R.anim.slide_up,
-                    R.anim.anim_none
+                    this, R.anim.slide_up, R.anim.anim_none
                 ).toBundle()
                 setResult(Activity.RESULT_OK)
                 startActivity(intent, options)
-//                startActivityForResult(intent, POST_WRITE_REQUEST_CODE, options)
                 ActivityCompat.finishAfterTransition(this)
             }
 
@@ -110,31 +137,29 @@ class PostWriteActivity : AppCompatActivity() {
     }
 
     private fun checkPermissionAndPickImage() {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                REQUEST_PERMISSION
-            )
-        } else {
-            pickImageFromGallery()
+        when {
+            ContextCompat.checkSelfPermission(
+                this, Manifest.permission.READ_MEDIA_IMAGES
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                // 권한이 이미 있을 경우, 이미지 선택기 실행
+                pickImageFromGallery()
+            }
+
+            else -> {
+                // 권한 요청
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    permissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
+                }
+            }
         }
     }
 
     private fun pickImageFromGallery() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        startActivityForResult(intent, PICK_IMAGE_REQUEST)
+        multipleImagePickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_PERMISSION) {
