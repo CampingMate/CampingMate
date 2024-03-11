@@ -14,5 +14,4 @@ class GetPostsUseCase(
     ): Resource<PostsEntity> {
         return postRepository.getPosts(pageSize, lastVisibleDoc)
     }
-
 }

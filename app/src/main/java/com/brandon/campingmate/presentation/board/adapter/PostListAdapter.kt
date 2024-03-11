@@ -13,7 +13,7 @@ import com.brandon.campingmate.databinding.ItemPostLoadingBinding
 import com.brandon.campingmate.databinding.ItemPostUnknownBinding
 import com.brandon.campingmate.domain.model.PostEntity
 import com.brandon.campingmate.presentation.mapper.toPostEntity
-import com.brandon.campingmate.utils.FirebaseUtils.toFormattedString
+import com.brandon.campingmate.utils.toFormattedString
 
 /**
  * 1. PostListAdapter
@@ -83,7 +83,7 @@ class PostListAdapter(private val onClickItem: (PostEntity) -> Unit) :
         }
     }
 
-    class PostLoadingViewHolder(private val binding: ItemPostLoadingBinding) : PostViewHolder(binding.root) {
+    class PostLoadingViewHolder(binding: ItemPostLoadingBinding) : PostViewHolder(binding.root) {
         override fun onBind(item: PostListItem) = Unit
     }
 

@@ -38,7 +38,6 @@ import kotlin.math.max
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
-//    private val binding get() = _binding!!
     private val binding get() = _binding ?: throw IllegalStateException("Attempt to access binding when not set.")
 
     private var districtItem = mutableListOf<CampEntity?>()
