@@ -17,7 +17,7 @@ android {
         applicationId = "com.brandon.campingmate"
         minSdk = 29
         targetSdk = 34
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0"
         buildConfigField("String", "camp_data_key", getApiKey("camp_data_key"))
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

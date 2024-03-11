@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/lo_home_fragment"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".presentation.home.HomeFragment"
     android:background="@color/white">
@@ -18,25 +19,33 @@
             android:layout_height="match_parent"
             android:layout_marginTop="16dp">
 
-            <ImageView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/iv_logo"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="32dp"
-                android:background="@drawable/shape_rounded_corner_background_r8"
-                android:src="@drawable/ic_logo_img"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:cardCornerRadius="8dp"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="5dp"
+                >
+                <ImageView
+                    android:id="@+id/iv_camp_pet_img"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_logo_img"
+                    />
+            </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cv_search"
                 android:layout_width="0dp"
-                android:layout_height="32dp"
+                android:layout_height="40dp"
                 android:layout_marginStart="19dp"
                 android:layout_marginEnd="16dp"
                 app:cardElevation="0dp"
-                app:cardCornerRadius="8dp"
+                app:cardCornerRadius="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/iv_logo"
                 app:layout_constraintTop_toTopOf="@id/iv_logo">
@@ -52,7 +61,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginStart="8dp"
+                        android:layout_marginStart="16dp"
                         android:src="@drawable/ic_search" />
 
                     <TextView
@@ -62,7 +71,7 @@
                         android:layout_marginStart="100dp"
                         android:fontFamily="@font/spoqahansansneo_regular"
                         android:text="검색"
-                        android:textSize="14sp" />
+                        android:textSize="15sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -71,7 +80,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="40dp"
                 android:fontFamily="@font/spoqahansansneo_bold"
                 android:text="카테고리"
                 android:textSize="20sp"
@@ -98,15 +107,16 @@
                     android:orientation="vertical">
 
                     <androidx.cardview.widget.CardView
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
                         android:layout_gravity="center"
                         app:cardBackgroundColor="@color/brandColor"
+                        app:cardElevation="0dp"
                         app:cardCornerRadius="30dp">
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:padding="3dp"
+                            android:padding="6dp"
                             android:src="@drawable/ic_glamping"
                             />
 
@@ -130,15 +140,16 @@
                     android:orientation="vertical">
 
                     <androidx.cardview.widget.CardView
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
                         android:layout_gravity="center"
                         app:cardBackgroundColor="@color/brandColor"
+                        app:cardElevation="0dp"
                         app:cardCornerRadius="30dp">
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:padding="6dp"
+                            android:padding="7dp"
                             android:src="@drawable/ic_caravan"
                             />
 
@@ -162,15 +173,16 @@
                     android:orientation="vertical">
 
                     <androidx.cardview.widget.CardView
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
                         android:layout_gravity="center"
                         app:cardBackgroundColor="@color/brandColor"
+                        app:cardElevation="0dp"
                         app:cardCornerRadius="30dp">
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:padding="5dp"
+                            android:padding="6dp"
                             android:src="@drawable/ic_car_camping"
                             />
 
@@ -194,15 +206,16 @@
                     android:orientation="vertical">
 
                     <androidx.cardview.widget.CardView
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
                         android:layout_gravity="center"
                         app:cardBackgroundColor="@color/brandColor"
+                        app:cardElevation="0dp"
                         app:cardCornerRadius="30dp">
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:padding="5dp"
+                            android:padding="8dp"
                             android:src="@drawable/ic_tent"
                             />
 
@@ -222,8 +235,8 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/lo_holiday"
                 android:layout_width="0dp"
-                android:layout_height="62dp"
-                android:layout_marginTop="32dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="40dp"
                 app:cardBackgroundColor="@color/green15"
                 app:cardElevation="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -245,17 +258,20 @@
                         android:textSize="20sp" />
 
                     <TextView
+                        android:id="@+id/tv_holiday_name"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:fontFamily="@font/spoqahansansneo_medium"
                         android:gravity="center"
-                        android:text="국회의원 선거 "
+                        android:text="휴일명"
                         android:textColor="@color/holiday_text"
                         android:textSize="20sp" />
 
                     <TextView
+                        android:id="@+id/tv_dday"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
+                        android:layout_marginStart="5dp"
                         android:fontFamily="@font/spoqahansansneo_medium"
                         android:gravity="center"
                         android:text="(D-14)"
@@ -268,7 +284,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="50dp"
                 android:fontFamily="@font/spoqahansansneo_bold"
                 android:text="지역별 캠핑장"
                 android:textSize="20sp"
@@ -301,7 +317,7 @@
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipCapital"
-                    style="@style/CustomChipChoiceDistrict"
+                    style="@style/CustomChipChoiceHome"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checkable="true"
@@ -313,7 +329,7 @@
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipChungcheong"
-                    style="@style/CustomChipChoiceDistrict"
+                    style="@style/CustomChipChoiceHome"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checkable="true"
@@ -325,7 +341,7 @@
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipGangwon"
-                    style="@style/CustomChipChoiceDistrict"
+                    style="@style/CustomChipChoiceHome"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checkable="true"
@@ -337,7 +353,7 @@
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipGyeongsang"
-                    style="@style/CustomChipChoiceDistrict"
+                    style="@style/CustomChipChoiceHome"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checkable="true"
@@ -349,7 +365,7 @@
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipJeolla"
-                    style="@style/CustomChipChoiceDistrict"
+                    style="@style/CustomChipChoiceHome"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checkable="true"
@@ -378,7 +394,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="50dp"
                 android:fontFamily="@font/spoqahansansneo_bold"
                 android:text="후기가 많은 캠핑장"
                 android:textSize="20sp"
@@ -402,7 +418,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="50dp"
                 android:fontFamily="@font/spoqahansansneo_bold"
                 android:text="반려동물 동반가능 캠핑장"
                 android:textSize="20sp"
@@ -426,7 +442,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="50dp"
                 android:fontFamily="@font/spoqahansansneo_bold"
                 android:text="테마별 캠핑장"
                 android:textSize="20sp"
@@ -434,115 +450,119 @@
                 app:layout_constraintTop_toBottomOf="@id/rv_pet_item" />
 
             <HorizontalScrollView
+                android:id="@+id/sv_chip"
                 android:layout_width="0dp"
-                android:layout_height="39dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="4dp"
                 android:layout_marginEnd="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_bigtitle_theme"
+                android:scrollbars="none"
                 >
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chip_theme_group"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="16dp"
+                    android:orientation="horizontal"
+                    app:singleSelection="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_bigtitle_theme">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipSpringFlower"
+                        style="@style/CustomChipChoiceHome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="봄꽃여행"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipWalk"
+                        style="@style/CustomChipChoiceHome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="걷기길"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipActivity"
+                        style="@style/CustomChipChoiceHome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="액티비티"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipSwim"
+                        style="@style/CustomChipChoiceHome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="여름물놀이"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipSunset"
+                        style="@style/CustomChipChoiceHome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="일몰명소"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipFallFlower"
+                        style="@style/CustomChipChoiceHome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="가을단풍명소"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipWinterFlower"
+                        style="@style/CustomChipChoiceHome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="겨울눈꽃명소"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+                </com.google.android.material.chip.ChipGroup>
 
             </HorizontalScrollView>
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chip_theme_group"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginEnd="16dp"
-                android:orientation="horizontal"
-                app:singleSelection="true"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_bigtitle_theme">
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipSpringFlower"
-                    style="@style/CustomChipChoiceDistrict"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:clickable="true"
-                    android:fontFamily="@font/spoqahansansneo_regular"
-                    android:text="봄꽃여행"
-                    app:chipCornerRadius="6dp"
-                    app:chipStrokeWidth="1dp" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipWalk"
-                    style="@style/CustomChipChoiceDistrict"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:clickable="true"
-                    android:fontFamily="@font/spoqahansansneo_regular"
-                    android:text="걷기길"
-                    app:chipCornerRadius="6dp"
-                    app:chipStrokeWidth="1dp" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipActivity"
-                    style="@style/CustomChipChoiceDistrict"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:clickable="true"
-                    android:fontFamily="@font/spoqahansansneo_regular"
-                    android:text="액티비티"
-                    app:chipCornerRadius="6dp"
-                    app:chipStrokeWidth="1dp" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipSwim"
-                    style="@style/CustomChipChoiceDistrict"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:clickable="true"
-                    android:fontFamily="@font/spoqahansansneo_regular"
-                    android:text="여름물놀이"
-                    app:chipCornerRadius="6dp"
-                    app:chipStrokeWidth="1dp" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipSunset"
-                    style="@style/CustomChipChoiceDistrict"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:clickable="true"
-                    android:fontFamily="@font/spoqahansansneo_regular"
-                    android:text="일몰명소"
-                    app:chipCornerRadius="6dp"
-                    app:chipStrokeWidth="1dp" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipFallFlower"
-                    style="@style/CustomChipChoiceDistrict"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:clickable="true"
-                    android:fontFamily="@font/spoqahansansneo_regular"
-                    android:text="가을단풍명소"
-                    app:chipCornerRadius="6dp"
-                    app:chipStrokeWidth="1dp" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipWinterFlower"
-                    style="@style/CustomChipChoiceDistrict"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:clickable="true"
-                    android:fontFamily="@font/spoqahansansneo_regular"
-                    android:text="겨울눈꽃명소"
-                    app:chipCornerRadius="6dp"
-                    app:chipStrokeWidth="1dp" />
-            </com.google.android.material.chip.ChipGroup>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_theme_item"
@@ -552,9 +572,14 @@
                 android:layout_marginTop="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/chip_theme_group">
+                app:layout_constraintTop_toBottomOf="@id/sv_chip">
 
             </androidx.recyclerview.widget.RecyclerView>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                app:layout_constraintTop_toBottomOf="@id/rv_theme_item"
+                />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

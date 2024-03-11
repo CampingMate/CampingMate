@@ -4,24 +4,25 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.brandon.campingmate.domain.model.CampEntity
-import com.brandon.campingmate.domain.model.NaverItem
+import com.brandon.campingmate.BuildConfig
+import com.brandon.campingmate.R
 import com.brandon.campingmate.domain.model.LocationBasedListItem
 import com.brandon.campingmate.network.retrofit.NetWorkClient
-import com.brandon.campingmate.network.retrofit.SearchItem
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
-import ted.gun0912.clustering.naver.TedNaverClustering
+import timber.log.Timber
 
 class MapViewModel : ViewModel(){
-    //private lateinit var tedNaverClustering: TedNaverClustering<LocationBasedListItem>
-    private var campDataList = mutableListOf<LocationBasedListItem>()
-    private var naverItems = mutableListOf<NaverItem>()
+
     private val _paramHashmap:MutableLiveData<HashMap<String, String>> = MutableLiveData()
     val paramHashmap: LiveData<HashMap<String, String>> get() = _paramHashmap
-
+    private val _imageRes: MutableLiveData<MutableList<String>> = MutableLiveData()
+    val imageRes: LiveData<MutableList<String>> get() = _imageRes
 
     private var _campList : MutableLiveData<MutableList<LocationBasedListItem>> = MutableLiveData()
     val campList : LiveData<MutableList<LocationBasedListItem>> get() = _campList
+    private var _bookmarkedList : MutableLiveData<MutableList<LocationBasedListItem>> = MutableLiveData()
+    val bookmarkedList : LiveData<MutableList<LocationBasedListItem>> get() = _bookmarkedList
     var authKey =
         "wPKSnhEmKeTSpI60GYZ8ITHvIIfjSvDK2IqmCS+OG1wXeBAn5t+Kxk/I9pV55PhG86E2NhyZj8+VCnkG3AVCTQ=="
 
@@ -49,6 +50,21 @@ class MapViewModel : ViewModel(){
         )
         return hashMap
     }
+
+    fun getImgParamHashmap(contentId:String): HashMap<String, String> {
+        var hashMap = hashMapOf(
+            "numOfRows" to "8",
+            "pageNo" to "1",
+            "MobileOS" to "AND",
+            "MobileApp" to "com.brandon.campingmate",
+            "serviceKey" to authKey,
+            "_type" to "json",
+            "contentId" to contentId
+        )
+        return hashMap
+    }
+
+
     fun getCampList(param: HashMap<String, String>?){
         viewModelScope.launch {
             val responseData = param?.let {
@@ -155,6 +171,7 @@ class MapViewModel : ViewModel(){
 
     fun getAllCampList(param: HashMap<String, String>?){
         viewModelScope.launch {
+            Timber.tag("test").d("allcamp 불러오고 있음")
             val responseData = param?.let {
                 NetWorkClient.imageNetWork.getBasedList(it)
             }
@@ -162,8 +179,9 @@ class MapViewModel : ViewModel(){
             val locationBasedList = mutableListOf<LocationBasedListItem>()
             if (items != null) {
                 for(item in items){
-                    val mapX = if(item.mapX.isNullOrEmpty()) "130" else item.mapX
-                    val mapY = if(item.mapY.isNullOrEmpty()) "38" else item.mapY
+                     if(item.mapX.isNullOrEmpty() || item.mapY.isNullOrEmpty()) {
+                         continue
+                    }
                     var value = LocationBasedListItem(
                         firstImageUrl = item.firstImageUrl,
                         siteMg3Vrticl = item.siteMg3Vrticl,
@@ -213,8 +231,8 @@ class MapViewModel : ViewModel(){
                         zipcode = item.zipcode,
                         addr1 = item.addr1,
                         addr2 = item.addr2,
-                        mapX = mapX,
-                        mapY = mapY,
+                        mapX = item.mapX,
+                        mapY = item.mapY,
                         direction = item.direction,
                         tel = item.tel,
                         homepage = item.homepage,
@@ -253,5 +271,50 @@ class MapViewModel : ViewModel(){
             }
             _campList.value =  locationBasedList
         }
+    }
+
+    fun getImgList(map: HashMap<String,String>?) {
+        viewModelScope.launch {
+            val response = map?.let { NetWorkClient.imageNetWork.getImage(it) }
+            val items = response?.response?.campBody?.campImageItems?.campImageItem
+            val imgList = mutableListOf<String>()
+            if (items != null) {
+                for(item in items){
+                    val imgUrl = item.imageUrl
+                    if (imgUrl != null) {
+                        imgList.add(imgUrl)
+                    }
+                }
+            }
+            if(imgList.isEmpty()){
+                imgList.add("android.resource://${BuildConfig.APPLICATION_ID}/${R.drawable.ic_login_img}")
+            }
+            _imageRes.value = imgList
+        }
+    }
+
+    fun getBookmarkedCamp(userId:String,campingList : MutableList<LocationBasedListItem> ){
+        viewModelScope.launch {
+            val db = FirebaseFirestore.getInstance()
+            val docRef = db.collection("users").document("Kakao${userId}")
+            val contentIds = mutableListOf<String>()
+            docRef.get().addOnSuccessListener {
+                if (it.exists()) {
+                    val bookmarkData = it.get("bookmarked") as? List<*>
+                    if (bookmarkData != null) {
+                        for (item in bookmarkData) {
+                            contentIds.add(item.toString())
+                        }
+                        Timber.tag("test").d("콘텐츠 아이디는: $contentIds")
+                    }
+                }
+                _bookmarkedList.value = campingList.filter {
+                    contentIds.contains(it.contentId)
+                }.toMutableList()
+
+            }
+            Timber.tag("test").d("북마크한 : ${_bookmarkedList.value}")
+        }
+
     }
 }

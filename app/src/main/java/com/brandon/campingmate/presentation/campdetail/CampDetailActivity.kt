@@ -25,6 +25,7 @@ import com.kakao.sdk.user.UserApiClient
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.MapFragment
+import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Align
@@ -40,7 +41,7 @@ class CampDetailActivity : AppCompatActivity(),OnMapReadyCallback {
     private var myData: CampEntity? = null
     private val db = FirebaseFirestore.getInstance()
     private val imageUrls = mutableListOf<String>()
-    private var mapView: MapFragment? = null
+    private var mapView: MapView? = null
     private var naverMap: NaverMap? = null
     private var maptype : Int = 1
 
@@ -52,12 +53,9 @@ class CampDetailActivity : AppCompatActivity(),OnMapReadyCallback {
         initViewModel()
         checkBookmarked()
         clickBookmarked()
-        val fm = supportFragmentManager
-        mapView = fm.findFragmentById(R.id.fc_map) as MapFragment?
-            ?: MapFragment.newInstance().also {
-                fm.beginTransaction().add(R.id.fc_map, it).commit()
-            }
-        mapView?.getMapAsync (this)
+        mapView = binding.fcMap
+        mapView?.onCreate(savedInstanceState)
+        mapView?.getMapAsync(this)
 
     }
 
@@ -145,24 +143,24 @@ class CampDetailActivity : AppCompatActivity(),OnMapReadyCallback {
             }
         }
 
-//        fcMap.setOnTouchListener(object : OnTouchListener {
-//            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-//               when(event?.action){
-//                   MotionEvent.ACTION_MOVE -> {
-//                       Log.d("test","mapview: actionmove")
-//                       scrollView.setScrollingEnabled(false)
-//                   //scrollView.requestDisallowInterceptTouchEvent(true)
-//                   }
-//                   MotionEvent.ACTION_UP -> {
-//                       scrollView.setScrollingEnabled(true)
-//                   }
-//                   MotionEvent.ACTION_CANCEL -> {
-//                       scrollView.setScrollingEnabled(true)
-//                   }
-//               }
-//                return onTouchEvent(event)
-//            }
-//        })
+        fcMap.setOnTouchListener(object : OnTouchListener {
+            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+               when(event?.action){
+                   MotionEvent.ACTION_MOVE -> {
+                       Log.d("test","mapview: actionmove")
+                       scrollView.setScrollingEnabled(false)
+                   //scrollView.requestDisallowInterceptTouchEvent(true)
+                   }
+                   MotionEvent.ACTION_UP -> {
+                       scrollView.setScrollingEnabled(true)
+                   }
+                   MotionEvent.ACTION_CANCEL -> {
+                       scrollView.setScrollingEnabled(true)
+                   }
+               }
+                return onTouchEvent(event)
+            }
+        })
 
 
     }

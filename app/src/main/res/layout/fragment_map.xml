@@ -29,7 +29,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/button"
+        android:id="@+id/btn_roadview"
         android:layout_width="78dp"
         android:layout_height="34dp"
         android:layout_marginTop="20dp"
@@ -40,6 +40,19 @@
         android:text="거리뷰"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_sattel" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_bookmark"
+        android:layout_width="78dp"
+        android:layout_height="34dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/apply_btn"
+        android:textColor="@color/white"
+        android:textSize="13sp"
+        android:text="전체"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_roadview" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:visibility="gone"
@@ -90,8 +103,8 @@
 
         <ImageView
             android:id="@+id/iv_dialogclose"
-            android:layout_width="8dp"
-            android:layout_height="7dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:src="@drawable/ic_close"
@@ -101,11 +114,12 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_campImg"
+            android:background="@drawable/layout_dialog"
             android:layout_width="match_parent"
             android:layout_height="90dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="10dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_map_img"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_dialoglocation" />

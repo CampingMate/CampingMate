@@ -83,7 +83,6 @@ class PostDetailActivity : AppCompatActivity() {
                 tvCreatedAt.text = it.timestamp.toFormattedString()
                 tvContent.text = it.content
                 ivUserProfile.load(it.authorProfileImageUrl)
-
                 imageListAdapter.setImageUrls(it.imageUrlList)
                 imageListAdapter.notifyDataSetChanged()
                 // TODO 댓글 목록

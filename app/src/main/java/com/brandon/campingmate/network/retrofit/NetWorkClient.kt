@@ -5,11 +5,12 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 import java.util.concurrent.TimeUnit
 
 object NetWorkClient {
     private const val IMAGE_BASE_URL = "https://apis.data.go.kr/B551011/GoCamping/"
-
+    private const val HOLIDAY_URL = "https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/"
     private fun createOkHttpClient(): OkHttpClient {
         val interceptor = HttpLoggingInterceptor()
 
@@ -32,5 +33,12 @@ object NetWorkClient {
         ).build()
 
     val imageNetWork: NetWorkInterface = imageRetrofit.create(NetWorkInterface::class.java)
+
+    private val holidayRetrofit = Retrofit.Builder()
+        .baseUrl(HOLIDAY_URL).addConverterFactory(GsonConverterFactory.create()).client(
+            createOkHttpClient()
+        ).build()
+
+    val holidayNetWork : NetWorkInterface = holidayRetrofit.create(NetWorkInterface::class.java)
 
 }
