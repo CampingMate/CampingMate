@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FF000000</color>
+    <color name="blackDimmed">#08FFFFFF</color>
     <color name="white">#FFFFFFFF</color>
     <color name="brandColor">#399D74</color>
     <color name="background">#FFFEFA</color>
