@@ -119,21 +119,20 @@ class SearchViewModel: ViewModel() {
         }
 
         result
-            .limit(5)
+            .limit(20)
             .get()
             .addOnSuccessListener { documents ->
+                val newCampList = mutableListOf<CampEntity>()
                 for (document in documents) {
                     val camp = document.toObject(CampEntity::class.java)
-                    campList.add(camp)
+                    newCampList.add(camp)
                 }
-                _myList.value = campList
+                _myList.value = newCampList
             }
             .addOnFailureListener { exception ->
                 // 오류 처리
                 // 예: Log.w("TAG", "Error getting documents.", exception)
             }
     }
-    fun clearCampList(){
-        campList.clear()
-    }
+
 }
