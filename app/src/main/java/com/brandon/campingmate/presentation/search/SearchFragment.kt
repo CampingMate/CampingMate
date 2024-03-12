@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.FragmentSearchBinding
 import com.brandon.campingmate.domain.model.CampEntity
@@ -36,7 +38,7 @@ class SearchFragment : Fragment() {
     companion object {
         var activatedChips = mutableListOf<String>()
         var doNmList = mutableListOf<String>()
-        var campList = mutableListOf<CampEntity>()
+
     }
 
     override fun onCreateView(
@@ -65,6 +67,22 @@ class SearchFragment : Fragment() {
         recyclerView.adapter = listAdapter
         recyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val visibleItemCount = layoutManager.childCount
+                val totalItemCount = layoutManager.itemCount
+                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+
+                if (visibleItemCount + firstVisibleItemPosition >= totalItemCount && firstVisibleItemPosition >= 0) {
+                    // 목록의 끝에 도달했을 때, 더 많은 데이터 로드
+                    if(!viewModel.isLoadingData){
+                        viewModel.loadMoreData()
+                    }
+                }
+            }
+        })
 
         val chipIds = arrayOf(
             R.id.chipAll,

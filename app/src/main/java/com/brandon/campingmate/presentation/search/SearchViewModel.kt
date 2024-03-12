@@ -1,15 +1,14 @@
 package com.brandon.campingmate.presentation.search
 
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.network.retrofit.NetWorkClient
-import com.brandon.campingmate.network.retrofit.SearchItem
 import com.brandon.campingmate.presentation.search.SearchFragment.Companion.activatedChips
-import com.brandon.campingmate.presentation.search.SearchFragment.Companion.campList
 import com.brandon.campingmate.presentation.search.SearchFragment.Companion.doNmList
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
@@ -22,6 +21,8 @@ class SearchViewModel: ViewModel() {
     val keyword: LiveData<MutableList<CampEntity>> get() = _keyword
     private val _myList: MutableLiveData<MutableList<CampEntity>> = MutableLiveData()
     val myList: LiveData<MutableList<CampEntity>> get() = _myList
+    var lastVisible: DocumentSnapshot? = null
+    var isLoadingData: Boolean = false
 
     fun setUpParkParameter(text: String) {
         val authKey =
@@ -119,8 +120,7 @@ class SearchViewModel: ViewModel() {
             }
         }
 
-        result
-            .limit(20)
+        result.limit(5)
             .get()
             .addOnSuccessListener { documents ->
                 val newCampList = mutableListOf<CampEntity>()
@@ -129,11 +129,48 @@ class SearchViewModel: ViewModel() {
                     newCampList.add(camp)
                 }
                 _myList.value = newCampList
+                lastVisible = documents.documents[documents.size()-1]
             }
             .addOnFailureListener { exception ->
                 // 오류 처리
-                // 예: Log.w("TAG", "Error getting documents.", exception)
+                 Log.w("TAG", "Error getting documents.", exception)
             }
     }
+    fun loadMoreData() {
+        isLoadingData = true
+        val db = Firebase.firestore
+        if (lastVisible != null) {
+            val next = db.collection("camps")
+                .startAfter(lastVisible!!)
+                .limit(5)
+
+            next.get()
+                .addOnSuccessListener { nextDocuments ->
+                    val newCampList = mutableListOf<CampEntity>()
+                    for (document in nextDocuments) {
+                        val camp = document.toObject(CampEntity::class.java)
+                        newCampList.add(camp)
+                    }
+
+                    val currentList = _myList.value ?: mutableListOf()
+                    currentList.addAll(newCampList)
+                    val newList = mutableListOf<CampEntity>()
+                    newList.addAll(currentList)
+                    _myList.value = newList
+
+                    if (nextDocuments.size() > 0) {
+                        lastVisible = nextDocuments.documents[nextDocuments.size() - 1]
+                    } else {
+                        lastVisible = null  // 더 이상 데이터가 없을 때 lastVisible을 null로 설정
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    // 오류 처리
+                    Log.w("TAG", "Error getting documents.", exception)
+                }
+        }
+        isLoadingData = false
+    }
+
 
 }
