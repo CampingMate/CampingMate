@@ -23,6 +23,7 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.kakao.sdk.user.UserApiClient
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.MapView
@@ -257,6 +258,11 @@ class CampDetailActivity : AppCompatActivity(),OnMapReadyCallback {
 
     override fun onMapReady(p0: NaverMap) {
         naverMap = p0
+        //한번도 카메라 영역 제한
+        naverMap?.minZoom = 6.0
+        naverMap?.maxZoom = 18.0
+        naverMap?.extent = LatLngBounds(LatLng(32.973077, 124.270981), LatLng(38.856197,130.051725 ))
+
         if(myData.toString().isNotEmpty()){
             val mapY = if(myData?.mapY.isNullOrEmpty()) 45.0 else myData?.mapY!!.toDouble()
             val mapX = if(myData?.mapX.isNullOrEmpty()) 130.0 else myData?.mapX!!.toDouble()
@@ -274,5 +280,10 @@ class CampDetailActivity : AppCompatActivity(),OnMapReadyCallback {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mapView = null
+        Log.d("test","맵뷰 파괴됨")
+    }
 
 }

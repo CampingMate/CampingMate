@@ -338,7 +338,7 @@ class HomeFragment : Fragment() {
 //        Log.d("Home", "parseYear=${parseYear}")
             val responseData = holidayNetWork.getRestDeInfo(authKey,year,"json",num)
             val holidayInfo = responseData.response.body.items.item
-//            Log.d("Home", "holidayInfo=${responseData}")
+           Log.d("Home", "holidayInfo=${responseData}")
 
         return holidayInfo
 
