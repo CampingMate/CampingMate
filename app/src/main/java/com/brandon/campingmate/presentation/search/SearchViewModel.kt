@@ -63,11 +63,12 @@ class SearchViewModel: ViewModel() {
         result.limit(5)
             .get()
             .addOnSuccessListener { documents ->
+                val newCampListKeyword = mutableListOf<CampEntity>()
                 for(document in documents){
                     val camp = document.toObject(CampEntity::class.java)
-                    campList.add(camp)
+                    newCampListKeyword.add(camp)
                 }
-                _keyword.value = campList
+                _keyword.value = newCampListKeyword
             }
     }
 
