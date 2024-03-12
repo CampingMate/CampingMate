@@ -63,11 +63,12 @@ class SearchViewModel: ViewModel() {
         result.limit(5)
             .get()
             .addOnSuccessListener { documents ->
+                val newCampListKeyword = mutableListOf<CampEntity>()
                 for(document in documents){
                     val camp = document.toObject(CampEntity::class.java)
-                    campList.add(camp)
+                    newCampListKeyword.add(camp)
                 }
-                _keyword.value = campList
+                _keyword.value = newCampListKeyword
             }
     }
 
@@ -122,18 +123,17 @@ class SearchViewModel: ViewModel() {
             .limit(20)
             .get()
             .addOnSuccessListener { documents ->
+                val newCampList = mutableListOf<CampEntity>()
                 for (document in documents) {
                     val camp = document.toObject(CampEntity::class.java)
-                    campList.add(camp)
+                    newCampList.add(camp)
                 }
-                _myList.value = campList
+                _myList.value = newCampList
             }
             .addOnFailureListener { exception ->
                 // 오류 처리
                 // 예: Log.w("TAG", "Error getting documents.", exception)
             }
     }
-    fun clearCampList(){
-        campList.clear()
-    }
+
 }
