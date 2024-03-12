@@ -27,8 +27,12 @@ import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.campdetail.CampDetailActivity
 import com.brandon.campingmate.presentation.login.LoginActivity
 import com.brandon.campingmate.presentation.profile.adapter.ProfileBookmarkAdapter
+import com.bumptech.glide.Glide
+import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.storage
 import com.kakao.sdk.user.UserApiClient
+import timber.log.Timber
 
 class ProfileFragment : Fragment() {
 
@@ -63,18 +67,15 @@ class ProfileFragment : Fragment() {
 
         //checkLogin()
 
+        clickLogin()
+
         clickWritingTab()
         clickBookmarkedTab()
-
-        clickLogin()
 
         clickEditListener()
         clickEditProfile()
 
         clickLogout()
-
-
-
 
     }
 
@@ -82,7 +83,7 @@ class ProfileFragment : Fragment() {
         UserApiClient.instance.me { user, error ->
             if (user?.id != null) {
                 initLogin()
-                setBookmarkedAdapter(user?.id.toString())
+                setBookmarkedAdapter(user.id.toString())
             } else initLogout()
         }
 
@@ -107,45 +108,21 @@ class ProfileFragment : Fragment() {
         }
     }
 
-
-    private fun initLogout() {
-        with(binding) {
-            //화면 상에서 비로그인 화면으로 되돌리기
-            ivProfileImg.setImageResource(R.drawable.ic_camp)
-            ivProfileImg.visibility = View.VISIBLE
-            tvProfileName.textSize = 20f
-            tvProfileName.text = getString(R.string.profile_login_text)
-            tvProfileName.visibility = View.VISIBLE
-            tvProfileEmail.visibility = View.GONE
-            btnLogout.visibility = View.INVISIBLE
-            btnGoLogin.visibility = View.VISIBLE
-            btnProfileEdit.visibility = View.GONE
-            tvTabLoginText.visibility = View.VISIBLE
-            lineBookmarked.visibility = View.VISIBLE
-            tvTabBookmarked.visibility = View.GONE
-            tvTabWriting.visibility = View.GONE
-            tvBookmarkedSize.visibility = View.GONE
-            tvBookmarkedSize.text = "0"
-            rvBookmarked.visibility = View.GONE
-            tvWritingSize.text="0"
-
-        }
-    }
-
-    fun initLogin() {
+    private fun initLogin() {
         with(binding) {
             UserApiClient.instance.me { user, error ->
                 val docRef = db.collection("users").document("Kakao${user?.id}")
                 docRef.get().addOnSuccessListener {
                     if (!it.exists()) {
-                        ivProfileImg.setImageURI(Uri.parse(user?.kakaoAccount?.profile?.profileImageUrl))
+                        //ivProfileImg.setImageURI(Uri.parse(user?.kakaoAccount?.profile?.profileImageUrl))
                         tvProfileName.textSize = 24f
                         tvProfileName.text = user?.kakaoAccount?.profile?.nickname
                         tvProfileEmail.text = user?.kakaoAccount?.email
                     } else {
                         if (it.getString("profileImage") != null) {
-                            //resolveUri failed on bad bitmap uri:
-                            ivProfileImg.setImageURI(Uri.parse(it.getString("profileImage")))
+                            Timber.tag("이닛로그인검사").d(it.getString("profileImage"))
+                            Glide.with(requireContext()).load(it.getString("profileImage")).into(ivProfileImg)
+                            ivProfileImg.visibility = View.VISIBLE
                         }
                         tvProfileName.textSize = 24f
                         tvProfileName.text = it.getString("nickName").toString()
@@ -172,6 +149,32 @@ class ProfileFragment : Fragment() {
 
         }
     }
+
+    private fun initLogout() {
+        with(binding) {
+            //화면 상에서 비로그인 화면으로 되돌리기
+            ivProfileImg.setImageResource(R.drawable.ic_camp)
+            ivProfileImg.visibility = View.VISIBLE
+            tvProfileName.textSize = 20f
+            tvProfileName.text = getString(R.string.profile_login_text)
+            tvProfileName.visibility = View.VISIBLE
+            tvProfileEmail.visibility = View.GONE
+            btnLogout.visibility = View.INVISIBLE
+            btnGoLogin.visibility = View.VISIBLE
+            btnProfileEdit.visibility = View.GONE
+            tvTabLoginText.visibility = View.VISIBLE
+            lineBookmarked.visibility = View.VISIBLE
+            tvTabBookmarked.visibility = View.GONE
+            tvTabWriting.visibility = View.GONE
+            tvBookmarkedSize.visibility = View.GONE
+            tvBookmarkedSize.text = "0"
+            rvBookmarked.visibility = View.GONE
+            tvWritingSize.text="0"
+
+        }
+    }
+
+
 
     private fun clickLogin() {
         binding.btnGoLogin.setOnClickListener {
