@@ -1,10 +1,12 @@
 package com.brandon.campingmate.presentation.postwrite
 
+import ImagePicker
 import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
@@ -45,6 +47,9 @@ class PostWriteActivity : AppCompatActivity() {
 
     private lateinit var multipleImagePickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
+
+    private var previouslySelectedImages: List<Uri> = listOf()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -132,8 +137,26 @@ class PostWriteActivity : AppCompatActivity() {
         }
         btnAddIMage.setOnClickListener {
             // 권한 얻기 + 갤러리에서 이미지 가져오기
-            checkPermissionAndPickImage()
+            showImagePickerBottomSheet()
+//            checkPermissionAndPickImage()
         }
+    }
+
+    private fun showImagePickerBottomSheet() {
+
+        val bottomSheet = ImagePicker(
+            maxSelection = 5,
+            preselectedImages = previouslySelectedImages,
+            gridCount = 3,
+            gridSpacing = 8,
+            includeEdge = false,
+            cornerRadius = 16f,
+            bottomSheetUsageDescription = null,
+            onSelectionComplete = { selectedImages ->
+                previouslySelectedImages = selectedImages
+                Timber.tag("PICK").d("됐다 걸려들었어!: $selectedImages")
+            })
+        bottomSheet.show(supportFragmentManager, bottomSheet.tag)
     }
 
     private fun checkPermissionAndPickImage() {
