@@ -119,7 +119,7 @@ class SearchViewModel: ViewModel() {
         }
 
         result
-            .limit(5)
+            .limit(20)
             .get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
