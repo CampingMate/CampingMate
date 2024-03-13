@@ -1,5 +1,6 @@
 package com.brandon.campingmate.presentation.profile
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -7,7 +8,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,27 +18,30 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.FragmentProfileBinding
-import com.brandon.campingmate.domain.model.CampEntity
-import com.brandon.campingmate.presentation.campdetail.CampDetailActivity
 import com.brandon.campingmate.presentation.login.LoginActivity
 import com.brandon.campingmate.presentation.profile.adapter.ProfileBookmarkAdapter
+import com.brandon.campingmate.utils.profileImgUpload
+import com.bumptech.glide.Glide
+import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.storage
 import com.kakao.sdk.user.UserApiClient
 
 class ProfileFragment : Fragment() {
 
     private lateinit var imageLauncher: ActivityResultLauncher<Intent>
     private var _binding: FragmentProfileBinding? = null
-    private var img_URI: Uri? = null
+    private var profileImgUri: Uri? = null
     private val binding get() = _binding!!
     private val adapter: ProfileBookmarkAdapter by lazy { ProfileBookmarkAdapter() }
     private val viewModel by lazy { ViewModelProvider(this)[ProfileViewModel::class.java] }
-    val db = FirebaseFirestore.getInstance()
+    private val db = FirebaseFirestore.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,7 +52,7 @@ class ProfileFragment : Fragment() {
         return binding.root
     }
 
-//    override fun onStart() {
+    //    override fun onStart() {
 //        super.onStart()
 //        checkLogin()
 //    }
@@ -63,94 +66,67 @@ class ProfileFragment : Fragment() {
 
         //checkLogin()
 
+        clickLogin()
+
         clickWritingTab()
         clickBookmarkedTab()
-
-        clickLogin()
 
         clickEditListener()
         clickEditProfile()
 
         clickLogout()
 
-
-
-
     }
 
-    fun checkLogin() {
-        UserApiClient.instance.me { user, error ->
+    private fun checkLogin() {
+        UserApiClient.instance.me { user, _ ->
             if (user?.id != null) {
                 initLogin()
-                setBookmarkedAdapter(user?.id.toString())
+                setBookmarkedAdapter(user.id.toString())
+                //Todo.작성글사이즈 부여 및 리사이클러뷰아이템가져오기
             } else initLogout()
         }
 
     }
 
-    private fun setBookmarkedAdapter(userId : String) = with(binding) {
+    private fun setBookmarkedAdapter(userId: String) = with(binding) {
         rvBookmarked.adapter = adapter
-        rvBookmarked.layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
+        rvBookmarked.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         viewModel.getBookmark(userId)
-        viewModel.bookmarkedList.observe(viewLifecycleOwner){
+        viewModel.bookmarkedList.observe(viewLifecycleOwner) {
             adapter.submitList(it)
-            if(it.isNotEmpty()) {
-                tvBookmarkedSize.visibility =View.VISIBLE
-                tvTabBookmarked.visibility =View.GONE
+            if (it.isNotEmpty()) {
+                tvBookmarkedSize.visibility = View.VISIBLE
+                tvTabBookmarked.visibility = View.GONE
                 rvBookmarked.visibility = View.VISIBLE
                 tvBookmarkedSize.text = it.size.toString()
-            } else{
-                tvTabBookmarked.visibility =View.VISIBLE
+            } else {
+                tvTabBookmarked.visibility = View.VISIBLE
                 rvBookmarked.visibility = View.GONE
                 tvBookmarkedSize.text = it.size.toString()
             }
         }
     }
 
-
-    private fun initLogout() {
-        with(binding) {
-            //화면 상에서 비로그인 화면으로 되돌리기
-            ivProfileImg.setImageResource(R.drawable.ic_camp)
-            ivProfileImg.visibility = View.VISIBLE
-            tvProfileName.textSize = 20f
-            tvProfileName.text = getString(R.string.profile_login_text)
-            tvProfileName.visibility = View.VISIBLE
-            tvProfileEmail.visibility = View.GONE
-            btnLogout.visibility = View.INVISIBLE
-            btnGoLogin.visibility = View.VISIBLE
-            btnProfileEdit.visibility = View.GONE
-            tvTabLoginText.visibility = View.VISIBLE
-            lineBookmarked.visibility = View.VISIBLE
-            tvTabBookmarked.visibility = View.GONE
-            tvTabWriting.visibility = View.GONE
-            tvBookmarkedSize.visibility = View.GONE
-            tvBookmarkedSize.text = "0"
-            rvBookmarked.visibility = View.GONE
-            tvWritingSize.text="0"
-
-        }
-    }
-
-    fun initLogin() {
+    private fun initLogin() {
         with(binding) {
             UserApiClient.instance.me { user, error ->
                 val docRef = db.collection("users").document("Kakao${user?.id}")
                 docRef.get().addOnSuccessListener {
                     if (!it.exists()) {
-                        ivProfileImg.setImageURI(Uri.parse(user?.kakaoAccount?.profile?.profileImageUrl))
+                        //ivProfileImg.setImageURI(Uri.parse(user?.kakaoAccount?.profile?.profileImageUrl))
                         tvProfileName.textSize = 24f
                         tvProfileName.text = user?.kakaoAccount?.profile?.nickname
                         tvProfileEmail.text = user?.kakaoAccount?.email
                     } else {
-                        if (it.getString("profileImage") != null) {
-                            //resolveUri failed on bad bitmap uri:
-                            ivProfileImg.setImageURI(Uri.parse(it.getString("profileImage")))
+                        if (profileImgUri == null) {
+                            ivProfileImg.scaleType = ImageView.ScaleType.CENTER_CROP
+                            Glide.with(requireContext()).load(it.getString("profileImage")).into(ivProfileImg)
+                            ivProfileImg.visibility = View.VISIBLE
+                            tvProfileName.textSize = 24f
+                            tvProfileName.text = it.getString("nickName").toString()
+                            tvProfileEmail.text = it.getString("userEmail").toString()
                         }
-                        tvProfileName.textSize = 24f
-                        tvProfileName.text = it.getString("nickName").toString()
-                        tvProfileEmail.text = it.getString("userEmail").toString()
-
                     }
                 }
             }
@@ -167,11 +143,34 @@ class ProfileFragment : Fragment() {
             tvTabBookmarked.visibility = View.VISIBLE
             lineBookmarked.visibility = View.VISIBLE
             lineWriting.visibility = View.INVISIBLE
+        }
+    }
 
-            //Todo. 북마크사이즈 부여 및 리사이클러뷰아이템가져오기 + 작성글사이즈 부여 및 리사이클러뷰아이템가져오기
+    private fun initLogout() {
+        with(binding) {
+            //화면 상에서 비로그인 화면으로 되돌리기
+            ivProfileImg.scaleType = ImageView.ScaleType.CENTER_INSIDE
+            ivProfileImg.setImageResource(R.drawable.ic_camp)
+            ivProfileImg.visibility = View.VISIBLE
+            tvProfileName.textSize = 20f
+            tvProfileName.text = getString(R.string.profile_login_text)
+            tvProfileName.visibility = View.VISIBLE
+            tvProfileEmail.visibility = View.GONE
+            btnLogout.visibility = View.INVISIBLE
+            btnGoLogin.visibility = View.VISIBLE
+            btnProfileEdit.visibility = View.GONE
+            tvTabLoginText.visibility = View.VISIBLE
+            lineBookmarked.visibility = View.VISIBLE
+            tvTabBookmarked.visibility = View.GONE
+            tvTabWriting.visibility = View.GONE
+            tvBookmarkedSize.visibility = View.GONE
+            tvBookmarkedSize.text = "0"
+            rvBookmarked.visibility = View.GONE
+            tvWritingSize.text = "0"
 
         }
     }
+
 
     private fun clickLogin() {
         binding.btnGoLogin.setOnClickListener {
@@ -193,7 +192,7 @@ class ProfileFragment : Fragment() {
             }
 
             clickEditName()
-            //clickEditImg()
+            clickEditImg()
         }
     }
 
@@ -266,23 +265,23 @@ class ProfileFragment : Fragment() {
         }
     }
 
-//    private fun clickEditImg() {
-//        with(binding) {
-//            btnEditImg.setOnClickListener {
-//                val intent = Intent(Intent.ACTION_PICK)
-//                intent.type = "image/*"
-//                imageLauncher.launch(intent)
-//            }
-//        }
-//
-//        imageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-//            if (result.resultCode == Activity.RESULT_OK) {
-//                img_URI = result.data?.data
-//                binding.ivProfileImg.scaleType = ImageView.ScaleType.CENTER_CROP
-//                binding.ivProfileImg.setImageURI(img_URI)
-//            }
-//        }
-//    }
+    private fun clickEditImg() {
+        with(binding) {
+            btnEditImg.setOnClickListener {
+                val intent = Intent(Intent.ACTION_PICK)
+                intent.type = "image/*"
+                imageLauncher.launch(intent)
+            }
+        }
+
+        imageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                profileImgUri = result.data?.data
+                binding.ivProfileImg.scaleType = ImageView.ScaleType.CENTER_CROP
+                Glide.with(requireContext()).load(profileImgUri).into(binding.ivProfileImg)
+            }
+        }
+    }
 
     private fun clickEditListener() {
         with(binding) {
@@ -294,20 +293,28 @@ class ProfileFragment : Fragment() {
     private fun handleClickEdit(confirm: Boolean) {
         with(binding) {
             if (confirm) {
-                //Todo. 사진에 대한 변경값을 다시 스토리지를 통헤 데이터베이스에 넘겨서 저장
-                UserApiClient.instance.me { user, error ->
+                UserApiClient.instance.me { user, _ ->
                     val documentRef = db.collection("users").document("Kakao${user?.id}")
                     val updateNickname = hashMapOf<String, Any>("nickName" to "${tvProfileName.text}")
-                    //val updateProfileImg = hashMapOf<String,Any>("profileImage" to img_URI.toString())
+                    if (profileImgUri != null) {
+                        profileImgUpload(profileImgUri!!, "Kakao${user?.id}")
+                        Firebase.storage.getReference("profileImage").child("Kakao${user?.id}").downloadUrl.addOnCompleteListener {
+                            if (it.isSuccessful) {
+                                val profileImgURI = hashMapOf<String, Any>("profileImage" to it.result.toString())
+                                documentRef.update(profileImgURI)
+                            }
+                        }
+                        //profileImgUri = null
+                    }
                     documentRef.get().addOnSuccessListener {
                         documentRef.update(updateNickname)
-                        //documentRef.update(updateProfileImg)
                     }
                 }
                 tvProfileName.text = tvProfileName.text
-                //ivProfileImg.setImageURI(img_URI)
             } else {
+                profileImgUri = null
                 tvProfileName.text = ""
+                ivProfileImg.setImageURI(profileImgUri)
                 initLogin()
             }
 
@@ -317,7 +324,7 @@ class ProfileFragment : Fragment() {
             btnProfileEdit.visibility = View.VISIBLE
             llEditConfirm.visibility = View.INVISIBLE
             tvProfileName.visibility = View.VISIBLE
-            if(rvBookmarked.visibility == View.VISIBLE){
+            if (rvBookmarked.visibility == View.VISIBLE) {
                 tvTabBookmarked.visibility = View.GONE
             }
         }
@@ -331,7 +338,7 @@ class ProfileFragment : Fragment() {
                 lineWriting.visibility = View.INVISIBLE
 
                 //if 가져올 데이터가 없으면
-                if(tvBookmarkedSize.text.toString().toInt() >0) {
+                if (tvBookmarkedSize.text.toString().toInt() > 0) {
                     rvBookmarked.visibility = View.VISIBLE
                     tvTabLoginText.visibility = View.GONE
                     tvTabWriting.visibility = View.GONE
