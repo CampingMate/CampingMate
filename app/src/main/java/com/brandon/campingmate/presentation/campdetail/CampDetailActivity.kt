@@ -175,7 +175,14 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
         scrollTab()
         commentSend.setOnClickListener {
-            SnackbarUtil.showSnackBar(binding.root)
+            UserApiClient.instance.me{ user, error ->
+                if(user?.id != null){
+                    val userDocRef = db.collection("users").document("Kakao${user.id}")
+                    val campId = myId
+                } else{
+                    SnackbarUtil.showSnackBar(it)
+                }
+            }
         }
 
 
