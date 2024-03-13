@@ -26,7 +26,8 @@ import com.brandon.campingmate.data.repository.PostRepositoryImpl
 import com.brandon.campingmate.data.source.network.impl.PostRemoteDataSourceImpl
 import com.brandon.campingmate.databinding.FragmentBoardBinding
 import com.brandon.campingmate.domain.usecase.GetPostsUseCase
-import com.brandon.campingmate.network.firestore.FireStoreService.fireStoreDB
+import com.brandon.campingmate.network.firestore.FirebaseService.fireStoreDB
+import com.brandon.campingmate.network.firestore.FirebaseService.firebaseStorage
 import com.brandon.campingmate.presentation.board.adapter.PostListAdapter
 import com.brandon.campingmate.presentation.board.adapter.PostListItem
 import com.brandon.campingmate.presentation.postdetail.PostDetailActivity
@@ -43,7 +44,7 @@ class BoardFragment : Fragment() {
 
     private val viewModel: BoardViewModel by viewModels {
         BoardViewModelFactory(
-            GetPostsUseCase(PostRepositoryImpl(PostRemoteDataSourceImpl(fireStoreDB))),
+            GetPostsUseCase(PostRepositoryImpl(PostRemoteDataSourceImpl(fireStoreDB, firebaseStorage))),
         )
     }
     private val postListAdapter: PostListAdapter by lazy {

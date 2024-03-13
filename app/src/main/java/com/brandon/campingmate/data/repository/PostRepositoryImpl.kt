@@ -1,5 +1,6 @@
 package com.brandon.campingmate.data.repository
 
+import android.net.Uri
 import com.brandon.campingmate.data.mapper.toPostDTO
 import com.brandon.campingmate.data.source.network.PostRemoteDataSource
 import com.brandon.campingmate.domain.mapper.toPostEntity
@@ -31,8 +32,12 @@ class PostRepositoryImpl(
     }
 
     override suspend fun uploadPost(
-        postEntity: PostEntity, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit
+        postEntity: PostEntity,
+        imageUris: List<Uri>,
+        onSuccess: (String) -> Unit,
+        onFailure: (Exception) -> Unit
     ) {
+        val imageUrls = postRemoteDataSource.uploadPostImages(imageUris, {}, {})
         postRemoteDataSource.uploadPost(
             postDto = postEntity.toPostDTO(),
             onSuccess = onSuccess,
@@ -50,6 +55,14 @@ class PostRepositoryImpl(
         } catch (e: Exception) {
             Resource.Error("Unknown Error")
         }
+    }
+
+    override suspend fun uploadPostImage(
+        imageUris: List<Uri>,
+        onSuccess: (List<String>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        postRemoteDataSource.uploadPostImages(imageUris, onSuccess, onFailure)
     }
 }
 

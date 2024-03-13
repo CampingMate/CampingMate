@@ -27,8 +27,10 @@ import com.brandon.campingmate.R
 import com.brandon.campingmate.data.repository.PostRepositoryImpl
 import com.brandon.campingmate.data.source.network.impl.PostRemoteDataSourceImpl
 import com.brandon.campingmate.databinding.ActivityPostWriteBinding
+import com.brandon.campingmate.domain.usecase.UploadPostImagesUseCase
 import com.brandon.campingmate.domain.usecase.UploadPostUseCase
-import com.brandon.campingmate.network.firestore.FireStoreService.fireStoreDB
+import com.brandon.campingmate.network.firestore.FirebaseService.fireStoreDB
+import com.brandon.campingmate.network.firestore.FirebaseService.firebaseStorage
 import com.brandon.campingmate.presentation.postdetail.PostDetailActivity
 import com.brandon.campingmate.presentation.postdetail.PostDetailActivity.Companion.EXTRA_POST_ID
 import kotlinx.coroutines.flow.collectLatest
@@ -41,7 +43,22 @@ class PostWriteActivity : AppCompatActivity() {
 
     private val viewModel: PostWriteViewModel by viewModels {
         PostWriteViewModelFactory(
-            UploadPostUseCase(PostRepositoryImpl(PostRemoteDataSourceImpl(fireStoreDB)))
+            UploadPostUseCase(
+                PostRepositoryImpl(
+                    PostRemoteDataSourceImpl(
+                        fireStoreDB,
+                        firebaseStorage
+                    )
+                )
+            ),
+            UploadPostImagesUseCase(
+                PostRepositoryImpl(
+                    PostRemoteDataSourceImpl(
+                        fireStoreDB,
+                        firebaseStorage
+                    )
+                )
+            )
         )
     }
 
@@ -142,7 +159,6 @@ class PostWriteActivity : AppCompatActivity() {
     }
 
     private fun showImagePickerBottomSheet() {
-
         val bottomSheet = ImagePicker(
             maxSelection = 5,
             preselectedImages = previouslySelectedImages,
@@ -154,6 +170,7 @@ class PostWriteActivity : AppCompatActivity() {
             onSelectionComplete = { selectedImages ->
                 previouslySelectedImages = selectedImages
                 Timber.tag("PICK").d("됐다 걸려들었어!: $selectedImages")
+                viewModel.handleEvent(PostWriteEvent.UploadPostImages(selectedImages))
             })
         bottomSheet.show(supportFragmentManager, bottomSheet.tag)
     }

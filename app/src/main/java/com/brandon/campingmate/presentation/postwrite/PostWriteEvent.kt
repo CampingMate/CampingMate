@@ -1,5 +1,7 @@
 package com.brandon.campingmate.presentation.postwrite
 
+import android.net.Uri
+
 sealed class PostWriteEvent {
 
     data class PostUploadSuccess(
@@ -10,6 +12,10 @@ sealed class PostWriteEvent {
     data class UploadPost(
         val title: String,
         val content: String,
+    ) : PostWriteEvent()
+
+    data class UploadPostImages(
+        val imageUris: List<Uri>,
     ) : PostWriteEvent()
 
 }

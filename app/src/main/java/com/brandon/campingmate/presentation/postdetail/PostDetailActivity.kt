@@ -17,7 +17,7 @@ import com.brandon.campingmate.data.repository.PostRepositoryImpl
 import com.brandon.campingmate.data.source.network.impl.PostRemoteDataSourceImpl
 import com.brandon.campingmate.databinding.ActivityPostDetailBinding
 import com.brandon.campingmate.domain.usecase.GetPostByIdUseCase
-import com.brandon.campingmate.network.firestore.FireStoreService
+import com.brandon.campingmate.network.firestore.FirebaseService
 import com.brandon.campingmate.presentation.postdetail.adapter.ImageListAdapter
 import com.brandon.campingmate.utils.toFormattedString
 import kotlinx.coroutines.flow.collectLatest
@@ -37,7 +37,14 @@ class PostDetailActivity : AppCompatActivity() {
 
     private val viewModel: PostDetailViewModel by viewModels {
         PostDetailViewModelFactory(
-            GetPostByIdUseCase(PostRepositoryImpl(PostRemoteDataSourceImpl(FireStoreService.fireStoreDB))),
+            GetPostByIdUseCase(
+                PostRepositoryImpl(
+                    PostRemoteDataSourceImpl(
+                        FirebaseService.fireStoreDB,
+                        FirebaseService.firebaseStorage
+                    )
+                )
+            ),
         )
     }
 

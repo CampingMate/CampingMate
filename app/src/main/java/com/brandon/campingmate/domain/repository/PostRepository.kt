@@ -1,5 +1,6 @@
 package com.brandon.campingmate.domain.repository
 
+import android.net.Uri
 import com.brandon.campingmate.domain.model.PostEntity
 import com.brandon.campingmate.domain.model.PostsEntity
 import com.brandon.campingmate.utils.Resource
@@ -14,6 +15,7 @@ interface PostRepository {
 
     suspend fun uploadPost(
         postEntity: PostEntity,
+        imageUris: List<Uri>,
         onSuccess: (String) -> Unit,
         onFailure: (Exception) -> Unit
     )
@@ -21,4 +23,10 @@ interface PostRepository {
     suspend fun getPostById(
         postId: String
     ): Resource<PostEntity>
+
+    suspend fun uploadPostImage(
+        imageUris: List<Uri>,
+        onSuccess: (List<String>) -> Unit,
+        onFailure: (Exception) -> Unit
+    )
 }

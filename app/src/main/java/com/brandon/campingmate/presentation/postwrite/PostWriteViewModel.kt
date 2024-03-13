@@ -1,21 +1,30 @@
 package com.brandon.campingmate.presentation.postwrite
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.brandon.campingmate.domain.model.PostEntity
+import com.brandon.campingmate.domain.usecase.UploadPostImagesUseCase
 import com.brandon.campingmate.domain.usecase.UploadPostUseCase
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class PostWriteViewModel(
     private val uploadPostUseCase: UploadPostUseCase,
+    private val uploadPostImagesUseCase: UploadPostImagesUseCase
 ) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(PostWriteUiState.init())
+    val uiState: StateFlow<PostWriteUiState> = _uiState.asStateFlow()
 
     private val _event = MutableSharedFlow<PostWriteEvent>(
         extraBufferCapacity = 10, onBufferOverflow = BufferOverflow.DROP_LATEST
@@ -36,6 +45,22 @@ class PostWriteViewModel(
                 Timber.d("게시물이 성공적으로 업로드 되었습니다!")
                 _event.tryEmit(PostWriteEvent.PostUploadSuccess(event.postId))
             }
+
+            is PostWriteEvent.UploadPostImages -> {
+                Timber.d("게시물 이미지 업로드 이벤트 발생!")
+                uploadPostImages(event.imageUris)
+            }
+        }
+    }
+
+    private fun uploadPostImages(imageUris: List<Uri>) {
+        viewModelScope.launch {
+            uploadPostImagesUseCase(imageUris = imageUris, onSuccess = {
+                Timber.d("이미지 업로드 성공 목록: ${it}")
+            }, onFailure = {
+                Timber.d("이미지 업로드 실패")
+            })
+
         }
     }
 
@@ -68,14 +93,13 @@ class PostWriteViewModel(
                 Timber.d("Attempting to upload post")
                 uploadPostUseCase(
                     postEntity = postEntity,
+                    imageUris = emptyList(),
                     onSuccess = { postId ->
                         Timber.d("Post successfully uploaded: $postId")
                         handleEvent(PostWriteEvent.PostUploadSuccess(postId))
-                    },
-                    onFailure = { exception ->
+                    }, onFailure = { exception ->
                         Timber.e(exception, "Error uploading post")
-                    }
-                )
+                    })
             }.onFailure { exception ->
                 Timber.e("Error loading posts: ${exception.message}")
             }
@@ -86,11 +110,14 @@ class PostWriteViewModel(
 
 class PostWriteViewModelFactory(
     private val uploadPostUseCase: UploadPostUseCase,
+    private val uploadPostImagesUseCase: UploadPostImagesUseCase
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         Timber.d("Creating PostWriteViewModel instance")
         if (modelClass.isAssignableFrom(PostWriteViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST") return PostWriteViewModel(uploadPostUseCase) as T
+            @Suppress("UNCHECKED_CAST") return PostWriteViewModel(
+                uploadPostUseCase, uploadPostImagesUseCase
+            ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

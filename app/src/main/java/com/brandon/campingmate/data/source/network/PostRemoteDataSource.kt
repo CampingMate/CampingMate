@@ -1,5 +1,6 @@
 package com.brandon.campingmate.data.source.network
 
+import android.net.Uri
 import com.brandon.campingmate.data.model.request.PostDTO
 import com.brandon.campingmate.data.model.response.PostResponse
 import com.brandon.campingmate.data.model.response.PostsResponse
@@ -10,4 +11,9 @@ interface PostRemoteDataSource {
     suspend fun getPosts(pageSize: Int, lastVisibleDoc: DocumentSnapshot?): Resource<PostsResponse>
     suspend fun uploadPost(postDto: PostDTO, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit)
     suspend fun getPostById(postId: String): Resource<PostResponse>
+    suspend fun uploadPostImages(
+        imageUris: List<Uri>,
+        onSuccess: (List<String>) -> Unit,
+        onFailure: (Exception) -> Unit가
+    )
 }

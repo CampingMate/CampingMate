@@ -1,5 +1,6 @@
 package com.brandon.campingmate.data.source.network.impl
 
+import android.net.Uri
 import com.brandon.campingmate.data.model.request.PostDTO
 import com.brandon.campingmate.data.model.response.PostResponse
 import com.brandon.campingmate.data.model.response.PostsResponse
@@ -8,14 +9,24 @@ import com.brandon.campingmate.utils.Resource
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.UUID
 
 /**
  * 데이터소스 레이어에서는 raw 한 데이터를 반환한다
  */
-class PostRemoteDataSourceImpl(private val firestore: FirebaseFirestore) : PostRemoteDataSource {
+class PostRemoteDataSourceImpl(
+    private val firestore: FirebaseFirestore,
+    private val storage: FirebaseStorage
+) : PostRemoteDataSource {
     override suspend fun getPosts(pageSize: Int, lastVisibleDoc: DocumentSnapshot?): Resource<PostsResponse> {
         return try {
             withContext(IO) {
@@ -62,6 +73,34 @@ class PostRemoteDataSourceImpl(private val firestore: FirebaseFirestore) : PostR
             } catch (e: Exception) {
                 Resource.Error(e.message ?: "UnkownError")
             }
+        }
+    }
+
+    override suspend fun uploadPostImages(
+        imageUris: List<Uri>,
+        onSuccess: (List<String>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) = withContext(IO) {
+        try {
+            // 이미지 URI 리스트를 돌며 각각에 대한 업로드 작업을 비동기적으로 수행하고, 결과를 Deferred 객체로 받음
+            val uploadTasks = imageUris.map { uri ->
+                async {
+                    val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
+                    val fileName = "IMG_${timeStamp}_${UUID.randomUUID()}.jpg"
+                    val imagesRef = storage.reference.child("postImages/$fileName")
+                    val uploadTaskSnapshot = imagesRef.putFile(uri).await() // 코루틴 사용하여 업로드 대기
+                    uploadTaskSnapshot.metadata?.reference?.downloadUrl?.await()
+                        .toString() // 다운로드 URL을 문자열로 반환
+                }
+            }
+
+            // 모든 업로드 작업이 완료될 때까지 대기
+            val uploadedImageUrls = uploadTasks.awaitAll()
+            // 모든 업로드가 성공적으로 완료되면 성공 콜백 호출
+            onSuccess(uploadedImageUrls)
+        } catch (e: Exception) {
+            // 하나라도 실패한 경우 실패 콜백 호출
+            onFailure(e)
         }
     }
 }
