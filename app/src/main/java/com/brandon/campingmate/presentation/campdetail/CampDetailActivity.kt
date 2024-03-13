@@ -174,6 +174,10 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         viewModel.callIdData(myId!!)
 
         scrollTab()
+        commentSend.setOnClickListener {
+            SnackbarUtil.showSnackBar(binding.root)
+        }
+
 
         btnDetailsattel.setOnClickListener {
             when (maptype) {
