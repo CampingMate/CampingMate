@@ -63,8 +63,8 @@ class ProfileFragment : Fragment() {
 
         //checkLogin()
 
-        //clickWritingTab()
-        //clickBookmarkedTab()
+        clickWritingTab()
+        clickBookmarkedTab()
 
         clickLogin()
 
@@ -121,11 +121,14 @@ class ProfileFragment : Fragment() {
             btnGoLogin.visibility = View.VISIBLE
             btnProfileEdit.visibility = View.GONE
             tvTabLoginText.visibility = View.VISIBLE
+            lineBookmarked.visibility = View.VISIBLE
             tvTabBookmarked.visibility = View.GONE
             tvTabWriting.visibility = View.GONE
             tvBookmarkedSize.visibility = View.GONE
+            tvBookmarkedSize.text = "0"
             rvBookmarked.visibility = View.GONE
-            tvTabLoginText.visibility = View.VISIBLE
+            tvWritingSize.text="0"
+
         }
     }
 
@@ -162,6 +165,8 @@ class ProfileFragment : Fragment() {
 
             tvTabLoginText.visibility = View.GONE
             tvTabBookmarked.visibility = View.VISIBLE
+            lineBookmarked.visibility = View.VISIBLE
+            lineWriting.visibility = View.INVISIBLE
 
             //Todo. 북마크사이즈 부여 및 리사이클러뷰아이템가져오기 + 작성글사이즈 부여 및 리사이클러뷰아이템가져오기
 
@@ -182,9 +187,9 @@ class ProfileFragment : Fragment() {
             btnProfileEdit.setOnClickListener {
                 llEditConfirm.visibility = View.VISIBLE
                 btnEditName.visibility = View.VISIBLE
-                //btnEditImg.visibility = View.VISIBLE
+                btnEditImg.visibility = View.VISIBLE
                 btnLogout.visibility = View.GONE
-                btnProfileEdit.visibility = View.INVISIBLE
+                btnProfileEdit.visibility = View.GONE
             }
 
             clickEditName()
@@ -319,40 +324,43 @@ class ProfileFragment : Fragment() {
 
     }
 
-//    private fun clickBookmarkedTab() {
-//        with(binding) {
-//            tabBookmarked.setOnClickListener {
-//                lineBookmarked.visibility = View.VISIBLE
-//                lineWriting.visibility = View.INVISIBLE
-//
-//                //if 가져올 데이터가 없으면
-//                tvTabLoginText.visibility = View.GONE
-//                tvTabBookmarked.visibility = View.VISIBLE
-//                tvTabWriting.visibility = View.GONE
-//                //todo.if(가져올데이터가있으면) size.setText + 리사이클러뷰 어댑터 수행 + 스와이프 아이템 삭제(스낵바undo)
-//                //로그인 후 사용해주세요 텍스트 어떻게 되는지 확인하고 아마 View.Gone해줘야할듯
-//            }
-//
-//        }
-//
-//    }
+    private fun clickBookmarkedTab() {
+        with(binding) {
+            tabBookmarked.setOnClickListener {
+                lineBookmarked.visibility = View.VISIBLE
+                lineWriting.visibility = View.INVISIBLE
 
-//    private fun clickWritingTab() {
-//        with(binding) {
-//            tabWriting.setOnClickListener {
-//                lineBookmarked.visibility = View.INVISIBLE
-//                lineWriting.visibility = View.VISIBLE
-//
-//                //if 가져올 데이터가 없으면
-//                tvTabLoginText.visibility = View.GONE
-//                tvTabBookmarked.visibility = View.GONE
-//                tvTabWriting.visibility = View.VISIBLE
-//                //todo.if(가져올데이터가있으면) size.setText + 리사이클러뷰 어댑터 수행 + 스와이프 아이템 삭제(스낵바undo)
-//                //로그인 후 사용해주세요 텍스트 어떻게 되는지 확인하고 아마 View.Gone해줘야할듯
-//            }
-//        }
-//
-//    }
+                //if 가져올 데이터가 없으면
+                if(tvBookmarkedSize.text.toString().toInt() >0) {
+                    rvBookmarked.visibility = View.VISIBLE
+                    tvTabLoginText.visibility = View.GONE
+                    tvTabWriting.visibility = View.GONE
+                } else {
+                    tvTabLoginText.visibility = View.GONE
+                    tvTabBookmarked.visibility = View.VISIBLE
+                    tvTabWriting.visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    private fun clickWritingTab() {
+        with(binding) {
+            tabWriting.setOnClickListener {
+                lineBookmarked.visibility = View.INVISIBLE
+                lineWriting.visibility = View.VISIBLE
+
+                //if 가져올 데이터가 없으면
+                tvTabLoginText.visibility = View.GONE
+                tvTabBookmarked.visibility = View.GONE
+                tvTabWriting.visibility = View.VISIBLE
+                rvBookmarked.visibility = View.GONE
+                //todo.if(가져올데이터가있으면) size.setText + 리사이클러뷰 어댑터 수행 + 스와이프 아이템 삭제(스낵바undo)
+                //로그인 후 사용해주세요 텍스트 어떻게 되는지 확인하고 아마 View.Gone해줘야할듯
+            }
+        }
+
+    }
 
 
     private fun clickLogout() {

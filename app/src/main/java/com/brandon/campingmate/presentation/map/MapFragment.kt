@@ -22,6 +22,7 @@ import com.brandon.campingmate.presentation.campdetail.CampDetailActivity
 import com.brandon.campingmate.presentation.profile.ProfileViewModel
 import com.kakao.sdk.user.UserApiClient
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
@@ -241,7 +242,7 @@ class MapFragment : Fragment(),OnMapReadyCallback {
                         viewModel.getImgList(param)
                     }
                     .minClusterSize(10)
-                    .clusterBuckets(intArrayOf(50,50))
+                    .clusterBuckets(intArrayOf(20,20))
                     .items(campDataList)
                     .make()
             }
@@ -387,6 +388,10 @@ class MapFragment : Fragment(),OnMapReadyCallback {
         naverMap = p0
         val cameraPosition = CameraPosition(LatLng(36.60545, 127.9792), 6.0)
         naverMap?.cameraPosition = cameraPosition
+        //한번도 카메라 영역 제한
+        naverMap?.minZoom = 6.0
+        naverMap?.maxZoom = 18.0
+        naverMap?.extent = LatLngBounds(LatLng(32.973077, 124.270981), LatLng(38.856197,130.051725 ))
 
         var bookmark = false
         binding.btnBookmark.setOnClickListener {

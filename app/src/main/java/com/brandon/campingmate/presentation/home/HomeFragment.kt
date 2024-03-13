@@ -1,11 +1,13 @@
 package com.brandon.campingmate.presentation.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -14,19 +16,25 @@ import com.brandon.campingmate.BuildConfig
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.FragmentHomeBinding
 import com.brandon.campingmate.domain.model.CampEntity
+import com.brandon.campingmate.domain.model.HolidayEntity
 import com.brandon.campingmate.domain.model.HolidayItem
 import com.brandon.campingmate.network.retrofit.NetWorkClient.holidayNetWork
+import com.brandon.campingmate.presentation.campdetail.CampDetailActivity
 import com.brandon.campingmate.presentation.home.adapter.HomeAdapter
 import com.brandon.campingmate.presentation.home.adapter.PetAdapter
+import com.brandon.campingmate.presentation.main.MainActivity
 import com.brandon.campingmate.presentation.search.SearchFragment
+import com.bumptech.glide.Glide
 import com.google.android.material.chip.ChipGroup
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.launch
+import nl.joery.animatedbottombar.AnimatedBottomBar
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import kotlin.math.max
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -87,19 +95,24 @@ class HomeFragment : Fragment() {
 
     private fun initView(data: Query, select:String) {
         Log.d("Home", "initView()-data:$data")
-        var limitData = data
+        var limitData = data.limit(10)
         var view = binding.rvDistrictItem
         dataItem.clear()
-        if (data == allCity)
-            limitData = data.limit(10)
-        else if (select == "theme")
-            limitData = data.whereNotEqualTo("districtItem", listOf<String>())
+//        if (data == allCity)
+//            limitData = data.limit(10)
+//        else if (select == "theme")
+//            limitData = data.whereNotEqualTo("districtItem", listOf<String>())
+        if (select == "theme")
+            limitData = data.whereNotEqualTo("themaEnvrnCl", listOf<String>()).limit(10)
 
         limitData.get().addOnSuccessListener { documents ->
             for (document in documents) {
                 val dataList = document.toObject(CampEntity::class.java)
                 dataItem.add(dataList)
-//                Log.d("Home","item : $dataItem")
+                if(select=="theme")
+                    Log.d("Home","theme item : $dataItem")
+                else
+                    Log.d("Home","district item : $dataItem")
             }
             view = when (select) {
                 "theme" -> binding.rvThemeItem
@@ -283,11 +296,11 @@ class HomeFragment : Fragment() {
         lifecycleScope.launch {
             val data = communicateNetWork(parse,100)
 
-            val dataSort = data.sortedBy { it.locdate }
+            val dataSort = data?.sortedBy { it.locdate }
             val dataFilter = dataSort?.filter { it.locdate != null && it.locdate >= formatDate.toInt()}
             if(dataFilter?.size!!<5) {
                 holidayList.addAll(dataFilter)
-                val addItem = communicateNetWork("${parse.toInt() + 1}", 5 - dataFilter.size!!)
+                val addItem = communicateNetWork("${parse.toInt() + 1}", 5 - dataFilter?.size!!)
                 holidayList.addAll(addItem)
             }else{
                 holidayList.addAll(dataFilter.take(5))
@@ -330,7 +343,7 @@ class HomeFragment : Fragment() {
 //        Log.d("Home", "parseYear=${parseYear}")
             val responseData = holidayNetWork.getRestDeInfo(authKey,year,"json",num)
             val holidayInfo = responseData.response.body.items.item
-            Log.d("Home", "holidayInfo=${responseData}")
+           Log.d("Home", "holidayInfo=${responseData}")
 
         return holidayInfo
 
