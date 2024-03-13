@@ -77,7 +77,7 @@ class PostWriteActivity : AppCompatActivity() {
         permissionLauncher =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                 if (isGranted) {
-                    pickImageFromGallery()
+                    showImagePickerBottomSheet()
                 } else {
                     Toast.makeText(this, "권한이 거부되었습니다.", Toast.LENGTH_SHORT).show()
                 }
@@ -137,8 +137,7 @@ class PostWriteActivity : AppCompatActivity() {
         }
         btnAddIMage.setOnClickListener {
             // 권한 얻기 + 갤러리에서 이미지 가져오기
-            showImagePickerBottomSheet()
-//            checkPermissionAndPickImage()
+            checkPermissionAndPickImage()
         }
     }
 
@@ -165,7 +164,7 @@ class PostWriteActivity : AppCompatActivity() {
                 this, Manifest.permission.READ_MEDIA_IMAGES
             ) == PackageManager.PERMISSION_GRANTED -> {
                 // 권한이 이미 있을 경우, 이미지 선택기 실행
-                pickImageFromGallery()
+                showImagePickerBottomSheet()
             }
 
             else -> {

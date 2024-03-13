@@ -11,7 +11,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.brandon.campingmate.R
@@ -38,7 +38,7 @@ class ImagePicker(
     private var _binding: FragmentImagePickerBottomSheetBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: ImagePickerViewModel by activityViewModels()
+    private val viewModel: ImagePickerViewModel by viewModels()
 
     private val imagePickerAdapter = ImagePickerAdapter(::onImageSelected)
     private var selectionSnackbar: Snackbar? = null
@@ -67,7 +67,7 @@ class ImagePicker(
             cornerRadii = floatArrayOf(50f, 50f, 50f, 50f, 50f, 50f, 50f, 50f)
         }
 
-        selectionSnackbar = Snackbar.make(binding.root, "", Snackbar.LENGTH_INDEFINITE).apply {
+        selectionSnackbar = Snackbar.make(binding.root, "", Snackbar.LENGTH_SHORT).apply {
             val snackbarView = view
             snackbarView.background = shapeDrawable
             val layoutParams = snackbarView.layoutParams as CoordinatorLayout.LayoutParams
@@ -99,9 +99,26 @@ class ImagePicker(
     }
 
     override fun onPause() {
+        Timber.tag("PICK").d("onPause 호출됨")
         selectionSnackbar?.dismiss()
         super.onPause()
+    }
+
+    override fun onStop() {
+        Timber.tag("PICK").d("onStop 호출됨")
+        super.onStop()
+    }
+
+    override fun onDestroyView() {
+        Timber.tag("PICK").d("onDestroyView 호출됨")
+        super.onDestroyView()
+        _binding = null
+    }
+
+    override fun onDestroy() {
+        Timber.tag("PICK").d("onDestroy 호출됨")
         onSelectionComplete(viewModel.selectedImages)
+        super.onDestroy()
     }
 
     private fun setPickerMaxSelection() {
@@ -144,7 +161,6 @@ class ImagePicker(
                     } else {
                         selectionSnackbar?.setBackgroundTint(Color.GRAY)
                     }
-                    Timber.tag("PICK").d("스낵바 활성화!!")
                     selectionSnackbar?.setText("Total: ($total/$maxSelection)") // 스낵바의 텍스트 업데이트
                     selectionSnackbar?.show()
                 } else {
