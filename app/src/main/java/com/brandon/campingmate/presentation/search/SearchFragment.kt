@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.FragmentSearchBinding
 import com.brandon.campingmate.domain.model.CampEntity
+import com.brandon.campingmate.presentation.search.adapter.SearchListAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
 
@@ -58,7 +59,9 @@ class SearchFragment : Fragment() {
         }
         myList.observe(viewLifecycleOwner){
             Log.d("Search", "옵저빙확 : ${it.size}")
-            listAdapter.submitList(it)
+            val myNewList = mutableListOf<CampEntity>()
+            myNewList.addAll(it)
+            listAdapter.submitList(myNewList)
         }
     }
 

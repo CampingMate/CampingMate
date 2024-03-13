@@ -162,20 +162,20 @@ class SearchViewModel : ViewModel() {
 
                     val currentList = _myList.value ?: mutableListOf()
                     currentList.addAll(newCampList)
-                    val newList = mutableListOf<CampEntity>()
-                    newList.addAll(currentList)
-                    Log.d("Search", "리스트확인 : ${newList.size}")
-                    _myList.value = newList
+//                    Log.d("Search", "리스트확인 : ${newList.size}")
+                    _myList.value = currentList
                     if (nextDocuments.size() > 0) {
                         lastVisible = nextDocuments.documents[nextDocuments.size() - 1]
                         Log.d("Search", "무한 ${lastVisible?.get("facltNm")}")
                     } else {
                         lastVisible = null  // 더 이상 데이터가 없을 때 lastVisible을 null로 설정
                     }
+                    isLoadingData = false
                 }
                 .addOnFailureListener { exception ->
                     // 오류 처리
                     Log.w("TAG", "Error getting documents.", exception)
+                    isLoadingData = false
                 }
         }
     }
