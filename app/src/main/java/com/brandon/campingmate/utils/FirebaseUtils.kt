@@ -1,6 +1,13 @@
 package com.brandon.campingmate.utils
 
+import android.net.Uri
+import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
+import com.google.firebase.storage.storage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -15,4 +22,20 @@ import java.util.Locale
 fun Timestamp?.toFormattedString(): String {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
     return this?.toDate()?.let { dateFormat.format(it) } ?: ""
+}
+
+fun profileImgUpload(imageURI: Uri, userID: String) {
+    val storage = Firebase.storage
+    val storageRef = storage.getReference("profileImage")
+
+    if (imageURI.toString().startsWith("http")) {
+        GlobalScope.launch(Dispatchers.IO) {
+            //인터넷URL의 경우 putStream사용.
+            storageRef.child(userID).putStream(URL(imageURI.toString()).openStream())
+        }
+    } else {
+        //로컬 파일 업로드 시 putFile 사용
+        storageRef.child(userID).putFile(imageURI)
+    }
+
 }
