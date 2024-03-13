@@ -162,8 +162,6 @@ class CampDetailActivity : AppCompatActivity(),OnMapReadyCallback {
                 return onTouchEvent(event)
             }
         })
-
-
     }
 
     private fun scrollTab() =with(binding){

@@ -24,6 +24,7 @@ import com.kakao.sdk.user.UserApiClient
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.CameraPosition
+import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
@@ -31,6 +32,7 @@ import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.OverlayImage
+import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.util.MarkerIcons
 import kotlinx.coroutines.launch
 import ted.gun0912.clustering.naver.TedNaverClustering
@@ -54,6 +56,7 @@ class MapFragment : Fragment(),OnMapReadyCallback {
     private val viewModel by lazy {
         ViewModelProvider(this)[MapViewModel::class.java]
     }
+    private lateinit var fusedLocationSource: FusedLocationSource
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,20 +118,21 @@ class MapFragment : Fragment(),OnMapReadyCallback {
     }
 
     private fun initViewModel() = with(viewModel){
-        val map = getBlParamHashmap()
-        getAllCampList(map)
-        paramHashmap.observe(viewLifecycleOwner){
-            //getCampList(it)
+
+        paramHashmap?.observe(viewLifecycleOwner){
+            getCampList(it)
         }
         campList.observe(viewLifecycleOwner){
             if (campList.value?.isNotEmpty() == true) {
+                campDataList.clear()
                 campDataList = campList.value!!
 
                 if(bookmarkMarkers.isNotEmpty()){
-                    invisibleAllMarker(bookmarkMarkers)
+                    //hideMarker(bookmarkMarkers)
                 }
 
                 markers.clear()
+                //Log.d("test","campdatalist개수 = ${campDataList.size}")
                 tedNaverClustering = TedNaverClustering.with<LocationBasedListItem>(requireContext(), naverMap!!)
                     .customMarker {
                         Marker().apply {
@@ -242,7 +246,7 @@ class MapFragment : Fragment(),OnMapReadyCallback {
                         viewModel.getImgList(param)
                     }
                     .minClusterSize(10)
-                    .clusterBuckets(intArrayOf(20,20))
+                    .clusterBuckets(intArrayOf(100,20))
                     .items(campDataList)
                     .make()
             }
@@ -259,7 +263,7 @@ class MapFragment : Fragment(),OnMapReadyCallback {
             if (bookmarkedList.value?.isNotEmpty() == true) {
                 bookMarkedList = bookmarkedList.value!!
                 if(markers.isNotEmpty()) {
-                    invisibleAllMarker(markers)
+                    //hideMarker(markers)
                 }
                 bookmarkMarkers.clear()
                 tedNaverClustering = TedNaverClustering.with<LocationBasedListItem>(requireContext(), naverMap!!)
@@ -382,11 +386,50 @@ class MapFragment : Fragment(),OnMapReadyCallback {
         }
 
     }
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>,
+                                            grantResults: IntArray) {
+        if(requestCode != LOCATION_PERMISSION_REQUEST_CODE){
+            return
+        }
+        if (fusedLocationSource.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+            if (!fusedLocationSource.isActivated) { // 권한 거부됨
+                naverMap?.locationTrackingMode = LocationTrackingMode.None
+            }
+            return
+        }
 
+    }
     
     override fun onMapReady(p0: NaverMap) {
         naverMap = p0
-        val cameraPosition = CameraPosition(LatLng(36.60545, 127.9792), 6.0)
+
+        val uiSetting = naverMap?.uiSettings
+        uiSetting?.isLocationButtonEnabled=true
+
+        fusedLocationSource = FusedLocationSource(this,LOCATION_PERMISSION_REQUEST_CODE)
+        naverMap?.locationSource = fusedLocationSource
+        naverMap?.addOnCameraIdleListener {
+            when(naverMap?.cameraPosition?.zoom!!.toInt()){
+                in 6..7 ->{
+                    val map = viewModel.getBlParamHashmap()
+                    viewModel.getAllCampList(map)
+                }
+                else -> {
+                   val ccc=  naverMap?.contentBounds
+                    Log.d("test","ccc확인 = ${ccc}")
+//                    val lon = naverMap?.cameraPosition?.target?.longitude!!
+//                    val lat = naverMap?.cameraPosition?.target?.latitude!!
+//                    val zoom = naverMap?.cameraPosition?.zoom!!
+//                    Log.d("test","카메라 중심 = ${naverMap?.cameraPosition}")
+//                    viewModel.getLocParamHashmap(lon,lat,zoom )
+                }
+            }
+
+        }
+
+        val cameraPosition = CameraPosition(LatLng(37.5440, 127.1265), 16.0)
         naverMap?.cameraPosition = cameraPosition
         //한번도 카메라 영역 제한
         naverMap?.minZoom = 6.0
@@ -397,14 +440,14 @@ class MapFragment : Fragment(),OnMapReadyCallback {
         binding.btnBookmark.setOnClickListener {
             if(bookmark){
                 binding.btnBookmark.text = "전체"
-                invisibleAllMarker(bookmarkMarkers)
-                visibleAllMarker(markers)
+                //hideMarker(bookmarkMarkers)
+                //showMarker(markers)
                 bookmark = false
-                viewModel.getBookmarkedCamp(userId,campDataList)
+                //viewModel.getBookmarkedCamp(userId,campDataList)
             }else{
                 binding.btnBookmark.text = "북마크"
-                invisibleAllMarker(markers)
-                visibleAllMarker(bookmarkMarkers)
+                //hideMarker(markers)
+               // showMarker(bookmarkMarkers)
                 bookmark = true
 //                val map = viewModel.getBlParamHashmap()
 //                viewModel.getAllCampList(map)
@@ -457,15 +500,17 @@ class MapFragment : Fragment(),OnMapReadyCallback {
         Timber.tag("mapfragment").d("mapview onLowMemory()")
     }
 
-    fun invisibleAllMarker(markers: MutableList<Marker>) {
-        markers.forEach {
-            it.isVisible = false
-        }
+    fun showMarker(marker: Marker, naverMap : NaverMap) {
+        marker.map = naverMap
     }
 
-    fun visibleAllMarker(markers: MutableList<Marker>) {
-        markers.forEach {
-            it.isVisible = true
-        }
+    fun hideMarker(marker: Marker) {
+        marker.map = null
     }
+
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
+    }
+
+
 }
