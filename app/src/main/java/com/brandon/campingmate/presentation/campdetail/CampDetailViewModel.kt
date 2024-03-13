@@ -7,13 +7,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.brandon.campingmate.BuildConfig
 import com.brandon.campingmate.R
+import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.network.retrofit.NetWorkClient
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.launch
 
 class CampDetailViewModel : ViewModel() {
 
     private val _imageResult: MutableLiveData<MutableList<String>> = MutableLiveData()
     val imageResult: LiveData<MutableList<String>> get() = _imageResult
+    private val _campEntity: MutableLiveData<CampEntity?> = MutableLiveData()
+    val campEntity: LiveData<CampEntity?> get() = _campEntity
     fun setUpParkParameter(contentId: String) {
         val authKey = BuildConfig.camp_data_key
         communicateNetWork(hashMapOf(
@@ -46,5 +52,20 @@ class CampDetailViewModel : ViewModel() {
             Log.d("campDetailViewModel", "$imageUrls")
             _imageResult.value = imageUrls
         }
+    }
+
+    fun callIdData(id: String) {
+        val db = Firebase.firestore
+        var baseQuery: Query = db.collection("camps").whereEqualTo("contentId", id)
+        baseQuery.get()
+            .addOnSuccessListener { documents ->
+                if(!documents.isEmpty){
+                    val campEntity = documents.documents[0].toObject(CampEntity::class.java)
+                    _campEntity.value = campEntity
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("CampDetailViewModel", "Error: ", exception)
+            }
     }
 }

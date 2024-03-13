@@ -45,6 +45,7 @@ class SearchListAdapter : ListAdapter<CampEntity, SearchListAdapter.SearchViewHo
         )
 
     override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
+        Log.d("Search", "onBindViewHolder - Position: $position")
         holder.onBind(getItem(position))
     }
 
@@ -52,6 +53,7 @@ class SearchListAdapter : ListAdapter<CampEntity, SearchListAdapter.SearchViewHo
         private val binding: ItemBigCampBinding,
     ) : SearchViewHolder(binding.root) {
         override fun onBind(item: CampEntity) = with(binding) {
+            Log.d("Search", "onBind - Item: $item")
             if (item !is CampEntity) {
                 return@with
             }
@@ -110,8 +112,8 @@ class SearchListAdapter : ListAdapter<CampEntity, SearchListAdapter.SearchViewHo
                 val myId = item.contentId
 
                 val intent = Intent(binding.root.context, CampDetailActivity::class.java).apply {
-                    putExtra("campData", myData)
-                    putExtra("campId", myId)
+                    putExtra("campData", myId)
+//                    putExtra("campId", myId)
                 }
                 binding.root.context.startActivity(intent)
             }

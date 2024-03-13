@@ -33,23 +33,28 @@ import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.Marker
 import timber.log.Timber
 
-class CampDetailActivity : AppCompatActivity(),OnMapReadyCallback {
+class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private val binding by lazy { ActivityCampDetailBinding.inflate(layoutInflater) }
     private val viewModel by lazy {
         ViewModelProvider(this)[CampDetailViewModel::class.java]
     }
-    private var myData: CampEntity? = null
+
+    //    private var myData: CampEntity? = null
     private val db = FirebaseFirestore.getInstance()
     private val imageUrls = mutableListOf<String>()
     private var mapView: MapView? = null
     private var naverMap: NaverMap? = null
-    private var maptype : Int = 1
+    private var maptype: Int = 1
+    private var myId: String? = null
+    private var mapX: String? = null
+    private var mapY: String? = null
+    private var campName: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-
+        Log.d("Detail", "onCreate")
         initView()
         initViewModel()
         checkBookmarked()
@@ -66,79 +71,127 @@ class CampDetailActivity : AppCompatActivity(),OnMapReadyCallback {
         binding.springDotsIndicator.attachTo(binding.viewPager)
     }
 
-    private fun initViewModel() =with(viewModel) {
-        imageResult.observe(this@CampDetailActivity){
-            if(it.isNotEmpty()){
+    private fun initViewModel() = with(viewModel) {
+        imageResult.observe(this@CampDetailActivity) {
+            if (it.isNotEmpty()) {
                 imageUrls.addAll(it)
                 initViewPager()
+            }
+        }
+        campEntity.observe(this@CampDetailActivity) {
+            if (it != null) {
+                initSetting(it)
+            }
+        }
+    }
+
+    private fun initSetting(it: CampEntity) = with(binding) {
+        mapX = it.mapX
+        mapY = it.mapY
+        campName = it.facltNm
+        Log.d("Detail", "${mapX}, ${mapY}, ${campName}")
+        tvCampName.text = it.facltNm
+        tvAddr.text = it.addr1 ?: "등록된 주소가 없습니다."
+        tvCall.text = it.tel ?: "등록된 번호가 없습니다."
+        if (it.homepage.isNullOrBlank()) {
+            tvHomepage.text = "등록된 홈페이지가 없습니다."
+        } else {
+            tvHomepage.text = "홈페이지 - ${it.homepage}"
+        }
+        if (it.allar.isNullOrBlank()) {
+            tvSize.text = "등록된 면적 정보가 없습니다."
+        } else {
+            tvSize.text = "면적 - ${it.allar}㎡"
+        }
+        if (it.hvofBgnde.isNullOrBlank() && it.hvofEnddle.isNullOrBlank()) {
+            tvRestTime.text = "등록된 휴장기간 정보가 없습니다."
+        } else {
+            tvRestTime.text = "휴장기간 ${it.hvofBgnde} ~ ${it.hvofEnddle} "
+        }
+        if (it.operPdCl.isNullOrBlank()) {
+            tvPlayTime.text = "등록된 운영기간 정보가 없습니다."
+        } else {
+            tvPlayTime.text = "운영기간 - ${it.operPdCl}"
+        }
+        var bottom = ""
+        if (it.siteBottomCl1 != "0") bottom += "잔디, "
+        if (it.siteBottomCl2 != "0") bottom += "파쇄석, "
+        if (it.siteBottomCl3 != "0") bottom += "테크, "
+        if (it.siteBottomCl4 != "0") bottom += "자갈, "
+        if (it.siteBottomCl5 != "0") bottom += "맨흙"
+        tvBottom.text = "바닥재질 - ${bottom}"
+        if (it.intro.isNullOrBlank()) {
+            tvIntroduceComment.text = "등록된 내용이 없습니다."
+        } else {
+            tvIntroduceComment.text = it.intro
+        }
+        tvConvenienceComment.text =
+            "편의시설 - 화장실: ${it.toiletCo} 샤워실: ${it.swrmCo} 개수대: ${it.wtrplCo} 화로대-${it.brazierCl}"
+        if (it.sbrsCl.isNullOrEmpty()) {
+            tvConvenienceComment2.text = "등록된 부대시설이 없습니다."
+        } else {
+            tvConvenienceComment2.text = "부대시설 - ${it.sbrsCl}"
+        }
+        if (it.themaEnvrnCl.isNullOrEmpty()) {
+            tvConvenienceThema.text = "등록된 테마가 없습니다."
+        } else {
+            tvConvenienceThema.text = "테마 - ${it.themaEnvrnCl}"
+        }
+        if (it.posblFcltyCl.isNullOrEmpty()) {
+            tvConvenienceNear.text = "등록된 내용이 없습니다."
+        } else {
+            tvConvenienceNear.text = "주변이용가능시설 - ${it.posblFcltyCl}"
+        }
+        if (it.featureNm.isNullOrBlank()) {
+            tvConvenienceFeature.text = "등록된 특징이 없습니다."
+        } else {
+            tvConvenienceFeature.text = "특징 - ${it.featureNm}"
+        }
+
+        ivArrowBack.setOnClickListener {
+            finish()
+        }
+        val tell = it.tel
+        ivCallCamping.setOnClickListener {
+            val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${tell}"))
+            startActivity(intent)
+        }
+        val reserveUrl = it.resveUrl
+        btnReserve.setOnClickListener {
+            if (!reserveUrl.isNullOrBlank()) {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(reserveUrl))
+                startActivity(intent)
+            } else {
+                Toast.makeText(this@CampDetailActivity, "등록된 홈페이지가 없습니다.", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }
 
     private fun initView() = with(binding) {
-        myData = intent.getParcelableExtra("campData") as? CampEntity
-        if (myData != null) {
-            val contentId = myData?.contentId.toString()
-            tvCampName.text = myData?.facltNm
-            tvAddr.text = myData?.addr1
-            tvCall.text = myData?.tel
-            tvHomepage.text = "홈페이지 - ${myData?.homepage}"
-            tvSize.text = "면적 - ${myData?.allar}㎡"
-            tvRestTime.text = "휴장기간 ${myData?.hvofBgnde} ~ ${myData?.hvofEnddle} "
-            tvPlayTime.text = "운영기간 - ${myData?.operPdCl}"
-            var bottom = ""
-            if (myData?.siteBottomCl1 != "0") bottom += "잔디, "
-            if (myData?.siteBottomCl2 != "0") bottom += "파쇄석, "
-            if (myData?.siteBottomCl3 != "0") bottom += "테크, "
-            if (myData?.siteBottomCl4 != "0") bottom += "자갈, "
-            if (myData?.siteBottomCl5 != "0") bottom += "맨흙, "
-            tvBottom.text = "바닥재질 - ${bottom}"
-            tvIntroduceComment.text = myData?.intro
-            tvConvenienceComment.text =
-                "편의시설 - 화장실: ${myData?.toiletCo} 샤워실: ${myData?.swrmCo} 개수대: ${myData?.wtrplCo} 화로대-${myData?.brazierCl}"
-            tvConvenienceComment2.text = "부대시설 - ${myData?.sbrsCl}"
-            tvConvenienceThema.text = "테마 - ${myData?.themaEnvrnCl}"
-            tvConvenienceNear.text = "주변이용가능시설 - ${myData?.posblFcltyCl}"
-            tvConvenienceFeature.text = "특징 - ${myData?.featureNm}"
-            viewModel.setUpParkParameter(contentId)
-        }
-        ivArrowBack.setOnClickListener {
-            finish()
-        }
-        ivCallCamping.setOnClickListener {
-            val callNum = myData?.tel
-            // 전화를 걸기 위한 Intent 생성
-            val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$callNum"))
-            startActivity(intent)
-        }
-        btnReserve.setOnClickListener{
-            val reserveUrl = myData?.resveUrl
-            Log.d("asdf", "$reserveUrl")
-            if(!reserveUrl.isNullOrBlank()){
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(reserveUrl))
-                startActivity(intent)
-            } else{
-                Toast.makeText(this@CampDetailActivity, "등록된 홈페이지가 없습니다.", Toast.LENGTH_SHORT).show()
-            }
-        }
+        myId = intent.getStringExtra("campData")
+        myId?.let { viewModel.setUpParkParameter(it) }
+        viewModel.callIdData(myId!!)
 
         scrollTab()
 
         btnDetailsattel.setOnClickListener {
-            when(maptype){
+            when (maptype) {
                 1 -> {
                     naverMap?.mapType = NaverMap.MapType.Satellite
-                    maptype+=1
+                    maptype += 1
                     btnDetailsattel.text = "위성도"
                 }
+
                 2 -> {
                     naverMap?.mapType = NaverMap.MapType.Terrain
-                    maptype+=1
+                    maptype += 1
                     btnDetailsattel.text = "지형도"
                 }
+
                 3 -> {
                     naverMap?.mapType = NaverMap.MapType.Basic
-                    maptype=1
+                    maptype = 1
                     btnDetailsattel.text = "기본"
                 }
             }
@@ -146,19 +199,21 @@ class CampDetailActivity : AppCompatActivity(),OnMapReadyCallback {
 
         fcMap.setOnTouchListener(object : OnTouchListener {
             override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-               when(event?.action){
-                   MotionEvent.ACTION_MOVE -> {
-                       Log.d("test","mapview: actionmove")
-                       scrollView.setScrollingEnabled(false)
-                   //scrollView.requestDisallowInterceptTouchEvent(true)
-                   }
-                   MotionEvent.ACTION_UP -> {
-                       scrollView.setScrollingEnabled(true)
-                   }
-                   MotionEvent.ACTION_CANCEL -> {
-                       scrollView.setScrollingEnabled(true)
-                   }
-               }
+                when (event?.action) {
+                    MotionEvent.ACTION_MOVE -> {
+                        Log.d("test", "mapview: actionmove")
+                        scrollView.setScrollingEnabled(false)
+                        //scrollView.requestDisallowInterceptTouchEvent(true)
+                    }
+
+                    MotionEvent.ACTION_UP -> {
+                        scrollView.setScrollingEnabled(true)
+                    }
+
+                    MotionEvent.ACTION_CANCEL -> {
+                        scrollView.setScrollingEnabled(true)
+                    }
+                }
                 return onTouchEvent(event)
             }
         })
@@ -166,7 +221,7 @@ class CampDetailActivity : AppCompatActivity(),OnMapReadyCallback {
 
     }
 
-    private fun scrollTab() =with(binding){
+    private fun scrollTab() = with(binding) {
         tvInformationTab.setOnClickListener {
             scrollToView(tvInformation)
         }
@@ -196,7 +251,7 @@ class CampDetailActivity : AppCompatActivity(),OnMapReadyCallback {
                 val userDocRef = db.collection("users").document("Kakao${user?.id}")
                 userDocRef.get().addOnSuccessListener {
                     val bookmarkedList = it.get("bookmarked") as? List<*>
-                    if (bookmarkedList != null && bookmarkedList.contains(myData?.contentId)) {
+                    if (bookmarkedList != null && bookmarkedList.contains(myId)) {
                         ivArrowBookmark.setImageResource(R.drawable.ic_bookmark_checked)
                     } else {
                         ivArrowBookmark.setImageResource(R.drawable.ic_bookmark)
@@ -207,6 +262,7 @@ class CampDetailActivity : AppCompatActivity(),OnMapReadyCallback {
             }
         }
     }
+
     private fun clickBookmarked() = with(binding) {
         ivArrowBookmark.setOnClickListener {
             UserApiClient.instance.me { user, error ->
@@ -217,7 +273,7 @@ class CampDetailActivity : AppCompatActivity(),OnMapReadyCallback {
                     userDocRef.get().addOnSuccessListener { document ->
                         val bookmarkedList = document.get("bookmarked") as? List<*>
                         Timber.tag("북마크리스트검사").d(bookmarkedList.toString())
-                        if (bookmarkedList?.contains(myData?.contentId) == true) {
+                        if (bookmarkedList?.contains(myId) == true) {
                             modifyBookmarked(userDocRef, bookmarkedList, deleteFromList = true)
                             Timber.tag("북마크삭제검사").d(bookmarkedList.toString())
                         } else {
@@ -230,47 +286,56 @@ class CampDetailActivity : AppCompatActivity(),OnMapReadyCallback {
             }
         }
     }
-    private fun modifyBookmarked(userDocRef: DocumentReference, bookmarkedList: List<*>?, deleteFromList: Boolean) = with(binding) {
+
+    private fun modifyBookmarked(
+        userDocRef: DocumentReference,
+        bookmarkedList: List<*>?,
+        deleteFromList: Boolean
+    ) = with(binding) {
         Timber.tag("모디파이검사").d(bookmarkedList.toString())
-        val updatedList = bookmarkedList?.toMutableList()?: mutableListOf()
+        val updatedList = bookmarkedList?.toMutableList() ?: mutableListOf()
         if (deleteFromList) {
-            updatedList.remove(myData?.contentId)
+            updatedList.remove(myId)
             userDocRef.update("bookmarked", updatedList)
                 .addOnSuccessListener {
                     Toast.makeText(binding.root.context, "북마크가 해제되었습니다.", Toast.LENGTH_SHORT).show()
                     ivArrowBookmark.setImageResource(R.drawable.ic_bookmark)
                 }
                 .addOnFailureListener {
-                    Toast.makeText(binding.root.context, "북마크 해제에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(binding.root.context, "북마크 해제에 실패했습니다.", Toast.LENGTH_SHORT)
+                        .show()
                 }
         } else {
-            updatedList.add(myData?.contentId)
+            updatedList.add(myId)
             userDocRef.update("bookmarked", updatedList)
                 .addOnSuccessListener {
                     Toast.makeText(binding.root.context, "북마크가 추가되었습니다.", Toast.LENGTH_SHORT).show()
                     ivArrowBookmark.setImageResource(R.drawable.ic_bookmark_checked)
                 }
                 .addOnFailureListener {
-                    Toast.makeText(binding.root.context, "북마크 추가에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(binding.root.context, "북마크 추가에 실패했습니다.", Toast.LENGTH_SHORT)
+                        .show()
                 }
         }
     }
 
     override fun onMapReady(p0: NaverMap) {
+        Log.d("Detail", "onMapReady")
         naverMap = p0
         //한번도 카메라 영역 제한
         naverMap?.minZoom = 6.0
         naverMap?.maxZoom = 18.0
-        naverMap?.extent = LatLngBounds(LatLng(32.973077, 124.270981), LatLng(38.856197,130.051725 ))
+        naverMap?.extent =
+            LatLngBounds(LatLng(32.973077, 124.270981), LatLng(38.856197, 130.051725))
 
-        if(myData.toString().isNotEmpty()){
-            val mapY = if(myData?.mapY.isNullOrEmpty()) 45.0 else myData?.mapY!!.toDouble()
-            val mapX = if(myData?.mapX.isNullOrEmpty()) 130.0 else myData?.mapX!!.toDouble()
+        if(mapX != null && mapY != null){
+            val mapY = if(mapY.isNullOrEmpty()) 45.0 else mapY!!.toDouble()
+            val mapX = if(mapX.isNullOrEmpty()) 130.0 else mapX!!.toDouble()
             val cameraPosition = CameraPosition(LatLng(mapY, mapX), 10.0)
             val marker = Marker()
             Timber.tag("test").d(naverMap.toString())
             marker.position = LatLng(mapY,mapX)
-            marker.captionText = myData?.facltNm.toString()
+            marker.captionText = campName.toString()
             marker.captionRequestedWidth = 200
             marker.setCaptionAligns(Align.Top)
             marker.captionOffset = 10
@@ -283,7 +348,7 @@ class CampDetailActivity : AppCompatActivity(),OnMapReadyCallback {
     override fun onDestroy() {
         super.onDestroy()
         mapView = null
-        Log.d("test","맵뷰 파괴됨")
+        Log.d("test", "맵뷰 파괴됨")
     }
 
 }

@@ -53,9 +53,11 @@ class SearchFragment : Fragment() {
 
     private fun initViewModel() = with(viewModel) {
         keyword.observe(viewLifecycleOwner){
+            Log.d("Search", "키워드 : ${it.size}")
             listAdapter.submitList(it)
         }
         myList.observe(viewLifecycleOwner){
+            Log.d("Search", "옵저빙확 : ${it.size}")
             listAdapter.submitList(it)
         }
     }
@@ -209,7 +211,6 @@ class SearchFragment : Fragment() {
          */
         tvEdit.setOnKeyListener{_, KeyCode, event ->
             if((event.action==KeyEvent.ACTION_DOWN) && (KeyCode==KeyEvent.KEYCODE_ENTER)){
-//                viewModel.clearCampList()
                 val searchText = binding.tvEdit.text.toString()
                 viewModel.setUpParkParameter(searchText)
                 binding.root.hideKeyboard()
