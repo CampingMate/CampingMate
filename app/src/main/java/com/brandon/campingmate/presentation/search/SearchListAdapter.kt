@@ -1,10 +1,13 @@
 package com.brandon.campingmate.presentation.search
 
 import android.content.Intent
+import android.graphics.drawable.ColorDrawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +16,7 @@ import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.databinding.ItemBigCampBinding
 import com.brandon.campingmate.presentation.campdetail.CampDetailActivity
 import com.bumptech.glide.Glide
+import kotlin.math.roundToInt
 
 class SearchListAdapter : ListAdapter<CampEntity, SearchListAdapter.SearchViewHolder>(
     object : DiffUtil.ItemCallback<CampEntity>() {
@@ -54,12 +58,20 @@ class SearchListAdapter : ListAdapter<CampEntity, SearchListAdapter.SearchViewHo
             if(item.firstImageUrl.isNullOrBlank()){
                 ivBigItem.setImageResource(R.drawable.default_camping)
             } else{
-                Glide.with(binding.root).load(item.firstImageUrl).into(binding.ivBigItem)
+                Glide.with(binding.root)
+                    .load(item.firstImageUrl)
+                    .into(binding.ivBigItem)
+            }
+//            ivBigItem.setColorFilter(R.color.blackDimmed) 먼가 이상함..
+            if(item.lineIntro.isNullOrBlank()){
+                tvBigItemLineIntro.visibility = View.GONE
+            } else{
+                tvBigItemLineIntro.text = item.lineIntro
+                tvBigItemLineIntro.visibility = View.VISIBLE
             }
             Log.d("checkImage", "${item.lctCl}")
             tvBigItemName.text = item.facltNm
             tvBigItemAddr.text = item.addr1
-            tvBigItemLineIntro.text = item.lineIntro
             if(item.lctCl.toString() == "[]"){
                 tvBigItemTag.text = "[일반]"
             } else{
@@ -95,9 +107,11 @@ class SearchListAdapter : ListAdapter<CampEntity, SearchListAdapter.SearchViewHo
                     intro = item.intro,
                     themaEnvrnCl = item.themaEnvrnCl
                 )
+                val myId = item.contentId
 
                 val intent = Intent(binding.root.context, CampDetailActivity::class.java).apply {
                     putExtra("campData", myData)
+                    putExtra("campId", myId)
                 }
                 binding.root.context.startActivity(intent)
             }

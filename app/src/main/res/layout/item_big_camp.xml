@@ -33,9 +33,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="전남 담양군 봉산면 탄금길 9-26"
-        android:textSize="11sp"
-        app:layout_constraintStart_toStartOf="@+id/tv_big_item_name"
-        app:layout_constraintTop_toBottomOf="@+id/tv_big_item_name" />
+        android:textSize="12sp"
+        android:textColor="@color/search_text_gray"
+        app:layout_constraintStart_toStartOf="@+id/tv_big_item_line_intro"
+        app:layout_constraintTop_toBottomOf="@+id/tv_big_item_line_intro" />
 
     <TextView
         android:id="@+id/tv_big_item_line_intro"
@@ -44,10 +45,11 @@
         android:ellipsize="end"
         android:maxLines="2"
         android:text="담양 힐링파크에서 일상 속 쌓인 스트레스를 풀어보자담양 힐링파크에서 일상 속 쌓인 스트레스를 풀어보자담양 힐링파크에서힐링파크에서 일상 속 쌓인 스트레스를 풀어보자담양 힐링파크에서asdf"
-        android:textSize="11sp"
+        android:textSize="12sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/tv_big_item_addr"
-        app:layout_constraintTop_toBottomOf="@+id/tv_big_item_addr" />
+        android:layout_marginTop="2dp"
+        app:layout_constraintStart_toStartOf="@+id/tv_big_item_name"
+        app:layout_constraintTop_toBottomOf="@+id/tv_big_item_name" />
 
     <TextView
         android:id="@+id/tv_big_item_tag"
@@ -55,22 +57,23 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:text="글램핑"
+        android:layout_marginTop="8dp"
         android:textColor="@color/tag"
         android:textSize="11sp"
-        app:layout_constraintBottom_toTopOf="@+id/tv_big_item_line_intro"
-        app:layout_constraintEnd_toEndOf="@+id/tv_big_item_line_intro" />
+        app:layout_constraintEnd_toEndOf="@id/iv_big_item"
+        app:layout_constraintTop_toBottomOf="@id/iv_big_item"/>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_gravity="center"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="@color/view_gray"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_big_item_line_intro" />
+<!--    <View-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="1dp"-->
+<!--        android:layout_gravity="center"-->
+<!--        android:layout_marginStart="16dp"-->
+<!--        android:layout_marginTop="16dp"-->
+<!--        android:layout_marginEnd="16dp"-->
+<!--        android:background="@color/view_gray"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/tv_big_item_line_intro" />-->
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -95,19 +95,24 @@ class HomeFragment : Fragment() {
 
     private fun initView(data: Query, select:String) {
         Log.d("Home", "initView()-data:$data")
-        var limitData = data
+        var limitData = data.limit(10)
         var view = binding.rvDistrictItem
         dataItem.clear()
-        if (data == allCity)
-            limitData = data.limit(10)
-        else if (select == "theme")
-            limitData = data.whereNotEqualTo("districtItem", listOf<String>())
+//        if (data == allCity)
+//            limitData = data.limit(10)
+//        else if (select == "theme")
+//            limitData = data.whereNotEqualTo("districtItem", listOf<String>())
+        if (select == "theme")
+            limitData = data.whereNotEqualTo("themaEnvrnCl", listOf<String>()).limit(10)
 
         limitData.get().addOnSuccessListener { documents ->
             for (document in documents) {
                 val dataList = document.toObject(CampEntity::class.java)
                 dataItem.add(dataList)
-//                Log.d("Home","item : $dataItem")
+                if(select=="theme")
+                    Log.d("Home","theme item : $dataItem")
+                else
+                    Log.d("Home","district item : $dataItem")
             }
             view = when (select) {
                 "theme" -> binding.rvThemeItem

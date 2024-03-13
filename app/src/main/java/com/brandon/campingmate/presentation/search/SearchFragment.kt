@@ -133,7 +133,7 @@ class SearchFragment : Fragment() {
         btnApply.setOnClickListener {
             doNmList.clear()
             activatedChips.clear()
-//            viewModel.clearCampList()
+
 
             for (chipId in chipIds) {
                 val chip = root.findViewById<Chip>(chipId)
@@ -255,6 +255,9 @@ class SearchFragment : Fragment() {
     private fun scrollTab() =with(binding){
         searchType.setOnClickListener {
             scrollToView(tvSearchType)
+        }
+        searchLocation.setOnClickListener {
+            scrollToView(tvSearchLocation)
         }
         searchConvenience.setOnClickListener {
             scrollToView(tvSearchConvenience)
