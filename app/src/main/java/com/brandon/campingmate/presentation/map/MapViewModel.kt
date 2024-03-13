@@ -44,7 +44,7 @@ class MapViewModel : ViewModel(){
     }
     fun getBlParamHashmap(): HashMap<String, String> {
         var hashMap = hashMapOf(
-            "numOfRows" to "4000",
+            "numOfRows" to "2000",
             "pageNo" to "1",
             "MobileOS" to "AND",
             "MobileApp" to "com.brandon.campingmate",
