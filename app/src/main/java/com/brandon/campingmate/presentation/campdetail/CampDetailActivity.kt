@@ -1,9 +1,12 @@
 package com.brandon.campingmate.presentation.campdetail
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -45,7 +48,6 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     }
     private val listAdapter: CommentListAdapter by lazy { CommentListAdapter() }
 
-    //    private var myData: CampEntity? = null
     private val db = FirebaseFirestore.getInstance()
     private val imageUrls = mutableListOf<String>()
     private var mapView: MapView? = null
@@ -55,6 +57,10 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private var mapX: String? = null
     private var mapY: String? = null
     private var campName: String? = null
+    private var myImage: String = ""
+    companion object{
+        private const val REQUEST_CODE_IMAGE_PICK = 1001
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -187,32 +193,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         recyclerComment.layoutManager =
             LinearLayoutManager(this@CampDetailActivity, LinearLayoutManager.VERTICAL, false)
         scrollTab()
-        commentSend.setOnClickListener {
-            commentSend.hideKeyboardInput()
-            UserApiClient.instance.me { user, error ->
-                if (user?.id != null) {
-                    val userDocRef = db.collection("users").document("Kakao${user.id}")
-                    userDocRef
-                        .get()
-                        .addOnSuccessListener {
-                            val userId = "Kakao${user.id}"
-                            val userName = it.get("nickName")
-                            val content = commentEdit.text.toString()
-                            val date = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(
-                                Date()
-                            )
-                            val img = R.drawable.ic_caravan
-                            val imgUri = Uri.parse("android.resource://${packageName}/${img}")
-                            val myComment = CampCommentEntity(userId, userName, content, date, imgUri)
-                            viewModel.uploadComment(myId!!, myComment)
-                            commentEdit.text.clear()
-                        }
-                } else {
-                    SnackbarUtil.showSnackBar(it)
-                }
-            }
-        }
-
+        comment()
 
         btnDetailsattel.setOnClickListener {
             when (maptype) {
@@ -258,6 +239,65 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         })
 
 
+    }
+
+    /**
+     * 댓글
+     */
+    private fun comment() =with(binding) {
+        commentPlusImage.setOnClickListener {
+            openGalleryForImage()
+        }
+        commentSend.setOnClickListener {
+            commentSend.hideKeyboardInput()
+            UserApiClient.instance.me { user, error ->
+                if (user?.id != null) {
+                    val userDocRef = db.collection("users").document("Kakao${user.id}")
+                    userDocRef
+                        .get()
+                        .addOnSuccessListener {
+                            val userId = "Kakao${user.id}"
+                            val userName = it.get("nickName")
+                            val content = commentEdit.text.toString()
+                            val date = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(
+                                Date()
+                            )
+                            val myImage = if(selectedImage.visibility == View.VISIBLE){
+                                myImage
+                            } else{
+                                ""
+                            }
+                            val myImageUri = Uri.parse(myImage)
+                            val myComment = CampCommentEntity(userId, userName, content, date, myImageUri)
+                            viewModel.uploadComment(myId!!, myComment)
+                            commentEdit.text.clear()
+                            //여기서
+                            selectedImage.setImageURI(null)
+                            selectedImage.visibility = View.GONE
+                        }
+                } else {
+                    SnackbarUtil.showSnackBar(it)
+                }
+            }
+        }
+    }
+
+    private fun openGalleryForImage() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(intent, REQUEST_CODE_IMAGE_PICK)
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_IMAGE_PICK && resultCode == Activity.RESULT_OK && data != null) {
+            val selectedImageUri: Uri? = data.data
+            //firebase에 사진 올리기
+//            viewModel.uploadImage(selectedImageUri)
+            selectedImageUri?.let {
+                binding.selectedImage.visibility = View.VISIBLE
+                binding.selectedImage.setImageURI(it)
+                myImage = it.toString()
+            }
+        }
     }
 
     private fun scrollTab() = with(binding) {

@@ -1,6 +1,8 @@
 package com.brandon.campingmate.presentation.campdetail
 
+import android.content.Intent
 import android.net.Uri
+import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,7 +17,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
+import com.google.firebase.storage.storage
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class CampDetailViewModel : ViewModel() {
 
@@ -137,6 +141,30 @@ class CampDetailViewModel : ViewModel() {
                 } else {
                     Log.d("CampDetailViewModel", "No such document")
                 }
+            }
+    }
+    fun uploadImage(selectedImageUri: Uri?) {
+        val storage = Firebase.storage
+        val storageRef = storage.reference
+
+        val imageFileName = "${UUID.randomUUID()}.jpg"
+        val campCommentRef = storageRef.child("campComment/$imageFileName")
+        // 이미지 업로드
+        campCommentRef.putFile(selectedImageUri!!)
+            .addOnSuccessListener { taskSnapshot ->
+                // 업로드 성공 시 이미지 다운로드 URL 가져오기
+                campCommentRef.downloadUrl.addOnSuccessListener { uri ->
+                    // 다운로드 URL을 Firebase Firestore에 저장하거나 다른 작업 수행
+                    val imageUrl = uri.toString()
+                    // 여기서 imageUrl을 사용하여 Firebase Firestore에 저장하거나 이미지 주소를 얻어오는 등의 작업을 수행할 수 있습니다.
+                }.addOnFailureListener { exception ->
+                    // 이미지 다운로드 URL을 가져오지 못한 경우 처리
+                    Log.e("FirebaseStorage", "Failed to get download URL: $exception")
+                }
+            }
+            .addOnFailureListener { exception ->
+                // 이미지 업로드 실패 시 처리
+                Log.e("FirebaseStorage", "Failed to upload image: $exception")
             }
     }
 

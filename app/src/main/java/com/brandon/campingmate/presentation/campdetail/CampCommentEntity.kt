@@ -7,5 +7,5 @@ data class CampCommentEntity(
     val userName: Any?,
     val content: String,
     val date: String,
-    val imageUrl: Uri,
+    val imageUrl: Uri?,
 )
