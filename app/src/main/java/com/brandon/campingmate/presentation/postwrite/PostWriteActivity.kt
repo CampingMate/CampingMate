@@ -1,16 +1,26 @@
 package com.brandon.campingmate.presentation.postwrite
 
+import ImagePicker
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.brandon.campingmate.R
@@ -35,14 +45,43 @@ class PostWriteActivity : AppCompatActivity() {
         )
     }
 
+    private lateinit var multipleImagePickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>
+    private lateinit var permissionLauncher: ActivityResultLauncher<String>
+
+    private var previouslySelectedImages: List<Uri> = listOf()
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        initActivityResults()
         initView()
         initListener()
         initViewModel()
         setupOnBackPressedHandling()
+    }
+
+    private fun initActivityResults() {
+
+        multipleImagePickerLauncher =
+            registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(5)) { uris ->
+                if (uris.isNotEmpty()) {
+                    Timber.d("PhotoPicker", "Number of items selected: ${uris.size}")
+                } else {
+                    Timber.d("PhotoPicker", "No media selected")
+                }
+            }
+
+        // 권한 요청 결과를 처리하는 ActivityResultLauncher 초기화
+        permissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (isGranted) {
+                    showImagePickerBottomSheet()
+                } else {
+                    Toast.makeText(this, "권한이 거부되었습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
     }
 
     private fun initViewModel() = with(viewModel) {
@@ -65,13 +104,10 @@ class PostWriteActivity : AppCompatActivity() {
                     putExtra(EXTRA_POST_ID, event.postId)
                 }
                 val options = ActivityOptionsCompat.makeCustomAnimation(
-                    this,
-                    R.anim.slide_up,
-                    R.anim.anim_none
+                    this, R.anim.slide_up, R.anim.anim_none
                 ).toBundle()
                 setResult(Activity.RESULT_OK)
                 startActivity(intent, options)
-//                startActivityForResult(intent, POST_WRITE_REQUEST_CODE, options)
                 ActivityCompat.finishAfterTransition(this)
             }
 
@@ -99,7 +135,64 @@ class PostWriteActivity : AppCompatActivity() {
                 )
             )
         }
+        btnAddIMage.setOnClickListener {
+            // 권한 얻기 + 갤러리에서 이미지 가져오기
+            checkPermissionAndPickImage()
+        }
     }
+
+    private fun showImagePickerBottomSheet() {
+
+        val bottomSheet = ImagePicker(
+            maxSelection = 5,
+            preselectedImages = previouslySelectedImages,
+            gridCount = 3,
+            gridSpacing = 8,
+            includeEdge = false,
+            cornerRadius = 16f,
+            bottomSheetUsageDescription = null,
+            onSelectionComplete = { selectedImages ->
+                previouslySelectedImages = selectedImages
+                Timber.tag("PICK").d("됐다 걸려들었어!: $selectedImages")
+            })
+        bottomSheet.show(supportFragmentManager, bottomSheet.tag)
+    }
+
+    private fun checkPermissionAndPickImage() {
+        when {
+            ContextCompat.checkSelfPermission(
+                this, Manifest.permission.READ_MEDIA_IMAGES
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                // 권한이 이미 있을 경우, 이미지 선택기 실행
+                showImagePickerBottomSheet()
+            }
+
+            else -> {
+                // 권한 요청
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    permissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
+                }
+            }
+        }
+    }
+
+    private fun pickImageFromGallery() {
+        multipleImagePickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_PERMISSION) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                pickImageFromGallery()
+            } else {
+                Toast.makeText(this, "권한이 거부되었습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
@@ -130,5 +223,10 @@ class PostWriteActivity : AppCompatActivity() {
         currentFocusedView?.let {
             inputMethodManager.hideSoftInputFromWindow(it.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
         }
+    }
+
+    companion object {
+        private const val REQUEST_PERMISSION = 100
+        private const val PICK_IMAGE_REQUEST = 101
     }
 }

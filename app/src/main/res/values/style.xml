@@ -30,8 +30,9 @@
         <item name="android:textSize">14sp</item>
         <item name="chipEndPadding">12dp</item>
         <item name="chipStartPadding">12dp</item>
-        <item name="chipMinHeight">36dp</item>
+        <item name="chipMinHeight">50dp</item>
     </style>
+<!--  원래 customChipChoice의 chipEnd/startPadding은 12였다.  -->
     <style name="CustomChipChoiceLocation" parent="@style/Widget.MaterialComponents.Chip.Choice">
         <item name="chipBackgroundColor">@color/chip_bg</item>
         <item name="android:textColor">@color/chip_txt</item>
@@ -39,7 +40,7 @@
         <item name="android:textSize">14sp</item>
         <item name="chipEndPadding">24dp</item>
         <item name="chipStartPadding">24dp</item>
-        <item name="chipMinHeight">36dp</item>
+        <item name="chipMinHeight">50dp</item>
     </style>
     <style name="CustomChipChoiceHome" parent="@style/Widget.MaterialComponents.Chip.Choice">
         <item name="chipBackgroundColor">@color/chip_bg</item>

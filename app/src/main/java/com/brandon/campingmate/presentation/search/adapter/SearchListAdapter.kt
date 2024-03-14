@@ -1,4 +1,4 @@
-package com.brandon.campingmate.presentation.search
+package com.brandon.campingmate.presentation.search.adapter
 
 import android.content.Intent
 import android.util.Log
@@ -19,11 +19,7 @@ class SearchListAdapter : ListAdapter<CampEntity, SearchListAdapter.SearchViewHo
         override fun areItemsTheSame(
             oldItem: CampEntity,
             newItem: CampEntity
-        ): Boolean = if (oldItem is CampEntity && newItem is CampEntity) {
-            oldItem.contentId == newItem.contentId
-        } else {
-            oldItem == newItem
-        }
+        ): Boolean = oldItem.contentId == newItem.contentId
 
         override fun areContentsTheSame(
             oldItem: CampEntity,
@@ -41,6 +37,7 @@ class SearchListAdapter : ListAdapter<CampEntity, SearchListAdapter.SearchViewHo
         )
 
     override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
+        Log.d("Search", "onBindViewHolder - Position: $position")
         holder.onBind(getItem(position))
     }
 
@@ -48,18 +45,27 @@ class SearchListAdapter : ListAdapter<CampEntity, SearchListAdapter.SearchViewHo
         private val binding: ItemBigCampBinding,
     ) : SearchViewHolder(binding.root) {
         override fun onBind(item: CampEntity) = with(binding) {
+            Log.d("Search", "onBind - Item: $item")
             if (item !is CampEntity) {
                 return@with
             }
             if(item.firstImageUrl.isNullOrBlank()){
                 ivBigItem.setImageResource(R.drawable.default_camping)
             } else{
-                Glide.with(binding.root).load(item.firstImageUrl).into(binding.ivBigItem)
+                Glide.with(binding.root)
+                    .load(item.firstImageUrl)
+                    .into(binding.ivBigItem)
+            }
+//            ivBigItem.setColorFilter(R.color.blackDimmed) 먼가 이상함..
+            if(item.lineIntro.isNullOrBlank()){
+                tvBigItemLineIntro.visibility = View.GONE
+            } else{
+                tvBigItemLineIntro.text = item.lineIntro
+                tvBigItemLineIntro.visibility = View.VISIBLE
             }
             Log.d("checkImage", "${item.lctCl}")
             tvBigItemName.text = item.facltNm
             tvBigItemAddr.text = item.addr1
-            tvBigItemLineIntro.text = item.lineIntro
             if(item.lctCl.toString() == "[]"){
                 tvBigItemTag.text = "[일반]"
             } else{
@@ -68,36 +74,9 @@ class SearchListAdapter : ListAdapter<CampEntity, SearchListAdapter.SearchViewHo
             ivBigItem.clipToOutline = true
 
             binding.root.setOnClickListener {
-                val myData = CampEntity(
-                    addr1 = item.addr1,
-                    contentId = item.contentId,
-                    facltNm = item.facltNm,
-                    wtrplCo = item.wtrplCo,
-                    brazierCl = item.brazierCl,
-                    sbrsCl = item.sbrsCl,
-                    posblFcltyCl = item.posblFcltyCl,
-                    hvofBgnde = item.hvofBgnde,
-                    hvofEnddle = item.hvofEnddle,
-                    toiletCo = item.toiletCo,
-                    swrmCo = item.swrmCo,
-                    featureNm = item.featureNm,
-                    induty = item.induty,
-                    tel = item.tel,
-                    homepage = item.homepage,
-                    resveCl = item.resveCl,
-                    siteBottomCl1 = item.siteBottomCl1,
-                    siteBottomCl2 = item.siteBottomCl2,
-                    siteBottomCl3 = item.siteBottomCl3,
-                    siteBottomCl4 = item.siteBottomCl4,
-                    siteBottomCl5 = item.siteBottomCl5,
-                    glampInnerFclty = item.glampInnerFclty,
-                    caravInnerFclty = item.caravInnerFclty,
-                    intro = item.intro,
-                    themaEnvrnCl = item.themaEnvrnCl
-                )
-
+                val myId = item.contentId
                 val intent = Intent(binding.root.context, CampDetailActivity::class.java).apply {
-                    putExtra("campData", myData)
+                    putExtra("campData", myId)
                 }
                 binding.root.context.startActivity(intent)
             }

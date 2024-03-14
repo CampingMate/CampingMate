@@ -71,9 +71,9 @@
                 android:id="@+id/iv_profile_img"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:visibility="invisible"
                 android:scaleType="centerInside"
-                android:src="@drawable/ic_camp" />
+                android:src="@drawable/ic_camp"
+                android:visibility="invisible" />
 
         </androidx.cardview.widget.CardView>
 
@@ -81,8 +81,8 @@
             android:id="@+id/btn_edit_img"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginTop="80dp"
             android:layout_marginStart="85dp"
+            android:layout_marginTop="80dp"
             android:backgroundTint="#d9d9d9"
             android:visibility="gone"
             app:cardCornerRadius="30dp"
@@ -102,17 +102,16 @@
             android:id="@+id/tv_profile_name"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="4dp"
             android:fontFamily="@font/spoqahansansneo_medium"
             android:textColor="@color/black"
             android:textSize="20sp"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="4dp"
             android:visibility="invisible"
             app:layout_constraintBottom_toTopOf="@+id/tv_profile_email"
             app:layout_constraintStart_toEndOf="@+id/cardView"
             app:layout_constraintTop_toTopOf="@+id/cardView"
-            app:layout_constraintVertical_chainStyle="packed"/>
-
+            app:layout_constraintVertical_chainStyle="packed" />
 
 
         <ImageView
@@ -131,9 +130,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:visibility="gone"
             android:fontFamily="@font/spoqahansansneo_regular"
             android:textColor="#848484"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/cardView"
             app:layout_constraintStart_toEndOf="@+id/cardView"
             app:layout_constraintTop_toBottomOf="@+id/tv_profile_name" />
@@ -142,21 +141,24 @@
             android:id="@+id/btn_logout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
             android:fontFamily="@font/spoqahansansneo_regular"
             android:text="@string/profile_logout"
+            android:layout_marginBottom="4dp"
             android:textColor="#4d4b4b"
             android:textSize="14sp"
             android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_profile_name"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardView" />
+            app:layout_constraintTop_toTopOf="@+id/tv_profile_name" />
 
         <LinearLayout
             android:id="@+id/ll_btn_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="26dp"
+            android:layout_marginTop="16dp"
             android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@+id/btn_logout">
+            app:layout_constraintTop_toBottomOf="@+id/cardView">
 
             <TextView
                 android:id="@+id/btn_go_login"
@@ -166,9 +168,9 @@
                 android:fontFamily="@font/spoqahansansneo_medium"
                 android:gravity="center"
                 android:text="@string/profile_login"
-                android:visibility="invisible"
                 android:textColor="@color/background"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:visibility="invisible" />
 
 
             <TextView
@@ -179,11 +181,67 @@
                 android:fontFamily="@font/spoqahansansneo_medium"
                 android:gravity="center"
                 android:text="@string/profile_edit"
-                android:textColor="#3b3939"
+                android:textColor="@color/black"
                 android:textSize="14sp"
                 android:visibility="gone" />
 
         </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view">
+
+            <TextView
+                android:id="@+id/tv_tab_login_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="200dp"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:gravity="center"
+                android:text="@string/profile_login_text"
+                android:textColor="@color/board_gray"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_tab_bookmarked"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="200dp"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:gravity="center"
+                android:text="@string/profile_tab_bookmarked"
+                android:textColor="@color/board_gray"
+                android:textSize="16sp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_tab_writing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="200dp"
+                android:fontFamily="@font/spoqahansansneo_regular"
+                android:gravity="center"
+                android:text="@string/profile_tab_writing"
+                android:textColor="@color/board_gray"
+                android:textSize="16sp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!--        <com.google.android.material.tabs.TabLayout-->
         <!--            android:id="@+id/tab_profile"-->
@@ -204,13 +262,6 @@
         <!--                android:layout_height="wrap_content"-->
         <!--                android:text="작성한 글" />-->
         <!--        </com.google.android.material.tabs.TabLayout>-->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="#ececec"
-            android:layout_marginBottom="16dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/linearLayout" />
 
         <LinearLayout
             android:id="@+id/linearLayout"
@@ -218,82 +269,63 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="26dp"
             android:orientation="horizontal"
-            android:gravity="center"
             app:layout_constraintTop_toBottomOf="@+id/ll_btn_layout">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/tab_bookmarked"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/spoqahansansneo_medium"
-                android:textSize="16sp"
-                android:text="@string/profile_bookmarked_camp"
-                android:gravity="center"/>
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tv_bookmarked_size"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/spoqahansansneo_medium"
+                    android:text="@string/profile_bookmarked_camp"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tv_bookmarked_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:fontFamily="@font/spoqahansansneo_medium"
+                    android:text="30"
+                    android:textColor="#939393"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/tab_writing"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:fontFamily="@font/spoqahansansneo_medium"
-                android:text="0"
-                android:textColor="#939393"
-                android:textSize="14sp"/>
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
 
-<!--            <LinearLayout-->
-<!--                android:id="@+id/tab_bookmarked"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="1"-->
-<!--                android:gravity="center"-->
-<!--                android:orientation="horizontal">-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/spoqahansansneo_medium"
+                    android:text="@string/proflie_wiriting"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
 
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:fontFamily="@font/spoqahansansneo_medium"-->
-<!--                    android:text="@string/profile_bookmarked_camp"-->
-<!--                    android:textColor="@color/black"-->
-<!--                    android:textSize="16sp" />-->
-
-<!--                <TextView-->
-<!--                    android:id="@+id/tv_bookmarked_size"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginStart="5dp"-->
-<!--                    android:fontFamily="@font/spoqahansansneo_medium"-->
-<!--                    android:text="30"-->
-<!--                    android:textColor="#939393"-->
-<!--                    android:textSize="14sp"-->
-<!--                    android:visibility="gone" />-->
-<!--            </LinearLayout>-->
-
-<!--            <LinearLayout-->
-<!--                android:id="@+id/tab_writing"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="1"-->
-<!--                android:gravity="center"-->
-<!--                android:orientation="horizontal">-->
-
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:fontFamily="@font/spoqahansansneo_medium"-->
-<!--                    android:text="@string/proflie_wiriting"-->
-<!--                    android:textColor="@color/black"-->
-<!--                    android:textSize="16sp" />-->
-
-<!--                <TextView-->
-<!--                    android:id="@+id/tv_writing_size"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginStart="5dp"-->
-<!--                    android:fontFamily="@font/spoqahansansneo_medium"-->
-<!--                    android:text="1000"-->
-<!--                    android:textColor="#939393"-->
-<!--                    android:textSize="14sp"-->
-<!--                    android:visibility="gone" />-->
-<!--            </LinearLayout>-->
+                <TextView
+                    android:id="@+id/tv_writing_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:fontFamily="@font/spoqahansansneo_medium"
+                    android:text="1000"
+                    android:textColor="#939393"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -317,8 +349,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="2dp"
                 android:layout_weight="1"
-                android:visibility="invisible"
                 android:background="@color/black"
+                android:visibility="invisible"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
             <View
@@ -365,62 +397,6 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/tv_tab_login_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/spoqahansansneo_regular"
-                android:gravity="center"
-                android:layout_marginTop="200dp"
-                android:text="@string/profile_login_text"
-                android:textColor="@color/board_gray"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tv_tab_bookmarked"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/spoqahansansneo_regular"
-                android:gravity="center"
-                android:layout_marginTop="200dp"
-                android:text="@string/profile_tab_bookmarked"
-                android:textColor="@color/board_gray"
-                android:textSize="16sp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tv_tab_writing"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/spoqahansansneo_regular"
-                android:gravity="center"
-                android:layout_marginTop="200dp"
-                android:text="@string/profile_tab_writing"
-                android:textColor="@color/board_gray"
-                android:textSize="16sp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
