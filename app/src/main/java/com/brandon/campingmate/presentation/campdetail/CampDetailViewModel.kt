@@ -11,6 +11,8 @@ import com.brandon.campingmate.R
 import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.network.retrofit.NetWorkClient
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.launch
@@ -23,6 +25,7 @@ class CampDetailViewModel : ViewModel() {
     val campEntity: LiveData<CampEntity?> get() = _campEntity
     private val _campComment: MutableLiveData<MutableList<CampCommentEntity>> = MutableLiveData()
     val campComment: LiveData<MutableList<CampCommentEntity>> get() = _campComment
+    private lateinit var listenerRegistration: ListenerRegistration
     fun setUpParkParameter(contentId: String) {
         val authKey = BuildConfig.camp_data_key
         communicateNetWork(hashMapOf(
@@ -86,7 +89,7 @@ class CampDetailViewModel : ViewModel() {
                     "userName" to myComment.userName,
                     "content" to myComment.content,
                     "date" to myComment.date,
-                    "img" to myComment.imageUrl
+                    "img" to myComment.imageUrl.toString()
                 )
                 commentList.add(newComment)
 
@@ -103,27 +106,42 @@ class CampDetailViewModel : ViewModel() {
             }
     }
 
-    fun callCommentData(myId: String) {
-        val db = Firebase.firestore
-        val campRef = db.collection("camps")
-            .whereEqualTo("contentId", myId)
-        campRef
-            .get()
-            .addOnSuccessListener { querySnapshot ->
-                val document = querySnapshot.documents[0]
-                val commentList = document.get("commentList") as? MutableList<Map<String, Any?>> ?: mutableListOf()
-                val comments = mutableListOf<CampCommentEntity>()
-                for(comment in commentList){
-                    val userId = comment["userId"] as String
-                    val userName = comment["userName"] as String
-                    val content = comment["content"] as String
-                    val date = comment["date"] as String
-                    val imageUrlString = comment["img"] as String
-                    val imageUrl = Uri.parse(imageUrlString)
-                    val data = CampCommentEntity(userId, userName, content, date, imageUrl)
-                    comments.add(data)
+    fun registerRealtimeUpdates(myId: String) {
+        listenerRegistration = FirebaseFirestore.getInstance()
+            .collection("camps")
+            .whereEqualTo("contentId", myId)  // 필터링 조건에 맞게 설정
+            .addSnapshotListener { snapshot, exception ->
+                if (exception != null) {
+                    Log.e("CampDetailViewModel", "Listen failed", exception)
+                    return@addSnapshotListener
                 }
-                _campComment.value = comments
+
+                if (snapshot != null && !snapshot.isEmpty) {
+                    // 실시간 업데이트가 발생했을 때 RecyclerView에 반영
+                    val comments = mutableListOf<CampCommentEntity>()
+                    for (doc in snapshot) {
+                        val commentList = doc.get("commentList") as? MutableList<Map<String, Any?>> ?: mutableListOf()
+                        for (comment in commentList) {
+                            val userId = comment["userId"] as String
+                            val userName = comment["userName"] as String
+                            val content = comment["content"] as String
+                            val date = comment["date"] as String
+                            val imageUrlString = comment["img"] as String
+                            val imageUrl = Uri.parse(imageUrlString)
+                            val data = CampCommentEntity(userId, userName, content, date, imageUrl)
+                            comments.add(data)
+                        }
+                    }
+                    // RecyclerView에 데이터를 업데이트
+                    _campComment.value = comments
+                } else {
+                    Log.d("CampDetailViewModel", "No such document")
+                }
             }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        listenerRegistration.remove()
     }
 }

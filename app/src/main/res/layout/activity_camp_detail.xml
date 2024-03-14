@@ -509,7 +509,7 @@
                     <EditText
                         android:id="@+id/comment_edit"
                         android:hint="@string/camp_detail_comment_hint"
-                        android:layout_width="match_parent"
+                        android:layout_width="290dp"
                         android:layout_height="wrap_content"
                         android:background="@null"
                         android:layout_marginStart="16dp"

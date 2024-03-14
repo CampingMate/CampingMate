@@ -22,6 +22,7 @@ import com.brandon.campingmate.presentation.campdetail.adapter.ViewPagerAdapter
 import com.brandon.campingmate.presentation.common.SnackbarUtil
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.kakao.sdk.user.UserApiClient
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
@@ -66,7 +67,6 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         mapView = binding.fcMap
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync(this)
-
     }
 
     private fun initViewPager() {
@@ -181,7 +181,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         myId = intent.getStringExtra("campData")
         myId?.let { viewModel.setUpParkParameter(it) }
         viewModel.callIdData(myId!!)
-        viewModel.callCommentData(myId!!)
+        viewModel.registerRealtimeUpdates(myId!!)
         //리사이클러뷰 연결
         recyclerComment.adapter = listAdapter
         recyclerComment.layoutManager =
@@ -205,6 +205,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                             val imgUri = Uri.parse("android.resource://${packageName}/${img}")
                             val myComment = CampCommentEntity(userId, userName, content, date, imgUri)
                             viewModel.uploadComment(myId!!, myComment)
+                            commentEdit.text.clear()
                         }
                 } else {
                     SnackbarUtil.showSnackBar(it)
