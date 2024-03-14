@@ -7,4 +7,5 @@
     <string name="camp_detail_convenience_lesure">편의 시설 및 레저</string>
     <string name="camp_detail_map">지도</string>
     <string name="camp_detail_comment">댓글</string>
+    <string name="camp_detail_comment_hint">댓글을 입력하세요.</string>
 </resources>
