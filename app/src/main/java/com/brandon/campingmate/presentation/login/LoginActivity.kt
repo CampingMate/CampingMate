@@ -1,11 +1,16 @@
 package com.brandon.campingmate.presentation.login
 
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.brandon.campingmate.databinding.ActivityLoginBinding
+import com.brandon.campingmate.utils.profileImgUpload
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
+import com.google.firebase.storage.storage
 import com.kakao.sdk.auth.LoginClient
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.AuthErrorCause
@@ -63,19 +68,43 @@ class LoginActivity : AppCompatActivity() {
 //                startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
                 val db = Firebase.firestore
                 UserApiClient.instance.me { user, _ ->
+                    profileImgUpload(Uri.parse(user?.kakaoAccount?.profile?.profileImageUrl), "Kakao${user?.id}")
+
                     val userModel = hashMapOf(
                         "nickName" to "${user?.kakaoAccount?.profile?.nickname}",
-                        "profileImage" to "${user?.kakaoAccount?.profile?.profileImageUrl}",
+                        "profileImage" to null,
                         "userEmail" to "${user?.kakaoAccount?.email}",
-                        "bookmarked" to "null",
+                        "bookmarked" to null,
                         "writing" to null
                     )
                     val documentRef = db.collection("users").document("Kakao${user?.id}")
                     documentRef.get().addOnSuccessListener {
                         if (!it.exists()) {
                             documentRef.set(userModel)
+                            Firebase.storage.getReference("profileImage").child("Kakao${user?.id}").downloadUrl.addOnCompleteListener {
+                                if (it.isSuccessful) {
+                                    val profileImgURI = hashMapOf<String, Any>(
+                                        "profileImage" to it.result.toString()
+                                    )
+                                    documentRef.update(profileImgURI)
+                                }
+                            }
                         }
                     }
+
+                    //SharedPreferences 암호화 후 저장
+                    val masterKeyAlias = MasterKey
+                        .Builder(applicationContext, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
+                        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                        .build()
+                    val pref = EncryptedSharedPreferences.create(
+                        this, //Context
+                        "userID",   //file name
+                        masterKeyAlias,
+                        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,  //key 암호화
+                        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM     //value 암호화
+                    )
+                    pref.edit().putString("myID","Kakao${user?.id}").apply()
                     finish()
                 }
             }

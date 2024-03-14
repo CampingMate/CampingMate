@@ -335,7 +335,7 @@
                     android:checkable="true"
                     android:clickable="true"
                     android:fontFamily="@font/spoqahansansneo_medium"
-                    android:text="충청권"
+                    android:text="충청도"
                     app:chipCornerRadius="6dp"
                     app:chipStrokeWidth="1dp" />
 
@@ -347,7 +347,7 @@
                     android:checkable="true"
                     android:clickable="true"
                     android:fontFamily="@font/spoqahansansneo_medium"
-                    android:text="강원권"
+                    android:text="강원도"
                     app:chipCornerRadius="6dp"
                     app:chipStrokeWidth="1dp" />
 
