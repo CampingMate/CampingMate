@@ -1,5 +1,6 @@
 package com.brandon.campingmate.presentation.campdetail
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -20,6 +21,8 @@ class CampDetailViewModel : ViewModel() {
     val imageResult: LiveData<MutableList<String>> get() = _imageResult
     private val _campEntity: MutableLiveData<CampEntity?> = MutableLiveData()
     val campEntity: LiveData<CampEntity?> get() = _campEntity
+    private val _campComment: MutableLiveData<MutableList<CampCommentEntity>> = MutableLiveData()
+    val campComment: LiveData<MutableList<CampCommentEntity>> get() = _campComment
     fun setUpParkParameter(contentId: String) {
         val authKey = BuildConfig.camp_data_key
         communicateNetWork(hashMapOf(
@@ -66,6 +69,61 @@ class CampDetailViewModel : ViewModel() {
             }
             .addOnFailureListener { exception ->
                 Log.e("CampDetailViewModel", "Error: ", exception)
+            }
+    }
+
+    fun uploadComment(myId: String, myComment: CampCommentEntity) {
+        val db = Firebase.firestore
+        val campRef = db.collection("camps")
+            .whereEqualTo("contentId", myId)
+        campRef
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                val document = querySnapshot.documents[0]
+                val commentList = document.get("commentList") as? MutableList<Map<String, Any?>> ?: mutableListOf()
+                val newComment = mapOf(
+                    "userId" to myComment.userId,
+                    "userName" to myComment.userName,
+                    "content" to myComment.content,
+                    "date" to myComment.date,
+                    "img" to myComment.imageUrl
+                )
+                commentList.add(newComment)
+
+                document.reference.update("commentList", commentList)
+                    .addOnSuccessListener {
+                        Log.d("CampDetailViewModel", "댓글 업로드 완료")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.d("CampDetailViewModel", "댓글 업로드 실패: $e")
+                    }
+            }
+            .addOnFailureListener { e ->
+                Log.d("CampDetailViewModel", "캠핑장 쿼리중 오류 발생 : $e")
+            }
+    }
+
+    fun callCommentData(myId: String) {
+        val db = Firebase.firestore
+        val campRef = db.collection("camps")
+            .whereEqualTo("contentId", myId)
+        campRef
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                val document = querySnapshot.documents[0]
+                val commentList = document.get("commentList") as? MutableList<Map<String, Any?>> ?: mutableListOf()
+                val comments = mutableListOf<CampCommentEntity>()
+                for(comment in commentList){
+                    val userId = comment["userId"] as String
+                    val userName = comment["userName"] as String
+                    val content = comment["content"] as String
+                    val date = comment["date"] as String
+                    val imageUrlString = comment["img"] as String
+                    val imageUrl = Uri.parse(imageUrlString)
+                    val data = CampCommentEntity(userId, userName, content, date, imageUrl)
+                    comments.add(data)
+                }
+                _campComment.value = comments
             }
     }
 }

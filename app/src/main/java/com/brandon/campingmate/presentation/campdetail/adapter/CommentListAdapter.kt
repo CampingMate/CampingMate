@@ -49,6 +49,7 @@ class CommentListAdapter(
             Glide.with(binding.root)
                 .load(item.imageUrl)
                 .into(ivCommentImg)
+            tvCommentUsername.text = item.userName.toString()
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.brandon.campingmate.presentation.campdetail
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -7,16 +8,16 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
-import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.ActivityCampDetailBinding
 import com.brandon.campingmate.domain.model.CampEntity
+import com.brandon.campingmate.presentation.campdetail.adapter.CommentListAdapter
 import com.brandon.campingmate.presentation.campdetail.adapter.ViewPagerAdapter
 import com.brandon.campingmate.presentation.common.SnackbarUtil
 import com.google.firebase.firestore.DocumentReference
@@ -25,13 +26,15 @@ import com.kakao.sdk.user.UserApiClient
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.CameraPosition
-import com.naver.maps.map.MapFragment
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.Marker
 import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -39,6 +42,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private val viewModel by lazy {
         ViewModelProvider(this)[CampDetailViewModel::class.java]
     }
+    private val listAdapter: CommentListAdapter by lazy { CommentListAdapter() }
 
     //    private var myData: CampEntity? = null
     private val db = FirebaseFirestore.getInstance()
@@ -81,6 +85,11 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         campEntity.observe(this@CampDetailActivity) {
             if (it != null) {
                 initSetting(it)
+            }
+        }
+        campComment.observe(this@CampDetailActivity){
+            if(it != null){
+                listAdapter.submitList(it)
             }
         }
     }
@@ -172,14 +181,32 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         myId = intent.getStringExtra("campData")
         myId?.let { viewModel.setUpParkParameter(it) }
         viewModel.callIdData(myId!!)
-
+        viewModel.callCommentData(myId!!)
+        //리사이클러뷰 연결
+        recyclerComment.adapter = listAdapter
+        recyclerComment.layoutManager =
+            LinearLayoutManager(this@CampDetailActivity, LinearLayoutManager.VERTICAL, false)
         scrollTab()
         commentSend.setOnClickListener {
-            UserApiClient.instance.me{ user, error ->
-                if(user?.id != null){
+            commentSend.hideKeyboardInput()
+            UserApiClient.instance.me { user, error ->
+                if (user?.id != null) {
                     val userDocRef = db.collection("users").document("Kakao${user.id}")
-                    val campId = myId
-                } else{
+                    userDocRef
+                        .get()
+                        .addOnSuccessListener {
+                            val userId = "Kakao${user.id}"
+                            val userName = it.get("nickName")
+                            val content = commentEdit.text.toString()
+                            val date = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(
+                                Date()
+                            )
+                            val img = R.drawable.ic_caravan
+                            val imgUri = Uri.parse("android.resource://${packageName}/${img}")
+                            val myComment = CampCommentEntity(userId, userName, content, date, imgUri)
+                            viewModel.uploadComment(myId!!, myComment)
+                        }
+                } else {
                     SnackbarUtil.showSnackBar(it)
                 }
             }
@@ -339,13 +366,13 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         naverMap?.extent =
             LatLngBounds(LatLng(32.973077, 124.270981), LatLng(38.856197, 130.051725))
 
-        if(mapX != null && mapY != null){
-            val mapY = if(mapY.isNullOrEmpty()) 45.0 else mapY!!.toDouble()
-            val mapX = if(mapX.isNullOrEmpty()) 130.0 else mapX!!.toDouble()
+        if (mapX != null && mapY != null) {
+            val mapY = if (mapY.isNullOrEmpty()) 45.0 else mapY!!.toDouble()
+            val mapX = if (mapX.isNullOrEmpty()) 130.0 else mapX!!.toDouble()
             val cameraPosition = CameraPosition(LatLng(mapY, mapX), 10.0)
             val marker = Marker()
             Timber.tag("test").d(naverMap.toString())
-            marker.position = LatLng(mapY,mapX)
+            marker.position = LatLng(mapY, mapX)
             marker.captionText = campName.toString()
             marker.captionRequestedWidth = 200
             marker.setCaptionAligns(Align.Top)
@@ -354,6 +381,10 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             marker.map = naverMap
             naverMap?.cameraPosition = cameraPosition
         }
+    }
+    private fun View.hideKeyboardInput() {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken, 0)
     }
 
     override fun onDestroy() {
