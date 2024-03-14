@@ -105,4 +105,7 @@ dependencies {
     // swipe refreshLayout for recyclerView
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
+    // EncryptedSharedPreferences
+    implementation("androidx.security:security-crypto-ktx:1.1.0-alpha03")
+
 }
