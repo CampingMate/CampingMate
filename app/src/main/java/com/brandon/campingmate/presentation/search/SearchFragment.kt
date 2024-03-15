@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -208,6 +209,8 @@ class SearchFragment : Fragment() {
             }
             viewModel.callData()
             behavior.state = BottomSheetBehavior.STATE_HIDDEN
+            val drawable = context?.let { it1 -> ContextCompat.getDrawable(it1, R.drawable.ic_filter_checked) }
+            ivSetting.setImageDrawable(drawable)
         }
         /**
          * 엔터누를시 검색
