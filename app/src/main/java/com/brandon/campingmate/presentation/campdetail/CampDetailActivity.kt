@@ -237,8 +237,6 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                 return onTouchEvent(event)
             }
         })
-
-
     }
 
     /**
