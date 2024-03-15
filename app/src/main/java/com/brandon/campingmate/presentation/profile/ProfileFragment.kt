@@ -24,8 +24,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.FragmentProfileBinding
+import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.login.LoginActivity
 import com.brandon.campingmate.presentation.profile.adapter.ProfileBookmarkAdapter
+import com.brandon.campingmate.presentation.profile.adapter.ProfilePostAdapter
 import com.brandon.campingmate.utils.profileImgUpload
 import com.bumptech.glide.Glide
 import com.google.firebase.Firebase
@@ -39,8 +41,9 @@ class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private var profileImgUri: Uri? = null
     private val binding get() = _binding!!
-    private val adapter: ProfileBookmarkAdapter by lazy { ProfileBookmarkAdapter() }
     private val viewModel by lazy { ViewModelProvider(this)[ProfileViewModel::class.java] }
+    private val bookmarkAdapter: ProfileBookmarkAdapter by lazy { ProfileBookmarkAdapter() }
+    private val postAdapter: ProfilePostAdapter by lazy { ProfilePostAdapter() }
     private val db = FirebaseFirestore.getInstance()
 
     override fun onCreateView(
@@ -52,14 +55,14 @@ class ProfileFragment : Fragment() {
         return binding.root
     }
 
-    //    override fun onStart() {
-//        super.onStart()
-//        checkLogin()
-//    }
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         checkLogin()
     }
+//    override fun onResume() {
+//        super.onResume()
+//        checkLogin()
+//    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -83,27 +86,42 @@ class ProfileFragment : Fragment() {
             if (user?.id != null) {
                 initLogin()
                 setBookmarkedAdapter(user.id.toString())
-                //Todo.작성글사이즈 부여 및 리사이클러뷰아이템가져오기
+                setPostAdapter(user.id.toString())
             } else initLogout()
         }
 
     }
 
     private fun setBookmarkedAdapter(userId: String) = with(binding) {
-        rvBookmarked.adapter = adapter
+        rvBookmarked.adapter = bookmarkAdapter
         rvBookmarked.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         viewModel.getBookmark(userId)
         viewModel.bookmarkedList.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
+            val newList = mutableListOf<CampEntity>()
+            newList.addAll(it)
+            bookmarkAdapter.submitList(newList)
             if (it.isNotEmpty()) {
+                tvBookmarkedSize.text = it.size.toString()
                 tvBookmarkedSize.visibility = View.VISIBLE
                 tvTabBookmarked.visibility = View.GONE
                 rvBookmarked.visibility = View.VISIBLE
-                tvBookmarkedSize.text = it.size.toString()
             } else {
+                tvBookmarkedSize.text = it.size.toString()
                 tvTabBookmarked.visibility = View.VISIBLE
                 rvBookmarked.visibility = View.GONE
-                tvBookmarkedSize.text = it.size.toString()
+            }
+        }
+    }
+
+    private fun setPostAdapter(userId: String) = with(binding) {
+        rvWriting.adapter = postAdapter
+        rvWriting.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        viewModel.getPosts(userId)
+        viewModel.postList.observe(viewLifecycleOwner) {
+            postAdapter.submitList(it.toList())
+            if (it.isNotEmpty()) {
+                tvWritingSize.text = it.size.toString()
+                tvWritingSize.visibility = View.VISIBLE
             }
         }
     }
@@ -143,6 +161,8 @@ class ProfileFragment : Fragment() {
             tvTabBookmarked.visibility = View.VISIBLE
             lineBookmarked.visibility = View.VISIBLE
             lineWriting.visibility = View.INVISIBLE
+            tvTabWriting.visibility = View.GONE
+            rvWriting.visibility = View.GONE
         }
     }
 
@@ -337,14 +357,16 @@ class ProfileFragment : Fragment() {
                 lineBookmarked.visibility = View.VISIBLE
                 lineWriting.visibility = View.INVISIBLE
 
-                //if 가져올 데이터가 없으면
                 if (tvBookmarkedSize.text.toString().toInt() > 0) {
+                    rvWriting.visibility = View.GONE
                     rvBookmarked.visibility = View.VISIBLE
                     tvTabLoginText.visibility = View.GONE
+                    tvTabBookmarked.visibility = View.GONE
                     tvTabWriting.visibility = View.GONE
                 } else {
                     tvTabLoginText.visibility = View.GONE
                     tvTabBookmarked.visibility = View.VISIBLE
+                    rvWriting.visibility = View.GONE
                     tvTabWriting.visibility = View.GONE
                 }
             }
@@ -357,16 +379,20 @@ class ProfileFragment : Fragment() {
                 lineBookmarked.visibility = View.INVISIBLE
                 lineWriting.visibility = View.VISIBLE
 
-                //if 가져올 데이터가 없으면
-                tvTabLoginText.visibility = View.GONE
-                tvTabBookmarked.visibility = View.GONE
-                tvTabWriting.visibility = View.VISIBLE
-                rvBookmarked.visibility = View.GONE
-                //todo.if(가져올데이터가있으면) size.setText + 리사이클러뷰 어댑터 수행 + 스와이프 아이템 삭제(스낵바undo)
-                //로그인 후 사용해주세요 텍스트 어떻게 되는지 확인하고 아마 View.Gone해줘야할듯
+                if (postAdapter.itemCount > 0) {
+                    rvBookmarked.visibility = View.GONE
+                    rvWriting.visibility = View.VISIBLE
+                    tvTabLoginText.visibility = View.GONE
+                    tvTabBookmarked.visibility = View.GONE
+                    tvTabWriting.visibility = View.GONE
+                } else {
+                    rvBookmarked.visibility = View.GONE
+                    tvTabLoginText.visibility = View.GONE
+                    tvTabBookmarked.visibility = View.GONE
+                    tvTabWriting.visibility = View.VISIBLE
+                }
             }
         }
-
     }
 
 

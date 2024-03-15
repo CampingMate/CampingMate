@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.brandon.campingmate.domain.model.CampEntity
+import com.brandon.campingmate.domain.model.PostEntity
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -15,20 +16,21 @@ class ProfileViewModel : ViewModel() {
     val bookmarkedList: LiveData<List<CampEntity>> get() = _bookmarkedList
     private val bookmarkCamp: MutableList<CampEntity> = mutableListOf()
 
+    private val _postList : MutableLiveData<List<PostEntity>> = MutableLiveData()
+    val postList : LiveData<List<PostEntity>> get() = _postList
+    private val writingPost : MutableList<PostEntity> = mutableListOf()
+
     fun getBookmark(userID: String) {
-        Timber.tag("겟북마크검사").d("작동중")
         val db = FirebaseFirestore.getInstance()
         val docRef = db.collection("users").document("Kakao${userID}")
         val contentIds = mutableListOf<String>()
         docRef.get().addOnSuccessListener {
             if (it.exists()) {
                 val bookmarkData = it.get("bookmarked") as? List<*>
-                Timber.tag("겟북마크목록검사").d(bookmarkData.toString())
                 if (bookmarkData != null) {
                     for (item in bookmarkData) {
                         contentIds.add(item.toString())
                     }
-                    Timber.tag("북마크목록검사").d("$contentIds")
                 }
                 bookmarkCamp.clear()
                 if (contentIds.isNotEmpty()) {
@@ -48,8 +50,19 @@ class ProfileViewModel : ViewModel() {
                 bookmarkCamp.add(camp)
             }
             _bookmarkedList.value = bookmarkCamp
-            Timber.tag("콜북마크검사").d(bookmarkCamp.size.toString())
         }
     }
-
+    fun getPosts(userID: String) {
+        val db = Firebase.firestore
+        val baseQuery: Query = db.collection("posts")
+        val result = baseQuery.whereIn("authorId", listOf("Kakao${userID}"))
+        writingPost.clear()
+        result.get().addOnSuccessListener {
+            for (doc in it) {
+                val post = doc.toObject(PostEntity::class.java)
+                writingPost.add(post)
+            }
+            _postList.value = writingPost
+        }
+    }
 }
