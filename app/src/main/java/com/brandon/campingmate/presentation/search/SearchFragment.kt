@@ -55,11 +55,10 @@ class SearchFragment : Fragment() {
 
     private fun initViewModel() = with(viewModel) {
         keyword.observe(viewLifecycleOwner){
-            Log.d("Search", "키워드 : ${it.size}")
             listAdapter.submitList(it)
         }
         myList.observe(viewLifecycleOwner){
-            Log.d("Search", "옵저빙확 : ${it.size}")
+            binding.loadingAnimation.visibility = View.GONE
             val myNewList = mutableListOf<CampEntity>()
             myNewList.addAll(it)
             listAdapter.submitList(myNewList)
@@ -155,9 +154,9 @@ class SearchFragment : Fragment() {
          * 적용하기 버튼 클릭시 firestore필터링 후 검색
          */
         btnApply.setOnClickListener {
+            loadingAnimation.visibility = View.VISIBLE
             doNmList.clear()
             activatedChips.clear()
-
 
             for (chipId in chipIds) {
                 val chip = root.findViewById<Chip>(chipId)
