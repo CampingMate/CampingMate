@@ -1,3 +1,4 @@
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
@@ -24,6 +25,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+
 class ImagePicker(
     private val onSelectionComplete: ((List<Uri>) -> Unit),
     private val maxSelection: Int = 5,
@@ -43,6 +45,8 @@ class ImagePicker(
     private val imagePickerAdapter = ImagePickerAdapter(::onImageSelected)
 //    private var selectionSnackbar: Snackbar? = null
 
+    private var bottomSheetBehavior: BottomSheetBehavior<View>? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -60,16 +64,41 @@ class ImagePicker(
         setPickerMaxSelection()
         restoreSelectedImagesState()
 //        setupSnackbar()
-
+        // TODO total 문자열 변경가능, ADD 버튼도 변경가능, peekHeight 변경가능
+        // 리소스 올릴 수 없음, 리소스도 같이 올릴 수 있음
+        // 컬러조차도 변경할 수 있으면 좋음
         dialog?.setOnShowListener { dialog ->
             val d = dialog as? BottomSheetDialog
             val bottomSheet =
                 d?.findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)
             bottomSheet?.let { sheet ->
-                val behavior = BottomSheetBehavior.from(sheet)
-                behavior.peekHeight = 3500 // 초기 높이 설정
+                val peekHeight = dpToPx(500f, requireContext())
+                bottomSheetBehavior = BottomSheetBehavior.from(sheet)
+                bottomSheetBehavior?.peekHeight = peekHeight
+
+                // 초기 위치 설정 - 애니메이션 없이 바로 적용
+                binding.clSnackbar.translationY = (peekHeight - binding.clSnackbar.height).toFloat()
+
+                bottomSheetBehavior?.addBottomSheetCallback(object :
+                    BottomSheetBehavior.BottomSheetCallback() {
+                    override fun onStateChanged(bottomSheet: View, newState: Int) {
+                        Timber.tag("BottomSheet").d("onStateChanged: %s", newState)
+                        var translationY = when (newState) {
+                            BottomSheetBehavior.STATE_COLLAPSED -> peekHeight - binding.clSnackbar.height
+                            else -> binding.root.height - binding.clSnackbar.height
+
+                        }
+                        binding.clSnackbar.animate().translationY(translationY.toFloat()).setDuration(150)
+                            .start()
+                    }
+
+                    override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                        // Optional: Implement sliding behavior if needed
+                    }
+                })
             }
         }
+
     }
 
     private fun initListener() = with(binding) {
@@ -169,6 +198,7 @@ class ImagePicker(
                 if (total > 0) {
                     binding.btnAdd.text = if (total == maxSelection) "MAX" else "ADD"
                     // TODO 보이게
+                    Timber.tag("VISION").d("state: ${binding.clSnackbar.isVisible}")
                     if (!binding.clSnackbar.isVisible) {
                         // 스낵바가 보이지 않는 상태라면
                         binding.clSnackbar.isVisible = true // 스낵바를 보이게 설정
@@ -193,18 +223,6 @@ class ImagePicker(
 //                        })
                     }
                 }
-//                    if (total == maxSelection) {
-//                        selectionSnackbar?.setBackgroundTint(
-//                            ContextCompat.getColor(
-//                                requireContext(),
-//                                R.color.brandColor
-//                            )
-//                        )
-//                    } else {
-//                        selectionSnackbar?.setBackgroundTint(Color.GRAY)
-//                    }
-//                    selectionSnackbar?.setText("Total: ($total/$maxSelection)") // 스낵바의 텍스트 업데이트
-//                    selectionSnackbar?.show()
             }
         }
     }
@@ -213,4 +231,10 @@ class ImagePicker(
         viewModel.toggleImageSelection(imageItem)
     }
 
+    private fun dpToPx(dp: Float, context: Context): Int {
+        val scale = context.resources.displayMetrics.density
+        return (dp * scale + 0.5f).toInt()
+    }
+
 }
+

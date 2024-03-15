@@ -1,5 +1,4 @@
 import android.graphics.Rect
-import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
@@ -32,9 +31,7 @@ class GridSpacingItemDecoration(
             outRect.bottom = spacing
 
             // 마지막 줄의 경우 추가적인 바닥 여백 적용
-            Log.e("SIZE", "position: $position, itemCount: $itemCount")
             if (position == itemCount - 1) {
-                Log.e("SIZE", "마지막 도달")
                 outRect.bottom = extraBottomSpacing
             }
         } else {
@@ -44,10 +41,8 @@ class GridSpacingItemDecoration(
             if (position >= spanCount) {
                 outRect.top = spacing
             }
-            Log.e("SIZE", "position: $position, itemCount: $itemCount")
             // 마지막 줄의 경우에만 추가 바닥 여백 적용
             if (position == itemCount - 1) {
-                Log.e("SIZE", "마지막 도달")
                 outRect.bottom = extraBottomSpacing
             }
         }
