@@ -4,6 +4,12 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+<<<<<<< HEAD
+=======
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+>>>>>>> origin/dev
 
     <application
         android:name=".GlobalApplication"
@@ -18,6 +24,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CampingMate"
         tools:targetApi="31">
+        <activity
+            android:name=".presentation.main.MainActivity"
+            android:exported="false" />
         <activity
             android:name=".presentation.campdetail.CampDetailActivity"
             android:exported="false" />
@@ -39,7 +48,6 @@
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
@@ -49,7 +57,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".presentation.main.MainActivity"
+            android:name=".presentation.splash.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

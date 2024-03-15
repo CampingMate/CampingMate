@@ -1,15 +1,14 @@
 package com.brandon.campingmate.presentation.search
 
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.network.retrofit.NetWorkClient
-import com.brandon.campingmate.network.retrofit.SearchItem
 import com.brandon.campingmate.presentation.search.SearchFragment.Companion.activatedChips
-import com.brandon.campingmate.presentation.search.SearchFragment.Companion.campList
 import com.brandon.campingmate.presentation.search.SearchFragment.Companion.doNmList
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
@@ -17,32 +16,37 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.launch
 
-class SearchViewModel: ViewModel() {
+class SearchViewModel : ViewModel() {
     private val _keyword: MutableLiveData<MutableList<CampEntity>> = MutableLiveData()
     val keyword: LiveData<MutableList<CampEntity>> get() = _keyword
     private val _myList: MutableLiveData<MutableList<CampEntity>> = MutableLiveData()
     val myList: LiveData<MutableList<CampEntity>> get() = _myList
+    var lastVisible: DocumentSnapshot? = null
+    var isLoadingData: Boolean = false
 
     fun setUpParkParameter(text: String) {
         val authKey =
             "wDP6fsVX3kKuaOD7OKrRHaAgPUNtxYUy387PNJRBAW/F6GUdZgv5LyyIAkVXED3leDg3aUD+TFIgBHWCgMBdzQ=="
-        communicateNetWork(hashMapOf(
-            "numOfRows" to "10",
-            "pageNo" to "1",
-            "MobileOS" to "AND",
-            "MobileApp" to "CampingMate",
-            "serviceKey" to authKey,
-            "_type" to "json",
-            "keyword" to text
-        ))
+        communicateNetWork(
+            hashMapOf(
+                "numOfRows" to "10",
+                "pageNo" to "1",
+                "MobileOS" to "AND",
+                "MobileApp" to "CampingMate",
+                "serviceKey" to authKey,
+                "_type" to "json",
+                "keyword" to text
+            )
+        )
     }
+
     fun communicateNetWork(param: HashMap<String, String>?) {
         viewModelScope.launch {
             val responseData = param?.let { NetWorkClient.imageNetWork.getSearch(it) }
             val items = responseData?.response?.searchBody?.searchItems?.item
             val contentIds = mutableListOf<String>()
             if (items != null) {
-                for(item in items){
+                for (item in items) {
                     val myContentId = item.contentId.toString()
                     if (myContentId != null) {
                         contentIds.add(myContentId)
@@ -50,7 +54,7 @@ class SearchViewModel: ViewModel() {
                 }
                 Log.d("checkList", "${contentIds}")
             }
-            if (contentIds.isNotEmpty()){
+            if (contentIds.isNotEmpty()) {
                 callKeywordData(contentIds)
             }
         }
@@ -64,7 +68,7 @@ class SearchViewModel: ViewModel() {
             .get()
             .addOnSuccessListener { documents ->
                 val newCampListKeyword = mutableListOf<CampEntity>()
-                for(document in documents){
+                for (document in documents) {
                     val camp = document.toObject(CampEntity::class.java)
                     newCampListKeyword.add(camp)
                 }
@@ -119,8 +123,7 @@ class SearchViewModel: ViewModel() {
             }
         }
 
-        result
-            .limit(20)
+        result.limit(5)
             .get()
             .addOnSuccessListener { documents ->
                 val newCampList = mutableListOf<CampEntity>()
@@ -129,11 +132,53 @@ class SearchViewModel: ViewModel() {
                     newCampList.add(camp)
                 }
                 _myList.value = newCampList
+                lastVisible = documents.documents[documents.size() - 1]
+                Log.d("Search", "첫번째 ${lastVisible?.get("facltNm")}")
             }
             .addOnFailureListener { exception ->
                 // 오류 처리
-                // 예: Log.w("TAG", "Error getting documents.", exception)
+                Log.w("TAG", "Error getting documents.", exception)
             }
     }
+    fun loadMoreData() {
+        if(isLoadingData){
+            return
+        }
+        isLoadingData = true
+        Log.d("Search", "loadMoreData")
+        val db = Firebase.firestore
+        if (lastVisible != null) {
+            val next = db.collection("camps")
+                .startAfter(lastVisible!!)
+                .limit(5)
+
+            next.get()
+                .addOnSuccessListener { nextDocuments ->
+                    val newCampList = mutableListOf<CampEntity>()
+                    for (document in nextDocuments) {
+                        val camp = document.toObject(CampEntity::class.java)
+                        newCampList.add(camp)
+                    }
+
+                    val currentList = _myList.value ?: mutableListOf()
+                    currentList.addAll(newCampList)
+//                    Log.d("Search", "리스트확인 : ${newList.size}")
+                    _myList.value = currentList
+                    if (nextDocuments.size() > 0) {
+                        lastVisible = nextDocuments.documents[nextDocuments.size() - 1]
+                        Log.d("Search", "무한 ${lastVisible?.get("facltNm")}")
+                    } else {
+                        lastVisible = null  // 더 이상 데이터가 없을 때 lastVisible을 null로 설정
+                    }
+                    isLoadingData = false
+                }
+                .addOnFailureListener { exception ->
+                    // 오류 처리
+                    Log.w("TAG", "Error getting documents.", exception)
+                    isLoadingData = false
+                }
+        }
+    }
+
 
 }

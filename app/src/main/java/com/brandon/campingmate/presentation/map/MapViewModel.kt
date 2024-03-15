@@ -1,5 +1,6 @@
 package com.brandon.campingmate.presentation.map
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,8 +15,8 @@ import timber.log.Timber
 
 class MapViewModel : ViewModel(){
 
-    private val _paramHashmap:MutableLiveData<HashMap<String, String>> = MutableLiveData()
-    val paramHashmap: LiveData<HashMap<String, String>> get() = _paramHashmap
+    private val _paramHashmap:MutableLiveData<HashMap<String, String>>? = MutableLiveData()
+    val paramHashmap: LiveData<HashMap<String, String>>? get() = _paramHashmap
     private val _imageRes: MutableLiveData<MutableList<String>> = MutableLiveData()
     val imageRes: LiveData<MutableList<String>> get() = _imageRes
 
@@ -26,18 +27,20 @@ class MapViewModel : ViewModel(){
     var authKey =
         "wPKSnhEmKeTSpI60GYZ8ITHvIIfjSvDK2IqmCS+OG1wXeBAn5t+Kxk/I9pV55PhG86E2NhyZj8+VCnkG3AVCTQ=="
 
-    fun getParamHashmap(mapx:String,mapy:String,radius:String){
-        _paramHashmap.value = hashMapOf(
-            "numOfRows" to "100",
+    fun getLocParamHashmap(mapx:Double,mapy:Double,zoom:Double){
+        val radius = (zoomToRadius(zoom.toInt())).toString()
+        _paramHashmap?.value = hashMapOf(
+            "numOfRows" to "4000",
             "pageNo" to "1",
             "MobileOS" to "AND",
             "MobileApp" to "com.brandon.campingmate",
             "serviceKey" to authKey,
             "_type" to "json",
-            "mapX" to mapx,
-            "mapY" to mapy,
+            "mapX" to mapx.toString(),
+            "mapY" to mapy.toString(),
             "radius" to radius
         )
+        Log.d("radius","레이디어스 = ${zoomToRadius(zoom.toInt())}")
     }
     fun getBlParamHashmap(): HashMap<String, String> {
         var hashMap = hashMapOf(
@@ -70,10 +73,13 @@ class MapViewModel : ViewModel(){
             val responseData = param?.let {
                 NetWorkClient.imageNetWork.getLocationBasedList(it)
             }
-            val items = responseData?.response?.LocationBasedListBody?.items?.item
+            val items = responseData?.response?.LocationBasedListBody?.item?.item
             val locationBasedList = mutableListOf<LocationBasedListItem>()
             if (items != null) {
                 for(item in items){
+                    if(item.mapX.isNullOrEmpty() || item.mapY.isNullOrEmpty()) {
+                        continue
+                    }
                     var value = LocationBasedListItem(
                         firstImageUrl = item.firstImageUrl,
                         siteMg3Vrticl = item.siteMg3Vrticl,
@@ -159,8 +165,7 @@ class MapViewModel : ViewModel(){
                     )
                     locationBasedList.add(value)
                 }
-
-
+                Timber.tag("test").d(locationBasedList.size.toString())
             }
             _campList.value =  locationBasedList
 
@@ -175,7 +180,7 @@ class MapViewModel : ViewModel(){
             val responseData = param?.let {
                 NetWorkClient.imageNetWork.getBasedList(it)
             }
-            val items = responseData?.response?.LocationBasedListBody?.items?.item
+            val items = responseData?.response?.LocationBasedListBody?.item?.item
             val locationBasedList = mutableListOf<LocationBasedListItem>()
             if (items != null) {
                 for(item in items){
@@ -315,6 +320,28 @@ class MapViewModel : ViewModel(){
             }
             Timber.tag("test").d("북마크한 : ${_bookmarkedList.value}")
         }
+
+    }
+
+    fun zoomToRadius(value: Int): Int {
+        var result = 0
+        when(value) {
+            8 ->  result = 70000
+            9 ->  result = 50000
+            10 ->  result = 40000
+            11 ->  result = 20000
+            12 ->  result = 10000
+            13 ->  result = 5000
+            14 ->  result = 2000
+            15 ->  result = 1000
+            16 ->  result = 500
+            17 ->  result = 200
+            18 ->  result = 100
+            else -> result = 10000
+        }
+        return result
+
+        // 8부터 18까지의 값에 대한 매핑
 
     }
 }
