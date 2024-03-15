@@ -46,6 +46,9 @@ class CommentListAdapter(
             }
             tvCommentContent.text = item.content
             tvCommentTime.text = item.date
+            if(item.imageUrl == null){
+                ivCommentImg.visibility = View.GONE
+            }
             Glide.with(binding.root)
                 .load(item.imageUrl)
                 .into(ivCommentImg)

@@ -9,15 +9,17 @@
 
     <TextView
         android:id="@+id/tv_comment_content"
-        android:layout_width="260dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:maxLines="3"
-        android:text="댓글내용댓글내용댓글내용댓글내용댓글내용댓글내용댓글내용댓글내용댓글내용댓글내용댓글내용댓글내용댓글내용댓글내용댓글내용댓글내용댓글내용댓글내용댓글내용댓글내용댓글내용댓글내용댓글내용댓글내용댓글내용댓글내용"
+        android:text="댓글내용댓글댓글내용댓글내용댓글내용"
         android:textSize="14sp"
         android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toStartOf="@id/iv_comment_img"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/iv_comment_img" />
+        app:layout_constraintTop_toTopOf="parent" />
     <TextView
         android:id="@+id/tv_comment_time"
         android:layout_width="wrap_content"
@@ -36,6 +38,7 @@
         android:text="유저이름"
         android:layout_marginStart="120dp"
         android:layout_marginEnd="16dp"
+        android:textSize="11sp"
         app:layout_constraintBottom_toBottomOf="@id/iv_comment_img"
         app:layout_constraintEnd_toStartOf="@id/iv_comment_img"/>
 
@@ -43,13 +46,12 @@
         android:id="@+id/iv_comment_img"
         android:layout_width="86dp"
         android:layout_height="86dp"
-        android:src="@drawable/default_camping"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:background="@drawable/detail_comment_selector"
+        android:scaleType="centerCrop"
+        android:src="@drawable/default_camping"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:scaleType="centerCrop"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/divider"

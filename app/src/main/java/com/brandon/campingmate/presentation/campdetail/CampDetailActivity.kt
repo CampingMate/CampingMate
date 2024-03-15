@@ -23,9 +23,11 @@ import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.campdetail.adapter.CommentListAdapter
 import com.brandon.campingmate.presentation.campdetail.adapter.ViewPagerAdapter
 import com.brandon.campingmate.presentation.common.SnackbarUtil
+import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.storage.storage
 import com.kakao.sdk.user.UserApiClient
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
@@ -39,6 +41,7 @@ import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.UUID
 
 class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -266,6 +269,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                                 ""
                             }
                             val myImageUri = Uri.parse(myImage)
+                            viewModel.uploadImage(myImageUri)
                             val myComment = CampCommentEntity(userId, userName, content, date, myImageUri)
                             viewModel.uploadComment(myId!!, myComment)
                             commentEdit.text.clear()
@@ -278,6 +282,42 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
         }
+        selectedImageDelete.setOnClickListener {
+            binding.selectedImage.setImageURI(null)
+            binding.selectedImage.visibility = View.GONE
+            binding.selectedImageDelete.visibility = View.GONE
+        }
+    }
+
+    private fun uploadImage(selectedImageUri: Uri?, callback: (String) -> Unit) {
+        if (selectedImageUri != null) {
+            val storage = Firebase.storage
+            val storageRef = storage.reference
+
+            val imageFileName = "${UUID.randomUUID()}.jpg"
+            val campCommentRef = storageRef.child("campComment/$imageFileName")
+
+            // 이미지 업로드
+            campCommentRef.putFile(selectedImageUri)
+                .addOnSuccessListener { taskSnapshot ->
+                    // 업로드 성공 시 이미지 다운로드 URL 가져오기
+                    campCommentRef.downloadUrl.addOnSuccessListener { uri ->
+                        // 다운로드 URL을 콜백 함수를 통해 전달
+                        val imageUrl = uri.toString()
+                        callback(imageUrl) // 콜백 함수 호출하여 Firestore에 저장
+                    }.addOnFailureListener { exception ->
+                        // 이미지 다운로드 URL을 가져오지 못한 경우 처리
+                        Log.e("FirebaseStorage", "Failed to get download URL: $exception")
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    // 이미지 업로드 실패 시 처리
+                    Log.e("FirebaseStorage", "Failed to upload image: $exception")
+                }
+        } else {
+            // 이미지가 선택되지 않은 경우에 대한 처리
+        }
+
     }
 
     private fun openGalleryForImage() {
@@ -292,6 +332,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 //            viewModel.uploadImage(selectedImageUri)
             selectedImageUri?.let {
                 binding.selectedImage.visibility = View.VISIBLE
+                binding.selectedImageDelete.visibility = View.VISIBLE
                 binding.selectedImage.setImageURI(it)
                 myImage = it.toString()
             }
