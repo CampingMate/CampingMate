@@ -4,6 +4,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.brandon.campingmate.databinding.ActivityLoginBinding
 import com.brandon.campingmate.utils.profileImgUpload
 import com.google.firebase.Firebase
@@ -89,6 +91,20 @@ class LoginActivity : AppCompatActivity() {
                             }
                         }
                     }
+
+                    //SharedPreferences 암호화 후 저장
+                    val masterKeyAlias = MasterKey
+                        .Builder(applicationContext, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
+                        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                        .build()
+                    val pref = EncryptedSharedPreferences.create(
+                        this, //Context
+                        "userID",   //file name
+                        masterKeyAlias,
+                        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,  //key 암호화
+                        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM     //value 암호화
+                    )
+                    pref.edit().putString("myID","Kakao${user?.id}").apply()
                     finish()
                 }
             }

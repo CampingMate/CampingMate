@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,6 +25,7 @@ import com.brandon.campingmate.presentation.home.adapter.HomeAdapter
 import com.brandon.campingmate.presentation.home.adapter.PetAdapter
 import com.brandon.campingmate.presentation.main.MainActivity
 import com.brandon.campingmate.presentation.search.SearchFragment
+import com.brandon.campingmate.presentation.splash.SplashViewModel
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.ChipGroup
 import com.google.firebase.Firebase
@@ -40,14 +42,20 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding ?: throw IllegalStateException("Attempt to access binding when not set.")
 
-    private var districtItem = mutableListOf<CampEntity?>()
+    private val viewModel by lazy {
+        ViewModelProvider(this)[SplashViewModel::class.java]
+    }
+
+    private var districtItem = mutableListOf<CampEntity>()
     private var petItem = mutableListOf<CampEntity?>()
-    private var themeItem = mutableListOf<CampEntity?>()
-    private var dataItem = mutableListOf<CampEntity?>()
+    private var themeItem = mutableListOf<CampEntity>()
+    private var dataItem = mutableListOf<CampEntity>()
     private lateinit var districtAdapter: HomeAdapter
     private lateinit var themeAdapter: HomeAdapter
     private val db = Firebase.firestore
     private val allCity: Query = db.collection("camps")
+    private lateinit var city : ArrayList<CampEntity>
+    private lateinit var theme : ArrayList<CampEntity>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,11 +67,15 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        initView(allCity, "district")
-        initView(allCity, "theme")
-        initPetView()
+        val main = activity as MainActivity
+        city = main.homeCity
+        theme = main.homeTheme
         holidayInfo()
+        viewModelGet()
+//        initView(allCity, "district")
+//        initView(allCity, "theme")
+        initPetView()
+
 
         onLayoutClickListener(binding.loCategoryCar)
         onLayoutClickListener(binding.loCategoryCaravan)
@@ -91,6 +103,28 @@ class HomeFragment : Fragment() {
 ////            val intent = Intent(requireContext(), SearchFragment::class.java)
 ////            startActivity(intent)
 //        }
+    }
+    private fun viewModelGet(){
+        Log.d("Home","#csh viewModelGet()")
+        Log.d("Home", "#csh city: ${city}")
+        Log.d("Home", "#csh theme: ${theme}")
+
+//        districtAdapter = HomeAdapter(requireContext(), viewModel.allCityData.value!!)
+        districtAdapter = HomeAdapter(requireContext(), city)
+        binding.rvDistrictItem.adapter = districtAdapter
+        binding.rvDistrictItem.layoutManager =
+            GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
+        binding.rvDistrictItem.itemAnimator = null
+
+//        themeAdapter = HomeAdapter(requireContext(), viewModel.allThemeData.value!!)
+        themeAdapter = HomeAdapter(requireContext(), theme)
+        binding.rvThemeItem.adapter = themeAdapter
+        binding.rvThemeItem.layoutManager =
+            GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
+        binding.rvThemeItem.itemAnimator = null
+
+        selectChip()
+
     }
 
     private fun initView(data: Query, select:String) {
@@ -203,7 +237,10 @@ class HomeFragment : Fragment() {
             "Gyeongsang" -> allCity.whereIn("doNm", listOf("경상북도", "경상남도", "부산시", "울산시", "대구시")).limit(10)
             "Jeolla" -> allCity.whereIn("doNm", listOf("전라북도", "전라남도", "광주시", "제주도")).limit(10)
             "Gangwon" -> allCity.whereIn("doNm", listOf("강원도")).limit(10)
-            else -> throw IllegalArgumentException("Invalid data value: $data")
+            else -> {
+                Toast.makeText(requireContext(), "지역칩 오류", Toast.LENGTH_SHORT).show()
+                throw IllegalArgumentException("Invalid data value: $data")
+            }
         }
 //        Log.d("Home", "2. data=$data")
         result.get().addOnSuccessListener { documents ->
@@ -288,6 +325,7 @@ class HomeFragment : Fragment() {
 //    val parseYear = dateFormat.substring(0,4)
 
     private fun holidayInfo(){
+        Log.d("Home", "#csh holidayInfo start")
         val holidayList = mutableListOf<HolidayItem>()
 
         val nowDate = LocalDate.now()

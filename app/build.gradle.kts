@@ -105,5 +105,9 @@ dependencies {
     implementation("com.tbuonomo:dotsindicator:5.0")
     // swipe refreshLayout for recyclerView
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    //내 위치 얻기
+    implementation("com.google.android.gms:play-services-location:21.2.0")
 
+    // EncryptedSharedPreferences
+    implementation("androidx.security:security-crypto-ktx:1.1.0-alpha03")
 }

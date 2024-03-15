@@ -237,8 +237,65 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                 return onTouchEvent(event)
             }
         })
+    }
 
+    /**
+     * 댓글
+     */
+    private fun comment() =with(binding) {
+        commentPlusImage.setOnClickListener {
+            openGalleryForImage()
+        }
+        commentSend.setOnClickListener {
+            commentSend.hideKeyboardInput()
+            UserApiClient.instance.me { user, error ->
+                if (user?.id != null) {
+                    val userDocRef = db.collection("users").document("Kakao${user.id}")
+                    userDocRef
+                        .get()
+                        .addOnSuccessListener {
+                            val userId = "Kakao${user.id}"
+                            val userName = it.get("nickName")
+                            val content = commentEdit.text.toString()
+                            val date = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(
+                                Date()
+                            )
+                            val myImage = if(selectedImage.visibility == View.VISIBLE){
+                                myImage
+                            } else{
+                                ""
+                            }
+                            val myImageUri = Uri.parse(myImage)
+                            val myComment = CampCommentEntity(userId, userName, content, date, myImageUri)
+                            viewModel.uploadComment(myId!!, myComment)
+                            commentEdit.text.clear()
+                            //여기서
+                            selectedImage.setImageURI(null)
+                            selectedImage.visibility = View.GONE
+                        }
+                } else {
+                    SnackbarUtil.showSnackBar(it)
+                }
+            }
+        }
+    }
 
+    private fun openGalleryForImage() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(intent, REQUEST_CODE_IMAGE_PICK)
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_IMAGE_PICK && resultCode == Activity.RESULT_OK && data != null) {
+            val selectedImageUri: Uri? = data.data
+            //firebase에 사진 올리기
+//            viewModel.uploadImage(selectedImageUri)
+            selectedImageUri?.let {
+                binding.selectedImage.visibility = View.VISIBLE
+                binding.selectedImage.setImageURI(it)
+                myImage = it.toString()
+            }
+        }
     }
 
     /**
