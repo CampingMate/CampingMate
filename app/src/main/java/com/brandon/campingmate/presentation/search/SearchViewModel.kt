@@ -132,7 +132,16 @@ class SearchViewModel : ViewModel() {
                     newCampList.add(camp)
                 }
                 _myList.value = newCampList
-                lastVisible = documents.documents[documents.size() - 1]
+                if(documents.size() > 0){
+                    lastVisible = when(documents.size()){
+                        5 -> documents.documents[documents.size() - 1]
+                        4 -> documents.documents[documents.size() - 2]
+                        3 -> documents.documents[documents.size() - 3]
+                        2 -> documents.documents[documents.size() - 4]
+                        1 -> documents.documents[documents.size() - 5]
+                        else -> null
+                    }
+                }
                 Log.d("Search", "첫번째 ${lastVisible?.get("facltNm")}")
             }
             .addOnFailureListener { exception ->
