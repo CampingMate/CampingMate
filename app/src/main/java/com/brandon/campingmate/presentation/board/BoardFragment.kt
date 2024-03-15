@@ -183,6 +183,7 @@ class BoardFragment : Fragment() {
         rvPostList.adapter = postListAdapter
         linearLayoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         rvPostList.layoutManager = linearLayoutManager
+        rvPostList.setHasFixedSize(true)
     }
 
     private fun initViewModel() = with(viewModel) {

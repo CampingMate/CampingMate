@@ -10,17 +10,15 @@ import com.bumptech.glide.Glide
 
 class ImagePickerAdapter(
     private val onImageSelected: (ImageItem) -> Unit
-) : ListAdapter<ImageItem, ImagePickerAdapter.ViewHolder>(DiffCallback) {
-
-    companion object DiffCallback : DiffUtil.ItemCallback<ImageItem>() {
-        override fun areItemsTheSame(oldItem: ImageItem, newItem: ImageItem): Boolean {
-            return oldItem.uri == newItem.uri
-        }
-
-        override fun areContentsTheSame(oldItem: ImageItem, newItem: ImageItem): Boolean {
-            return oldItem.isChecked == newItem.isChecked
-        }
+) : ListAdapter<ImageItem, ImagePickerAdapter.ViewHolder>(object : DiffUtil.ItemCallback<ImageItem>() {
+    override fun areItemsTheSame(oldItem: ImageItem, newItem: ImageItem): Boolean {
+        return oldItem.uri == newItem.uri
     }
+
+    override fun areContentsTheSame(oldItem: ImageItem, newItem: ImageItem): Boolean {
+        return oldItem.isChecked == newItem.isChecked
+    }
+}) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemPickerImageBinding.inflate(LayoutInflater.from(parent.context), parent, false)

@@ -12,7 +12,7 @@ fun List<PostEntity>.toPostListItem(): List<PostListItem> {
             authorProfileImageUrl = postEntity.authorProfileImageUrl,
             title = postEntity.title,
             content = postEntity.content,
-            imageUrlList = postEntity.imageUrlList,
+            imageUrlList = postEntity.imageUrls,
             timestamp = postEntity.timestamp
         )
     }
@@ -26,7 +26,7 @@ fun PostListItem.PostItem.toPostEntity(): PostEntity {
         authorProfileImageUrl = this.authorProfileImageUrl,
         title = this.title,
         content = this.content,
-        imageUrlList = this.imageUrlList,
+        imageUrls = this.imageUrlList,
         timestamp = this.timestamp
     )
 }

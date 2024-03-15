@@ -27,7 +27,7 @@
             android:textColor="@android:color/black" />
 
         <TextView
-            android:id="@+id/btn_add_i가mage"
+            android:id="@+id/btn_add_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
@@ -80,18 +80,18 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:text="이미지는 5개까지 첨부 가능합니다"
-            app:layout_constraintBottom_toTopOf="@id/rv_images"
+            app:layout_constraintBottom_toTopOf="@id/rv_post_images"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_images"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="16dp"
-                android:orientation="horizontal"
-                tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item_map_img" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_post_images"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:orientation="horizontal"
+            tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_postwrite_image" />
 
         <TextView
             android:id="@+id/btn_post_upload"

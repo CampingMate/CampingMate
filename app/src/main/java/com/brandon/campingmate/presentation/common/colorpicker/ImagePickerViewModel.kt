@@ -25,6 +25,10 @@ class ImagePickerViewModel : ViewModel() {
 
     private var maxSelection = 5
 
+    init {
+        Timber.tag("PICK").d("PickerViewModel 생성")
+    }
+
     fun setMaxSelection(max: Int) {
         maxSelection = max
     }
@@ -36,6 +40,7 @@ class ImagePickerViewModel : ViewModel() {
                 loadImageItemsFromLocalStorage(context, preselectedImages)
             }
             _imageItem.value = imageItems
+            _selectedImageCount.value = imageItems.count { it.isChecked }
         }
     }
 

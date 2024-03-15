@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,8 +22,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.FragmentProfileBinding
-import com.brandon.campingmate.domain.model.CampEntity
-import com.brandon.campingmate.presentation.campdetail.CampDetailActivity
 import com.brandon.campingmate.presentation.login.LoginActivity
 import com.brandon.campingmate.presentation.profile.adapter.ProfileBookmarkAdapter
 import com.google.firebase.firestore.FirebaseFirestore
@@ -73,16 +70,13 @@ class ProfileFragment : Fragment() {
 
         clickLogout()
 
-
-
-
     }
 
     fun checkLogin() {
         UserApiClient.instance.me { user, error ->
             if (user?.id != null) {
                 initLogin()
-                setBookmarkedAdapter(user?.id.toString())
+                setBookmarkedAdapter(user.id.toString())
             } else initLogout()
         }
 

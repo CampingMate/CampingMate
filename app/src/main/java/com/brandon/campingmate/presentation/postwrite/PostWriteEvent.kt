@@ -8,14 +8,22 @@ sealed class PostWriteEvent {
         val postId: String
     ) : PostWriteEvent()
 
-    // TODO View 에서 관찰하지 않는 Event..
     data class UploadPost(
         val title: String,
         val content: String,
     ) : PostWriteEvent()
 
-    data class UploadPostImages(
-        val imageUris: List<Uri>,
+    data class ImageSelected(
+        val imageUris: List<Uri>
     ) : PostWriteEvent()
+
+    data class ClickImageDelete(
+        val imageUri: Uri
+    ) : PostWriteEvent()
+
+    data class OpenPhotoPicker(
+        val uris: List<Uri>? = null
+    ) : PostWriteEvent()
+
 
 }

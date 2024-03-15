@@ -13,20 +13,13 @@ interface PostRepository {
         lastVisibleDoc: DocumentSnapshot?
     ): Resource<PostsEntity>
 
-    suspend fun uploadPost(
-        postEntity: PostEntity,
-        imageUris: List<Uri>,
-        onSuccess: (String) -> Unit,
-        onFailure: (Exception) -> Unit
-    )
-
     suspend fun getPostById(
         postId: String
     ): Resource<PostEntity>
 
-    suspend fun uploadPostImage(
+
+    suspend fun uploadPostWithImages(
+        postEntity: PostEntity,
         imageUris: List<Uri>,
-        onSuccess: (List<String>) -> Unit,
-        onFailure: (Exception) -> Unit
-    )
+    ): Result<String>
 }
