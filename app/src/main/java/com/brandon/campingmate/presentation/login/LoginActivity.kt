@@ -72,8 +72,7 @@ class LoginActivity : AppCompatActivity() {
                         "nickName" to "${user?.kakaoAccount?.profile?.nickname}",
                         "profileImage" to null,
                         "userEmail" to "${user?.kakaoAccount?.email}",
-                        "bookmarked" to null,
-                        "writing" to null
+                        "bookmarked" to null
                     )
                     val documentRef = db.collection("users").document("Kakao${user?.id}")
                     documentRef.get().addOnSuccessListener {
