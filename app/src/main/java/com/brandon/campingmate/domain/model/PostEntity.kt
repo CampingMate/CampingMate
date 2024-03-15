@@ -12,6 +12,6 @@ data class PostEntity(
     val authorProfileImageUrl: String? = null,
     val title: String? = null,
     val content: String? = null,
-    val imageUrlList: List<String>? = null,
+    val imageUrls: List<String>? = null,
     val timestamp: Timestamp? = null
 ) : Parcelable

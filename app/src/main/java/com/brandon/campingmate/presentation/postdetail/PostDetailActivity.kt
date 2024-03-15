@@ -17,8 +17,8 @@ import com.brandon.campingmate.data.repository.PostRepositoryImpl
 import com.brandon.campingmate.data.source.network.impl.PostRemoteDataSourceImpl
 import com.brandon.campingmate.databinding.ActivityPostDetailBinding
 import com.brandon.campingmate.domain.usecase.GetPostByIdUseCase
-import com.brandon.campingmate.network.firestore.FireStoreService
-import com.brandon.campingmate.presentation.postdetail.adapter.ImageListAdapter
+import com.brandon.campingmate.network.firestore.FirebaseService
+import com.brandon.campingmate.presentation.postdetail.adapter.PostDetailImageAdapter
 import com.brandon.campingmate.utils.toFormattedString
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -31,13 +31,20 @@ class PostDetailActivity : AppCompatActivity() {
 
     private val binding: ActivityPostDetailBinding by lazy { ActivityPostDetailBinding.inflate(layoutInflater) }
 
-    private val imageListAdapter: ImageListAdapter by lazy {
-        ImageListAdapter(emptyList())
+    private val imageListAdapter: PostDetailImageAdapter by lazy {
+        PostDetailImageAdapter(emptyList())
     }
 
     private val viewModel: PostDetailViewModel by viewModels {
         PostDetailViewModelFactory(
-            GetPostByIdUseCase(PostRepositoryImpl(PostRemoteDataSourceImpl(FireStoreService.fireStoreDB))),
+            GetPostByIdUseCase(
+                PostRepositoryImpl(
+                    PostRemoteDataSourceImpl(
+                        FirebaseService.fireStoreDB,
+                        FirebaseService.firebaseStorage
+                    )
+                )
+            ),
         )
     }
 
@@ -60,22 +67,22 @@ class PostDetailActivity : AppCompatActivity() {
     private fun initViewModel() = with(viewModel) {
         lifecycleScope.launch {
             viewModel.uiState.flowWithLifecycle(lifecycle).collectLatest { state ->
-                updateUI(state)
+                onBind(state)
             }
         }
 
         lifecycleScope.launch {
             viewModel.event.flowWithLifecycle(lifecycle).collectLatest { event ->
-                handleEvent(event)
+                onEvent(event)
             }
         }
     }
 
-    private fun handleEvent(event: PostDetailEvent) {
+    private fun onEvent(event: PostDetailEvent) {
         TODO("Not yet implemented")
     }
 
-    private fun updateUI(state: PostDetailUiState) {
+    private fun onBind(state: PostDetailUiState) {
         state.post?.let {
             with(binding) {
                 tvUsername.text = it.authorName
@@ -83,7 +90,7 @@ class PostDetailActivity : AppCompatActivity() {
                 tvCreatedAt.text = it.timestamp.toFormattedString()
                 tvContent.text = it.content
                 ivUserProfile.load(it.authorProfileImageUrl)
-                imageListAdapter.setImageUrls(it.imageUrlList)
+                imageListAdapter.setImageUrls(it.imageUrls)
                 imageListAdapter.notifyDataSetChanged()
                 // TODO 댓글 목록
             }
