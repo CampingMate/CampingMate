@@ -481,7 +481,6 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:visibility="gone"
-                android:src="@drawable/sky"
                 android:scaleType="centerCrop"
                 android:layout_marginTop="16dp"
                 app:layout_constraintStart_toStartOf="@id/recycler_comment"
