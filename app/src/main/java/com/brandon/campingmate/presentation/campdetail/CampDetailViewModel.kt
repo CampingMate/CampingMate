@@ -88,13 +88,17 @@ class CampDetailViewModel : ViewModel() {
             .addOnSuccessListener { querySnapshot ->
                 val document = querySnapshot.documents[0]
                 val commentList = document.get("commentList") as? MutableList<Map<String, Any?>> ?: mutableListOf()
-                val newComment = mapOf(
+                val newComment = mutableMapOf(
                     "userId" to myComment.userId,
                     "userName" to myComment.userName,
                     "content" to myComment.content,
                     "date" to myComment.date,
-                    "img" to myComment.imageUrl.toString()
                 )
+                if(myComment.imageUrl.toString().isNotBlank()){
+                    newComment["img"] = myComment.imageUrl.toString()
+                } else{
+                    newComment["img"] = ""
+                }
                 commentList.add(newComment)
 
                 document.reference.update("commentList", commentList)

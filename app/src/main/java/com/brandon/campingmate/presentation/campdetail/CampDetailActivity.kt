@@ -268,14 +268,20 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                             } else{
                                 ""
                             }
-                            val myImageUri = Uri.parse(myImage)
-                            viewModel.uploadImage(myImageUri){ imageUrl ->
-                                val myComment = CampCommentEntity(userId, userName, content, date, Uri.parse(imageUrl))
+                            if(myImage.isNotBlank()){
+                                val myImageUri = Uri.parse(myImage)
+                                viewModel.uploadImage(myImageUri){ imageUrl ->
+                                    val myComment = CampCommentEntity(userId, userName, content, date, Uri.parse(imageUrl))
+                                    viewModel.uploadComment(myId!!, myComment)
+                                    commentEdit.text.clear()
+                                    selectedImage.setImageURI(null)
+                                    selectedImage.visibility = View.GONE
+                                    selectedImageDelete.visibility = View.GONE
+                                }
+                            } else{
+                                val myComment = CampCommentEntity(userId, userName, content, date, Uri.EMPTY)
                                 viewModel.uploadComment(myId!!, myComment)
                                 commentEdit.text.clear()
-                                selectedImage.setImageURI(null)
-                                selectedImage.visibility = View.GONE
-                                selectedImageDelete.visibility = View.GONE
                             }
                         }
                 } else {
