@@ -21,7 +21,7 @@ fun PostResponse.toPostEntity(): PostEntity {
         authorProfileImageUrl = this.authorProfileImageUrl ?: "",
         title = this.title ?: "",
         content = this.content ?: "",
-        imageUrlList = this.imageUrlList ?: listOf(),
+        imageUrls = this.imageUrls ?: listOf(),
         timestamp = this.timestamp
     )
 }

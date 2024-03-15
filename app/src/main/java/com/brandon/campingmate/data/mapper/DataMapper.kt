@@ -12,7 +12,7 @@ fun PostEntity.toPostDTO(): PostDTO {
         authorProfileImageUrl = this.authorProfileImageUrl ?: "",
         title = this.title ?: "",
         content = this.content ?: "",
-        imageUrlList = this.imageUrlList ?: listOf(),
+        imageUrlList = this.imageUrls ?: listOf(),
         timestamp = this.timestamp ?: Timestamp.now()
     )
 }

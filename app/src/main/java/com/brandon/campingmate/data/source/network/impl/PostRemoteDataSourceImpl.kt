@@ -1,21 +1,29 @@
 package com.brandon.campingmate.data.source.network.impl
 
-import com.brandon.campingmate.data.model.request.PostDTO
+import android.net.Uri
 import com.brandon.campingmate.data.model.response.PostResponse
 import com.brandon.campingmate.data.model.response.PostsResponse
 import com.brandon.campingmate.data.source.network.PostRemoteDataSource
+import com.brandon.campingmate.domain.model.PostEntity
 import com.brandon.campingmate.utils.Resource
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.UUID
 
 /**
  * 데이터소스 레이어에서는 raw 한 데이터를 반환한다
  */
-class PostRemoteDataSourceImpl(private val firestore: FirebaseFirestore) : PostRemoteDataSource {
+class PostRemoteDataSourceImpl(
+    private val firestore: FirebaseFirestore, private val storage: FirebaseStorage
+) : PostRemoteDataSource {
     override suspend fun getPosts(pageSize: Int, lastVisibleDoc: DocumentSnapshot?): Resource<PostsResponse> {
         return try {
             withContext(IO) {
@@ -34,18 +42,13 @@ class PostRemoteDataSourceImpl(private val firestore: FirebaseFirestore) : PostR
         }
     }
 
-    override suspend fun uploadPost(
-        postDto: PostDTO, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit
-    ) {
-        try {
+    override suspend fun uploadPost(postEntity: PostEntity): Result<String> = withContext(IO) {
+        runCatching {
             val postsCollection = firestore.collection("posts")
-            val newPostRef = postsCollection.document()
-            val postId = newPostRef.id
-            val newPost = postDto.copy(postId = postId)
-            postsCollection.document(postId).set(newPost).await()
-            onSuccess(postId)
-        } catch (e: Exception) {
-            onFailure(e)
+            val newPostRef = postsCollection.document() // 새 문서 생성
+            val newPostId = newPostRef.id
+            postsCollection.document(newPostId).set(postEntity.copy(postId = newPostId)).await()
+            newPostId
         }
     }
 
@@ -64,4 +67,30 @@ class PostRemoteDataSourceImpl(private val firestore: FirebaseFirestore) : PostR
             }
         }
     }
+
+    override suspend fun uploadPostImage(imageUri: Uri): Result<String> = withContext(IO) {
+        runCatching {
+            val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
+            val fileName = "IMG_${timeStamp}_${UUID.randomUUID()}.jpg"
+            val imageRef = storage.reference.child("postImages/$fileName")
+            val uploadTask = imageRef.putFile(imageUri).await() // 코루틴을 사용해 업로드를 기다림
+            val imageUrl = uploadTask.metadata?.reference?.downloadUrl?.await()?.toString()
+            imageUrl ?: throw Exception("Failed to get download URL")
+        }
+    }
 }
+
+//    override suspend fun uploadPostImages(
+//        imageUris: List<Uri>,
+//    ): List<String> = withContext(IO) {
+//        imageUris.map { uri ->
+//            async {
+//                val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
+//                val fileName = "IMG_${timeStamp}_${UUID.randomUUID()}.jpg"
+//                val imageRef = storage.reference.child("postImages/$fileName")
+//                val uploadTask = imageRef.putFile(uri).await() // 코루틴을 사용해 업로드를 기다림
+//                uploadTask.metadata?.reference?.downloadUrl?.await()?.toString()
+//                    ?: throw Exception("Failed to upload image and get URL")
+//            }
+//        }.awaitAll()
+//    }

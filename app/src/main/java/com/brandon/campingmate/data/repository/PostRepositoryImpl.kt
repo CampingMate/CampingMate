@@ -1,6 +1,6 @@
 package com.brandon.campingmate.data.repository
 
-import com.brandon.campingmate.data.mapper.toPostDTO
+import android.net.Uri
 import com.brandon.campingmate.data.source.network.PostRemoteDataSource
 import com.brandon.campingmate.domain.mapper.toPostEntity
 import com.brandon.campingmate.domain.mapper.toPostsEntity
@@ -9,6 +9,9 @@ import com.brandon.campingmate.domain.model.PostsEntity
 import com.brandon.campingmate.domain.repository.PostRepository
 import com.brandon.campingmate.utils.Resource
 import com.google.firebase.firestore.DocumentSnapshot
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 
 
 class PostRepositoryImpl(
@@ -30,16 +33,6 @@ class PostRepositoryImpl(
         }
     }
 
-    override suspend fun uploadPost(
-        postEntity: PostEntity, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit
-    ) {
-        postRemoteDataSource.uploadPost(
-            postDto = postEntity.toPostDTO(),
-            onSuccess = onSuccess,
-            onFailure = onFailure,
-        )
-    }
-
     override suspend fun getPostById(postId: String): Resource<PostEntity> {
         return try {
             when (val result = postRemoteDataSource.getPostById(postId)) {
@@ -51,6 +44,20 @@ class PostRepositoryImpl(
             Resource.Error("Unknown Error")
         }
     }
+
+    override suspend fun uploadPostWithImages(
+        postEntity: PostEntity,
+        imageUris: List<Uri>,
+    ): Result<String> = coroutineScope {
+        runCatching {
+            val imageUrls = imageUris.map { uri ->
+                async { postRemoteDataSource.uploadPostImage(uri).getOrElse { throw it } }
+            }.awaitAll()
+            val newPost = postEntity.copy(imageUrls = imageUrls)
+            postRemoteDataSource.uploadPost(newPost).getOrElse { throw it }
+        }
+    }
+
 }
 
 
