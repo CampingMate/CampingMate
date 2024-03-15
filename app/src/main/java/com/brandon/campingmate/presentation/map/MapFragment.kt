@@ -196,9 +196,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                             binding.tvDialogcampname.setOnClickListener { view ->
                                 val intent =
                                     Intent(requireContext(), CampDetailActivity::class.java)
-                                var data = CampEntity(
-                                    contentId = it.contentId
-                                )
+                                val data = it.contentId
                                 intent.putExtra("campData", data)
                                 startActivity(intent)
                             }
@@ -304,9 +302,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     binding.clMapBottomDialog.isGone = false
                     binding.clMapBottomDialog.setOnClickListener { view ->
                         val intent = Intent(requireContext(), CampDetailActivity::class.java)
-                        var data = CampEntity(
-                            contentId = it.contentId,
-                        )
+                        var data = it.contentId
                         intent.putExtra("campData", data)
                         startActivity(intent)
                     }

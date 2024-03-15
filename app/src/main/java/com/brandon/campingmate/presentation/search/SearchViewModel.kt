@@ -23,6 +23,7 @@ class SearchViewModel : ViewModel() {
     val myList: LiveData<MutableList<CampEntity>> get() = _myList
     var lastVisible: DocumentSnapshot? = null
     var isLoadingData: Boolean = false
+    var pageNo: Int = 1
 
     fun setUpParkParameter(text: String) {
         val authKey =
