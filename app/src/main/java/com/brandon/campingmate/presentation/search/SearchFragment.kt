@@ -55,6 +55,7 @@ class SearchFragment : Fragment() {
 
     private fun initViewModel() = with(viewModel) {
         keyword.observe(viewLifecycleOwner){
+            binding.loadingAnimation.visibility = View.GONE
             listAdapter.submitList(it)
         }
         myList.observe(viewLifecycleOwner){
@@ -216,6 +217,7 @@ class SearchFragment : Fragment() {
          */
         tvEdit.setOnKeyListener{_, KeyCode, event ->
             if((event.action==KeyEvent.ACTION_DOWN) && (KeyCode==KeyEvent.KEYCODE_ENTER)){
+                loadingAnimation.visibility = View.VISIBLE
                 val searchText = binding.tvEdit.text.toString()
                 viewModel.setUpParkParameter(searchText)
                 binding.root.hideKeyboard()
