@@ -4,21 +4,20 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.brandon.campingmate.domain.model.CampEntity
-import com.brandon.campingmate.domain.model.PostEntity
+import com.brandon.campingmate.domain.model.Post
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
-import timber.log.Timber
 
 class ProfileViewModel : ViewModel() {
     private val _bookmarkedList: MutableLiveData<List<CampEntity>> = MutableLiveData()
     val bookmarkedList: LiveData<List<CampEntity>> get() = _bookmarkedList
     private val bookmarkCamp: MutableList<CampEntity> = mutableListOf()
 
-    private val _postList : MutableLiveData<List<PostEntity>> = MutableLiveData()
-    val postList : LiveData<List<PostEntity>> get() = _postList
-    private val writingPost : MutableList<PostEntity> = mutableListOf()
+    private val _postList: MutableLiveData<List<Post>> = MutableLiveData()
+    val postList: LiveData<List<Post>> get() = _postList
+    private val writingPost: MutableList<Post> = mutableListOf()
 
     fun getBookmark(userID: String) {
         val db = FirebaseFirestore.getInstance()
@@ -59,7 +58,7 @@ class ProfileViewModel : ViewModel() {
         writingPost.clear()
         result.get().addOnSuccessListener {
             for (doc in it) {
-                val post = doc.toObject(PostEntity::class.java)
+                val post = doc.toObject(Post::class.java)
                 writingPost.add(post)
             }
             _postList.value = writingPost

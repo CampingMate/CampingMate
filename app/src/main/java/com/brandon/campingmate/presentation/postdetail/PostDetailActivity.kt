@@ -17,15 +17,14 @@ import com.brandon.campingmate.R
 import com.brandon.campingmate.data.repository.PostRepositoryImpl
 import com.brandon.campingmate.data.source.network.impl.PostRemoteDataSourceImpl
 import com.brandon.campingmate.databinding.ActivityPostDetailBinding
-import com.brandon.campingmate.domain.model.PostCommentEntity
 import com.brandon.campingmate.domain.usecase.GetPostByIdUseCase
+import com.brandon.campingmate.domain.usecase.UploadPostCommentUseCase
 import com.brandon.campingmate.network.firestore.FirebaseService
 import com.brandon.campingmate.network.firestore.FirebaseService.fireStoreDB
 import com.brandon.campingmate.presentation.postdetail.adapter.PostDetailImageAdapter
 import com.brandon.campingmate.utils.toFormattedString
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class PostDetailActivity : AppCompatActivity() {
 
@@ -49,6 +48,14 @@ class PostDetailActivity : AppCompatActivity() {
                     )
                 )
             ),
+            UploadPostCommentUseCase(
+                PostRepositoryImpl(
+                    PostRemoteDataSourceImpl(
+                        fireStoreDB,
+                        FirebaseService.firebaseStorage
+                    )
+                )
+            ),
         )
     }
 
@@ -63,20 +70,17 @@ class PostDetailActivity : AppCompatActivity() {
         viewModel.loadData(postId)
 
         initView()
+        initListener()
         initViewModel()
         setupOnBackPressedHandling()
 
+    }
 
-        fireStoreDB.collection("posts").document("OhjH7RyaFCL5NEAVdIa7").collection("comments")
-            .add(PostCommentEntity(id = "123", content = "첫 댓글입니다", author = "김필승"))
-            .addOnSuccessListener { documentReference ->
-                Timber.d("Comment added with ID: " + documentReference.id)
-            }
-            .addOnFailureListener { e ->
-                Timber.d("Error adding comment", e)
-            }
-
-
+    private fun initListener() = with(binding) {
+        btnSend.setOnClickListener {
+            val content = etCommentInput.text.toString()
+            viewModel.handleEvent(PostDetailEvent.UploadComment(content))
+        }
     }
 
     private fun initViewModel() = with(viewModel) {

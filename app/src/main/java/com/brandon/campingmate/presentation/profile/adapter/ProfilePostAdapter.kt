@@ -8,14 +8,14 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.brandon.campingmate.databinding.ItemPostBinding
-import com.brandon.campingmate.domain.model.PostEntity
+import com.brandon.campingmate.domain.model.Post
 import com.brandon.campingmate.presentation.postdetail.PostDetailActivity
 import com.brandon.campingmate.utils.toFormattedString
 import com.bumptech.glide.Glide
 
-class ProfilePostAdapter : ListAdapter<PostEntity, ProfilePostAdapter.Holder>(diffUtil) {
+class ProfilePostAdapter : ListAdapter<Post, ProfilePostAdapter.Holder>(diffUtil) {
     inner class Holder(val binding: ItemPostBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(data: PostEntity) {
+        fun bind(data: Post) {
             with(binding) {
                 if (data.imageUrls.isNullOrEmpty()) {
                     ivPostImage.isVisible = false
@@ -38,12 +38,12 @@ class ProfilePostAdapter : ListAdapter<PostEntity, ProfilePostAdapter.Holder>(di
     }
 
     companion object {
-        private val diffUtil = object : DiffUtil.ItemCallback<PostEntity>() {
-            override fun areItemsTheSame(oldItem: PostEntity, newItem: PostEntity): Boolean {
+        private val diffUtil = object : DiffUtil.ItemCallback<Post>() {
+            override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {
                 return oldItem == newItem
             }
 
-            override fun areContentsTheSame(oldItem: PostEntity, newItem: PostEntity): Boolean {
+            override fun areContentsTheSame(oldItem: Post, newItem: Post): Boolean {
                 return oldItem == newItem
             }
         }

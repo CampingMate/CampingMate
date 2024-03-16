@@ -5,7 +5,7 @@ import com.google.firebase.Timestamp
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class PostEntity(
+data class Post(
     val postId: String? = null,
     val authorName: String? = null,
     val authorId: String? = null,
