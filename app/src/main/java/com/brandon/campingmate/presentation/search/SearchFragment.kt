@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -54,11 +55,11 @@ class SearchFragment : Fragment() {
 
     private fun initViewModel() = with(viewModel) {
         keyword.observe(viewLifecycleOwner){
-            Log.d("Search", "키워드 : ${it.size}")
+            binding.loadingAnimation.visibility = View.GONE
             listAdapter.submitList(it)
         }
         myList.observe(viewLifecycleOwner){
-            Log.d("Search", "옵저빙확 : ${it.size}")
+            binding.loadingAnimation.visibility = View.GONE
             val myNewList = mutableListOf<CampEntity>()
             myNewList.addAll(it)
             listAdapter.submitList(myNewList)
@@ -154,9 +155,9 @@ class SearchFragment : Fragment() {
          * 적용하기 버튼 클릭시 firestore필터링 후 검색
          */
         btnApply.setOnClickListener {
+            loadingAnimation.visibility = View.VISIBLE
             doNmList.clear()
             activatedChips.clear()
-
 
             for (chipId in chipIds) {
                 val chip = root.findViewById<Chip>(chipId)
@@ -208,12 +209,15 @@ class SearchFragment : Fragment() {
             }
             viewModel.callData()
             behavior.state = BottomSheetBehavior.STATE_HIDDEN
+            val drawable = context?.let { it1 -> ContextCompat.getDrawable(it1, R.drawable.ic_filter_checked) }
+            ivSetting.setImageDrawable(drawable)
         }
         /**
          * 엔터누를시 검색
          */
         tvEdit.setOnKeyListener{_, KeyCode, event ->
             if((event.action==KeyEvent.ACTION_DOWN) && (KeyCode==KeyEvent.KEYCODE_ENTER)){
+                loadingAnimation.visibility = View.VISIBLE
                 val searchText = binding.tvEdit.text.toString()
                 viewModel.setUpParkParameter(searchText)
                 binding.root.hideKeyboard()

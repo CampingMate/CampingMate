@@ -47,6 +47,7 @@ class HomeFragment : Fragment() {
         ViewModelProvider(this)[SplashViewModel::class.java]
     }
 
+
     private var districtItem = mutableListOf<HomeEntity>()
     private var petItem = mutableListOf<HomeEntity?>()
     private var themeItem = mutableListOf<HomeEntity>()

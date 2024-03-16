@@ -1,5 +1,6 @@
 package com.brandon.campingmate.presentation.map
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -9,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.view.isGone
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -24,6 +26,7 @@ import com.kakao.sdk.user.UserApiClient
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.CameraPosition
+import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
@@ -31,20 +34,25 @@ import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.OverlayImage
+import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.util.MarkerIcons
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import ted.gun0912.clustering.naver.TedNaverClustering
 import timber.log.Timber
 
-class MapFragment : Fragment(),OnMapReadyCallback {
-    private var _binding : FragmentMapBinding? = null
-    private val binding  get() = _binding!!
+class MapFragment : Fragment(), OnMapReadyCallback {
+    private var _binding: FragmentMapBinding? = null
+    private val binding get() = _binding!!
     private var mapView: MapView? = null
     private var naverMap: NaverMap? = null
-    private var maptype : Int = 1
-    private var context : Context? = null
+    private var maptype: Int = 1
+    private var context: Context? = null
     private val imgAdapter = DialogImgAdapter()
-    private lateinit var tedNaverClustering: TedNaverClustering<LocationBasedListItem>
+    private var tedNaverClustering: TedNaverClustering<LocationBasedListItem>? = null
     private var campDataList = mutableListOf<LocationBasedListItem>()
     private var imageList = mutableListOf<String>()
     private var bookMarkedList = mutableListOf<LocationBasedListItem>()
@@ -54,6 +62,7 @@ class MapFragment : Fragment(),OnMapReadyCallback {
     private val viewModel by lazy {
         ViewModelProvider(this)[MapViewModel::class.java]
     }
+    private lateinit var fusedLocationSource: FusedLocationSource
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +74,7 @@ class MapFragment : Fragment(),OnMapReadyCallback {
         savedInstanceState: Bundle?
     ): View? {
         context = container?.context
-        _binding = FragmentMapBinding.inflate(inflater,container,false)
+        _binding = FragmentMapBinding.inflate(inflater, container, false)
         mapView = binding.mvMap
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync(this)
@@ -74,27 +83,33 @@ class MapFragment : Fragment(),OnMapReadyCallback {
         Timber.tag("mapfragment").d("mapview getMapAsync()")
         return binding.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
     }
 
-    private fun initView() = with(binding){
+    private fun initView() = with(binding) {
+        val map = viewModel.getBlParamHashmap()
+        viewModel.getAllCampList(map)
+
         btnSattel.setOnClickListener {
-            when(maptype){
+            when (maptype) {
                 1 -> {
                     naverMap?.mapType = NaverMap.MapType.Satellite
-                    maptype+=1
+                    maptype += 1
                     btnSattel.text = "위성도"
                 }
+
                 2 -> {
                     naverMap?.mapType = NaverMap.MapType.Terrain
-                    maptype+=1
+                    maptype += 1
                     btnSattel.text = "지형도"
                 }
+
                 3 -> {
                     naverMap?.mapType = NaverMap.MapType.Basic
-                    maptype=1
+                    maptype = 1
                     btnSattel.text = "기본"
                 }
             }
@@ -108,309 +123,196 @@ class MapFragment : Fragment(),OnMapReadyCallback {
 //            val intent = Intent(context, WebViewActivity::class.java)
 //            startActivity(intent)
 //        }
-        rvCampImg.layoutManager = LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
+        rvCampImg.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         rvCampImg.adapter = imgAdapter
 
 
     }
 
-    private fun initViewModel() = with(viewModel){
-        val map = getBlParamHashmap()
-        getAllCampList(map)
-        paramHashmap.observe(viewLifecycleOwner){
-            //getCampList(it)
+    private fun initViewModel() = with(viewModel) {
+
+        paramHashmap?.observe(viewLifecycleOwner) {
+            getCampList(it)
         }
-        campList.observe(viewLifecycleOwner){
+        campList.observe(viewLifecycleOwner) {
             if (campList.value?.isNotEmpty() == true) {
                 campDataList = campList.value!!
+                campDataList.sortWith(compareBy<LocationBasedListItem>{ it.mapX }.thenBy { it.mapY })
 
-                if(bookmarkMarkers.isNotEmpty()){
-                    invisibleAllMarker(bookmarkMarkers)
-                }
+//                for(camp in campDataList){
+//                    val marker = Marker()
+//                    marker.captionText = camp.facltNm.toString()
+//                    marker.captionRequestedWidth = 200
+//                    marker.setCaptionAligns(Align.Top)
+//                    marker.captionOffset = 10
+//                    if(camp.mapX.isNullOrEmpty() || camp.mapY.isNullOrEmpty()) {
+//                        continue
+//                    }
+//                    marker.position = LatLng(camp.mapY.toDouble(),camp.mapX.toDouble())
+//                    markers.add(marker)
+//                }
+                //Log.d("test","campdatalist개수 = ${campDataList.size}")
 
-                markers.clear()
-                tedNaverClustering = TedNaverClustering.with<LocationBasedListItem>(requireContext(), naverMap!!)
-                    .customMarker {
-                        Marker().apply {
-                            captionText = it.facltNm.toString()
-                            captionRequestedWidth = 200
-                            setCaptionAligns(Align.Top)
-                            captionOffset = 10
-                            captionTextSize = 18f
-                            markers.add(this)
-                        }
-                    }
-                    .markerClickListener {
-                        val tag = it.induty
-                        val loc = it.lctCl
-                        imgAdapter.clear()
-                        binding.clMapBottomDialog.setOnClickListener(null)
-                        binding.tvDialogtag.text = "$tag · $loc"
-                        binding.tvDialogcampname.text = it.facltNm
-                        binding.tvDialoglocation.text = it.addr1
-                        binding.clMapBottomDialog.isGone=false
-                        binding.clMapBottomDialog.setOnClickListener { view ->
-                            val intent = Intent(requireContext(),CampDetailActivity::class.java)
-                            var data = CampEntity(
-                                firstImageUrl = it.firstImageUrl,
-                                siteMg3Vrticl = it.siteMg3Vrticl,
-                                siteMg2Vrticl = it.siteMg2Vrticl,
-                                siteMg1Co = it.siteMg1Co,
-                                siteMg2Co = it.siteMg2Co,
-                                siteMg3Co = it.siteMg3Co,
-                                siteBottomCl1 = it.siteBottomCl1,
-                                siteBottomCl2 = it.siteBottomCl2,
-                                siteBottomCl3 = it.siteBottomCl3,
-                                siteBottomCl4 = it.siteBottomCl4,
-                                fireSensorCo = it.fireSensorCo,
-                                themaEnvrnCl = it.themaEnvrnCl?.split(","),
-                                eqpmnLendCl = it.eqpmnLendCl?.split(","),
-                                animalCmgCl = it.animalCmgCl,
-                                tooltip = it.tooltip,
-                                glampInnerFclty = it.glampInnerFclty?.split(","),
-                                caravInnerFclty = it.caravInnerFclty?.split(","),
-                                prmisnDe = it.prmisnDe,
-                                operPdCl = it.operPdCl,
-                                operDeCl = it.operDeCl,
-                                trlerAcmpnyAt = it.trlerAcmpnyAt,
-                                caravAcmpnyAt = it.caravAcmpnyAt,
-                                toiletCo = it.toiletCo,
-                                frprvtWrppCo = it.frprvtWrppCo,
-                                frprvtSandCo = it.frprvtSandCo,
-                                induty = it.induty?.split(","),
-                                siteMg1Vrticl = it.siteMg1Vrticl,
-                                posblFcltyEtc = it.posblFcltyEtc,
-                                clturEventAt = it.clturEventAt,
-                                clturEvent = it.clturEvent,
-                                exprnProgrmAt = it.exprnProgrmAt,
-                                exprnProgrm = it.exprnProgrm,
-                                extshrCo = it.extshrCo,
-                                manageSttus = it.manageSttus,
-                                hvofBgnde = it.hvofBgnde,
-                                hvofEnddle = it.hvofEnddle,
-                                trsagntNo = it.trsagntNo,
-                                bizrno = it.bizrno,
-                                facltDivNm = it.facltDivNm,
-                                mangeDivNm = it.mangeDivNm,
-                                mgcDiv = it.mgcDiv,
-                                tourEraCl = it.tourEraCl,
-                                lctCl = it.lctCl?.split(","),
-                                doNm = it.doNm,
-                                sigunguNm = it.sigunguNm,
-                                zipcode = it.zipcode,
-                                addr1 = it.addr1,
-                                addr2 = it.addr2,
-                                mapX = it.mapX,
-                                mapY = it.mapY,
-                                direction = it.direction,
-                                tel = it.tel,
-                                homepage = it.homepage,
-                                contentId = it.contentId,
-                                swrmCo = it.swrmCo,
-                                wtrplCo = it.wtrplCo,
-                                brazierCl = it.brazierCl,
-                                sbrsCl = it.sbrsCl?.split(","),
-                                sbrsEtc = it.sbrsEtc,
-                                modifiedtime = it.modifiedtime,
-                                facltNm = it.facltNm,
-                                lineIntro = it.lineIntro,
-                                intro = it.intro,
-                                allar = it.allar,
-                                insrncAt = it.insrncAt,
-                                resveUrl = it.resveUrl,
-                                resveCl = it.resveCl,
-                                manageNmpr = it.manageNmpr,
-                                gnrlSiteCo = it.gnrlSiteCo,
-                                autoSiteCo = it.autoSiteCo,
-                                glampSiteCo = it.glampSiteCo,
-                                caravSiteCo = it.caravSiteCo,
-                                indvdlCaravSiteCo = it.indvdlCaravSiteCo,
-                                sitedStnc = it.sitedStnc,
-                                siteMg1Width = it.siteMg1Width,
-                                siteMg2Width = it.siteMg2Width,
-                                siteMg3Width = it.siteMg3Width,
-                                createdtime = it.createdtime,
-                                posblFcltyCl = it.posblFcltyCl?.split(","),
-                                featureNm = it.featureNm,
-                                siteBottomCl5 = it.siteBottomCl5
-                            )
-                            intent.putExtra("campData",data)
-                            startActivity(intent)
-                        }
-
-                        val param = getImgParamHashmap(it.contentId.toString())
-                        viewModel.getImgList(param)
-                    }
-                    .minClusterSize(10)
-                    .clusterBuckets(intArrayOf(20,20))
-                    .items(campDataList)
-                    .make()
             }
         }
 
-        imageRes.observe(viewLifecycleOwner){
+        imageRes.observe(viewLifecycleOwner) {
             if (imageRes.value?.isNotEmpty() == true) {
                 imageList = viewModel.imageRes.value!!
-                imgAdapter.submitList(imageList )
+                imgAdapter.submitList(imageList)
             }
         }
 
-        bookmarkedList.observe(viewLifecycleOwner){
+        bookmarkedList.observe(viewLifecycleOwner) {
             if (bookmarkedList.value?.isNotEmpty() == true) {
                 bookMarkedList = bookmarkedList.value!!
-                if(markers.isNotEmpty()) {
-                    invisibleAllMarker(markers)
+                if (markers.isNotEmpty()) {
+                    //hideMarker(markers)
                 }
                 bookmarkMarkers.clear()
-                tedNaverClustering = TedNaverClustering.with<LocationBasedListItem>(requireContext(), naverMap!!)
-                    .customMarker {
-                        Marker().apply {
-                            icon = MarkerIcons.RED
-                            captionText = it.facltNm.toString()
-                            captionRequestedWidth = 200
-                            setCaptionAligns(Align.Top)
-                            captionOffset = 10
-                            captionTextSize = 18f
-                            bookmarkMarkers .add(this)
+                tedNaverClustering =
+                    TedNaverClustering.with<LocationBasedListItem>(requireContext(), naverMap!!)
+                        .customMarker {
+                            Marker().apply {
+                                icon = MarkerIcons.RED
+                                captionText = it.facltNm.toString()
+                                captionRequestedWidth = 200
+                                setCaptionAligns(Align.Top)
+                                captionOffset = 10
+                                captionTextSize = 18f
+                                bookmarkMarkers.add(this)
+                            }
                         }
-                    }
-                    .markerClickListener {
-                        val tag = it.induty
-                        val loc = it.lctCl
-                        imgAdapter.clear()
-                        binding.tvDialogcampname.setOnClickListener(null)
-                        binding.tvDialogtag.text = "$tag · $loc"
-                        binding.tvDialogcampname.text = it.facltNm
-                        binding.tvDialoglocation.text = it.addr1
-                        binding.clMapBottomDialog.isGone=false
-                        binding.tvDialogcampname.setOnClickListener { view ->
-                            val intent = Intent(requireContext(),CampDetailActivity::class.java)
-                            var data = CampEntity(
-                                firstImageUrl = it.firstImageUrl,
-                                siteMg3Vrticl = it.siteMg3Vrticl,
-                                siteMg2Vrticl = it.siteMg2Vrticl,
-                                siteMg1Co = it.siteMg1Co,
-                                siteMg2Co = it.siteMg2Co,
-                                siteMg3Co = it.siteMg3Co,
-                                siteBottomCl1 = it.siteBottomCl1,
-                                siteBottomCl2 = it.siteBottomCl2,
-                                siteBottomCl3 = it.siteBottomCl3,
-                                siteBottomCl4 = it.siteBottomCl4,
-                                fireSensorCo = it.fireSensorCo,
-                                themaEnvrnCl = it.themaEnvrnCl?.split(","),
-                                eqpmnLendCl = it.eqpmnLendCl?.split(","),
-                                animalCmgCl = it.animalCmgCl,
-                                tooltip = it.tooltip,
-                                glampInnerFclty = it.glampInnerFclty?.split(","),
-                                caravInnerFclty = it.caravInnerFclty?.split(","),
-                                prmisnDe = it.prmisnDe,
-                                operPdCl = it.operPdCl,
-                                operDeCl = it.operDeCl,
-                                trlerAcmpnyAt = it.trlerAcmpnyAt,
-                                caravAcmpnyAt = it.caravAcmpnyAt,
-                                toiletCo = it.toiletCo,
-                                frprvtWrppCo = it.frprvtWrppCo,
-                                frprvtSandCo = it.frprvtSandCo,
-                                induty = it.induty?.split(","),
-                                siteMg1Vrticl = it.siteMg1Vrticl,
-                                posblFcltyEtc = it.posblFcltyEtc,
-                                clturEventAt = it.clturEventAt,
-                                clturEvent = it.clturEvent,
-                                exprnProgrmAt = it.exprnProgrmAt,
-                                exprnProgrm = it.exprnProgrm,
-                                extshrCo = it.extshrCo,
-                                manageSttus = it.manageSttus,
-                                hvofBgnde = it.hvofBgnde,
-                                hvofEnddle = it.hvofEnddle,
-                                trsagntNo = it.trsagntNo,
-                                bizrno = it.bizrno,
-                                facltDivNm = it.facltDivNm,
-                                mangeDivNm = it.mangeDivNm,
-                                mgcDiv = it.mgcDiv,
-                                tourEraCl = it.tourEraCl,
-                                lctCl = it.lctCl?.split(","),
-                                doNm = it.doNm,
-                                sigunguNm = it.sigunguNm,
-                                zipcode = it.zipcode,
-                                addr1 = it.addr1,
-                                addr2 = it.addr2,
-                                mapX = it.mapX,
-                                mapY = it.mapY,
-                                direction = it.direction,
-                                tel = it.tel,
-                                homepage = it.homepage,
-                                contentId = it.contentId,
-                                swrmCo = it.swrmCo,
-                                wtrplCo = it.wtrplCo,
-                                brazierCl = it.brazierCl,
-                                sbrsCl = it.sbrsCl?.split(","),
-                                sbrsEtc = it.sbrsEtc,
-                                modifiedtime = it.modifiedtime,
-                                facltNm = it.facltNm,
-                                lineIntro = it.lineIntro,
-                                intro = it.intro,
-                                allar = it.allar,
-                                insrncAt = it.insrncAt,
-                                resveUrl = it.resveUrl,
-                                resveCl = it.resveCl,
-                                manageNmpr = it.manageNmpr,
-                                gnrlSiteCo = it.gnrlSiteCo,
-                                autoSiteCo = it.autoSiteCo,
-                                glampSiteCo = it.glampSiteCo,
-                                caravSiteCo = it.caravSiteCo,
-                                indvdlCaravSiteCo = it.indvdlCaravSiteCo,
-                                sitedStnc = it.sitedStnc,
-                                siteMg1Width = it.siteMg1Width,
-                                siteMg2Width = it.siteMg2Width,
-                                siteMg3Width = it.siteMg3Width,
-                                createdtime = it.createdtime,
-                                posblFcltyCl = it.posblFcltyCl?.split(","),
-                                featureNm = it.featureNm,
-                                siteBottomCl5 = it.siteBottomCl5
-                            )
-                            intent.putExtra("campData",data)
-                            startActivity(intent)
+                        .markerClickListener {
+                            val tag = it.induty
+                            val loc = it.lctCl
+                            imgAdapter.clear()
+                            binding.tvDialogcampname.setOnClickListener(null)
+                            binding.tvDialogtag.text = "$tag · $loc"
+                            binding.tvDialogcampname.text = it.facltNm
+                            binding.tvDialoglocation.text = it.addr1
+                            binding.clMapBottomDialog.isGone = false
+                            binding.tvDialogcampname.setOnClickListener { view ->
+                                val intent =
+                                    Intent(requireContext(), CampDetailActivity::class.java)
+                                val data = it.contentId
+                                intent.putExtra("campData", data)
+                                startActivity(intent)
+                            }
+                            val param = getImgParamHashmap(it.contentId.toString())
+                            viewModel.getImgList(param)
                         }
-                        val param = getImgParamHashmap(it.contentId.toString())
-                        viewModel.getImgList(param)
-                    }
-                    .minClusterSize(10)
-                    .clusterBuckets(intArrayOf(50,50))
-                    .items(bookMarkedList)
-                    .make()
+                        .minClusterSize(10)
+                        .clusterBuckets(intArrayOf(50, 50))
+                        .items(bookMarkedList)
+                        .make()
             }
         }
 
     }
 
-    
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
+            return
+        }
+        if (fusedLocationSource.onRequestPermissionsResult(
+                requestCode,
+                permissions,
+                grantResults
+            )
+        ) {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+            if (!fusedLocationSource.isActivated) { // 권한 거부됨
+                naverMap?.locationTrackingMode = LocationTrackingMode.None
+            }
+            return
+        }
+
+    }
+
+    @SuppressLint("SetTextI18n")
     override fun onMapReady(p0: NaverMap) {
         naverMap = p0
-        val cameraPosition = CameraPosition(LatLng(36.60545, 127.9792), 6.0)
+
+        val uiSetting = naverMap?.uiSettings
+        uiSetting?.isLocationButtonEnabled = true
+
+        fusedLocationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
+        naverMap?.locationSource = fusedLocationSource
+        naverMap?.addOnCameraIdleListener {
+            updateMarkers(naverMap!!, campDataList)
+            //updateMarkers(naverMap!!,markers)
+            Log.d("test",naverMap?.cameraPosition?.zoom.toString())
+        }
+
+        val cameraPosition = CameraPosition(LatLng(37.5440, 127.1265), 16.0)
         naverMap?.cameraPosition = cameraPosition
         //한번도 카메라 영역 제한
         naverMap?.minZoom = 6.0
         naverMap?.maxZoom = 18.0
-        naverMap?.extent = LatLngBounds(LatLng(32.973077, 124.270981), LatLng(38.856197,130.051725 ))
+        naverMap?.extent =
+            LatLngBounds(LatLng(32.973077, 124.270981), LatLng(38.856197, 130.051725))
 
         var bookmark = false
         binding.btnBookmark.setOnClickListener {
-            if(bookmark){
+            if (bookmark) {
                 binding.btnBookmark.text = "전체"
-                invisibleAllMarker(bookmarkMarkers)
-                visibleAllMarker(markers)
+                //hideMarker(bookmarkMarkers)
+                //showMarker(markers)
                 bookmark = false
-                viewModel.getBookmarkedCamp(userId,campDataList)
-            }else{
+                //viewModel.getBookmarkedCamp(userId,campDataList)
+            } else {
                 binding.btnBookmark.text = "북마크"
-                invisibleAllMarker(markers)
-                visibleAllMarker(bookmarkMarkers)
+                //hideMarker(markers)
+                // showMarker(bookmarkMarkers)
                 bookmark = true
 //                val map = viewModel.getBlParamHashmap()
 //                viewModel.getAllCampList(map)
             }
-
         }
+
+        tedNaverClustering =
+            TedNaverClustering.with<LocationBasedListItem>(requireContext(), naverMap!!)
+                .customMarker {
+                    Marker().apply {
+                        val zoom = naverMap?.cameraPosition?.zoom!!
+                        if(zoom.toInt() >13){
+                            captionText = it.facltNm.toString()
+                        }
+                        captionRequestedWidth = 200
+                        setCaptionAligns(Align.Top)
+                        captionOffset = 10
+                        captionTextSize = 18f
+                        //markers.add(this)
+                    }
+                }
+                .markerClickListener {
+                    val tag = it.induty
+                    val loc = it.lctCl
+                    imgAdapter.clear()
+                    binding.clMapBottomDialog.setOnClickListener(null)
+                    binding.tvDialogtag.text = "$tag · $loc"
+                    binding.tvDialogcampname.text = it.facltNm
+                    binding.tvDialoglocation.text = it.addr1
+                    binding.clMapBottomDialog.isGone = false
+                    binding.clMapBottomDialog.setOnClickListener { view ->
+                        val intent = Intent(requireContext(), CampDetailActivity::class.java)
+                        var data = it.contentId
+                        intent.putExtra("campData", data)
+                        startActivity(intent)
+                    }
+                    val param = viewModel.getImgParamHashmap(it.contentId.toString())
+                    viewModel.getImgList(param)
+                }
+                .minClusterSize(20)
+                .clusterBuckets(intArrayOf(5000, 100))
+                .items(mutableListOf())
+                .make()
     }
 
 
@@ -457,15 +359,74 @@ class MapFragment : Fragment(),OnMapReadyCallback {
         Timber.tag("mapfragment").d("mapview onLowMemory()")
     }
 
-    fun invisibleAllMarker(markers: MutableList<Marker>) {
-        markers.forEach {
-            it.isVisible = false
+//    fun showMarker(marker: Marker, naverMap: NaverMap) {
+//        marker.map = naverMap
+//    }
+//
+//    fun hideMarker(marker: Marker) {
+//        marker.map = null
+//    }
+
+
+    //fun updateMarkers(naverMap: NaverMap, tMarkers: MutableList<Marker>){
+    private fun updateMarkers(naverMap: NaverMap, campData: MutableList<LocationBasedListItem>) {
+        val mapBounds = naverMap.contentBounds
+        val clustering = mutableListOf<LocationBasedListItem>()
+
+//        for(marker in tMarkers){
+//            val position = marker.position
+//            val lat = camp.mapY
+//            val lon = camp.mapX
+//            val position = LatLng(lat!!.toDouble(),lon!!.toDouble())
+//            //Log.d("test","포지션= ${position}")
+//            if(mapBounds.contains(position)){
+//                showMarker(marker,naverMap)
+//                //Log.d("test","마커 드러남")
+//            }else {
+//                hideMarker(marker)
+//            }
+//        }
+
+
+        CoroutineScope(Dispatchers.Default).launch {
+            tedNaverClustering?.clearItems()
+            val middleIdx = campDataList.size/4
+
+            val job1 = async {
+                showCampData(campDataList,naverMap,0,middleIdx)
+            }
+            val job2 = async {
+                showCampData(campDataList,naverMap,middleIdx,middleIdx*2)
+            }
+            val job3 = async {
+                showCampData(campDataList,naverMap,middleIdx*2,middleIdx*3)
+            }
+            val job4 = async {
+                showCampData(campDataList,naverMap,middleIdx*3,campDataList.size)
+            }
+            val list = listOf(job1,job2,job3,job4)
+            list.awaitAll()
         }
     }
 
-    fun visibleAllMarker(markers: MutableList<Marker>) {
-        markers.forEach {
-            it.isVisible = true
+    fun showCampData(campData:MutableList<LocationBasedListItem> , naverMap: NaverMap, startIdx:Int,endIdx:Int){
+        val mapBounds = naverMap.contentBounds
+        val clustering = mutableListOf<LocationBasedListItem>()
+        for (i in startIdx until endIdx) {
+            val lat = campData[i].mapY
+            val lon = campData[i].mapX
+            val position = LatLng(lat!!.toDouble(), lon!!.toDouble())
+            //Log.d("test","포지션= ${position}")
+            if (mapBounds.contains(position)) {
+                clustering.add(campData[i])
+            }
         }
+        tedNaverClustering?.addItems(clustering)
     }
+
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
+    }
+
+
 }

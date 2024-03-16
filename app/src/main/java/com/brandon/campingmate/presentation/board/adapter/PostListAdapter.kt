@@ -7,13 +7,13 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
 import com.brandon.campingmate.databinding.ItemPostBinding
 import com.brandon.campingmate.databinding.ItemPostLoadingBinding
 import com.brandon.campingmate.databinding.ItemPostUnknownBinding
 import com.brandon.campingmate.domain.model.PostEntity
 import com.brandon.campingmate.presentation.mapper.toPostEntity
 import com.brandon.campingmate.utils.toFormattedString
+import com.bumptech.glide.Glide
 
 /**
  * 1. PostListAdapter
@@ -72,7 +72,10 @@ class PostListAdapter(private val onClickItem: (PostEntity) -> Unit) :
                 if (imageUrl == null) {
                     ivPostImage.isVisible = false
                 } else {
-                    ivPostImage.load(imageUrl)
+                    ivPostImage.isVisible = true
+                    Glide.with(itemView.context)
+                        .load(imageUrl)
+                        .into(ivPostImage)
                 }
             }
             binding.root.setOnClickListener {
