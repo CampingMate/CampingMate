@@ -6,11 +6,12 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.MenuItem
+import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -49,8 +50,7 @@ class PostWriteActivity : AppCompatActivity() {
             UploadPostUseCase(
                 PostRepositoryImpl(
                     PostRemoteDataSourceImpl(
-                        fireStoreDB,
-                        firebaseStorage
+                        fireStoreDB, firebaseStorage
                     )
                 )
             ),
@@ -67,8 +67,7 @@ class PostWriteActivity : AppCompatActivity() {
 
     private val editTexts
         get() = listOf(
-            binding.tvTitle,
-            binding.tvContent
+            binding.tvTitle, binding.tvContent
         )
 
 
@@ -152,12 +151,12 @@ class PostWriteActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // 뒤로가기 버튼 활성화
 
         // 리사이클러뷰 설정
-        rvPostImages.layoutManager =
+        rvPostImage.layoutManager =
             LinearLayoutManager(this@PostWriteActivity, LinearLayoutManager.HORIZONTAL, false)
-        rvPostImages.adapter = imageListAdapter
+        rvPostImage.adapter = imageListAdapter
 
         // 커스텀 ItemAnimator 설정
-        rvPostImages.itemAnimator = null
+        rvPostImage.itemAnimator = null
 
     }
 
@@ -176,32 +175,40 @@ class PostWriteActivity : AppCompatActivity() {
             // 권한 얻기 + 갤러리에서 이미지 가져오기
             viewModel.handleEvent(PostWriteEvent.OpenPhotoPicker())
         }
-        // TODO editText 리스너
-        editTexts.forEach { editText ->
-            editText.setOnKeyListener { v, keyCode, event ->
-                if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    Timber.tag("VIEW").d("뒤로가기")
-                    // TODO 이거 안됨
-                    v.clearFocus()
+
+        val rootView = binding.root
+        rootView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            var previousHeightDiff: Int = 0
+            override fun onGlobalLayout() {
+                val rect = Rect()
+                rootView.getWindowVisibleDisplayFrame(rect)
+                val heightDiff = rootView.rootView.height - (rect.bottom - rect.top)
+                val isKeyboardActive = heightDiff > 500
+                if (heightDiff != previousHeightDiff) {
+                    Timber.tag("VIEW").d("isKeyboardActive: $isKeyboardActive")
+                    when (isKeyboardActive) {
+                        true -> {
+                            binding.rvImageContainer.animate().translationY(rvImageContainer.height.toFloat())
+                                .setDuration(100)
+                                .withEndAction {
+                                    rvImageContainer.isVisible = false
+                                }
+                        }
+
+                        false -> {
+                            rvImageContainer.isVisible = true
+                            rvImageContainer.animate().translationY(0f)
+                                .setDuration(100)
+                        }
+                    }
+                    previousHeightDiff = heightDiff
                 }
-                return@setOnKeyListener false
             }
-        } // TODO 키보드 활성화에 따라  rv 가시성 변경
-
-        root.viewTreeObserver.addOnDrawListener {
-            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            val isKeyboardOpen = inputMethodManager.isAcceptingText
-
-            // TODO 로직 바꿔야됨
-
-            Timber.tag("VIEW").d("State: ${!isKeyboardOpen}")
-            binding.rvPostImages.isVisible = !isKeyboardOpen
-        }
+        })
     }
 
     private fun showImagePickerBottomSheet(uris: List<Uri> = emptyList()) {
-        val bottomSheet = ImagePicker(
-            maxSelection = 5,
+        val bottomSheet = ImagePicker(maxSelection = 5,
             preselectedImages = uris,
             gridCount = 3,
             gridSpacing = 8,

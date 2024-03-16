@@ -99,7 +99,7 @@
 
             <!-- Images RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_post_images"
+                android:id="@+id/rv_post_image"
                 android:layout_width="0dp"
                 android:layout_height="120dp"
                 android:layout_marginStart="16dp"
@@ -123,7 +123,7 @@
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/rv_post_images" />
+                app:layout_constraintTop_toBottomOf="@id/rv_post_image" />
 
             <!-- Comments RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView
