@@ -52,6 +52,7 @@ class PostRemoteDataSourceImpl(
         }
     }
 
+
     override suspend fun getPostById(postId: String): Resource<PostResponse> {
         return withContext(IO) {
             try {
@@ -79,18 +80,3 @@ class PostRemoteDataSourceImpl(
         }
     }
 }
-
-//    override suspend fun uploadPostImages(
-//        imageUris: List<Uri>,
-//    ): List<String> = withContext(IO) {
-//        imageUris.map { uri ->
-//            async {
-//                val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
-//                val fileName = "IMG_${timeStamp}_${UUID.randomUUID()}.jpg"
-//                val imageRef = storage.reference.child("postImages/$fileName")
-//                val uploadTask = imageRef.putFile(uri).await() // 코루틴을 사용해 업로드를 기다림
-//                uploadTask.metadata?.reference?.downloadUrl?.await()?.toString()
-//                    ?: throw Exception("Failed to upload image and get URL")
-//            }
-//        }.awaitAll()
-//    }
