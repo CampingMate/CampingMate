@@ -23,9 +23,11 @@ import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.campdetail.adapter.CommentListAdapter
 import com.brandon.campingmate.presentation.campdetail.adapter.ViewPagerAdapter
 import com.brandon.campingmate.presentation.common.SnackbarUtil
+import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.storage.storage
 import com.kakao.sdk.user.UserApiClient
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
@@ -39,6 +41,7 @@ import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.UUID
 
 class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -265,18 +268,32 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                             } else{
                                 ""
                             }
-                            val myImageUri = Uri.parse(myImage)
-                            val myComment = CampCommentEntity(userId, userName, content, date, myImageUri)
-                            viewModel.uploadComment(myId!!, myComment)
-                            commentEdit.text.clear()
-                            //여기서
-                            selectedImage.setImageURI(null)
-                            selectedImage.visibility = View.GONE
+                            if(myImage.isNotBlank()){
+                                val myImageUri = Uri.parse(myImage)
+                                viewModel.uploadImage(myImageUri){ imageUrl ->
+                                    val myComment = CampCommentEntity(userId, userName, content, date, Uri.parse(imageUrl))
+                                    viewModel.uploadComment(myId!!, myComment)
+                                    commentEdit.text.clear()
+                                    selectedImage.setImageURI(null)
+                                    selectedImage.visibility = View.GONE
+                                    selectedImageDelete.visibility = View.GONE
+                                }
+                            } else{
+                                val myComment = CampCommentEntity(userId, userName, content, date, Uri.EMPTY)
+                                viewModel.uploadComment(myId!!, myComment)
+                                commentEdit.text.clear()
+                            }
                         }
                 } else {
                     SnackbarUtil.showSnackBar(it)
                 }
             }
+        }
+        selectedImageDelete.setOnClickListener {
+            binding.selectedImage.setImageURI(null)
+            binding.selectedImage.visibility = View.GONE
+            binding.selectedImageDelete.visibility = View.GONE
+            myImage = ""
         }
     }
 
@@ -288,10 +305,9 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_IMAGE_PICK && resultCode == Activity.RESULT_OK && data != null) {
             val selectedImageUri: Uri? = data.data
-            //firebase에 사진 올리기
-//            viewModel.uploadImage(selectedImageUri)
             selectedImageUri?.let {
                 binding.selectedImage.visibility = View.VISIBLE
+                binding.selectedImageDelete.visibility = View.VISIBLE
                 binding.selectedImage.setImageURI(it)
                 myImage = it.toString()
             }

@@ -19,6 +19,7 @@ import com.brandon.campingmate.databinding.FragmentHomeBinding
 import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.domain.model.HolidayEntity
 import com.brandon.campingmate.domain.model.HolidayItem
+import com.brandon.campingmate.domain.model.HomeEntity
 import com.brandon.campingmate.network.retrofit.NetWorkClient.holidayNetWork
 import com.brandon.campingmate.presentation.campdetail.CampDetailActivity
 import com.brandon.campingmate.presentation.home.adapter.HomeAdapter
@@ -46,16 +47,17 @@ class HomeFragment : Fragment() {
         ViewModelProvider(this)[SplashViewModel::class.java]
     }
 
-    private var districtItem = mutableListOf<CampEntity>()
-    private var petItem = mutableListOf<CampEntity?>()
-    private var themeItem = mutableListOf<CampEntity>()
-    private var dataItem = mutableListOf<CampEntity>()
+
+    private var districtItem = mutableListOf<HomeEntity>()
+    private var petItem = mutableListOf<HomeEntity?>()
+    private var themeItem = mutableListOf<HomeEntity>()
+    private var dataItem = mutableListOf<HomeEntity>()
     private lateinit var districtAdapter: HomeAdapter
     private lateinit var themeAdapter: HomeAdapter
     private val db = Firebase.firestore
     private val allCity: Query = db.collection("camps")
-    private lateinit var city : ArrayList<CampEntity>
-    private lateinit var theme : ArrayList<CampEntity>
+    private lateinit var city : ArrayList<HomeEntity>
+    private lateinit var theme : ArrayList<HomeEntity>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -141,7 +143,7 @@ class HomeFragment : Fragment() {
 
         limitData.get().addOnSuccessListener { documents ->
             for (document in documents) {
-                val dataList = document.toObject(CampEntity::class.java)
+                val dataList = document.toObject(HomeEntity::class.java)
                 dataItem.add(dataList)
                 if(select=="theme")
                     Log.d("Home","theme item : $dataItem")
@@ -180,6 +182,30 @@ class HomeFragment : Fragment() {
 
     private fun selectChip() {
         Log.d("Home", "selectChip()")
+//        val chipDistricList = listOf<Int>(R.id.chipCapital, R.id.chipChungcheong, R.id.chipGangwon, R.id.chipGyeongsang, R.id.chipJeolla)
+//        val chipThemeList = listOf<Int>(R.id.chipSpringFlower, R.id.chipWalk, R.id.chipActivity, R.id.chipSwim, R.id.chipSunset, R.id.chipFallFlower, R.id.chipWinterFlower)
+//        ChipGroup.OnCheckedStateChangeListener { group, checkedIds ->
+//            when(checkedIds){
+//                chipDistricList -> {
+//                    when(chipDistricList){
+//                        R.id.chipCapital -> initDistrictView("Capital")
+//                    }
+//                }
+//                chipThemeList ->
+//                -> initDistrictView("Capital")
+//                 -> initDistrictView("Chungcheong")
+//                 -> initDistrictView("Gangwon")
+//                 -> initDistrictView("Gyeongsang")
+//                 -> initDistrictView("Jeolla")
+//                 -> initThemeView("SpringFlower")
+//                 -> initThemeView("Walk")
+//                 -> initThemeView("Activity")
+//                 -> initThemeView("Swim")
+//                 -> initThemeView("Sunset")
+//                 -> initThemeView("FallFlower")
+//                 -> initThemeView("WinterFlower")
+//            }
+//        }
         val chipGroup = ChipGroup.OnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
                 R.id.chipCapital -> initDistrictView("Capital")
@@ -212,7 +238,7 @@ class HomeFragment : Fragment() {
         val dataPet = allCity.whereIn("animalCmgCl", listOf("가능", "가능(소형견)")).limit(10)
         dataPet.get().addOnSuccessListener { documents ->
             for (document in documents) {
-                val dataList = document.toObject(CampEntity::class.java)
+                val dataList = document.toObject(HomeEntity::class.java)
                 petItem.add(dataList)
 //                Log.d("Home","item : $dataItem")
             }
@@ -245,7 +271,7 @@ class HomeFragment : Fragment() {
 //        Log.d("Home", "2. data=$data")
         result.get().addOnSuccessListener { documents ->
             for (document in documents) {
-                val dataList = document.toObject(CampEntity::class.java)
+                val dataList = document.toObject(HomeEntity::class.java)
                 districtItem.add(dataList)
 //                Log.d("Home","item : $dataItem")
             }
@@ -280,7 +306,7 @@ class HomeFragment : Fragment() {
 //        Log.d("Home", "2. data=$data")
         result.get().addOnSuccessListener { documents ->
             for (document in documents) {
-                val dataList = document.toObject(CampEntity::class.java)
+                val dataList = document.toObject(HomeEntity::class.java)
                 themeItem.add(dataList)
 //                Log.d("Home","item : $dataItem")
             }

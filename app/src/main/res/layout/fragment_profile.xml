@@ -293,7 +293,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:fontFamily="@font/spoqahansansneo_medium"
-                    android:text="30"
+                    android:text="0"
                     android:textColor="#939393"
                     android:textSize="14sp"
                     android:visibility="gone" />
@@ -321,7 +321,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:fontFamily="@font/spoqahansansneo_medium"
-                    android:text="1000"
+                    android:text="0"
                     android:textColor="#939393"
                     android:textSize="14sp"
                     android:visibility="gone" />

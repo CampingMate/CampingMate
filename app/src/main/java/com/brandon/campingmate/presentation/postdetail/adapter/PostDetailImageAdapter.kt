@@ -4,13 +4,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.brandon.campingmate.databinding.ItemPostImageBinding
+import com.brandon.campingmate.databinding.ItemPostdetailImageBinding
 import timber.log.Timber
 
-class ImageListAdapter(private var imageUrls: List<String>) :
-    RecyclerView.Adapter<ImageListAdapter.ImageViewHolder>() {
+class PostDetailImageAdapter(private var imageUrls: List<String>) :
+    RecyclerView.Adapter<PostDetailImageAdapter.ImageViewHolder>() {
 
-    inner class ImageViewHolder(private val binding: ItemPostImageBinding) :
+    inner class ImageViewHolder(private val binding: ItemPostdetailImageBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun onBind(imageUrl: String) {
             binding.ivPostImage.load(imageUrl) {
@@ -22,7 +22,7 @@ class ImageListAdapter(private var imageUrls: List<String>) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
-        val binding = ItemPostImageBinding.inflate(
+        val binding = ItemPostdetailImageBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
