@@ -11,7 +11,7 @@ import com.brandon.campingmate.databinding.ItemPostBinding
 import com.brandon.campingmate.databinding.ItemPostLoadingBinding
 import com.brandon.campingmate.databinding.ItemPostUnknownBinding
 import com.brandon.campingmate.domain.model.Post
-import com.brandon.campingmate.presentation.mapper.toPostEntity
+import com.brandon.campingmate.utils.mappers.toPostEntity
 import com.brandon.campingmate.utils.toFormattedString
 import com.bumptech.glide.Glide
 

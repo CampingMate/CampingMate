@@ -7,8 +7,8 @@ import com.brandon.campingmate.domain.usecase.GetPostsUseCase
 import com.brandon.campingmate.presentation.board.BoardViewModel.RefreshTrigger.SCROLL
 import com.brandon.campingmate.presentation.board.BoardViewModel.RefreshTrigger.SWIPE
 import com.brandon.campingmate.presentation.board.BoardViewModel.RefreshTrigger.UPLOAD
-import com.brandon.campingmate.presentation.mapper.toPostListItem
 import com.brandon.campingmate.utils.Resource
+import com.brandon.campingmate.utils.mappers.toPostListItem
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

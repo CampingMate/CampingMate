@@ -1,11 +1,10 @@
-package com.brandon.campingmate.data.source.network.impl
+package com.brandon.campingmate.data.remote.impl
 
 import android.net.Uri
-import com.brandon.campingmate.data.model.request.PostCommentDTO
-import com.brandon.campingmate.data.model.request.PostDTO
-import com.brandon.campingmate.data.model.response.PostResponse
-import com.brandon.campingmate.data.model.response.PostsResponse
-import com.brandon.campingmate.data.source.network.PostRemoteDataSource
+import com.brandon.campingmate.data.remote.PostRemoteDataSource
+import com.brandon.campingmate.data.remote.dto.PostCommentDTO
+import com.brandon.campingmate.data.remote.dto.PostDTO
+import com.brandon.campingmate.data.remote.dto.PostsDTO
 import com.brandon.campingmate.utils.Resource
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
@@ -25,15 +24,15 @@ import java.util.UUID
 class PostRemoteDataSourceImpl(
     private val firestore: FirebaseFirestore, private val storage: FirebaseStorage
 ) : PostRemoteDataSource {
-    override suspend fun getPosts(pageSize: Int, lastVisibleDoc: DocumentSnapshot?): Resource<PostsResponse> {
+    override suspend fun getPosts(pageSize: Int, lastVisibleDoc: DocumentSnapshot?): Resource<PostsDTO> {
         return try {
             withContext(IO) {
                 val query = firestore.collection("posts").orderBy("timestamp", Query.Direction.DESCENDING)
                 val paginatedQuery = lastVisibleDoc?.let { query.startAfter(it) } ?: query
                 val snapshot = paginatedQuery.limit(pageSize.toLong()).get().await()
-                val posts = snapshot.documents.mapNotNull { it.toObject(PostResponse::class.java) }
+                val posts = snapshot.documents.mapNotNull { it.toObject(PostDTO::class.java) }
                 if (posts.isNotEmpty()) {
-                    Resource.Success(PostsResponse(posts, snapshot.documents.lastOrNull()))
+                    Resource.Success(PostsDTO(posts, snapshot.documents.lastOrNull()))
                 } else {
                     Resource.Empty
                 }
@@ -66,11 +65,11 @@ class PostRemoteDataSourceImpl(
         }
     }
 
-    override suspend fun getPostById(postId: String): Resource<PostResponse> {
+    override suspend fun getPostById(postId: String): Resource<PostDTO> {
         return withContext(IO) {
             try {
                 val document = firestore.collection("posts").document(postId).get().await()
-                val post = document.toObject(PostResponse::class.java)
+                val post = document.toObject(PostDTO::class.java)
                 if (post != null) {
                     Resource.Success(post)
                 } else {
