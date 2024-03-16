@@ -4,6 +4,12 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.RectF
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
@@ -21,7 +27,11 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.FragmentProfileBinding
 import com.brandon.campingmate.domain.model.CampEntity
@@ -34,6 +44,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.storage
 import com.kakao.sdk.user.UserApiClient
+import timber.log.Timber
 
 class ProfileFragment : Fragment() {
 
@@ -45,6 +56,7 @@ class ProfileFragment : Fragment() {
     private val bookmarkAdapter: ProfileBookmarkAdapter by lazy { ProfileBookmarkAdapter() }
     private val postAdapter: ProfilePostAdapter by lazy { ProfilePostAdapter() }
     private val db = FirebaseFirestore.getInstance()
+    var userId: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,6 +64,21 @@ class ProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
+        //저장된 유저 아이디 가져오기
+        val masterKeyAlias = MasterKey
+//    .Builder(applicationContext, MasterKey.DEFAULT_MASTER_KEY_ALIAS)    //액티비티에서 가져올때
+            .Builder(requireContext(), MasterKey.DEFAULT_MASTER_KEY_ALIAS)    //프래그먼트에서 가져올때
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+        val pref = EncryptedSharedPreferences.create(
+            requireContext(),  //프래그먼트
+//    this, //Context
+            "userID",   //file name
+            masterKeyAlias,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,  //key 암호화
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM     //value 암호화
+        )
+        userId = pref.getString("myID", "")
         return binding.root
     }
 
@@ -77,18 +104,24 @@ class ProfileFragment : Fragment() {
         clickEditListener()
         clickEditProfile()
 
+        swipeRecyclerView(binding.rvBookmarked)
+        //swipeRecyclerView(binding.rvWriting)
+
         clickLogout()
 
     }
 
     private fun checkLogin() {
-        UserApiClient.instance.me { user, _ ->
-            if (user?.id != null) {
-                initLogin()
-                setBookmarkedAdapter(user.id.toString())
-                setPostAdapter(user.id.toString())
-            } else initLogout()
-        }
+        //UserApiClient.instance.me { user, _ ->
+        //if (user?.id != null) {
+        if (userId != null) {
+            initLogin()
+            //setBookmarkedAdapter(user.id.toString())
+            //setPostAdapter(user.id.toString())
+            setBookmarkedAdapter(userId!!)
+            setPostAdapter(userId!!)
+        } else initLogout()
+        //}
 
     }
 
@@ -395,6 +428,49 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    private fun swipeRecyclerView(recyclerView: RecyclerView) {
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val bookmarkID = bookmarkAdapter.currentList[position]
+                val postID = postAdapter.currentList[position]
+                //todo.리사이클러뷰 삭제(북마크해제/글삭제) 동작 수행
+                when (recyclerView) {
+                    binding.rvBookmarked -> {
+                        viewModel.removeBookmarkCamp(userId.toString(), bookmarkID.contentId.toString())
+                    }
+                }
+
+            }
+
+            override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
+                val icon: Bitmap
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                    val itemView = viewHolder.itemView
+                    val height = (itemView.bottom - itemView.top).toFloat()
+                    val width = height / 4
+                    val paint = Paint()
+                    if (dX < 0) {
+                        paint.color = Color.WHITE
+                        val background = RectF(itemView.right.toFloat() + dX, itemView.top.toFloat(), itemView.right.toFloat(), itemView.bottom.toFloat())
+                        c.drawRect(background, paint)
+
+                        icon = BitmapFactory.decodeResource(resources, R.drawable.ic_delete)
+                        val iconTop = itemView.top.toFloat() + (height - width) / 2
+                        val iconRight = itemView.right.toFloat() - width + dX
+                        val iconDst = RectF(iconRight, iconTop, iconRight + width, iconTop + width)
+                        c.drawBitmap(icon, null, iconDst, null)
+                    }
+                }
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+            }
+        })
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+    }
 
     private fun clickLogout() {
         with(binding) {

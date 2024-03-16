@@ -16,13 +16,13 @@ class ProfileViewModel : ViewModel() {
     val bookmarkedList: LiveData<List<CampEntity>> get() = _bookmarkedList
     private val bookmarkCamp: MutableList<CampEntity> = mutableListOf()
 
-    private val _postList : MutableLiveData<List<PostEntity>> = MutableLiveData()
-    val postList : LiveData<List<PostEntity>> get() = _postList
-    private val writingPost : MutableList<PostEntity> = mutableListOf()
+    private val _postList: MutableLiveData<List<PostEntity>> = MutableLiveData()
+    val postList: LiveData<List<PostEntity>> get() = _postList
+    private val writingPost: MutableList<PostEntity> = mutableListOf()
 
     fun getBookmark(userID: String) {
         val db = FirebaseFirestore.getInstance()
-        val docRef = db.collection("users").document("Kakao${userID}")
+        val docRef = db.collection("users").document(userID)
         val contentIds = mutableListOf<String>()
         docRef.get().addOnSuccessListener {
             if (it.exists()) {
@@ -52,10 +52,11 @@ class ProfileViewModel : ViewModel() {
             _bookmarkedList.value = bookmarkCamp
         }
     }
+
     fun getPosts(userID: String) {
         val db = Firebase.firestore
         val baseQuery: Query = db.collection("posts")
-        val result = baseQuery.whereIn("authorId", listOf("Kakao${userID}"))
+        val result = baseQuery.whereIn("authorId", listOf(userID))
         writingPost.clear()
         result.get().addOnSuccessListener {
             for (doc in it) {
@@ -64,5 +65,20 @@ class ProfileViewModel : ViewModel() {
             }
             _postList.value = writingPost
         }
+    }
+
+    fun removeBookmarkCamp(userID: String, contentID: String) {
+        _bookmarkedList.value = _bookmarkedList.value?.toMutableList()?.apply {
+            val removeItem = find { it.contentId == contentID }
+            remove(removeItem)
+        } ?: mutableListOf()
+
+        val db = FirebaseFirestore.getInstance()
+        val docRef = db.collection("users").document(userID)
+        val updateBookmarkList = mutableListOf<String>()
+        _bookmarkedList.value?.forEach {
+            updateBookmarkList.add(it.contentId.toString())
+        }
+        docRef.update("bookmarked", updateBookmarkList)
     }
 }
