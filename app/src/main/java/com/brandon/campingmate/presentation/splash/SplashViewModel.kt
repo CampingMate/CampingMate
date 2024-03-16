@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.brandon.campingmate.domain.model.CampEntity
+import com.brandon.campingmate.domain.model.HomeEntity
 import com.brandon.campingmate.presentation.main.MainActivity
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.Query
@@ -21,11 +22,11 @@ class SplashViewModel:ViewModel() {
 //    private val _allThemeData : MutableLiveData<MutableList<CampEntity>> = MutableLiveData()
 //    val allThemeData : LiveData<MutableList<CampEntity>> get() = _allThemeData
 
-    private val _allCityData = mutableListOf<CampEntity>()
-    val allCityData : MutableList<CampEntity> get() = _allCityData
+    private val _allCityData = mutableListOf<HomeEntity>()
+    val allCityData : MutableList<HomeEntity> get() = _allCityData
 
-    private val _allThemeData = mutableListOf<CampEntity>()
-    val allThemeData : MutableList<CampEntity> get() = _allThemeData
+    private val _allThemeData = mutableListOf<HomeEntity>()
+    val allThemeData : MutableList<HomeEntity> get() = _allThemeData
 
     private val _isGet : MutableLiveData<Int> = MutableLiveData()
     val isGet : LiveData<Int> get() = _isGet
@@ -39,7 +40,7 @@ class SplashViewModel:ViewModel() {
             val allTheme : Query = allCity.whereNotEqualTo("themaEnvrnCl", listOf<String>()).limit(10)
             allCity.get().addOnSuccessListener {documents ->
                 for (document in documents) {
-                    val cityList = document.toObject(CampEntity::class.java)
+                    val cityList = document.toObject(HomeEntity::class.java)
 //                    _allCityData.value?.add(cityList)
                     _allCityData.add(cityList)
                 }
@@ -47,7 +48,7 @@ class SplashViewModel:ViewModel() {
             }
             allTheme.get().addOnSuccessListener {documents ->
                 for (document in documents) {
-                    val themeList = document.toObject(CampEntity::class.java)
+                    val themeList = document.toObject(HomeEntity::class.java)
 //                    _allThemeData.value?.add(themeList)
                     _allThemeData.add(themeList)
                 }
