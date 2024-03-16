@@ -1,9 +1,9 @@
 package com.brandon.campingmate.presentation.mapper
 
-import com.brandon.campingmate.domain.model.PostEntity
+import com.brandon.campingmate.domain.model.Post
 import com.brandon.campingmate.presentation.board.adapter.PostListItem
 
-fun List<PostEntity>.toPostListItem(): List<PostListItem> {
+fun List<Post>.toPostListItem(): List<PostListItem> {
     return this.map { postEntity ->
         PostListItem.PostItem(
             postId = postEntity.postId,
@@ -18,8 +18,8 @@ fun List<PostEntity>.toPostListItem(): List<PostListItem> {
     }
 }
 
-fun PostListItem.PostItem.toPostEntity(): PostEntity {
-    return PostEntity(
+fun PostListItem.PostItem.toPostEntity(): Post {
+    return Post(
         postId = this.postId,
         authorName = this.author,
         authorId = this.authorId,

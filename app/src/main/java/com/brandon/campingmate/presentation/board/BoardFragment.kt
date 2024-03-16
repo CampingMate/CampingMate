@@ -208,7 +208,7 @@ class BoardFragment : Fragment() {
         when (event) {
             is BoardEvent.OpenContent -> {
                 Intent(requireContext(), PostDetailActivity::class.java).apply {
-                    putExtra(PostDetailActivity.EXTRA_POST_ID, event.postEntity.postId)
+                    putExtra(PostDetailActivity.EXTRA_POST_ID, event.post.postId)
                 }.also {
                     val options = ActivityOptionsCompat.makeCustomAnimation(
                         requireContext(), R.anim.slide_in, R.anim.anim_none
@@ -301,7 +301,7 @@ class BoardFragment : Fragment() {
                     authorProfileImageUrl = "https://example.com/profile$i.jpg",
                     title = "Title $i",
                     content = "This is the content for post $i. Here we can have some more text just to make it look like a real post content.",
-                    imageUrlList = listOf(
+                    imageUrls = listOf(
                         "https://campingagains3.s3.ap-northeast-2.amazonaws.com/medium_2021_10_17_11_38_57_f4f550931f.png",
                         "https://img1.daumcdn.net/thumb/R1280x0.fjpg/?fname=http://t1.daumcdn.net/brunch/service/user/wlQ/image/t9TZ03FH0sDqrDV8qQPj6VTfplg.jpeg"
                     ),

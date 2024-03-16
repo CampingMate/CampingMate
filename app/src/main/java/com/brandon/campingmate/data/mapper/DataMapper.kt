@@ -1,10 +1,10 @@
 package com.brandon.campingmate.data.mapper
 
 import com.brandon.campingmate.data.model.request.PostDTO
-import com.brandon.campingmate.domain.model.PostEntity
+import com.brandon.campingmate.domain.model.Post
 import com.google.firebase.Timestamp
 
-fun PostEntity.toPostDTO(): PostDTO {
+fun Post.toPostDTO(): PostDTO {
     return PostDTO(
         postId = this.postId ?: "",
         authorName = this.authorName ?: "",
@@ -12,7 +12,7 @@ fun PostEntity.toPostDTO(): PostDTO {
         authorProfileImageUrl = this.authorProfileImageUrl ?: "",
         title = this.title ?: "",
         content = this.content ?: "",
-        imageUrlList = this.imageUrls ?: listOf(),
+        imageUrls = this.imageUrls ?: listOf(),
         timestamp = this.timestamp ?: Timestamp.now()
     )
 }

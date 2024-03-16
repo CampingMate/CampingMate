@@ -1,10 +1,11 @@
 package com.brandon.campingmate.data.source.network.impl
 
 import android.net.Uri
+import com.brandon.campingmate.data.model.request.PostCommentDTO
+import com.brandon.campingmate.data.model.request.PostDTO
 import com.brandon.campingmate.data.model.response.PostResponse
 import com.brandon.campingmate.data.model.response.PostsResponse
 import com.brandon.campingmate.data.source.network.PostRemoteDataSource
-import com.brandon.campingmate.domain.model.PostEntity
 import com.brandon.campingmate.utils.Resource
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
@@ -42,12 +43,25 @@ class PostRemoteDataSourceImpl(
         }
     }
 
-    override suspend fun uploadPost(postEntity: PostEntity): Result<String> = withContext(IO) {
+    override suspend fun uploadPostComment(
+        postId: String,
+        postCommentDto: PostCommentDTO
+    ): Result<String> = withContext(IO) {
+        runCatching {
+            val commentsCollection = firestore.collection("posts").document(postId).collection("comments")
+            val newCommentRef = commentsCollection.document()
+            val newCommentId = newCommentRef.id
+            commentsCollection.document(newCommentId).set(postCommentDto).await()
+            newCommentId
+        }
+    }
+
+    override suspend fun uploadPost(postDto: PostDTO): Result<String> = withContext(IO) {
         runCatching {
             val postsCollection = firestore.collection("posts")
             val newPostRef = postsCollection.document() // 새 문서 생성
             val newPostId = newPostRef.id
-            postsCollection.document(newPostId).set(postEntity.copy(postId = newPostId)).await()
+            postsCollection.document(newPostId).set(postDto.copy(postId = newPostId)).await()
             newPostId
         }
     }
@@ -79,18 +93,3 @@ class PostRemoteDataSourceImpl(
         }
     }
 }
-
-//    override suspend fun uploadPostImages(
-//        imageUris: List<Uri>,
-//    ): List<String> = withContext(IO) {
-//        imageUris.map { uri ->
-//            async {
-//                val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
-//                val fileName = "IMG_${timeStamp}_${UUID.randomUUID()}.jpg"
-//                val imageRef = storage.reference.child("postImages/$fileName")
-//                val uploadTask = imageRef.putFile(uri).await() // 코루틴을 사용해 업로드를 기다림
-//                uploadTask.metadata?.reference?.downloadUrl?.await()?.toString()
-//                    ?: throw Exception("Failed to upload image and get URL")
-//            }
-//        }.awaitAll()
-//    }
