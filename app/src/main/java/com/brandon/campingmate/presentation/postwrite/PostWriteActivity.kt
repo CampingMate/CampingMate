@@ -28,8 +28,8 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.brandon.campingmate.R
+import com.brandon.campingmate.data.remote.impl.PostRemoteDataSourceImpl
 import com.brandon.campingmate.data.repository.PostRepositoryImpl
-import com.brandon.campingmate.data.source.network.impl.PostRemoteDataSourceImpl
 import com.brandon.campingmate.databinding.ActivityPostWriteBinding
 import com.brandon.campingmate.domain.usecase.UploadPostUseCase
 import com.brandon.campingmate.network.firestore.FirebaseService.fireStoreDB

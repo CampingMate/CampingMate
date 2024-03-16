@@ -1,4 +1,4 @@
-package com.brandon.campingmate.data.model.request
+package com.brandon.campingmate.data.remote.dto
 
 import com.google.firebase.Timestamp
 
