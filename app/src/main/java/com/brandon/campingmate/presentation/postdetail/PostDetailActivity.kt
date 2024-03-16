@@ -103,9 +103,9 @@ class PostDetailActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false) // 기본 타이틀 숨기기
         supportActionBar?.setDisplayHomeAsUpEnabled(true)// 뒤로가기 버튼 활성화
 
-        rvPostImages.layoutManager =
+        rvPostImage.layoutManager =
             LinearLayoutManager(this@PostDetailActivity, LinearLayoutManager.HORIZONTAL, false)
-        rvPostImages.adapter = imageListAdapter
+        rvPostImage.adapter = imageListAdapter
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

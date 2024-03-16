@@ -17,10 +17,10 @@ class ProfilePostAdapter : ListAdapter<PostEntity, ProfilePostAdapter.Holder>(di
     inner class Holder(val binding: ItemPostBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(data: PostEntity) {
             with(binding) {
-                if(data.imageUrlList.isNullOrEmpty()){
+                if (data.imageUrls.isNullOrEmpty()) {
                     ivPostImage.isVisible = false
-                }else {
-                    Glide.with(binding.root).load(data.imageUrlList.firstOrNull()).into(ivPostImage)
+                } else {
+                    Glide.with(binding.root).load(data.imageUrls.firstOrNull()).into(ivPostImage)
                 }
                 tvTitle.text = data.title
                 tvContent.text = data.content
