@@ -1,16 +1,16 @@
 package com.brandon.campingmate.data.repository
 
 import android.net.Uri
-import com.brandon.campingmate.data.mapper.toPostDTO
-import com.brandon.campingmate.data.source.network.PostRemoteDataSource
-import com.brandon.campingmate.domain.mapper.toPostEntity
-import com.brandon.campingmate.domain.mapper.toPostsEntity
+import com.brandon.campingmate.data.remote.PostRemoteDataSource
 import com.brandon.campingmate.domain.model.Post
 import com.brandon.campingmate.domain.model.PostComment
 import com.brandon.campingmate.domain.model.Posts
 import com.brandon.campingmate.domain.repository.PostRepository
 import com.brandon.campingmate.utils.Resource
 import com.brandon.campingmate.utils.mappers.toCommentDTO
+import com.brandon.campingmate.utils.mappers.toPostDTO
+import com.brandon.campingmate.utils.mappers.toPostEntity
+import com.brandon.campingmate.utils.mappers.toPostsEntity
 import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll

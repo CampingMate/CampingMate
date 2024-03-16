@@ -14,8 +14,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.brandon.campingmate.R
+import com.brandon.campingmate.data.remote.impl.PostRemoteDataSourceImpl
 import com.brandon.campingmate.data.repository.PostRepositoryImpl
-import com.brandon.campingmate.data.source.network.impl.PostRemoteDataSourceImpl
 import com.brandon.campingmate.databinding.ActivityPostDetailBinding
 import com.brandon.campingmate.domain.usecase.GetPostByIdUseCase
 import com.brandon.campingmate.domain.usecase.UploadPostCommentUseCase

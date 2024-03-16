@@ -1,6 +1,6 @@
 package com.brandon.campingmate.utils.mappers
 
-import com.brandon.campingmate.data.model.request.PostCommentDTO
+import com.brandon.campingmate.data.remote.dto.PostCommentDTO
 import com.brandon.campingmate.domain.model.PostComment
 
 fun PostComment.toCommentDTO(): PostCommentDTO {

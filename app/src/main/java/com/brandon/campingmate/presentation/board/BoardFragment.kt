@@ -21,9 +21,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.brandon.campingmate.R
-import com.brandon.campingmate.data.model.request.PostDTO
+import com.brandon.campingmate.data.remote.dto.PostDTO
+import com.brandon.campingmate.data.remote.impl.PostRemoteDataSourceImpl
 import com.brandon.campingmate.data.repository.PostRepositoryImpl
-import com.brandon.campingmate.data.source.network.impl.PostRemoteDataSourceImpl
 import com.brandon.campingmate.databinding.FragmentBoardBinding
 import com.brandon.campingmate.domain.usecase.GetPostsUseCase
 import com.brandon.campingmate.network.firestore.FirebaseService.fireStoreDB

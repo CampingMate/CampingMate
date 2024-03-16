@@ -1,9 +1,9 @@
-package com.brandon.campingmate.data.model.response
+package com.brandon.campingmate.data.remote.dto
 
 import com.google.firebase.Timestamp
 
-data class PostResponse(
-    var postId: String? = null,
+data class PostDTO(
+    val postId: String? = null,
     val authorName: String? = null,
     val authorId: String? = null,
     val authorProfileImageUrl: String? = null,
@@ -12,3 +12,5 @@ data class PostResponse(
     val imageUrls: List<String>? = null,
     val timestamp: Timestamp? = null
 )
+
+
