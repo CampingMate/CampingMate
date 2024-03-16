@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.brandon.campingmate.domain.model.PostEntity
+import com.brandon.campingmate.domain.model.Post
 import com.brandon.campingmate.domain.usecase.UploadPostUseCase
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.channels.BufferOverflow
@@ -81,7 +81,7 @@ class PostWriteViewModel(
             val authorProfileImageUrl =
                 "https://t1.kakaocdn.net/account_images/default_profile.jpeg.twg.thumb.R640x640"
 
-            val postEntity = PostEntity(
+            val post = Post(
                 postId = null,  // Datasource 계층에서 주입
                 authorName = authorName,
                 authorId = authorId,
@@ -93,7 +93,7 @@ class PostWriteViewModel(
             )
             // TODO 업로드 중 로딩 애니메이션 적용
 
-            uploadPostUseCase(postEntity = postEntity, imageUris = uiState.value.imageUris).fold(
+            uploadPostUseCase(post = post, imageUris = uiState.value.imageUris).fold(
                 onSuccess = { postId ->
                     handleEvent(PostWriteEvent.PostUploadSuccess(postId))
                 },

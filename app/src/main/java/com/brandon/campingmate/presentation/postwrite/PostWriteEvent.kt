@@ -25,5 +25,4 @@ sealed class PostWriteEvent {
         val uris: List<Uri>? = null
     ) : PostWriteEvent()
 
-
 }

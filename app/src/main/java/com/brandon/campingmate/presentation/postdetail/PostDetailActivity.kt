@@ -1,5 +1,6 @@
 package com.brandon.campingmate.presentation.postdetail
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
@@ -17,7 +18,9 @@ import com.brandon.campingmate.data.repository.PostRepositoryImpl
 import com.brandon.campingmate.data.source.network.impl.PostRemoteDataSourceImpl
 import com.brandon.campingmate.databinding.ActivityPostDetailBinding
 import com.brandon.campingmate.domain.usecase.GetPostByIdUseCase
+import com.brandon.campingmate.domain.usecase.UploadPostCommentUseCase
 import com.brandon.campingmate.network.firestore.FirebaseService
+import com.brandon.campingmate.network.firestore.FirebaseService.fireStoreDB
 import com.brandon.campingmate.presentation.postdetail.adapter.PostDetailImageAdapter
 import com.brandon.campingmate.utils.toFormattedString
 import kotlinx.coroutines.flow.collectLatest
@@ -40,7 +43,15 @@ class PostDetailActivity : AppCompatActivity() {
             GetPostByIdUseCase(
                 PostRepositoryImpl(
                     PostRemoteDataSourceImpl(
-                        FirebaseService.fireStoreDB,
+                        fireStoreDB,
+                        FirebaseService.firebaseStorage
+                    )
+                )
+            ),
+            UploadPostCommentUseCase(
+                PostRepositoryImpl(
+                    PostRemoteDataSourceImpl(
+                        fireStoreDB,
                         FirebaseService.firebaseStorage
                     )
                 )
@@ -59,9 +70,17 @@ class PostDetailActivity : AppCompatActivity() {
         viewModel.loadData(postId)
 
         initView()
+        initListener()
         initViewModel()
-
         setupOnBackPressedHandling()
+
+    }
+
+    private fun initListener() = with(binding) {
+        btnSend.setOnClickListener {
+            val content = etCommentInput.text.toString()
+            viewModel.handleEvent(PostDetailEvent.UploadComment(content))
+        }
     }
 
     private fun initViewModel() = with(viewModel) {
@@ -82,6 +101,7 @@ class PostDetailActivity : AppCompatActivity() {
         TODO("Not yet implemented")
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun onBind(state: PostDetailUiState) {
         state.post?.let {
             with(binding) {

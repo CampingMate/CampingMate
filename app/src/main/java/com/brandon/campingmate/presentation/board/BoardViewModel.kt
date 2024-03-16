@@ -50,7 +50,7 @@ class BoardViewModel(
 
             is BoardEvent.OpenContent -> {
                 Timber.d("문서 열기 이벤트")
-                _event.tryEmit(BoardEvent.OpenContent(event.postEntity))
+                _event.tryEmit(BoardEvent.OpenContent(event.post))
             }
 
             is BoardEvent.MakeToast -> {
