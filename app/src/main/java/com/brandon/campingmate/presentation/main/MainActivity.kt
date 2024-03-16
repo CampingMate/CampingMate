@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.brandon.campingmate.databinding.ActivityMainBinding
 import com.brandon.campingmate.domain.model.CampEntity
+import com.brandon.campingmate.domain.model.HomeEntity
 import com.kakao.sdk.common.util.Utility
 import nl.joery.animatedbottombar.AnimatedBottomBar
 import timber.log.Timber
@@ -12,8 +13,8 @@ import timber.log.Timber
 class MainActivity : AppCompatActivity() {
 
     val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
-    var homeCity = ArrayList<CampEntity>()
-    var homeTheme = ArrayList<CampEntity>()
+    var homeCity = ArrayList<HomeEntity>()
+    var homeTheme = ArrayList<HomeEntity>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

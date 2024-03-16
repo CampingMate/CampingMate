@@ -9,10 +9,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.ItemMiddleCampBinding
 import com.brandon.campingmate.domain.model.CampEntity
+import com.brandon.campingmate.domain.model.HomeEntity
 import com.brandon.campingmate.presentation.campdetail.CampDetailActivity
 import com.bumptech.glide.Glide
 
-class PetAdapter(private val mContext: Context, var mItems: MutableList<CampEntity?>) :
+class PetAdapter(private val mContext: Context, var mItems: MutableList<HomeEntity?>) :
     RecyclerView.Adapter<PetAdapter.Holder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
@@ -23,7 +24,7 @@ class PetAdapter(private val mContext: Context, var mItems: MutableList<CampEnti
     override fun onBindViewHolder(holder: PetAdapter.Holder, position: Int) {
         holder.itemView.setOnClickListener {
             val intent = Intent(mContext, CampDetailActivity::class.java).apply {
-                putExtra("campData", mItems[position])
+                putExtra("campData", mItems[position]?.contentId)
             }
             mContext.startActivity(intent)
         }
