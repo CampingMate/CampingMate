@@ -32,39 +32,11 @@ class ProfileBookmarkAdapter : ListAdapter<CampEntity, ProfileBookmarkAdapter.Ho
                 tvCampInduty.text = data.induty.toString()
 
                 binding.root.setOnClickListener {
-                    val myData = CampEntity(
-                        addr1 = data.addr1,
-                        contentId = data.contentId,
-                        facltNm = data.facltNm,
-                        wtrplCo = data.wtrplCo,
-                        brazierCl = data.brazierCl,
-                        sbrsCl = data.sbrsCl,
-                        posblFcltyCl = data.posblFcltyCl,
-                        hvofBgnde = data.hvofBgnde,
-                        hvofEnddle = data.hvofEnddle,
-                        toiletCo = data.toiletCo,
-                        swrmCo = data.swrmCo,
-                        featureNm = data.featureNm,
-                        induty = data.induty,
-                        tel = data.tel,
-                        homepage = data.homepage,
-                        resveCl = data.resveCl,
-                        siteBottomCl1 = data.siteBottomCl1,
-                        siteBottomCl2 = data.siteBottomCl2,
-                        siteBottomCl3 = data.siteBottomCl3,
-                        siteBottomCl4 = data.siteBottomCl4,
-                        siteBottomCl5 = data.siteBottomCl5,
-                        glampInnerFclty = data.glampInnerFclty,
-                        caravInnerFclty = data.caravInnerFclty,
-                        intro = data.intro,
-                        themaEnvrnCl = data.themaEnvrnCl
-                    )
-
+                    val campId = data.contentId
                     val intent = Intent(binding.root.context, CampDetailActivity::class.java).apply {
-                        putExtra("campData", myData)
+                        putExtra("campData", campId)
                     }
                     binding.root.context.startActivity(intent)
-
                 }
             }
         }

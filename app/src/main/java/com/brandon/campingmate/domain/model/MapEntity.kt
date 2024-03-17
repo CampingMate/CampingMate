@@ -2,7 +2,10 @@ package com.brandon.campingmate.domain.model
 
 
 import android.os.Parcelable
+import com.brandon.campingmate.network.retrofit.CampImageItems
 import com.brandon.campingmate.network.retrofit.SearchHeader
+import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
 import com.naver.maps.geometry.LatLng
 import kotlinx.parcelize.Parcelize
@@ -52,8 +55,21 @@ data class LocationBasedListBody(
     val pageNo: Int?,
     val totalCount: Int?,
     @SerializedName("items")
-    val items: LocationBasedListitems?,
-)
+    val items: JsonElement?,
+){
+    val item: LocationBasedListitems
+        get() {
+            return when {
+                items == null || items.isJsonNull -> LocationBasedListitems(mutableListOf())
+                items.isJsonPrimitive && items.asJsonPrimitive.isString && items.asString.isEmpty() -> LocationBasedListitems(mutableListOf())
+                items.isJsonObject || items.isJsonArray -> {
+                    // JsonElement가 객체나 배열인 경우, Gson을 사용하여 파싱
+                    Gson().fromJson(items, LocationBasedListitems::class.java)
+                }
+                else -> LocationBasedListitems(mutableListOf())
+            }
+        }
+}
 data class LocationBasedListitems(
     @SerializedName("item")
     val item: MutableList<LocationBasedListItem>?,

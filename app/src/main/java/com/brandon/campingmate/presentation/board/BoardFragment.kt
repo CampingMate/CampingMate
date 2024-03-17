@@ -21,12 +21,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.brandon.campingmate.R
-import com.brandon.campingmate.data.model.request.PostDTO
+import com.brandon.campingmate.data.remote.dto.PostDTO
+import com.brandon.campingmate.data.remote.impl.PostRemoteDataSourceImpl
 import com.brandon.campingmate.data.repository.PostRepositoryImpl
-import com.brandon.campingmate.data.source.network.impl.PostRemoteDataSourceImpl
 import com.brandon.campingmate.databinding.FragmentBoardBinding
 import com.brandon.campingmate.domain.usecase.GetPostsUseCase
-import com.brandon.campingmate.network.firestore.FireStoreService.fireStoreDB
+import com.brandon.campingmate.network.firestore.FirebaseService.fireStoreDB
+import com.brandon.campingmate.network.firestore.FirebaseService.firebaseStorage
 import com.brandon.campingmate.presentation.board.adapter.PostListAdapter
 import com.brandon.campingmate.presentation.board.adapter.PostListItem
 import com.brandon.campingmate.presentation.postdetail.PostDetailActivity
@@ -43,7 +44,7 @@ class BoardFragment : Fragment() {
 
     private val viewModel: BoardViewModel by viewModels {
         BoardViewModelFactory(
-            GetPostsUseCase(PostRepositoryImpl(PostRemoteDataSourceImpl(fireStoreDB))),
+            GetPostsUseCase(PostRepositoryImpl(PostRemoteDataSourceImpl(fireStoreDB, firebaseStorage))),
         )
     }
     private val postListAdapter: PostListAdapter by lazy {
@@ -182,6 +183,7 @@ class BoardFragment : Fragment() {
         rvPostList.adapter = postListAdapter
         linearLayoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         rvPostList.layoutManager = linearLayoutManager
+        rvPostList.setHasFixedSize(true)
     }
 
     private fun initViewModel() = with(viewModel) {
@@ -206,7 +208,7 @@ class BoardFragment : Fragment() {
         when (event) {
             is BoardEvent.OpenContent -> {
                 Intent(requireContext(), PostDetailActivity::class.java).apply {
-                    putExtra(PostDetailActivity.EXTRA_POST_ID, event.postEntity.postId)
+                    putExtra(PostDetailActivity.EXTRA_POST_ID, event.post.postId)
                 }.also {
                     val options = ActivityOptionsCompat.makeCustomAnimation(
                         requireContext(), R.anim.slide_in, R.anim.anim_none
@@ -299,7 +301,7 @@ class BoardFragment : Fragment() {
                     authorProfileImageUrl = "https://example.com/profile$i.jpg",
                     title = "Title $i",
                     content = "This is the content for post $i. Here we can have some more text just to make it look like a real post content.",
-                    imageUrlList = listOf(
+                    imageUrls = listOf(
                         "https://campingagains3.s3.ap-northeast-2.amazonaws.com/medium_2021_10_17_11_38_57_f4f550931f.png",
                         "https://img1.daumcdn.net/thumb/R1280x0.fjpg/?fname=http://t1.daumcdn.net/brunch/service/user/wlQ/image/t9TZ03FH0sDqrDV8qQPj6VTfplg.jpeg"
                     ),

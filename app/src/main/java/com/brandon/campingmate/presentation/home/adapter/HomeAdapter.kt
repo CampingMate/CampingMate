@@ -14,6 +14,7 @@ import com.brandon.campingmate.presentation.campdetail.CampDetailActivity
 import com.bumptech.glide.Glide
 
 class HomeAdapter(private val mContext: Context, var mItems: MutableList<HomeEntity>) :
+
     RecyclerView.Adapter<HomeAdapter.Holder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {

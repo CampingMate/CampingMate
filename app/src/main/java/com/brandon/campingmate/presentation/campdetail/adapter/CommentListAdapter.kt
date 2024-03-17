@@ -3,6 +3,7 @@ package com.brandon.campingmate.presentation.campdetail.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -46,9 +47,17 @@ class CommentListAdapter(
             }
             tvCommentContent.text = item.content
             tvCommentTime.text = item.date
+            if(item.imageUrl.toString().isBlank()){
+                ivCommentImg.visibility = View.GONE
+//                val params = tvCommentUsername.layoutParams as ConstraintLayout.LayoutParams
+//                params.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
+//                tvCommentUsername.layoutParams = params
+            }
             Glide.with(binding.root)
                 .load(item.imageUrl)
                 .into(ivCommentImg)
+            ivCommentImg.clipToOutline = true
+            tvCommentUsername.text = item.userName.toString()
         }
     }
 }
