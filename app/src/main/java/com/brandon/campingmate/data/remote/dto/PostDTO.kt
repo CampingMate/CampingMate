@@ -1,4 +1,4 @@
-package com.brandon.campingmate.data.model.request
+package com.brandon.campingmate.data.remote.dto
 
 import com.google.firebase.Timestamp
 
@@ -9,7 +9,7 @@ data class PostDTO(
     val authorProfileImageUrl: String? = null,
     val title: String? = null,
     val content: String? = null,
-    val imageUrlList: List<String>? = null,
+    val imageUrls: List<String>? = null,
     val timestamp: Timestamp? = null
 )
 

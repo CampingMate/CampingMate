@@ -1,10 +1,10 @@
 package com.brandon.campingmate.presentation.board
 
-import com.brandon.campingmate.domain.model.PostEntity
+import com.brandon.campingmate.domain.model.Post
 
 sealed class BoardEvent {
     data class OpenContent(
-        val postEntity: PostEntity,
+        val post: Post,
     ) : BoardEvent()
 
     data class LoadPosts(
