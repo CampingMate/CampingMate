@@ -22,15 +22,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.brandon.campingmate.R
-import com.brandon.campingmate.data.remote.impl.PostRemoteDataSourceImpl
+import com.brandon.campingmate.data.local.preferences.EncryptedPrefs.sharedPreferences
+import com.brandon.campingmate.data.local.preferences.PreferencesDataSourceImpl
+import com.brandon.campingmate.data.remote.firebasestorage.FireBaseStorageDataSourceImpl
+import com.brandon.campingmate.data.remote.firestore.FirestoreDataSourceImpl
 import com.brandon.campingmate.data.repository.PostRepositoryImpl
+import com.brandon.campingmate.data.repository.UserRepositoryImpl
 import com.brandon.campingmate.databinding.ActivityPostWriteBinding
+import com.brandon.campingmate.domain.usecase.CheckUserLoggedInUseCase
 import com.brandon.campingmate.domain.usecase.UploadPostUseCase
 import com.brandon.campingmate.network.firestore.FirebaseService.fireStoreDB
 import com.brandon.campingmate.network.firestore.FirebaseService.firebaseStorage
@@ -49,11 +53,25 @@ class PostWriteActivity : AppCompatActivity() {
         PostWriteViewModelFactory(
             UploadPostUseCase(
                 PostRepositoryImpl(
-                    PostRemoteDataSourceImpl(
-                        fireStoreDB, firebaseStorage
+                    FirestoreDataSourceImpl(
+                        fireStoreDB
+                    ),
+                    FireBaseStorageDataSourceImpl(
+                        firebaseStorage
                     )
                 )
             ),
+            CheckUserLoggedInUseCase(
+                UserRepositoryImpl(
+                    PreferencesDataSourceImpl(
+                        sharedPreferences
+                    ),
+                    FirestoreDataSourceImpl(
+                        fireStoreDB
+                    )
+                )
+            )
+
         )
     }
 
@@ -74,6 +92,8 @@ class PostWriteActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        Timber.tag("LOGIN").d("onCreate")
+
 
         initActivityResultContracts()
         initView()
@@ -97,6 +117,18 @@ class PostWriteActivity : AppCompatActivity() {
     private fun initViewModel() = with(viewModel) {
 
         lifecycleScope.launch {
+            isLoggedIn.flowWithLifecycle(lifecycle).collect { user ->
+                if (user != null) {
+                    // 사용자가 로그인 한 경우
+                    Timber.tag("LOGIN").d("회원입니다: $user")
+                } else {
+                    // 사용자가 로그인 하지 않은 경우
+                    Timber.tag("LOGIN").d("비회원입니다")
+                }
+            }
+        }
+
+        lifecycleScope.launch {
             uiState.flowWithLifecycle(lifecycle).collectLatest { state ->
                 onBind(state)
             }
@@ -108,10 +140,6 @@ class PostWriteActivity : AppCompatActivity() {
             }
         }
 
-    }
-
-    fun exampleFunction() {
-        ViewCompat.getRootWindowInsets(binding.root)
     }
 
     private fun onBind(state: PostWriteImageUiState) {

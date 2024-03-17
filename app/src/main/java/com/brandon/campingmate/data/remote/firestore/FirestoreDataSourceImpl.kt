@@ -1,29 +1,21 @@
-package com.brandon.campingmate.data.remote.impl
+package com.brandon.campingmate.data.remote.firestore
 
-import android.net.Uri
-import com.brandon.campingmate.data.remote.PostRemoteDataSource
 import com.brandon.campingmate.data.remote.dto.PostCommentDTO
 import com.brandon.campingmate.data.remote.dto.PostDTO
 import com.brandon.campingmate.data.remote.dto.PostsDTO
+import com.brandon.campingmate.data.remote.dto.UserDTO
 import com.brandon.campingmate.utils.Resource
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.UUID
+import timber.log.Timber
 
-/**
- * 데이터소스 레이어에서는 raw 한 데이터를 반환한다
- */
-class PostRemoteDataSourceImpl(
-    private val firestore: FirebaseFirestore, private val storage: FirebaseStorage
-) : PostRemoteDataSource {
+class FirestoreDataSourceImpl(
+    private val firestore: FirebaseFirestore
+) : FirestoreDataSource {
     override suspend fun getPosts(pageSize: Int, lastVisibleDoc: DocumentSnapshot?): Resource<PostsDTO> {
         return try {
             withContext(IO) {
@@ -43,8 +35,7 @@ class PostRemoteDataSourceImpl(
     }
 
     override suspend fun uploadPostComment(
-        postId: String,
-        postCommentDto: PostCommentDTO
+        postId: String, postCommentDto: PostCommentDTO
     ): Result<String> = withContext(IO) {
         runCatching {
             val commentsCollection = firestore.collection("posts").document(postId).collection("comments")
@@ -60,6 +51,7 @@ class PostRemoteDataSourceImpl(
             val postsCollection = firestore.collection("posts")
             val newPostRef = postsCollection.document() // 새 문서 생성
             val newPostId = newPostRef.id
+            Timber.tag("USER").d("postDto: $postDto")
             postsCollection.document(newPostId).set(postDto.copy(postId = newPostId)).await()
             newPostId
         }
@@ -81,14 +73,12 @@ class PostRemoteDataSourceImpl(
         }
     }
 
-    override suspend fun uploadPostImage(imageUri: Uri): Result<String> = withContext(IO) {
+    override suspend fun getUserById(userId: String): Result<UserDTO?> = withContext(IO) {
+        // 로컬 userId 는 있지만 document 가 null 로 나온 경우
         runCatching {
-            val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
-            val fileName = "IMG_${timeStamp}_${UUID.randomUUID()}.jpg"
-            val imageRef = storage.reference.child("postImages/$fileName")
-            val uploadTask = imageRef.putFile(imageUri).await() // 코루틴을 사용해 업로드를 기다림
-            val imageUrl = uploadTask.metadata?.reference?.downloadUrl?.await()?.toString()
-            imageUrl ?: throw Exception("Failed to get download URL")
+            val document = firestore.collection("users").document(userId).get().await()
+            document.toObject(UserDTO::class.java)
+                ?: throw NoSuchElementException("Can't find the User using local myID: $userId")
         }
     }
 }
