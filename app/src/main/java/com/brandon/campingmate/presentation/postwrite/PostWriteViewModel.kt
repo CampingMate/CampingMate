@@ -4,9 +4,9 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.brandon.campingmate.domain.model.PostEntity
+import com.brandon.campingmate.domain.model.User
+import com.brandon.campingmate.domain.usecase.CheckUserLoggedInUseCase
 import com.brandon.campingmate.domain.usecase.UploadPostUseCase
-import com.google.firebase.Timestamp
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +20,7 @@ import timber.log.Timber
 
 class PostWriteViewModel(
     private val uploadPostUseCase: UploadPostUseCase,
+    private val checkUserLoggedInUseCase: CheckUserLoggedInUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PostWriteImageUiState.init())
@@ -30,12 +31,26 @@ class PostWriteViewModel(
     )
     val event: SharedFlow<PostWriteEvent> = _event.asSharedFlow()
 
+    private val _isLoggedIn = MutableStateFlow<User?>(null)
+    val isLoggedIn: StateFlow<User?> = _isLoggedIn
+
+    init {
+        checkLoginStatus()
+    }
+
+    private fun checkLoginStatus() {
+        viewModelScope.launch {
+            checkUserLoggedInUseCase().fold(
+                onSuccess = { user -> _isLoggedIn.value = user },
+                onFailure = { e -> Timber.d("로그인 중 에러 발생, 예외: $e") }
+            )
+        }
+    }
+
 
     fun handleEvent(event: PostWriteEvent) {
         when (event) {
             is PostWriteEvent.UploadPost -> {
-                // 업로드 요청에 대해 event 를 발생시키지 않고 요청을 viewModel 에서 처리해 완료한다
-                // _event.tryEmit(event)
                 Timber.d("게시물 업로드 이벤트 발생!")
                 uploadPost(event.title, event.content)
             }
@@ -75,42 +90,28 @@ class PostWriteViewModel(
 
     private fun uploadPost(title: String, content: String) {
         viewModelScope.launch {
-            // TODO 임시 유저 정보 이후 다른 곳에서 가져옴
-            val authorName = "wiz" // 유저이름
-            val authorId = "Kakao3375284946" // 유저 id (문서 key)
-            val authorProfileImageUrl =
-                "https://t1.kakaocdn.net/account_images/default_profile.jpeg.twg.thumb.R640x640"
-
-            val postEntity = PostEntity(
-                postId = null,  // Datasource 계층에서 주입
-                authorName = authorName,
-                authorId = authorId,
-                authorProfileImageUrl = authorProfileImageUrl,
+            uploadPostUseCase(
                 title = title,
                 content = content,
-                imageUrls = null,
-                timestamp = Timestamp.now()
-            )
-            // TODO 업로드 중 로딩 애니메이션 적용
-
-            uploadPostUseCase(postEntity = postEntity, imageUris = uiState.value.imageUris).fold(
-                onSuccess = { postId ->
-                    handleEvent(PostWriteEvent.PostUploadSuccess(postId))
-                },
-                onFailure = { e -> Timber.tag("POST UPLOAD").d("게시물 업로드 실패: ${e.message}") }
-            )
+                user = _isLoggedIn.value,
+                imageUris = uiState.value.imageUris
+            ).fold(
+                onSuccess = { postId -> handleEvent(PostWriteEvent.PostUploadSuccess(postId)) },
+                onFailure = { e -> Timber.tag("POST UPLOAD").d("게시물 업로드 실패: ${e.message}") })
         }
     }
 }
 
 class PostWriteViewModelFactory(
     private val uploadPostUseCase: UploadPostUseCase,
+    private val checkUserLoggedInUseCase: CheckUserLoggedInUseCase,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         Timber.d("Creating PostWriteViewModel instance")
         if (modelClass.isAssignableFrom(PostWriteViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST") return PostWriteViewModel(
-                uploadPostUseCase
+                uploadPostUseCase,
+                checkUserLoggedInUseCase
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

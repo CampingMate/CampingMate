@@ -1,13 +1,17 @@
 package com.brandon.campingmate.data.repository
 
 import android.net.Uri
-import com.brandon.campingmate.data.source.network.PostRemoteDataSource
-import com.brandon.campingmate.domain.mapper.toPostEntity
-import com.brandon.campingmate.domain.mapper.toPostsEntity
-import com.brandon.campingmate.domain.model.PostEntity
-import com.brandon.campingmate.domain.model.PostsEntity
+import com.brandon.campingmate.data.remote.firebasestorage.FireBaseStorageDataSource
+import com.brandon.campingmate.data.remote.firestore.FirestoreDataSource
+import com.brandon.campingmate.domain.model.Post
+import com.brandon.campingmate.domain.model.PostComment
+import com.brandon.campingmate.domain.model.Posts
 import com.brandon.campingmate.domain.repository.PostRepository
 import com.brandon.campingmate.utils.Resource
+import com.brandon.campingmate.utils.mappers.toCommentDTO
+import com.brandon.campingmate.utils.mappers.toPostDTO
+import com.brandon.campingmate.utils.mappers.toPostEntity
+import com.brandon.campingmate.utils.mappers.toPostsEntity
 import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -15,15 +19,16 @@ import kotlinx.coroutines.coroutineScope
 
 
 class PostRepositoryImpl(
-    private val postRemoteDataSource: PostRemoteDataSource
+    private val firestoreDataSource: FirestoreDataSource,
+    private val fireBaseStorageDataSource: FireBaseStorageDataSource
 ) : PostRepository {
 
     override suspend fun getPosts(
         pageSize: Int,
         lastVisibleDoc: DocumentSnapshot?
-    ): Resource<PostsEntity> {
+    ): Resource<Posts> {
         return try {
-            when (val result = postRemoteDataSource.getPosts(pageSize, lastVisibleDoc)) {
+            when (val result = firestoreDataSource.getPosts(pageSize, lastVisibleDoc)) {
                 Resource.Empty -> Resource.Empty
                 is Resource.Error -> Resource.Error(result.message)
                 is Resource.Success -> Resource.Success(result.data.toPostsEntity())
@@ -33,9 +38,9 @@ class PostRepositoryImpl(
         }
     }
 
-    override suspend fun getPostById(postId: String): Resource<PostEntity> {
+    override suspend fun getPostById(postId: String): Resource<Post> {
         return try {
-            when (val result = postRemoteDataSource.getPostById(postId)) {
+            when (val result = firestoreDataSource.getPostById(postId)) {
                 Resource.Empty -> Resource.Empty
                 is Resource.Error -> Resource.Error(result.message)
                 is Resource.Success -> Resource.Success(result.data.toPostEntity())
@@ -46,18 +51,21 @@ class PostRepositoryImpl(
     }
 
     override suspend fun uploadPostWithImages(
-        postEntity: PostEntity,
+        post: Post,
         imageUris: List<Uri>,
     ): Result<String> = coroutineScope {
         runCatching {
             val imageUrls = imageUris.map { uri ->
-                async { postRemoteDataSource.uploadPostImage(uri).getOrElse { throw it } }
+                async { fireBaseStorageDataSource.uploadPostImage(uri).getOrThrow() }
             }.awaitAll()
-            val newPost = postEntity.copy(imageUrls = imageUrls)
-            postRemoteDataSource.uploadPost(newPost).getOrElse { throw it }
+            val newPost = post.copy(imageUrls = imageUrls).toPostDTO()
+            firestoreDataSource.uploadPost(newPost).getOrThrow()
         }
     }
 
+    override suspend fun uploadComment(postId: String, postComment: PostComment): Result<String> {
+        return firestoreDataSource.uploadPostComment(postId, postComment.toCommentDTO())
+    }
 }
 
 

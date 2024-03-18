@@ -99,7 +99,7 @@
 
             <!-- Images RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_post_images"
+                android:id="@+id/rv_post_image"
                 android:layout_width="0dp"
                 android:layout_height="120dp"
                 android:layout_marginStart="16dp"
@@ -123,7 +123,7 @@
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/rv_post_images" />
+                app:layout_constraintTop_toBottomOf="@id/rv_post_image" />
 
             <!-- Comments RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView
@@ -156,7 +156,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <EditText
-            android:id="@+id/et_comment_bar"
+            android:id="@+id/et_comment_input"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -178,7 +178,7 @@
             android:backgroundTint="@color/view_gray"
             android:padding="6dp"
             android:src="@drawable/ic_text_input"
-            app:layout_constraintBottom_toBottomOf="@id/et_comment_bar"
+            app:layout_constraintBottom_toBottomOf="@id/et_comment_input"
             app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

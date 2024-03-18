@@ -1,5 +1,6 @@
 package com.brandon.campingmate.presentation.postdetail
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
@@ -13,15 +14,19 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.brandon.campingmate.R
+import com.brandon.campingmate.data.remote.firebasestorage.FireBaseStorageDataSourceImpl
+import com.brandon.campingmate.data.remote.firestore.FirestoreDataSourceImpl
 import com.brandon.campingmate.data.repository.PostRepositoryImpl
-import com.brandon.campingmate.data.source.network.impl.PostRemoteDataSourceImpl
 import com.brandon.campingmate.databinding.ActivityPostDetailBinding
 import com.brandon.campingmate.domain.usecase.GetPostByIdUseCase
+import com.brandon.campingmate.domain.usecase.UploadPostCommentUseCase
 import com.brandon.campingmate.network.firestore.FirebaseService
+import com.brandon.campingmate.network.firestore.FirebaseService.fireStoreDB
 import com.brandon.campingmate.presentation.postdetail.adapter.PostDetailImageAdapter
 import com.brandon.campingmate.utils.toFormattedString
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class PostDetailActivity : AppCompatActivity() {
 
@@ -39,10 +44,14 @@ class PostDetailActivity : AppCompatActivity() {
         PostDetailViewModelFactory(
             GetPostByIdUseCase(
                 PostRepositoryImpl(
-                    PostRemoteDataSourceImpl(
-                        FirebaseService.fireStoreDB,
-                        FirebaseService.firebaseStorage
-                    )
+                    FirestoreDataSourceImpl(fireStoreDB),
+                    FireBaseStorageDataSourceImpl(FirebaseService.firebaseStorage)
+                )
+            ),
+            UploadPostCommentUseCase(
+                PostRepositoryImpl(
+                    FirestoreDataSourceImpl(fireStoreDB),
+                    FireBaseStorageDataSourceImpl(FirebaseService.firebaseStorage)
                 )
             ),
         )
@@ -59,9 +68,17 @@ class PostDetailActivity : AppCompatActivity() {
         viewModel.loadData(postId)
 
         initView()
+        initListener()
         initViewModel()
-
         setupOnBackPressedHandling()
+
+    }
+
+    private fun initListener() = with(binding) {
+        btnSend.setOnClickListener {
+            val content = etCommentInput.text.toString()
+            viewModel.handleEvent(PostDetailEvent.UploadComment(content))
+        }
     }
 
     private fun initViewModel() = with(viewModel) {
@@ -82,8 +99,10 @@ class PostDetailActivity : AppCompatActivity() {
         TODO("Not yet implemented")
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun onBind(state: PostDetailUiState) {
         state.post?.let {
+            Timber.tag("USER").d("State: ${state.post}")
             with(binding) {
                 tvUsername.text = it.authorName
                 tvTitle.text = it.title
@@ -103,9 +122,9 @@ class PostDetailActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false) // 기본 타이틀 숨기기
         supportActionBar?.setDisplayHomeAsUpEnabled(true)// 뒤로가기 버튼 활성화
 
-        rvPostImages.layoutManager =
+        rvPostImage.layoutManager =
             LinearLayoutManager(this@PostDetailActivity, LinearLayoutManager.HORIZONTAL, false)
-        rvPostImages.adapter = imageListAdapter
+        rvPostImage.adapter = imageListAdapter
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

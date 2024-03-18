@@ -10,8 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.brandon.campingmate.databinding.ItemPostBinding
 import com.brandon.campingmate.databinding.ItemPostLoadingBinding
 import com.brandon.campingmate.databinding.ItemPostUnknownBinding
-import com.brandon.campingmate.domain.model.PostEntity
-import com.brandon.campingmate.presentation.mapper.toPostEntity
+import com.brandon.campingmate.domain.model.Post
+import com.brandon.campingmate.utils.mappers.toPostEntity
 import com.brandon.campingmate.utils.toFormattedString
 import com.bumptech.glide.Glide
 
@@ -33,7 +33,7 @@ import com.bumptech.glide.Glide
  *
  * ViewType 의 확장성을 고려한 type 처리
  */
-class PostListAdapter(private val onClickItem: (PostEntity) -> Unit) :
+class PostListAdapter(private val onClickItem: (Post) -> Unit) :
     ListAdapter<PostListItem, PostListAdapter.PostViewHolder>(
         object : DiffUtil.ItemCallback<PostListItem>() {
             override fun areItemsTheSame(oldItem: PostListItem, newItem: PostListItem): Boolean {
@@ -61,7 +61,7 @@ class PostListAdapter(private val onClickItem: (PostEntity) -> Unit) :
 
     class PostItemViewHolder(
         private val binding: ItemPostBinding,
-        private val onClickItem: (PostEntity) -> Unit
+        private val onClickItem: (Post) -> Unit
     ) : PostViewHolder(binding.root) {
         override fun onBind(item: PostListItem) = with(binding) {
             if (item is PostListItem.PostItem) {
