@@ -61,7 +61,8 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private var mapY: String? = null
     private var campName: String? = null
     private var myImage: String = ""
-    companion object{
+
+    companion object {
         private const val REQUEST_CODE_IMAGE_PICK = 1001
     }
 
@@ -94,10 +95,11 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         campEntity.observe(this@CampDetailActivity) {
             if (it != null) {
                 initSetting(it)
+                makeMarker()
             }
         }
-        campComment.observe(this@CampDetailActivity){
-            if(it != null){
+        campComment.observe(this@CampDetailActivity) {
+            if (it != null) {
                 listAdapter.submitList(it)
             }
         }
@@ -245,7 +247,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     /**
      * 댓글
      */
-    private fun comment() =with(binding) {
+    private fun comment() = with(binding) {
         commentPlusImage.setOnClickListener {
             openGalleryForImage()
         }
@@ -260,26 +262,34 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                             val userId = "Kakao${user.id}"
                             val userName = it.get("nickName")
                             val content = commentEdit.text.toString()
-                            val date = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(
-                                Date()
-                            )
-                            val myImage = if(selectedImage.visibility == View.VISIBLE){
+                            val date =
+                                SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(
+                                    Date()
+                                )
+                            val myImage = if (selectedImage.visibility == View.VISIBLE) {
                                 myImage
-                            } else{
+                            } else {
                                 ""
                             }
-                            if(myImage.isNotBlank()){
+                            if (myImage.isNotBlank()) {
                                 val myImageUri = Uri.parse(myImage)
-                                viewModel.uploadImage(myImageUri){ imageUrl ->
-                                    val myComment = CampCommentEntity(userId, userName, content, date, Uri.parse(imageUrl))
+                                viewModel.uploadImage(myImageUri) { imageUrl ->
+                                    val myComment = CampCommentEntity(
+                                        userId,
+                                        userName,
+                                        content,
+                                        date,
+                                        Uri.parse(imageUrl)
+                                    )
                                     viewModel.uploadComment(myId!!, myComment)
                                     commentEdit.text.clear()
                                     selectedImage.setImageURI(null)
                                     selectedImage.visibility = View.GONE
                                     selectedImageDelete.visibility = View.GONE
                                 }
-                            } else{
-                                val myComment = CampCommentEntity(userId, userName, content, date, Uri.EMPTY)
+                            } else {
+                                val myComment =
+                                    CampCommentEntity(userId, userName, content, date, Uri.EMPTY)
                                 viewModel.uploadComment(myId!!, myComment)
                                 commentEdit.text.clear()
                             }
@@ -301,6 +311,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(intent, REQUEST_CODE_IMAGE_PICK)
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_IMAGE_PICK && resultCode == Activity.RESULT_OK && data != null) {
@@ -420,7 +431,20 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         naverMap?.maxZoom = 18.0
         naverMap?.extent =
             LatLngBounds(LatLng(32.973077, 124.270981), LatLng(38.856197, 130.051725))
+    }
 
+    private fun View.hideKeyboardInput() {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken, 0)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mapView = null
+        Log.d("test", "맵뷰 파괴됨")
+    }
+
+    private fun makeMarker() {
         if (mapX != null && mapY != null) {
             val mapY = if (mapY.isNullOrEmpty()) 45.0 else mapY!!.toDouble()
             val mapX = if (mapX.isNullOrEmpty()) 130.0 else mapX!!.toDouble()
@@ -436,16 +460,6 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             marker.map = naverMap
             naverMap?.cameraPosition = cameraPosition
         }
-    }
-    private fun View.hideKeyboardInput() {
-        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(windowToken, 0)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mapView = null
-        Log.d("test", "맵뷰 파괴됨")
     }
 
 }
