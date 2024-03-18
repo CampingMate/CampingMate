@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
+import android.view.animation.AlphaAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -57,6 +58,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private var mapY: String? = null
     private var campName: String? = null
     private var myImage: String = ""
+    var isTop = true
 
     companion object {
         private const val REQUEST_CODE_IMAGE_PICK = 1001
@@ -195,6 +197,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             LinearLayoutManager(this@CampDetailActivity, LinearLayoutManager.VERTICAL, false)
         scrollTab()
         comment()
+        scrollListener()
 
         btnDetailsattel.setOnClickListener {
             when (maptype) {
@@ -238,6 +241,29 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                 return onTouchEvent(event)
             }
         })
+    }
+
+    private fun scrollListener() = with(binding){
+        val fadeIn = AlphaAnimation(0f, 1f).apply { duration = 1000 }
+        val fadeOut = AlphaAnimation(1f, 0f).apply { duration = 1000 }
+        scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+            if(scrollY == 0){ //최상단일경우
+                if(!isTop){
+                    floating.startAnimation(fadeOut)
+                    floating.visibility = View.GONE
+                    isTop = true
+                }
+            } else{ //최상단이 아닐경우
+                if(isTop){
+                    floating.startAnimation(fadeIn)
+                    floating.visibility = View.VISIBLE
+                    isTop = false
+                }
+            }
+        }
+        floating.setOnClickListener {
+            scrollView.smoothScrollTo(0,0)
+        }
     }
 
     /**
