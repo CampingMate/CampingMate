@@ -143,6 +143,11 @@ class ProfileFragment : Fragment() {
             if (it.isNotEmpty()) {
                 tvWritingSize.text = it.size.toString()
                 tvWritingSize.visibility = View.VISIBLE
+            }else {
+                tvWritingSize.text = it.size.toString()
+                if(lineWriting.visibility == View.VISIBLE){
+                    tvTabWriting.visibility = View.VISIBLE
+                }
             }
             layoutManager.scrollToPosition(it.size-1)
         }
@@ -423,11 +428,9 @@ class ProfileFragment : Fragment() {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
-                val bookmarkID = bookmarkAdapter.currentList[position]
-                val postID = postAdapter.currentList[position]
-                //todo.리사이클러뷰 삭제(북마크해제/글삭제) 동작 수행
                 when (recyclerView) {
                     binding.rvBookmarked -> {
+                        val bookmarkID = bookmarkAdapter.currentList[position]
                         viewModel.removeBookmarkCamp(userId.toString(), bookmarkID.contentId.toString())
                         val undoSnackbar = Snackbar.make(binding.root,"해당 북마크를 삭제했습니다.",5000)
                         undoSnackbar.setAction("되돌리기"){
@@ -442,6 +445,7 @@ class ProfileFragment : Fragment() {
 //                            viewModel.undoPost()
 //                        }
 //                        undoSnackbar.show()
+                        val postID = postAdapter.currentList[position]
                         val builder = AlertDialog.Builder(requireContext())
                         builder.setMessage("정말로 삭제하시겠습니까?")
                             .setPositiveButton("삭제",DialogInterface.OnClickListener { _, _ ->
