@@ -3,6 +3,7 @@ package com.brandon.campingmate.presentation.profile
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -90,7 +91,7 @@ class ProfileFragment : Fragment() {
         clickEditProfile()
 
         swipeRecyclerView(binding.rvBookmarked)
-        //swipeRecyclerView(binding.rvWriting)
+        swipeRecyclerView(binding.rvWriting)
 
         clickLogout()
 
@@ -111,7 +112,8 @@ class ProfileFragment : Fragment() {
 
     private fun setBookmarkedAdapter(userId: String) = with(binding) {
         rvBookmarked.adapter = bookmarkAdapter
-        rvBookmarked.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
+        rvBookmarked.layoutManager = layoutManager
         viewModel.getBookmark(userId)
         viewModel.bookmarkedList.observe(viewLifecycleOwner) {
             val newList = mutableListOf<CampEntity>()
@@ -127,12 +129,14 @@ class ProfileFragment : Fragment() {
                 tvTabBookmarked.visibility = View.VISIBLE
                 rvBookmarked.visibility = View.GONE
             }
+            layoutManager.scrollToPosition(it.size-1)
         }
     }
 
     private fun setPostAdapter(userId: String) = with(binding) {
         rvWriting.adapter = postAdapter
-        rvWriting.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
+        rvWriting.layoutManager = layoutManager
         viewModel.getPosts(userId)
         viewModel.postList.observe(viewLifecycleOwner) {
             postAdapter.submitList(it.toList())
@@ -140,6 +144,7 @@ class ProfileFragment : Fragment() {
                 tvWritingSize.text = it.size.toString()
                 tvWritingSize.visibility = View.VISIBLE
             }
+            layoutManager.scrollToPosition(it.size-1)
         }
     }
 
@@ -429,6 +434,23 @@ class ProfileFragment : Fragment() {
                             viewModel.undoBookmarkCamp(userId.toString())
                         }
                         undoSnackbar.show()
+                    }
+                    binding.rvWriting -> {
+                        //되돌리기가 아니고 진짜 삭제하겠냐고 묻는 다이얼로그 필요
+//                        val undoSnackbar = Snackbar.make(binding.root,"해당 작성 글을 삭제했습니다.",5000)
+//                        undoSnackbar.setAction("되돌리기"){
+//                            viewModel.undoPost()
+//                        }
+//                        undoSnackbar.show()
+                        val builder = AlertDialog.Builder(requireContext())
+                        builder.setMessage("정말로 삭제하시겠습니까?")
+                            .setPositiveButton("삭제",DialogInterface.OnClickListener { _, _ ->
+                                viewModel.removePost(postID.postId.toString())
+                            })
+                            .setNegativeButton("취소",DialogInterface.OnClickListener { _, _ ->
+                                postAdapter.notifyDataSetChanged()
+                            })
+                        builder.show()
                     }
                 }
 
