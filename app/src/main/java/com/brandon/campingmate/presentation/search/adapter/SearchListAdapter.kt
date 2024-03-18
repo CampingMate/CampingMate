@@ -56,7 +56,7 @@ class SearchListAdapter : ListAdapter<CampEntity, SearchListAdapter.SearchViewHo
                     .load(item.firstImageUrl)
                     .into(binding.ivBigItem)
             }
-//            ivBigItem.setColorFilter(R.color.blackDimmed) 먼가 이상함..
+            //ivBigItem.setColorFilter(R.color.blackDimmed) //먼가 이상함..
             if(item.lineIntro.isNullOrBlank()){
                 tvBigItemLineIntro.visibility = View.GONE
             } else{
