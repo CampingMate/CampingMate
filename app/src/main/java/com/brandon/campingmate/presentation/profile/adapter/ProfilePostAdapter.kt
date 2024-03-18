@@ -17,9 +17,9 @@ class ProfilePostAdapter : ListAdapter<Post, ProfilePostAdapter.Holder>(diffUtil
     inner class Holder(val binding: ItemPostBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(data: Post) {
             with(binding) {
-                if (data.imageUrls.isNullOrEmpty()) {
+                if(data.imageUrls.isNullOrEmpty()){
                     ivPostImage.isVisible = false
-                } else {
+                }else {
                     Glide.with(binding.root).load(data.imageUrls.firstOrNull()).into(ivPostImage)
                 }
                 tvTitle.text = data.title
