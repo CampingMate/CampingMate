@@ -34,7 +34,7 @@ import com.brandon.campingmate.data.remote.firestore.FirestoreDataSourceImpl
 import com.brandon.campingmate.data.repository.PostRepositoryImpl
 import com.brandon.campingmate.data.repository.UserRepositoryImpl
 import com.brandon.campingmate.databinding.ActivityPostWriteBinding
-import com.brandon.campingmate.domain.usecase.CheckUserLoggedInUseCase
+import com.brandon.campingmate.domain.usecase.GetUserUserCase
 import com.brandon.campingmate.domain.usecase.UploadPostUseCase
 import com.brandon.campingmate.network.firestore.FirebaseService.fireStoreDB
 import com.brandon.campingmate.network.firestore.FirebaseService.firebaseStorage
@@ -61,7 +61,7 @@ class PostWriteActivity : AppCompatActivity() {
                     )
                 )
             ),
-            CheckUserLoggedInUseCase(
+            GetUserUserCase(
                 UserRepositoryImpl(
                     PreferencesDataSourceImpl(
                         sharedPreferences
@@ -117,7 +117,7 @@ class PostWriteActivity : AppCompatActivity() {
     private fun initViewModel() = with(viewModel) {
 
         lifecycleScope.launch {
-            isLoggedIn.flowWithLifecycle(lifecycle).collect { user ->
+            user.flowWithLifecycle(lifecycle).collect { user ->
                 if (user != null) {
                     // 사용자가 로그인 한 경우
                     Timber.tag("LOGIN").d("회원입니다: $user")
