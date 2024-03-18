@@ -418,8 +418,8 @@ class HomeFragment : Fragment() {
                 it.dDay = dDay
             }
             Log.d("Home", "#csh check D-Day=${holidayList}")
-            binding.tvHolidayName.text = holidayList[0].dateName
-            binding.tvDday.text = "(D-${holidayList[0].dDay})"
+            binding.tvHolidayName.text = "다음 휴일인 ${holidayList[0].dateName}까지 "
+            binding.tvDday.text = "${holidayList[0].dDay}일"
 //
 //
 //            var maxDiff = Long.MAX_VALUE
