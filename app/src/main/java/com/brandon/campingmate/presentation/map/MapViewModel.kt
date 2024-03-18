@@ -298,23 +298,23 @@ class MapViewModel : ViewModel(){
         }
     }
 
-    fun getBookmarkedCamp(userId:String,campingList : MutableList<LocationBasedListItem> ){
+    fun getBookmarkedCamp(userId:String,campData : MutableList<LocationBasedListItem> ){
         viewModelScope.launch {
             val db = FirebaseFirestore.getInstance()
             val docRef = db.collection("users").document("Kakao${userId}")
-            val contentIds = mutableListOf<String>()
+            val bookmarkedContentIds = mutableListOf<String>()
             docRef.get().addOnSuccessListener {
                 if (it.exists()) {
                     val bookmarkData = it.get("bookmarked") as? List<*>
                     if (bookmarkData != null) {
                         for (item in bookmarkData) {
-                            contentIds.add(item.toString())
+                            bookmarkedContentIds.add(item.toString())
                         }
-                        Timber.tag("test").d("콘텐츠 아이디는: $contentIds")
+                        Timber.tag("test").d("콘텐츠 아이디는: $bookmarkedContentIds")
                     }
                 }
-                _bookmarkedList.value = campingList.filter {
-                    contentIds.contains(it.contentId)
+                _bookmarkedList.value = campData.filter {
+                    bookmarkedContentIds.contains(it.contentId)
                 }.toMutableList()
 
             }
