@@ -16,8 +16,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
 import androidx.viewpager2.widget.ViewPager2
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.ActivityCampDetailBinding
@@ -97,6 +95,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         campEntity.observe(this@CampDetailActivity) {
             if (it != null) {
                 initSetting(it)
+                makeMarker()
             }
         }
         campComment.observe(this@CampDetailActivity) {
@@ -253,75 +252,53 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             openGalleryForImage()
         }
         commentSend.setOnClickListener {
-            val masterKeyAlias = MasterKey
-                .Builder(applicationContext)
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build()
-            val pref = EncryptedSharedPreferences.create(
-                applicationContext,
-                "userID",   // 파일 이름
-                masterKeyAlias,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,  // 키 암호화
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM     // 값 암호화
-            )
-            val userId = pref.getString("myID", "")
-            if (userId != null && userId.isNotEmpty()) {
-                UserApiClient.instance.me { user, error ->
-                    if (user != null) {
-                        val userDocRef = db.collection("users").document("Kakao${user.id}")
-                        userDocRef
-                            .get()
-                            .addOnSuccessListener {
-                                val userId = "Kakao${user.id}"
-                                val userName = it.get("nickName")
-                                val content = commentEdit.text.toString()
-                                val date = SimpleDateFormat(
-                                    "yyyy-MM-dd HH:mm",
-                                    Locale.getDefault()
-                                ).format(
+            commentSend.hideKeyboardInput()
+            UserApiClient.instance.me { user, error ->
+                if (user?.id != null) {
+                    val userDocRef = db.collection("users").document("Kakao${user.id}")
+                    userDocRef
+                        .get()
+                        .addOnSuccessListener {
+                            val userId = "Kakao${user.id}"
+                            val userName = it.get("nickName")
+                            val content = commentEdit.text.toString()
+                            val date =
+                                SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(
                                     Date()
                                 )
-                                val myImage = if (selectedImage.visibility == View.VISIBLE) {
-                                    myImage
-                                } else {
-                                    ""
-                                }
-                                if (myImage.isNotBlank()) {
-                                    val myImageUri = Uri.parse(myImage)
-                                    viewModel.uploadImage(myImageUri) { imageUrl ->
-                                        val myComment = CampCommentEntity(
-                                            userId,
-                                            userName,
-                                            content,
-                                            date,
-                                            Uri.parse(imageUrl)
-                                        )
-                                        viewModel.uploadComment(myId!!, myComment)
-                                        commentEdit.text.clear()
-                                        selectedImage.setImageURI(null)
-                                        selectedImage.visibility = View.GONE
-                                        selectedImageDelete.visibility = View.GONE
-                                    }
-                                } else {
+                            val myImage = if (selectedImage.visibility == View.VISIBLE) {
+                                myImage
+                            } else {
+                                ""
+                            }
+                            if (myImage.isNotBlank()) {
+                                val myImageUri = Uri.parse(myImage)
+                                viewModel.uploadImage(myImageUri) { imageUrl ->
                                     val myComment = CampCommentEntity(
                                         userId,
                                         userName,
                                         content,
                                         date,
-                                        Uri.EMPTY
+                                        Uri.parse(imageUrl)
                                     )
                                     viewModel.uploadComment(myId!!, myComment)
                                     commentEdit.text.clear()
+                                    selectedImage.setImageURI(null)
+                                    selectedImage.visibility = View.GONE
+                                    selectedImageDelete.visibility = View.GONE
                                 }
+                            } else {
+                                val myComment =
+                                    CampCommentEntity(userId, userName, content, date, Uri.EMPTY)
+                                viewModel.uploadComment(myId!!, myComment)
+                                commentEdit.text.clear()
                             }
-                    }
+                        }
+                } else {
+                    SnackbarUtil.showSnackBar(it)
                 }
-
-            } else {
-                SnackbarUtil.showSnackBar(it)
             }
         }
-
         selectedImageDelete.setOnClickListener {
             binding.selectedImage.setImageURI(null)
             binding.selectedImage.visibility = View.GONE
@@ -454,7 +431,20 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         naverMap?.maxZoom = 18.0
         naverMap?.extent =
             LatLngBounds(LatLng(32.973077, 124.270981), LatLng(38.856197, 130.051725))
+    }
 
+    private fun View.hideKeyboardInput() {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken, 0)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mapView = null
+        Log.d("test", "맵뷰 파괴됨")
+    }
+
+    private fun makeMarker() {
         if (mapX != null && mapY != null) {
             val mapY = if (mapY.isNullOrEmpty()) 45.0 else mapY!!.toDouble()
             val mapX = if (mapX.isNullOrEmpty()) 130.0 else mapX!!.toDouble()
@@ -470,17 +460,6 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             marker.map = naverMap
             naverMap?.cameraPosition = cameraPosition
         }
-    }
-
-    private fun View.hideKeyboardInput() {
-        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(windowToken, 0)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mapView = null
-        Log.d("test", "맵뷰 파괴됨")
     }
 
 }

@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.brandon.campingmate.data.local.preferences.EncryptedPrefs
 import com.brandon.campingmate.databinding.ActivityLoginBinding
 import com.brandon.campingmate.utils.profileImgUpload
 import com.google.firebase.Firebase
@@ -70,13 +71,14 @@ class LoginActivity : AppCompatActivity() {
                 UserApiClient.instance.me { user, _ ->
                     profileImgUpload(Uri.parse(user?.kakaoAccount?.profile?.profileImageUrl), "Kakao${user?.id}")
 
+                    val documentRef = db.collection("users").document("Kakao${user?.id}")
                     val userModel = hashMapOf(
+                        "userId" to "Kakao${user?.id}",
                         "nickName" to "${user?.kakaoAccount?.profile?.nickname}",
                         "profileImage" to null,
                         "userEmail" to "${user?.kakaoAccount?.email}",
                         "bookmarked" to null
                     )
-                    val documentRef = db.collection("users").document("Kakao${user?.id}")
                     documentRef.get().addOnSuccessListener {
                         if (!it.exists()) {
                             documentRef.set(userModel)
@@ -103,7 +105,8 @@ class LoginActivity : AppCompatActivity() {
                         EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,  //key 암호화
                         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM     //value 암호화
                     )
-                    pref.edit().putString("myID","Kakao${user?.id}").apply()
+                    EncryptedPrefs.saveMyId("Kakao${user?.id}")
+                    pref.edit().putString("myID", "Kakao${user?.id}").apply()
                     finish()
                 }
             }

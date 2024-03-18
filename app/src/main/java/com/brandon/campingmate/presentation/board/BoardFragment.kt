@@ -22,7 +22,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.brandon.campingmate.R
 import com.brandon.campingmate.data.remote.dto.PostDTO
-import com.brandon.campingmate.data.remote.impl.PostRemoteDataSourceImpl
+import com.brandon.campingmate.data.remote.firebasestorage.FireBaseStorageDataSourceImpl
+import com.brandon.campingmate.data.remote.firestore.FirestoreDataSourceImpl
 import com.brandon.campingmate.data.repository.PostRepositoryImpl
 import com.brandon.campingmate.databinding.FragmentBoardBinding
 import com.brandon.campingmate.domain.usecase.GetPostsUseCase
@@ -44,7 +45,11 @@ class BoardFragment : Fragment() {
 
     private val viewModel: BoardViewModel by viewModels {
         BoardViewModelFactory(
-            GetPostsUseCase(PostRepositoryImpl(PostRemoteDataSourceImpl(fireStoreDB, firebaseStorage))),
+            GetPostsUseCase(
+                PostRepositoryImpl(
+                    FirestoreDataSourceImpl(fireStoreDB), FireBaseStorageDataSourceImpl(firebaseStorage)
+                )
+            ),
         )
     }
     private val postListAdapter: PostListAdapter by lazy {

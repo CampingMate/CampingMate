@@ -197,7 +197,6 @@ class ImagePicker(
                 Timber.tag("PICK").d("이미지 토탈 개수 업데이트 $total:")
                 if (total > 0) {
                     binding.btnAdd.text = if (total == maxSelection) "MAX" else "ADD"
-                    // TODO 보이게
                     Timber.tag("VISION").d("state: ${binding.clSnackbar.isVisible}")
                     if (!binding.clSnackbar.isVisible) {
                         // 스낵바가 보이지 않는 상태라면
@@ -208,7 +207,6 @@ class ImagePicker(
                     }
                     binding.tvCount.text = "$total"
                 } else {
-                    // TODO 안보이게
                     if (binding.clSnackbar.isVisible) {
                         val slideDownAnimation =
                             AnimationUtils.loadAnimation(requireContext(), R.anim.slide_down)

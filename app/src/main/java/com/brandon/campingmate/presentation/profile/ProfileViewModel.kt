@@ -9,15 +9,16 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
+import timber.log.Timber
 
 class ProfileViewModel : ViewModel() {
     private val _bookmarkedList: MutableLiveData<List<CampEntity>> = MutableLiveData()
     val bookmarkedList: LiveData<List<CampEntity>> get() = _bookmarkedList
     private val bookmarkCamp: MutableList<CampEntity> = mutableListOf()
 
-    private val _postList: MutableLiveData<List<Post>> = MutableLiveData()
-    val postList: LiveData<List<Post>> get() = _postList
-    private val writingPost: MutableList<Post> = mutableListOf()
+    private val _postList : MutableLiveData<List<Post>> = MutableLiveData()
+    val postList : LiveData<List<Post>> get() = _postList
+    private val writingPost : MutableList<Post> = mutableListOf()
 
     fun getBookmark(userID: String) {
         val db = FirebaseFirestore.getInstance()
