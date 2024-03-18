@@ -316,6 +316,18 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_bigtitle_district">
 
                 <com.google.android.material.chip.Chip
+                    android:id="@+id/chipAllCity"
+                    style="@style/CustomChipChoiceHome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    android:clickable="true"
+                    android:fontFamily="@font/spoqahansansneo_medium"
+                    android:text="전체"
+                    app:chipCornerRadius="6dp"
+                    app:chipStrokeWidth="1dp" />
+
+                <com.google.android.material.chip.Chip
                     android:id="@+id/chipCapital"
                     style="@style/CustomChipChoiceHome"
                     android:layout_width="wrap_content"
@@ -474,6 +486,18 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_bigtitle_theme">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipAllTeme"
+                        style="@style/CustomChipChoiceHome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_regular"
+                        android:text="전체"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipSpringFlower"
