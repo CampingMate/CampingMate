@@ -11,6 +11,7 @@ import com.brandon.campingmate.network.retrofit.NetWorkClient
 import com.brandon.campingmate.presentation.search.SearchFragment.Companion.activatedChips
 import com.brandon.campingmate.presentation.search.SearchFragment.Companion.doNmList
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
@@ -157,8 +158,52 @@ class SearchViewModel : ViewModel() {
         isLoadingData = true
         Log.d("Search", "loadMoreData")
         val db = Firebase.firestore
+        var baseQuery: Query = db.collection("camps")
         if (lastVisible != null) {
-            val next = db.collection("camps")
+            var result = if (doNmList.isNotEmpty()) {
+                baseQuery.whereIn("doNm", doNmList)
+            } else {
+                baseQuery
+            }
+
+            for (chip in activatedChips) {
+                when (chip) {
+                    "글램핑" -> baseQuery = baseQuery.whereIn("induty1", listOf("글램핑"))
+                    "일반야영" -> baseQuery = baseQuery.whereIn("induty2", listOf("일반야영장"))
+                    "차박" -> baseQuery = baseQuery.whereIn("induty3", listOf("자동차야영장"))
+                    "카라반" -> baseQuery = baseQuery.whereIn("induty4", listOf("카라반"))
+                    "화장실" -> baseQuery = baseQuery.whereIn("bathroom", listOf("화장실"))
+                    "샤워실" -> baseQuery = baseQuery.whereIn("shower", listOf("샤워실"))
+                    "화로대" -> baseQuery = baseQuery.whereIn("fire", listOf("화로대"))
+                    "전기" -> baseQuery = baseQuery.whereIn("electronic", listOf("전기"))
+                    "냉장고" -> baseQuery = baseQuery.whereIn("refrigerator", listOf("냉장고"))
+                    "불멍" -> baseQuery = baseQuery.whereIn("firesee", listOf("불멍"))
+                    "에어컨" -> baseQuery = baseQuery.whereIn("aircon", listOf("에어컨"))
+                    "침대" -> baseQuery = baseQuery.whereIn("bed", listOf("침대"))
+                    "TV" -> baseQuery = baseQuery.whereIn("tv", listOf("TV"))
+                    "난방기구" -> baseQuery = baseQuery.whereIn("warmer", listOf("난방기구"))
+                    "내부화장실" -> baseQuery = baseQuery.whereIn("innerBathroom", listOf("내부화장실"))
+                    "내부샤워실" -> baseQuery = baseQuery.whereIn("innerShower", listOf("내부샤워실"))
+                    "유무선인터넷" -> baseQuery = baseQuery.whereIn("internet", listOf("유무선인터넷"))
+                    "애견동반" -> baseQuery = baseQuery.whereIn("animalCmgCl", listOf("가능", "가능(소형견)"))
+                    "여름물놀이" -> baseQuery = baseQuery.whereIn("summerPlay", listOf("여름물놀이"))
+                    "낚시" -> baseQuery = baseQuery.whereIn("fishing", listOf("낚시"))
+                    "걷기길" -> baseQuery = baseQuery.whereIn("walking", listOf("걷기길"))
+                    "액티비티" -> baseQuery = baseQuery.whereIn("activity", listOf("액티비티"))
+                    "봄꽃여행" -> baseQuery = baseQuery.whereIn("springFlower", listOf("봄꽃여행"))
+                    "가을단풍명소" -> baseQuery = baseQuery.whereIn("fallLeaves", listOf("가을단풍명소"))
+                    "겨울눈꽃명소" -> baseQuery = baseQuery.whereIn("winterSnow", listOf("겨울눈꽃명소"))
+                    "일몰명소" -> baseQuery = baseQuery.whereIn("sunset", listOf("일몰명소"))
+                    "수상레저" -> baseQuery = baseQuery.whereIn("waterLeisure", listOf("수상레저"))
+                    "잔디" -> baseQuery = baseQuery.whereIn("siteBottomCl1", listOf("잔디"))
+                    "파쇄석" -> baseQuery = baseQuery.whereIn("siteBottomCl2", listOf("파쇄석"))
+                    "테크" -> baseQuery = baseQuery.whereIn("siteBottomCl3", listOf("테크"))
+                    "자갈" -> baseQuery = baseQuery.whereIn("siteBottomCl4", listOf("자갈"))
+                    "맨흙" -> baseQuery = baseQuery.whereIn("siteBottomCl5", listOf("맨흙"))
+                    else -> Unit
+                }
+            }
+            val next = result
                 .startAfter(lastVisible!!)
                 .limit(5)
 
