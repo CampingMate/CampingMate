@@ -113,12 +113,13 @@
 
             <!-- Comments Title -->
             <TextView
+                android:text="댓글"
                 android:id="@+id/tv_title_comment"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="20dp"
-                tools:text="댓글"
+                android:visibility="visible"
                 android:textFontWeight="500"
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
