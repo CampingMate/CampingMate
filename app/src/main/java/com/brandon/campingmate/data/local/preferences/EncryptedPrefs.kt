@@ -29,4 +29,8 @@ object EncryptedPrefs {
     }
 
     fun getMyId(): String? = sharedPreferences.getString("myID", null)
+
+    fun deleteMyId() {
+        sharedPreferences.edit().remove("myID").apply()
+    }
 }
