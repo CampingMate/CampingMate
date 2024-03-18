@@ -19,7 +19,7 @@ class UploadPostUseCase(
 
         val post = Post(
             postId = null,
-            authorId = "tempUserID",
+            authorId = user.userId,
             authorName = user.nickName,
             authorProfileImageUrl = user.profileImage,
             title = title,
