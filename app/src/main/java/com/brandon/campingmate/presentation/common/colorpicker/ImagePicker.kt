@@ -67,37 +67,6 @@ class ImagePicker(
         // TODO total 문자열 변경가능, ADD 버튼도 변경가능, peekHeight 변경가능
         // 리소스 올릴 수 없음, 리소스도 같이 올릴 수 있음
         // 컬러조차도 변경할 수 있으면 좋음
-        dialog?.setOnShowListener { dialog ->
-            val d = dialog as? BottomSheetDialog
-            val bottomSheet =
-                d?.findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)
-            bottomSheet?.let { sheet ->
-                val peekHeight = dpToPx(500f, requireContext())
-                bottomSheetBehavior = BottomSheetBehavior.from(sheet)
-                bottomSheetBehavior?.peekHeight = peekHeight
-
-                // 초기 위치 설정 - 애니메이션 없이 바로 적용
-                binding.clSnackbar.translationY = (peekHeight - binding.clSnackbar.height).toFloat()
-
-                bottomSheetBehavior?.addBottomSheetCallback(object :
-                    BottomSheetBehavior.BottomSheetCallback() {
-                    override fun onStateChanged(bottomSheet: View, newState: Int) {
-                        Timber.tag("BottomSheet").d("onStateChanged: %s", newState)
-                        var translationY = when (newState) {
-                            BottomSheetBehavior.STATE_COLLAPSED -> peekHeight - binding.clSnackbar.height
-                            else -> binding.root.height - binding.clSnackbar.height
-
-                        }
-                        binding.clSnackbar.animate().translationY(translationY.toFloat()).setDuration(150)
-                            .start()
-                    }
-
-                    override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                        // Optional: Implement sliding behavior if needed
-                    }
-                })
-            }
-        }
 
     }
 
@@ -184,6 +153,46 @@ class ImagePicker(
 
         val gridSpacingDecorator = GridSpacingItemDecoration(gridCount, gridSpacing, includeEdge)
         binding.rvImage.addItemDecoration(gridSpacingDecorator)
+
+
+        dialog?.setOnShowListener { dialog ->
+            val d = dialog as? BottomSheetDialog
+            val bottomSheet =
+                d?.findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)
+            bottomSheet?.let { sheet ->
+                val peekHeight = dpToPx(500f, requireContext())
+                bottomSheetBehavior = BottomSheetBehavior.from(sheet)
+                bottomSheetBehavior?.peekHeight = peekHeight
+
+                // 초기 위치 설정 - 애니메이션 없이 바로 적용
+                binding.clSnackbar.translationY = (peekHeight - binding.clSnackbar.height).toFloat()
+
+                bottomSheetBehavior?.addBottomSheetCallback(object :
+                    BottomSheetBehavior.BottomSheetCallback() {
+                    override fun onStateChanged(bottomSheet: View, newState: Int) {
+                        Timber.tag("BottomSheet").d("onStateChanged: %s", newState)
+                        val translationY = when (newState) {
+                            BottomSheetBehavior.STATE_COLLAPSED -> {
+                                binding.root.isNestedScrollingEnabled = true
+                                peekHeight - binding.clSnackbar.height
+                            }
+
+                            else -> {
+                                binding.root.isNestedScrollingEnabled = false
+                                binding.root.height - binding.clSnackbar.height
+                            }
+                        }
+                        binding.clSnackbar.animate().translationY(translationY.toFloat()).setDuration(150)
+                            .start()
+                    }
+
+                    override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                        // Optional: Implement sliding behavior if needed
+                    }
+                })
+
+            }
+        }
     }
 
     private fun initViewModel() {
