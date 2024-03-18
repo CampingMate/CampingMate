@@ -22,7 +22,7 @@ import com.brandon.campingmate.domain.usecase.GetPostByIdUseCase
 import com.brandon.campingmate.domain.usecase.UploadPostCommentUseCase
 import com.brandon.campingmate.network.firestore.FirebaseService
 import com.brandon.campingmate.network.firestore.FirebaseService.fireStoreDB
-import com.brandon.campingmate.presentation.postdetail.adapter.PostDetailImageAdapter
+import com.brandon.campingmate.presentation.postdetail.adapter.PostDetailImageListAdapter
 import com.brandon.campingmate.utils.toFormattedString
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -36,8 +36,8 @@ class PostDetailActivity : AppCompatActivity() {
 
     private val binding: ActivityPostDetailBinding by lazy { ActivityPostDetailBinding.inflate(layoutInflater) }
 
-    private val imageListAdapter: PostDetailImageAdapter by lazy {
-        PostDetailImageAdapter(emptyList())
+    private val imageListAdapter: PostDetailImageListAdapter by lazy {
+        PostDetailImageListAdapter(emptyList())
     }
 
     private val viewModel: PostDetailViewModel by viewModels {

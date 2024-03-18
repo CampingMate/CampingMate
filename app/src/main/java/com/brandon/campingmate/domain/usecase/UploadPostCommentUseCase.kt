@@ -9,8 +9,9 @@ class UploadPostCommentUseCase(
 ) {
     suspend operator fun invoke(postId: String, comment: String): Result<String> {
         val postComment = PostComment(
-            id = "OhjH7RyaFCL5NEAVdIa7",
-            userName = "김철수",
+            commentId = "OhjH7RyaFCL5NEAVdIa7",
+            postId = "fda",
+            authorName = "김철수",
             content = comment,
             timestamp = Timestamp.now()
         )
