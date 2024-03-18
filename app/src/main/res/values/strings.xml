@@ -89,5 +89,9 @@
     <string name="snackbar_login">로그인</string>
     <string name="snackbar_login_text">다양한 기능을 사용하시려면\n로그인 후 이용해주세요</string>
 
+    <string name="dialog_comment_delete">댓글삭제</string>
+    <string name="dialog_comment_text">댓글을 삭제하시면 되돌릴 수 없습니다. \n 정말 삭제 하시겠습니까?</string>
+    <string name="dialog_delete">삭제</string>
+
 
 </resources>

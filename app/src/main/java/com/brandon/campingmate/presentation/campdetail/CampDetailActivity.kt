@@ -3,7 +3,6 @@ package com.brandon.campingmate.presentation.campdetail
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -19,15 +18,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.ActivityCampDetailBinding
+import com.brandon.campingmate.domain.model.CampCommentEntity
 import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.campdetail.adapter.CommentListAdapter
 import com.brandon.campingmate.presentation.campdetail.adapter.ViewPagerAdapter
 import com.brandon.campingmate.presentation.common.SnackbarUtil
-import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.storage.storage
 import com.kakao.sdk.user.UserApiClient
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
@@ -41,7 +38,6 @@ import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.UUID
 
 class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -274,14 +270,19 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                             if (myImage.isNotBlank()) {
                                 val myImageUri = Uri.parse(myImage)
                                 viewModel.uploadImage(myImageUri) { imageUrl ->
-                                    val myComment = CampCommentEntity(
-                                        userId,
-                                        userName,
-                                        content,
-                                        date,
-                                        Uri.parse(imageUrl)
-                                    )
-                                    viewModel.uploadComment(myId!!, myComment)
+                                    val myComment = myId?.let { it1 ->
+                                        CampCommentEntity(
+                                            userId,
+                                            userName,
+                                            content,
+                                            date,
+                                            Uri.parse(imageUrl),
+                                            it1
+                                        )
+                                    }
+                                    if (myComment != null) {
+                                        viewModel.uploadComment(myId!!, myComment)
+                                    }
                                     commentEdit.text.clear()
                                     selectedImage.setImageURI(null)
                                     selectedImage.visibility = View.GONE
@@ -289,8 +290,14 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                                 }
                             } else {
                                 val myComment =
-                                    CampCommentEntity(userId, userName, content, date, Uri.EMPTY)
-                                viewModel.uploadComment(myId!!, myComment)
+                                    myId?.let { it1 ->
+                                        CampCommentEntity(userId, userName, content, date, Uri.EMPTY,
+                                            it1
+                                        )
+                                    }
+                                if (myComment != null) {
+                                    viewModel.uploadComment(myId!!, myComment)
+                                }
                                 commentEdit.text.clear()
                             }
                         }
