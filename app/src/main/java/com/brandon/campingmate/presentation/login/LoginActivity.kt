@@ -71,13 +71,14 @@ class LoginActivity : AppCompatActivity() {
                 UserApiClient.instance.me { user, _ ->
                     profileImgUpload(Uri.parse(user?.kakaoAccount?.profile?.profileImageUrl), "Kakao${user?.id}")
 
+                    val documentRef = db.collection("users").document("Kakao${user?.id}")
                     val userModel = hashMapOf(
+                        "userId" to "Kakao${user?.id}",
                         "nickName" to "${user?.kakaoAccount?.profile?.nickname}",
                         "profileImage" to null,
                         "userEmail" to "${user?.kakaoAccount?.email}",
                         "bookmarked" to null
                     )
-                    val documentRef = db.collection("users").document("Kakao${user?.id}")
                     documentRef.get().addOnSuccessListener {
                         if (!it.exists()) {
                             documentRef.set(userModel)
