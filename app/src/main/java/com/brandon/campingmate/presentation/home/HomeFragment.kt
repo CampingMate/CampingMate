@@ -47,7 +47,6 @@ class HomeFragment : Fragment() {
         ViewModelProvider(this)[SplashViewModel::class.java]
     }
 
-
     private var districtItem = mutableListOf<HomeEntity>()
     private var petItem = mutableListOf<HomeEntity?>()
     private var themeItem = mutableListOf<HomeEntity>()
@@ -73,7 +72,8 @@ class HomeFragment : Fragment() {
         city = main.homeCity
         theme = main.homeTheme
         holidayInfo()
-        viewModelGet()
+        viewModelGet("district")
+        viewModelGet("theme")
 //        initView(allCity, "district")
 //        initView(allCity, "theme")
         initPetView()
@@ -106,24 +106,29 @@ class HomeFragment : Fragment() {
 ////            startActivity(intent)
 //        }
     }
-    private fun viewModelGet(){
+    private fun viewModelGet(select:String){
         Log.d("Home","#csh viewModelGet()")
         Log.d("Home", "#csh city: ${city}")
         Log.d("Home", "#csh theme: ${theme}")
 
+        if(select == "district") {
 //        districtAdapter = HomeAdapter(requireContext(), viewModel.allCityData.value!!)
-        districtAdapter = HomeAdapter(requireContext(), city)
-        binding.rvDistrictItem.adapter = districtAdapter
-        binding.rvDistrictItem.layoutManager =
-            GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
-        binding.rvDistrictItem.itemAnimator = null
+            districtAdapter = HomeAdapter(requireContext(), city)
+            binding.rvDistrictItem.adapter = districtAdapter
+            binding.rvDistrictItem.layoutManager =
+                GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
+            binding.rvDistrictItem.itemAnimator = null
+        }
 
+        else {
 //        themeAdapter = HomeAdapter(requireContext(), viewModel.allThemeData.value!!)
-        themeAdapter = HomeAdapter(requireContext(), theme)
-        binding.rvThemeItem.adapter = themeAdapter
-        binding.rvThemeItem.layoutManager =
-            GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
-        binding.rvThemeItem.itemAnimator = null
+            themeAdapter = HomeAdapter(requireContext(), theme)
+            binding.rvThemeItem.adapter = themeAdapter
+            binding.rvThemeItem.layoutManager =
+                GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
+            binding.rvThemeItem.itemAnimator = null
+        }
+
 
         selectChip()
 
@@ -206,7 +211,40 @@ class HomeFragment : Fragment() {
 //                 -> initThemeView("WinterFlower")
 //            }
 //        }
+//        val chipGroups : ChipGroup = binding.chipThemeGroup
+//        chipGroups.setOnCheckedStateChangeListener { group, checkedIds ->
+//            val chipCapital = binding.chipCapital
+//            val chipChungcheong = binding.chipChungcheong
+//            val chipGangwon = binding.chipGangwon
+//            val chipGyeongsang = binding.chipGyeongsang
+//            val chipJeolla = binding.chipJeolla
+//            val chipSpringFlower = binding.chipSpringFlower
+//            val chipWalk = binding.chipWalk
+//            val chipActivity = binding.chipActivity
+//            val chipSwim = binding.chipSwim
+//            val chipSunset = binding.chipSunset
+//            val chipFallFlower = binding.chipFallFlower
+//            val chipWinterFlower = binding.chipWinterFlower
+//
+//            val isChipCapital = checkedIds.contains(chipCapital.id)
+//            val isChipChungcheong = checkedIds.contains(chipChungcheong.id)
+//            val isChipGangwon = checkedIds.contains(chipGangwon.id)
+//            val isChipGyeongsang = checkedIds.contains(chipGyeongsang.id)
+//            val isChipJeolla = checkedIds.contains(chipJeolla.id)
+//            val isChipSpringFlower = checkedIds.contains(chipSpringFlower.id)
+//            val isChipWalk = checkedIds.contains(chipWalk.id)
+//            val isChipActivity = checkedIds.contains(chipActivity.id)
+//            val isChipSwim = checkedIds.contains(chipSwim.id)
+//            val isChipSunset = checkedIds.contains(chipSunset.id)
+//            val isChipFallFlower = checkedIds.contains(chipFallFlower.id)
+//            val isChipWinterFlower = checkedIds.contains(chipWinterFlower.id)
+//
+//            val isChecked = chipCapital.isChecked
+//        }
+        binding.chipAllCity.isChecked=true
+        binding.chipAllTeme.isChecked=true
         val chipGroup = ChipGroup.OnCheckedChangeListener { group, checkedId ->
+            Log.d("Home", "#csh 1 isChecked ${binding.chipAllCity.isChecked}")
             when (checkedId) {
                 R.id.chipCapital -> initDistrictView("Capital")
                 R.id.chipChungcheong -> initDistrictView("Chungcheong")
@@ -221,10 +259,15 @@ class HomeFragment : Fragment() {
                 R.id.chipFallFlower -> initThemeView("FallFlower")
                 R.id.chipWinterFlower -> initThemeView("WinterFlower")
                 else -> {
-                    if(group == binding.chipDistrictGroup)
-                        initView(allCity, "district")
-                    else
-                        initView(allCity, "theme")
+                    if(group == binding.chipDistrictGroup) {
+                        Log.d("Home", "#csh 2 isChecked ${binding.chipAllCity.isChecked}")
+                        binding.chipAllCity.isChecked=true
+                        viewModelGet("district")
+                    }
+                    else {
+                        viewModelGet("theme")
+                        binding.chipAllTeme.isChecked=true
+                    }
                 }
             }
         }

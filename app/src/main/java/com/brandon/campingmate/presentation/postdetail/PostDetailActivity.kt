@@ -14,7 +14,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.brandon.campingmate.R
-import com.brandon.campingmate.data.remote.impl.PostRemoteDataSourceImpl
+import com.brandon.campingmate.data.remote.firebasestorage.FireBaseStorageDataSourceImpl
+import com.brandon.campingmate.data.remote.firestore.FirestoreDataSourceImpl
 import com.brandon.campingmate.data.repository.PostRepositoryImpl
 import com.brandon.campingmate.databinding.ActivityPostDetailBinding
 import com.brandon.campingmate.domain.usecase.GetPostByIdUseCase
@@ -25,6 +26,7 @@ import com.brandon.campingmate.presentation.postdetail.adapter.PostDetailImageAd
 import com.brandon.campingmate.utils.toFormattedString
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class PostDetailActivity : AppCompatActivity() {
 
@@ -42,18 +44,14 @@ class PostDetailActivity : AppCompatActivity() {
         PostDetailViewModelFactory(
             GetPostByIdUseCase(
                 PostRepositoryImpl(
-                    PostRemoteDataSourceImpl(
-                        fireStoreDB,
-                        FirebaseService.firebaseStorage
-                    )
+                    FirestoreDataSourceImpl(fireStoreDB),
+                    FireBaseStorageDataSourceImpl(FirebaseService.firebaseStorage)
                 )
             ),
             UploadPostCommentUseCase(
                 PostRepositoryImpl(
-                    PostRemoteDataSourceImpl(
-                        fireStoreDB,
-                        FirebaseService.firebaseStorage
-                    )
+                    FirestoreDataSourceImpl(fireStoreDB),
+                    FireBaseStorageDataSourceImpl(FirebaseService.firebaseStorage)
                 )
             ),
         )
@@ -104,6 +102,7 @@ class PostDetailActivity : AppCompatActivity() {
     @SuppressLint("NotifyDataSetChanged")
     private fun onBind(state: PostDetailUiState) {
         state.post?.let {
+            Timber.tag("USER").d("State: ${state.post}")
             with(binding) {
                 tvUsername.text = it.authorName
                 tvTitle.text = it.title

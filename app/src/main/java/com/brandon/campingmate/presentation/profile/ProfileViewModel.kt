@@ -18,6 +18,7 @@ class ProfileViewModel : ViewModel() {
     private val _postList: MutableLiveData<List<Post>> = MutableLiveData()
     val postList: LiveData<List<Post>> get() = _postList
     private val writingPost: MutableList<Post> = mutableListOf()
+    private var removeBookmarkItem : CampEntity? = null
 
 
     fun getBookmark(userID: String) {
@@ -69,10 +70,23 @@ class ProfileViewModel : ViewModel() {
 
     fun removeBookmarkCamp(userID: String, contentID: String) {
         _bookmarkedList.value = _bookmarkedList.value?.toMutableList()?.apply {
-            val removeItem = find { it.contentId == contentID }
-            remove(removeItem)
+            removeBookmarkItem = find { it.contentId == contentID }
+            remove(removeBookmarkItem)
         } ?: mutableListOf()
 
+        val db = FirebaseFirestore.getInstance()
+        val docRef = db.collection("users").document(userID)
+        val updateBookmarkList = mutableListOf<String>()
+        _bookmarkedList.value?.forEach {
+            updateBookmarkList.add(it.contentId.toString())
+        }
+        docRef.update("bookmarked", updateBookmarkList)
+    }
+
+    fun undoBookmarkCamp(userID: String) {
+        _bookmarkedList.value = _bookmarkedList.value?.toMutableList()?.apply {
+            removeBookmarkItem?.let { add(it) }
+        } ?: mutableListOf()
         val db = FirebaseFirestore.getInstance()
         val docRef = db.collection("users").document(userID)
         val updateBookmarkList = mutableListOf<String>()

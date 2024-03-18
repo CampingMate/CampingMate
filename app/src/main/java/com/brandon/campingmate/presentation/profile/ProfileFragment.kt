@@ -30,9 +30,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
 import com.brandon.campingmate.R
+import com.brandon.campingmate.data.local.preferences.EncryptedPrefs
 import com.brandon.campingmate.databinding.FragmentProfileBinding
 import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.login.LoginActivity
@@ -40,6 +39,7 @@ import com.brandon.campingmate.presentation.profile.adapter.ProfileBookmarkAdapt
 import com.brandon.campingmate.presentation.profile.adapter.ProfilePostAdapter
 import com.brandon.campingmate.utils.profileImgUpload
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.storage
@@ -56,7 +56,7 @@ class ProfileFragment : Fragment() {
     private val bookmarkAdapter: ProfileBookmarkAdapter by lazy { ProfileBookmarkAdapter() }
     private val postAdapter: ProfilePostAdapter by lazy { ProfilePostAdapter() }
     private val db = FirebaseFirestore.getInstance()
-    var userId: String? = null
+    var userId: String? = EncryptedPrefs.getMyId()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -64,21 +64,6 @@ class ProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
-        //저장된 유저 아이디 가져오기
-        val masterKeyAlias = MasterKey
-//    .Builder(applicationContext, MasterKey.DEFAULT_MASTER_KEY_ALIAS)    //액티비티에서 가져올때
-            .Builder(requireContext(), MasterKey.DEFAULT_MASTER_KEY_ALIAS)    //프래그먼트에서 가져올때
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
-        val pref = EncryptedSharedPreferences.create(
-            requireContext(),  //프래그먼트
-//    this, //Context
-            "userID",   //file name
-            masterKeyAlias,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,  //key 암호화
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM     //value 암호화
-        )
-        userId = pref.getString("myID", "")
         return binding.root
     }
 
@@ -122,7 +107,6 @@ class ProfileFragment : Fragment() {
             setPostAdapter(userId!!)
         } else initLogout()
         //}
-
     }
 
     private fun setBookmarkedAdapter(userId: String) = with(binding) {
@@ -161,14 +145,15 @@ class ProfileFragment : Fragment() {
 
     private fun initLogin() {
         with(binding) {
-            UserApiClient.instance.me { user, error ->
-                val docRef = db.collection("users").document("Kakao${user?.id}")
+                val docRef = db.collection("users").document(userId.toString())
                 docRef.get().addOnSuccessListener {
                     if (!it.exists()) {
-                        //ivProfileImg.setImageURI(Uri.parse(user?.kakaoAccount?.profile?.profileImageUrl))
-                        tvProfileName.textSize = 24f
-                        tvProfileName.text = user?.kakaoAccount?.profile?.nickname
-                        tvProfileEmail.text = user?.kakaoAccount?.email
+                        UserApiClient.instance.me { user, error ->
+                            //ivProfileImg.setImageURI(Uri.parse(user?.kakaoAccount?.profile?.profileImageUrl))
+                            tvProfileName.textSize = 24f
+                            tvProfileName.text = user?.kakaoAccount?.profile?.nickname
+                            tvProfileEmail.text = user?.kakaoAccount?.email
+                        }
                     } else {
                         if (profileImgUri == null) {
                             ivProfileImg.scaleType = ImageView.ScaleType.CENTER_CROP
@@ -180,7 +165,6 @@ class ProfileFragment : Fragment() {
                         }
                     }
                 }
-            }
 
             tvProfileName.visibility = View.VISIBLE
             tvProfileEmail.visibility = View.VISIBLE
@@ -346,12 +330,11 @@ class ProfileFragment : Fragment() {
     private fun handleClickEdit(confirm: Boolean) {
         with(binding) {
             if (confirm) {
-                UserApiClient.instance.me { user, _ ->
-                    val documentRef = db.collection("users").document("Kakao${user?.id}")
+                    val documentRef = db.collection("users").document(userId.toString())
                     val updateNickname = hashMapOf<String, Any>("nickName" to "${tvProfileName.text}")
                     if (profileImgUri != null) {
-                        profileImgUpload(profileImgUri!!, "Kakao${user?.id}")
-                        Firebase.storage.getReference("profileImage").child("Kakao${user?.id}").downloadUrl.addOnCompleteListener {
+                        profileImgUpload(profileImgUri!!, userId.toString())
+                        Firebase.storage.getReference("profileImage").child(userId.toString()).downloadUrl.addOnCompleteListener {
                             if (it.isSuccessful) {
                                 val profileImgURI = hashMapOf<String, Any>("profileImage" to it.result.toString())
                                 documentRef.update(profileImgURI)
@@ -362,7 +345,6 @@ class ProfileFragment : Fragment() {
                     documentRef.get().addOnSuccessListener {
                         documentRef.update(updateNickname)
                     }
-                }
                 tvProfileName.text = tvProfileName.text
             } else {
                 profileImgUri = null
@@ -442,6 +424,11 @@ class ProfileFragment : Fragment() {
                 when (recyclerView) {
                     binding.rvBookmarked -> {
                         viewModel.removeBookmarkCamp(userId.toString(), bookmarkID.contentId.toString())
+                        val undoSnackbar = Snackbar.make(binding.root,"해당 북마크를 삭제했습니다.",5000)
+                        undoSnackbar.setAction("되돌리기"){
+                            viewModel.undoBookmarkCamp(userId.toString())
+                        }
+                        undoSnackbar.show()
                     }
                 }
 
