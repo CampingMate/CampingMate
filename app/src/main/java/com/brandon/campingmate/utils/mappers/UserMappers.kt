@@ -5,6 +5,7 @@ import com.brandon.campingmate.domain.model.User
 
 fun UserDTO.toUser(): User {
     return User(
+        userId = userId,
         userEmail = userEmail,
         nickName = nickName,
         profileImage = profileImage,
