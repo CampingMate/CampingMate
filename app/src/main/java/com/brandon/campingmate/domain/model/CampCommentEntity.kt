@@ -1,4 +1,4 @@
-package com.brandon.campingmate.presentation.campdetail
+package com.brandon.campingmate.domain.model
 
 import android.net.Uri
 
@@ -8,4 +8,5 @@ data class CampCommentEntity(
     val content: String,
     val date: String,
     val imageUrl: Uri?,
+    val campId: String,
 )
