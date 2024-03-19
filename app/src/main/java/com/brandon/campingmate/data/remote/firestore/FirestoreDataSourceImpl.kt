@@ -64,6 +64,7 @@ class FirestoreDataSourceImpl(
             val newCommentRef = commentsCollection.document()
             val newCommentId = newCommentRef.id
             val newPost = postCommentDto.copy(commentId = newCommentId)
+            Timber.tag("USER").d("datasource url: ${newPost.authorImageUrl}")
             commentsCollection.document(newCommentId).set(newPost).await()
             newPost.toPostComment()
         }

@@ -7,7 +7,6 @@ import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
@@ -19,7 +18,6 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.brandon.campingmate.R
 import com.brandon.campingmate.data.local.preferences.EncryptedPrefs
@@ -171,18 +169,6 @@ class PostDetailActivity : AppCompatActivity() {
             }
         }
 
-        bottomSheetLayout.rvComments.addOnItemTouchListener(object : RecyclerView.OnItemTouchListener {
-            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
-                rv.parent.requestDisallowInterceptTouchEvent(true)
-                return false
-            }
-
-            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}
-
-            override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
-        })
-
-
     }
 
     private fun initViewModel() = with(viewModel) {
@@ -231,7 +217,7 @@ class PostDetailActivity : AppCompatActivity() {
             val firstComment = it.firstOrNull()
             firstComment?.let { comment ->
                 // TODO 댓글 작성자 이미지 불러오기
-//                binding.ivCommentUserProfile.load()
+                binding.ivCommentUserProfile.load(comment.authorImageUrl)
                 binding.tvComment.text = comment.content
             }
             Timber.tag("COMMENT").d("Count: ${it.size}")

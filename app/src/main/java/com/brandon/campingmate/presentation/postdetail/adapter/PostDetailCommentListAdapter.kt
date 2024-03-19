@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.brandon.campingmate.databinding.ItemPostCommentBinding
+import com.bumptech.glide.Glide
 
 class PostDetailCommentListAdapter :
     ListAdapter<PostCommentListItem, PostDetailCommentListAdapter.ViewHolder>(object :
@@ -32,6 +33,7 @@ class PostDetailCommentListAdapter :
                 tvUserName.text = postCommentListItem.authorName
                 tvComment.text = postCommentListItem.content
                 tvTimestamp.text = postCommentListItem.timestamp
+                Glide.with(binding.root).load(postCommentListItem.authorImageUrl).into(binding.ivUserProfile)
             }
         }
     }

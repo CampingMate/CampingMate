@@ -10,6 +10,7 @@ fun PostComment.toCommentDTO(): PostCommentDTO {
         commentId = commentId,
         postId = postId,
         authorName = authorName,
+        authorImageUrl = authorImageUrl,
         content = content,
         timestamp = timestamp
     )
@@ -20,6 +21,7 @@ fun PostCommentDTO.toPostComment(): PostComment {
         commentId = commentId,
         postId = postId,
         authorName = authorName,
+        authorImageUrl = authorImageUrl,
         content = content,
         timestamp = timestamp
     )
@@ -30,6 +32,7 @@ fun PostComment.toPostCommentListItem(): PostCommentListItem {
         commentId = commentId,
         postId = postId,
         authorName = authorName,
+        authorImageUrl = authorImageUrl,
         content = content,
         timestamp = timestamp.toFormattedString()
     )

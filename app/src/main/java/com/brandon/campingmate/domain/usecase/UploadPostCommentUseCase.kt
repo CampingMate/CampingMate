@@ -6,6 +6,7 @@ import com.brandon.campingmate.domain.repository.PostRepository
 import com.brandon.campingmate.presentation.postdetail.adapter.PostCommentListItem
 import com.brandon.campingmate.utils.mappers.toPostCommentListItem
 import com.google.firebase.Timestamp
+import timber.log.Timber
 
 class UploadPostCommentUseCase(
     private val postRepository: PostRepository
@@ -21,6 +22,7 @@ class UploadPostCommentUseCase(
             content = comment,
             timestamp = Timestamp.now()
         )
+        Timber.tag("USER").d("url: ${user.profileImage}")
         return postRepository.uploadComment(postId, postComment).mapCatching { it.toPostCommentListItem() }
     }
 }
