@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".presentation.postdetail.PostDetailActivity">
 
-    <androidx.core.widget.NestedScrollView
+    <ScrollView
         android:id="@+id/ns_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -170,11 +170,101 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
+    </ScrollView>
 
-    <include
-        android:id="@+id/bottomSheetLayout"
-        layout="@layout/bottomsheet_postdetail_comment" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/sheet_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/shape_bottom_sheet_background"
+        app:behavior_hideable="true"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <!--        핸들러        -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_sheet_handle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_bottom_sheet_background"
+            android:backgroundTint="#EBEBEB"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <View
+                android:id="@+id/view_handle"
+                android:layout_width="30dp"
+                android:layout_height="3dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/shape_rounded_corner_background_r6"
+                android:backgroundTint="@color/hint_gray"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_bottom_sheet_title_comment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="댓글"
+                android:textFontWeight="700"
+                android:textSize="24dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/view_handle" />
+
+            <ImageView
+                android:id="@+id/btn_close"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_close_thin"
+                app:layout_constraintBottom_toBottomOf="@id/tv_bottom_sheet_title_comment"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_bottom_sheet_title_comment" />
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/hint_gray"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_bottom_sheet_title_comment" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!--        댓글목록      -->
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/sheet_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cl_sheet_handle">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_comments"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@color/white"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                android:paddingBottom="240dp" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
+        <TextView
+            android:id="@+id/tv_no_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="200dp"
+            android:text="현재 댓글이 없습니다."
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cl_sheet_handle" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Comment Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout

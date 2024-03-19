@@ -36,6 +36,7 @@ import com.brandon.campingmate.network.firestore.FirebaseService.fireStoreDB
 import com.brandon.campingmate.presentation.postdetail.adapter.PostDetailCommentListAdapter
 import com.brandon.campingmate.presentation.postdetail.adapter.PostDetailImageListAdapter
 import com.brandon.campingmate.utils.toFormattedString
+import com.brandon.campingmate.utils.toPx
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collectLatest
@@ -118,13 +119,13 @@ class PostDetailActivity : AppCompatActivity() {
             }
         }
 
-        bottomSheetLayout.btnClose.setOnClickListener {
+        btnClose.setOnClickListener {
             bottomSheetBehavior?.state = BottomSheetBehavior.STATE_HIDDEN
         }
 
         bottomSheetBehavior?.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-
             override fun onStateChanged(bottomSheet: View, newState: Int) {
+                Timber.d("BottomSheet State Changed: $newState")
                 when (newState) {
                     BottomSheetBehavior.STATE_HIDDEN -> {
                         hideKeyboard()
@@ -167,6 +168,14 @@ class PostDetailActivity : AppCompatActivity() {
                 }
                 previousHeightDiff = heightDiff
             }
+        }
+
+        sheetRefresh.setOnRefreshListener {
+            viewModel.handleEvent(PostDetailEvent.SwipeRefresh)
+//            val handler = Handler(Looper.getMainLooper())
+//            handler.postDelayed({
+//                sheetRefresh.isRefreshing = false
+//            }, 1000)
         }
 
     }
@@ -213,15 +222,20 @@ class PostDetailActivity : AppCompatActivity() {
                 imageListAdapter.notifyDataSetChanged()
             }
         }
-        state.comments.let {
-            val firstComment = it.firstOrNull()
+        state.comments.let { comments ->
+            val firstComment = comments.firstOrNull()
             firstComment?.let { comment ->
-                // TODO 댓글 작성자 이미지 불러오기
                 binding.ivCommentUserProfile.load(comment.authorImageUrl)
                 binding.tvComment.text = comment.content
             }
-            Timber.tag("COMMENT").d("Count: ${it.size}")
-            commentListAdapter.submitList(it)
+            binding.tvNoComment.isVisible = comments.isEmpty()
+
+            Timber.tag("COMMENT").d("Count: ${comments.size}")
+            commentListAdapter.submitList(comments)
+        }
+
+        if (!state.isLoadingComments) {
+            binding.sheetRefresh.isRefreshing = false
         }
     }
 
@@ -235,18 +249,25 @@ class PostDetailActivity : AppCompatActivity() {
             LinearLayoutManager(this@PostDetailActivity, LinearLayoutManager.HORIZONTAL, false)
         rvPostImage.adapter = imageListAdapter
 
-        bottomSheetLayout.rvComments.layoutManager =
+        rvComments.layoutManager =
             LinearLayoutManager(this@PostDetailActivity, LinearLayoutManager.VERTICAL, false)
-        bottomSheetLayout.rvComments.adapter = commentListAdapter
+        rvComments.adapter = commentListAdapter
 
-        bottomSheetLayout.rvComments.addItemDecoration(LinearVerticalItemDecoration(200))
+        rvComments.addItemDecoration(LinearVerticalItemDecoration(200))
 
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout.root)
+//        bottomSheetBehavior = CustomBottomSheetBehavior.from(bottomSheetLayout.root)
+//
+//        val layoutParams = bottomSheetLayout.root.layoutParams as CoordinatorLayout.LayoutParams
+//        layoutParams.behavior = bottomSheetBehavior
+//        bottomSheetLayout.root.layoutParams = layoutParams
+
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.sheetContainer)
+
         bottomSheetBehavior?.let {
             it.state = BottomSheetBehavior.STATE_HIDDEN
-//            it.expandedOffset = 200
-            it.isFitToContents = true
+            it.peekHeight = 650.toPx(this@PostDetailActivity)
         }
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

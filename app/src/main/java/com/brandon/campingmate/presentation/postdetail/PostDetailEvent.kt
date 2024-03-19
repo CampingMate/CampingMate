@@ -8,4 +8,6 @@ sealed class PostDetailEvent {
 
     object UploadCommentSuccess : PostDetailEvent()
 
+    object SwipeRefresh : PostDetailEvent()
+
 }

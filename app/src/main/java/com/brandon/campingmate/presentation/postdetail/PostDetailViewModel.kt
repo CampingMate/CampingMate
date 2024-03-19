@@ -54,7 +54,14 @@ class PostDetailViewModel(
             }
 
             PostDetailEvent.UploadCommentSuccess -> _event.tryEmit(PostDetailEvent.UploadCommentSuccess)
+            PostDetailEvent.SwipeRefresh -> refreshComments()
         }
+    }
+
+    private fun refreshComments() {
+        if (_uiState.value.isLoadingComments) return
+        _uiState.value = _uiState.value.copy(isLoadingComments = true)
+        getComments()
     }
 
     private fun checkLoginStatus() {
@@ -75,7 +82,7 @@ class PostDetailViewModel(
             ).fold(
                 onSuccess = {
                     _uiState.update { currentState ->
-                        currentState.copy(comments = currentState.comments + it)
+                        currentState.copy(comments = currentState.comments + it, isLoadingComments = false)
                     }
                 },
                 onFailure = { e ->
