@@ -9,6 +9,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
+import timber.log.Timber
 
 class ProfileViewModel : ViewModel() {
     private val _bookmarkedList: MutableLiveData<List<CampEntity>> = MutableLiveData()
@@ -54,7 +55,6 @@ class ProfileViewModel : ViewModel() {
             _bookmarkedList.value = bookmarkCamp
         }
     }
-
     fun getPosts(userID: String) {
         val db = Firebase.firestore
         val baseQuery: Query = db.collection("posts")

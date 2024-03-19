@@ -1,10 +1,13 @@
 package com.brandon.campingmate.presentation.search.adapter
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -56,7 +59,8 @@ class SearchListAdapter : ListAdapter<CampEntity, SearchListAdapter.SearchViewHo
                     .load(item.firstImageUrl)
                     .into(binding.ivBigItem)
             }
-//            ivBigItem.setColorFilter(R.color.blackDimmed) 먼가 이상함..
+            val dimColor = Color.parseColor("#0D000000")
+            ivBigItem.setColorFilter(dimColor, PorterDuff.Mode.SRC_ATOP)
             if(item.lineIntro.isNullOrBlank()){
                 tvBigItemLineIntro.visibility = View.GONE
             } else{

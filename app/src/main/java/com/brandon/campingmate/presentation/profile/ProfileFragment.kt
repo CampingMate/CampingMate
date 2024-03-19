@@ -522,6 +522,7 @@ class ProfileFragment : Fragment() {
 
                     //화면 상에서 비로그인 화면으로 되돌리기
                     initLogout()
+                    EncryptedPrefs.deleteMyId()
                     dialog.dismiss()
                 }
             }

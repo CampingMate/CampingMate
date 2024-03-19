@@ -93,20 +93,7 @@ class LoginActivity : AppCompatActivity() {
                         }
                     }
 
-                    //SharedPreferences 암호화 후 저장
-                    val masterKeyAlias = MasterKey
-                        .Builder(applicationContext, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
-                        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                        .build()
-                    val pref = EncryptedSharedPreferences.create(
-                        this, //Context
-                        "user_prefs",   //file name
-                        masterKeyAlias,
-                        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,  //key 암호화
-                        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM     //value 암호화
-                    )
                     EncryptedPrefs.saveMyId("Kakao${user?.id}")
-                    pref.edit().putString("myID", "Kakao${user?.id}").apply()
                     finish()
                 }
             }
