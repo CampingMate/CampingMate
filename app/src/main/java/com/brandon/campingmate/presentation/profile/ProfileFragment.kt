@@ -70,6 +70,7 @@ class ProfileFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        userId = EncryptedPrefs.getMyId()
         checkLogin()
     }
 //    override fun onResume() {
@@ -208,6 +209,7 @@ class ProfileFragment : Fragment() {
             tvBookmarkedSize.visibility = View.GONE
             tvBookmarkedSize.text = "0"
             rvBookmarked.visibility = View.GONE
+            tvWritingSize.visibility = View.GONE
             tvWritingSize.text = "0"
             rvWriting.visibility= View.GONE
 
