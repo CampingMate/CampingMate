@@ -245,7 +245,6 @@ class PostWriteActivity : AppCompatActivity() {
             bottomSheetUsageDescription = null,
             onSelectionComplete = { selectedImages ->
                 viewModel.handleEvent(PostWriteEvent.ImageSelected(selectedImages))
-                Timber.tag("PICK").d("됐다 걸려들었어!: $selectedImages")
             })
         bottomSheet.show(supportFragmentManager, bottomSheet.tag)
     }

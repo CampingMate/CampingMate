@@ -6,4 +6,6 @@ sealed class PostDetailEvent {
         val comment: String,
     ) : PostDetailEvent()
 
+    object UploadCommentSuccess : PostDetailEvent()
+
 }
