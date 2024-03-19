@@ -17,6 +17,7 @@ class UploadPostCommentUseCase(
             commentId = null,
             postId = postId,
             authorName = user.nickName,
+            authorImageUrl = user.profileImage,
             content = comment,
             timestamp = Timestamp.now()
         )

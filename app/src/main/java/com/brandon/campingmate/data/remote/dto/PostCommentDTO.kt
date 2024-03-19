@@ -6,6 +6,7 @@ data class PostCommentDTO(
     val commentId: String? = null,
     val postId: String? = null,
     val authorName: String? = null,
+    val authorImageUrl: String? = null,
     val content: String? = null,
     val timestamp: Timestamp? = null,
 )

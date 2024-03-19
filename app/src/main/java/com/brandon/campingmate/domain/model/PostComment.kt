@@ -6,6 +6,7 @@ data class PostComment(
     val commentId: String?,
     val postId: String?,
     val authorName: String?,
+    val authorImageUrl: String?,
     val content: String?,
     val timestamp: Timestamp?
 )
