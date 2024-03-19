@@ -1,8 +1,6 @@
 package com.brandon.campingmate.presentation.campdetail
 
-import android.content.Intent
 import android.net.Uri
-import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -10,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.brandon.campingmate.BuildConfig
 import com.brandon.campingmate.R
+import com.brandon.campingmate.domain.model.CampCommentEntity
 import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.network.retrofit.NetWorkClient
 import com.google.firebase.Firebase
@@ -136,7 +135,7 @@ class CampDetailViewModel : ViewModel() {
                             val date = comment["date"] as String
                             val imageUrlString = comment["img"] as String
                             val imageUrl = Uri.parse(imageUrlString)
-                            val data = CampCommentEntity(userId, userName, content, date, imageUrl)
+                            val data = CampCommentEntity(userId, userName, content, date, imageUrl, myId)
                             comments.add(data)
                         }
                     }
