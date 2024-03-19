@@ -23,6 +23,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.brandon.campingmate.R
+import com.brandon.campingmate.data.local.preferences.EncryptedPrefs
 import com.brandon.campingmate.databinding.FragmentProfileBinding
 import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.login.LoginActivity
@@ -433,6 +434,7 @@ class ProfileFragment : Fragment() {
 
                     //화면 상에서 비로그인 화면으로 되돌리기
                     initLogout()
+                    EncryptedPrefs.deleteMyId()
                     dialog.dismiss()
                 }
             }
