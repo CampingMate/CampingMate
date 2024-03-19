@@ -86,7 +86,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mapView?.getMapAsync(this)
         initView()
         initViewModel()
-        //fusedLocationSource = FusedLocationSource(this, 1004)
+        fusedLocationSource = FusedLocationSource(this, 1004)
         //Timber.tag("mapfragment").d("mapview getMapAsync()")
         return binding.root
     }
@@ -281,7 +281,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         naverMap?.cameraPosition = cameraPosition
 
 
-        //naverMap?.locationSource = fusedLocationSource
+        naverMap?.locationSource = fusedLocationSource
         naverMap?.locationTrackingMode = LocationTrackingMode.NoFollow
 
 //        var isFirst = false
