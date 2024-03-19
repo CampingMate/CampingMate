@@ -19,8 +19,8 @@ class ProfileViewModel : ViewModel() {
     private val _postList: MutableLiveData<List<Post>> = MutableLiveData()
     val postList: LiveData<List<Post>> get() = _postList
     private val writingPost: MutableList<Post> = mutableListOf()
-    private var removeBookmarkItem : CampEntity? = null
-    private var removePostItem : Post? = null
+    private var removeBookmarkItem: CampEntity? = null
+    private var removePostItem: Post? = null
 
 
     fun getBookmark(userID: String) {
@@ -55,6 +55,7 @@ class ProfileViewModel : ViewModel() {
             _bookmarkedList.value = bookmarkCamp
         }
     }
+
     fun getPosts(userID: String) {
         val db = Firebase.firestore
         val baseQuery: Query = db.collection("posts")
@@ -97,38 +98,26 @@ class ProfileViewModel : ViewModel() {
         docRef.update("bookmarked", updateBookmarkList)
     }
 
-    fun removePost(postID: String) {
+    fun removePostAdapter(postID: String) {
         _postList.value = _postList.value?.toMutableList()?.apply {
             removePostItem = find { it.postId == postID }
             remove(removePostItem)
         } ?: mutableListOf()
+    }
 
+    fun removePostDB() {
         val db = FirebaseFirestore.getInstance()
         val docRef = db.collection("posts")
-        docRef.whereEqualTo("postId",removePostItem?.postId).get().addOnSuccessListener {
-            for(doc in it) {
+        docRef.whereEqualTo("postId", removePostItem?.postId).get().addOnSuccessListener {
+            for (doc in it) {
                 doc.reference.delete()
             }
         }
     }
 
-//    fun undoPost() {
-//        _postList.value = _postList.value?.toMutableList()?.apply {
-//            removePostItem?.let { add(it) }
-//        } ?: mutableListOf()
-//
-//        val db = Firebase.firestore
-//        val docRef = db.collection("posts").document()
-//        val postItem = hashMapOf(
-//            "authorId" to removePostItem?.authorId,
-//            "authorName" to removePostItem?.authorName,
-//            "authorProfileImageUrl" to removePostItem?.authorProfileImageUrl,
-//            "content" to removePostItem?.content,
-//            "imageUrls" to removePostItem?.imageUrls,
-//            "postId" to removePostItem?.postId,
-//            "timestamp" to removePostItem?.timestamp,
-//            "title" to removePostItem?.title
-//        )
-//        docRef.set(postItem)
-//    }
+    fun undoPost() {
+        _postList.value = _postList.value?.toMutableList()?.apply {
+            removePostItem?.let { add(it) }
+        } ?: mutableListOf()
+    }
 }

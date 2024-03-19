@@ -3,7 +3,6 @@ package com.brandon.campingmate.presentation.profile
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -40,6 +39,7 @@ import com.brandon.campingmate.presentation.profile.adapter.ProfileBookmarkAdapt
 import com.brandon.campingmate.presentation.profile.adapter.ProfilePostAdapter
 import com.brandon.campingmate.utils.profileImgUpload
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
@@ -98,16 +98,11 @@ class ProfileFragment : Fragment() {
     }
 
     private fun checkLogin() {
-        //UserApiClient.instance.me { user, _ ->
-        //if (user?.id != null) {
         if (userId != null) {
             initLogin()
-            //setBookmarkedAdapter(user.id.toString())
-            //setPostAdapter(user.id.toString())
             setBookmarkedAdapter(userId!!)
             setPostAdapter(userId!!)
         } else initLogout()
-        //}
     }
 
     private fun setBookmarkedAdapter(userId: String) = with(binding) {
@@ -129,7 +124,7 @@ class ProfileFragment : Fragment() {
                 tvTabBookmarked.visibility = View.VISIBLE
                 rvBookmarked.visibility = View.GONE
             }
-            layoutManager.scrollToPosition(it.size-1)
+            layoutManager.scrollToPosition(it.size - 1)
         }
     }
 
@@ -143,38 +138,38 @@ class ProfileFragment : Fragment() {
             if (it.isNotEmpty()) {
                 tvWritingSize.text = it.size.toString()
                 tvWritingSize.visibility = View.VISIBLE
-            }else {
+            } else {
                 tvWritingSize.text = it.size.toString()
-                if(lineWriting.visibility == View.VISIBLE){
+                if (lineWriting.visibility == View.VISIBLE) {
                     tvTabWriting.visibility = View.VISIBLE
                 }
             }
-            layoutManager.scrollToPosition(it.size-1)
+            layoutManager.scrollToPosition(it.size - 1)
         }
     }
 
     private fun initLogin() {
         with(binding) {
-                val docRef = db.collection("users").document(userId.toString())
-                docRef.get().addOnSuccessListener {
-                    if (!it.exists()) {
-                        UserApiClient.instance.me { user, error ->
-                            //ivProfileImg.setImageURI(Uri.parse(user?.kakaoAccount?.profile?.profileImageUrl))
-                            tvProfileName.textSize = 24f
-                            tvProfileName.text = user?.kakaoAccount?.profile?.nickname
-                            tvProfileEmail.text = user?.kakaoAccount?.email
-                        }
-                    } else {
-                        if (profileImgUri == null) {
-                            ivProfileImg.scaleType = ImageView.ScaleType.CENTER_CROP
-                            Glide.with(requireContext()).load(it.getString("profileImage")).into(ivProfileImg)
-                            ivProfileImg.visibility = View.VISIBLE
-                            tvProfileName.textSize = 24f
-                            tvProfileName.text = it.getString("nickName").toString()
-                            tvProfileEmail.text = it.getString("userEmail").toString()
-                        }
+            val docRef = db.collection("users").document(userId.toString())
+            docRef.get().addOnSuccessListener {
+                if (!it.exists()) {
+                    UserApiClient.instance.me { user, error ->
+                        ivProfileImg.setImageURI(Uri.parse(user?.kakaoAccount?.profile?.profileImageUrl))
+                        tvProfileName.textSize = 24f
+                        tvProfileName.text = user?.kakaoAccount?.profile?.nickname
+                        tvProfileEmail.text = user?.kakaoAccount?.email
+                    }
+                } else {
+                    if (profileImgUri == null) {
+                        ivProfileImg.scaleType = ImageView.ScaleType.CENTER_CROP
+                        Glide.with(requireContext()).load(it.getString("profileImage")).into(ivProfileImg)
+                        ivProfileImg.visibility = View.VISIBLE
+                        tvProfileName.textSize = 24f
+                        tvProfileName.text = it.getString("nickName").toString()
+                        tvProfileEmail.text = it.getString("userEmail").toString()
                     }
                 }
+            }
 
             tvProfileName.visibility = View.VISIBLE
             tvProfileEmail.visibility = View.VISIBLE
@@ -214,10 +209,10 @@ class ProfileFragment : Fragment() {
             tvBookmarkedSize.text = "0"
             rvBookmarked.visibility = View.GONE
             tvWritingSize.text = "0"
+            rvWriting.visibility= View.GONE
 
         }
     }
-
 
     private fun clickLogin() {
         binding.btnGoLogin.setOnClickListener {
@@ -226,7 +221,6 @@ class ProfileFragment : Fragment() {
             startActivity(intent)
         }
     }
-
 
     private fun clickEditProfile() {
         with(binding) {
@@ -340,21 +334,21 @@ class ProfileFragment : Fragment() {
     private fun handleClickEdit(confirm: Boolean) {
         with(binding) {
             if (confirm) {
-                    val documentRef = db.collection("users").document(userId.toString())
-                    val updateNickname = hashMapOf<String, Any>("nickName" to "${tvProfileName.text}")
-                    if (profileImgUri != null) {
-                        profileImgUpload(profileImgUri!!, userId.toString())
-                        Firebase.storage.getReference("profileImage").child(userId.toString()).downloadUrl.addOnCompleteListener {
-                            if (it.isSuccessful) {
-                                val profileImgURI = hashMapOf<String, Any>("profileImage" to it.result.toString())
-                                documentRef.update(profileImgURI)
-                            }
+                val documentRef = db.collection("users").document(userId.toString())
+                val updateNickname = hashMapOf<String, Any>("nickName" to "${tvProfileName.text}")
+                if (profileImgUri != null) {
+                    profileImgUpload(profileImgUri!!, userId.toString())
+                    Firebase.storage.getReference("profileImage").child(userId.toString()).downloadUrl.addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            val profileImgURI = hashMapOf<String, Any>("profileImage" to it.result.toString())
+                            documentRef.update(profileImgURI)
                         }
-                        //profileImgUri = null
                     }
-                    documentRef.get().addOnSuccessListener {
-                        documentRef.update(updateNickname)
-                    }
+                    //profileImgUri = null
+                }
+                documentRef.get().addOnSuccessListener {
+                    documentRef.update(updateNickname)
+                }
                 tvProfileName.text = tvProfileName.text
             } else {
                 profileImgUri = null
@@ -432,29 +426,30 @@ class ProfileFragment : Fragment() {
                     binding.rvBookmarked -> {
                         val bookmarkID = bookmarkAdapter.currentList[position]
                         viewModel.removeBookmarkCamp(userId.toString(), bookmarkID.contentId.toString())
-                        val undoSnackbar = Snackbar.make(binding.root,"해당 북마크를 삭제했습니다.",5000)
-                        undoSnackbar.setAction("되돌리기"){
+                        val undoSnackbar = Snackbar.make(binding.root, "해당 북마크를 삭제했습니다.", 5000)
+                        undoSnackbar.setAction("되돌리기") {
                             viewModel.undoBookmarkCamp(userId.toString())
                         }
                         undoSnackbar.show()
                     }
+
                     binding.rvWriting -> {
-                        //되돌리기가 아니고 진짜 삭제하겠냐고 묻는 다이얼로그 필요
-//                        val undoSnackbar = Snackbar.make(binding.root,"해당 작성 글을 삭제했습니다.",5000)
-//                        undoSnackbar.setAction("되돌리기"){
-//                            viewModel.undoPost()
-//                        }
-//                        undoSnackbar.show()
                         val postID = postAdapter.currentList[position]
-                        val builder = AlertDialog.Builder(requireContext())
-                        builder.setMessage("정말로 삭제하시겠습니까?")
-                            .setPositiveButton("삭제",DialogInterface.OnClickListener { _, _ ->
-                                viewModel.removePost(postID.postId.toString())
-                            })
-                            .setNegativeButton("취소",DialogInterface.OnClickListener { _, _ ->
-                                postAdapter.notifyDataSetChanged()
-                            })
-                        builder.show()
+                        viewModel.removePostAdapter(postID.postId.toString())
+                        val undoSnackbar = Snackbar.make(binding.root, "해당 작성 글을 삭제했습니다.", 5000)
+                        undoSnackbar.setAction("되돌리기") {
+                            viewModel.undoPost()
+                        }
+                        undoSnackbar.show()
+                        val snackbarCallBack = object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                                super.onDismissed(transientBottomBar, event)
+                                if (event != DISMISS_EVENT_ACTION) {
+                                    viewModel.removePostDB()
+                                }
+                            }
+                        }
+                        undoSnackbar.addCallback(snackbarCallBack)
                     }
                 }
 
@@ -533,6 +528,7 @@ class ProfileFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        Glide.with(requireActivity()).clear(binding.ivProfileImg)
     }
 
 }
