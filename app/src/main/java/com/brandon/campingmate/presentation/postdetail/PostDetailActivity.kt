@@ -7,6 +7,7 @@ import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.LayoutInflater
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.text.InputFilter
@@ -14,6 +15,7 @@ import android.text.method.ScrollingMovementMethod
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
@@ -292,8 +294,10 @@ class PostDetailActivity : AppCompatActivity() {
         state.comments.let { comments ->
             val firstComment = comments.lastOrNull()
             firstComment?.let { comment ->
-                binding.ivCommentUserProfile.load(comment.authorImageUrl)
-                binding.tvComment.text = comment.content
+                if (comment is PostCommentListItem.PostCommentItem) {
+                    binding.ivCommentUserProfile.load(comment.authorImageUrl)
+                    binding.tvComment.text = comment.content
+                }
             }
 
             binding.tvNoComment.isVisible = comments.isEmpty()
@@ -421,6 +425,19 @@ class PostDetailActivity : AppCompatActivity() {
                 etCommentInput.hint = "로그인 후 사용해주세요"
             }
         }
+    }
+
+    private fun showImagePreviewDialog(imageUrl: String) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_image_preview, null)
+        val imageView = dialogView.findViewById<ImageView>(R.id.iv_image_preview)
+
+        Glide.with(this).load(imageUrl).into(imageView)
+
+        val dialog = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen).apply {
+            setContentView(dialogView)
+            dialogView.setOnClickListener { dismiss() } // 다이얼로그 바깥을 누르면 닫히도록 설정
+        }
+        dialog.show()
     }
 
 }
