@@ -93,7 +93,6 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         campEntity.observe(this@CampDetailActivity) {
             if (it != null) {
                 initSetting(it)
-                makeMarker()
             }
         }
         campComment.observe(this@CampDetailActivity) {
@@ -464,6 +463,10 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         naverMap?.maxZoom = 18.0
         naverMap?.extent =
             LatLngBounds(LatLng(32.973077, 124.270981), LatLng(38.856197, 130.051725))
+        if (mapX!!.isNotEmpty() && mapY!!.isNotEmpty() && campName!!.isNotEmpty()) {
+            makeMarker(mapX, mapY, campName)
+        }
+
     }
 
     private fun View.hideKeyboardInput() {
@@ -477,19 +480,19 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         Log.d("test", "맵뷰 파괴됨")
     }
 
-    private fun makeMarker() {
+    private fun makeMarker(mapX: String?, mapY: String?, campName: String?) {
         if (mapX != null && mapY != null) {
-            val mapY = if (mapY.isNullOrEmpty()) 45.0 else mapY!!.toDouble()
-            val mapX = if (mapX.isNullOrEmpty()) 130.0 else mapX!!.toDouble()
+            val mapY = if (mapY.isEmpty()) 37.0 else mapY!!.toDouble()
+            val mapX = if (mapX.isEmpty()) 127.0 else mapX!!.toDouble()
             val cameraPosition = CameraPosition(LatLng(mapY, mapX), 10.0)
             val marker = Marker()
-            Timber.tag("test").d(naverMap.toString())
+            Timber.tag("makeMarker").d("mapx =${mapX}, mapy = ${mapY}")
             marker.position = LatLng(mapY, mapX)
             marker.captionText = campName.toString()
             marker.captionRequestedWidth = 200
             marker.setCaptionAligns(Align.Top)
             marker.captionOffset = 10
-            marker.captionTextSize = 18f
+            marker.captionTextSize = 16f
             marker.map = naverMap
             naverMap?.cameraPosition = cameraPosition
         }
