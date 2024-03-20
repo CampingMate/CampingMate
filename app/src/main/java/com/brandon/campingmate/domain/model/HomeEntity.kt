@@ -1,7 +1,6 @@
 package com.brandon.campingmate.domain.model
 
 import android.os.Parcelable
-import com.brandon.campingmate.presentation.campdetail.CampCommentEntity
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
 
