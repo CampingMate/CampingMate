@@ -26,6 +26,7 @@ import com.brandon.campingmate.presentation.home.adapter.HomeAdapter
 import com.brandon.campingmate.presentation.home.adapter.PetAdapter
 import com.brandon.campingmate.presentation.home.adapter.ReviewAdapter
 import com.brandon.campingmate.presentation.main.MainActivity
+import com.brandon.campingmate.presentation.search.SearchActivity
 import com.brandon.campingmate.presentation.search.SearchFragment
 import com.brandon.campingmate.presentation.splash.SplashViewModel
 import com.bumptech.glide.Glide
@@ -444,7 +445,7 @@ class HomeFragment : Fragment() {
 //            val main = activity as MainActivity
 //            main.binding.viewPager.setCurrentItem(2, false)
 
-            val intent = Intent(requireContext(), SearchFragment::class.java).apply{
+            val intent = Intent(requireContext(), SearchActivity::class.java).apply{
                 var temp:String=""
                 when(layout){
                     binding.loCategoryCar -> temp="차박"
