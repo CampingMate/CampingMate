@@ -32,4 +32,5 @@
     <color name="boardwite_add">#5A5A5A</color>
     <color name="indicator_gray">#E6E6E4</color>
     <color name="comment_bar_gray">#E6E6E4</color>
+    <color name="location_viewpager">#4C6712</color>
 </resources>
