@@ -1,9 +1,14 @@
 package com.brandon.campingmate.presentation.campdetail
 
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Geocoder
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -14,6 +19,7 @@ import android.view.animation.AlphaAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
@@ -35,6 +41,7 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.util.FusedLocationSource
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -59,6 +66,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private var campName: String? = null
     private var myImage: String = ""
     var isTop = true
+    private lateinit var fusedLocationSource: FusedLocationSource
 
     companion object {
         private const val REQUEST_CODE_IMAGE_PICK = 1001
@@ -75,6 +83,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         mapView = binding.fcMap
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync(this)
+        fusedLocationSource = FusedLocationSource(this, 1005)
     }
 
     private fun initViewPager() {
@@ -93,6 +102,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         campEntity.observe(this@CampDetailActivity) {
             if (it != null) {
                 initSetting(it)
+
             }
         }
         campComment.observe(this@CampDetailActivity) {
@@ -106,7 +116,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         mapX = it.mapX
         mapY = it.mapY
         campName = it.facltNm
-        Log.d("Detail", "${mapX}, ${mapY}, ${campName}")
+        Log.d("Detail", " initsettiong = ${mapX}, ${mapY}, ${campName}, ${naverMap}")
         tvCampName.text = it.facltNm
         tvAddr.text = it.addr1 ?: "등록된 주소가 없습니다."
         tvCall.text = it.tel ?: "등록된 번호가 없습니다."
@@ -183,6 +193,14 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                     .show()
             }
         }
+        if (naverMap != null) {
+            Log.d("Detail", "initsettiong 안에 마커만들기 실행됨")
+            makeMarker(it.mapX, it.mapY, it.facltNm, naverMap)
+        }
+        binding.btnDetailroute.setOnClickListener { view ->
+            //openMap(it.mapY!!.toDouble(), it.mapX!!.toDouble(), it.facltNm)
+        }
+
     }
 
     private fun initView() = with(binding) {
@@ -240,20 +258,21 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                 return onTouchEvent(event)
             }
         })
+
     }
 
-    private fun scrollListener() = with(binding){
+    private fun scrollListener() = with(binding) {
         val fadeIn = AlphaAnimation(0f, 1f).apply { duration = 1000 }
         val fadeOut = AlphaAnimation(1f, 0f).apply { duration = 1000 }
         scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-            if(scrollY == 0){ //최상단일경우
-                if(!isTop){
+            if (scrollY == 0) { //최상단일경우
+                if (!isTop) {
                     floating.startAnimation(fadeOut)
                     floating.visibility = View.GONE
                     isTop = true
                 }
-            } else{ //최상단이 아닐경우
-                if(isTop){
+            } else { //최상단이 아닐경우
+                if (isTop) {
                     floating.startAnimation(fadeIn)
                     floating.visibility = View.VISIBLE
                     isTop = false
@@ -261,7 +280,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
         floating.setOnClickListener {
-            scrollView.smoothScrollTo(0,0)
+            scrollView.smoothScrollTo(0, 0)
         }
     }
 
@@ -316,7 +335,8 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                             } else {
                                 val myComment =
                                     myId?.let { it1 ->
-                                        CampCommentEntity(userId, userName, content, date, Uri.EMPTY,
+                                        CampCommentEntity(
+                                            userId, userName, content, date, Uri.EMPTY,
                                             it1
                                         )
                                     }
@@ -456,17 +476,17 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     override fun onMapReady(p0: NaverMap) {
-        Log.d("Detail", "onMapReady")
         naverMap = p0
         //한번도 카메라 영역 제한
         naverMap?.minZoom = 6.0
         naverMap?.maxZoom = 18.0
         naverMap?.extent =
             LatLngBounds(LatLng(32.973077, 124.270981), LatLng(38.856197, 130.051725))
-        if (mapX!!.isNotEmpty() && mapY!!.isNotEmpty() && campName!!.isNotEmpty()) {
-            makeMarker(mapX, mapY, campName)
+        Log.d("Detail", "onMapReady = ${mapX}, ${mapY}, ${campName},${naverMap}")
+        if (mapX?.isNotEmpty() == true && mapY?.isNotEmpty() == true && campName?.isNotEmpty() == true) {
+            Log.d("Detail", "onmapready 안에 마커만들기 실행됨")
+            makeMarker(mapX, mapY, campName, naverMap)
         }
-
     }
 
     private fun View.hideKeyboardInput() {
@@ -480,7 +500,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         Log.d("test", "맵뷰 파괴됨")
     }
 
-    private fun makeMarker(mapX: String?, mapY: String?, campName: String?) {
+    private fun makeMarker(mapX: String?, mapY: String?, campName: String?, map: NaverMap?) {
         if (mapX != null && mapY != null) {
             val mapY = if (mapY.isEmpty()) 37.0 else mapY!!.toDouble()
             val mapX = if (mapX.isEmpty()) 127.0 else mapX!!.toDouble()
@@ -493,9 +513,41 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             marker.setCaptionAligns(Align.Top)
             marker.captionOffset = 10
             marker.captionTextSize = 16f
-            marker.map = naverMap
-            naverMap?.cameraPosition = cameraPosition
+            marker.map = map
+            map?.cameraPosition = cameraPosition
         }
     }
+
+//    private fun openMap(
+//        endLat: Double, endlon: Double, name: String?
+//    ) {
+//        val url =
+//            "nmap://route/car?dlat=${endLat}&dlng=${endlon}&dname=${name}"
+//        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+//        intent.addCategory(Intent.CATEGORY_BROWSABLE)
+//
+//        val installCheck = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//            this.packageManager.queryIntentActivities(
+//                Intent(Intent.ACTION_MAIN, null).addCategory(Intent.CATEGORY_LAUNCHER),
+//                PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY.toLong())
+//            )
+//        } else {
+//            this.packageManager.queryIntentActivities(
+//                Intent(Intent.ACTION_MAIN, null).addCategory(Intent.CATEGORY_LAUNCHER),
+//                PackageManager.GET_META_DATA
+//            )
+//        }
+//        if (installCheck.isEmpty()) {
+//            val uri = "market://details?id=com.nhn.android.nmap"
+//            startActivity(
+//                Intent(
+//                    Intent.ACTION_VIEW,
+//                    Uri.parse(uri)
+//                )
+//            )
+//        } else {
+//            startActivity(intent)
+//        }
+//    }
 
 }
