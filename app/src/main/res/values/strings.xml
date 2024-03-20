@@ -93,5 +93,13 @@
     <string name="dialog_comment_text">댓글을 삭제하시면 되돌릴 수 없습니다. \n 정말 삭제 하시겠습니까?</string>
     <string name="dialog_delete">삭제</string>
 
+    <string name="location_camping_title">지역 별 캠핑장</string>
+    <string name="location_camping_sudo">수도권</string>
+    <string name="location_camping_gangwon">강원도</string>
+    <string name="location_camping_chungcheong">충청도</string>
+    <string name="location_camping_jeolla">전라도</string>
+    <string name="location_camping_gyeongsang">경상도</string>
+    <string name="location_camping_all">전체</string>
+
 
 </resources>

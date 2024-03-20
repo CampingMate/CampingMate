@@ -125,6 +125,21 @@ class HomeFragment : Fragment() {
 ////            val intent = Intent(requireContext(), SearchFragment::class.java)
 ////            startActivity(intent)
 //        }
+        binding.ivMoreIcon.setOnClickListener {
+            val checkedChipId = binding.chipDistrictGroup.checkedChipId
+            val checkedChipName = when(checkedChipId){
+                R.id.chipCapital -> "수도권"
+                R.id.chipChungcheong -> "충청도"
+                R.id.chipGangwon -> "강원도"
+                R.id.chipGyeongsang -> "경상도"
+                R.id.chipJeolla -> "전라도"
+                else -> "전체"
+            }
+            val intent = Intent(requireContext(), LocationActivity::class.java).apply {
+                putExtra("checkedChipName", checkedChipName)
+            }
+            requireContext().startActivity(intent)
+        }
     }
     private fun viewModelGet(select:String){
         Log.d("Home","#csh viewModelGet()")
