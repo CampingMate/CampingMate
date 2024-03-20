@@ -6,12 +6,9 @@ import android.content.Context
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.LayoutInflater
-import android.view.inputmethod.InputMethodManager
-import android.widget.ImageView
 import android.text.InputFilter
 import android.text.method.ScrollingMovementMethod
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -172,7 +169,7 @@ class PostDetailActivity : AppCompatActivity() {
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
 
-                binding.commentBarContainer.isVisible = (slideOffset < -0.8).not()
+                binding.clCommentBarContainer.isVisible = (slideOffset < -0.8).not()
                 when (slideOffset) {
                     in 0f..1f -> binding.nsContainer.alpha = 0.5f
                     in -1f..0f -> binding.nsContainer.alpha = 1 - 0.5f * (slideOffset + 1)
@@ -294,10 +291,8 @@ class PostDetailActivity : AppCompatActivity() {
         state.comments.let { comments ->
             val firstComment = comments.lastOrNull()
             firstComment?.let { comment ->
-                if (comment is PostCommentListItem.PostCommentItem) {
-                    binding.ivCommentUserProfile.load(comment.authorImageUrl)
-                    binding.tvComment.text = comment.content
-                }
+                binding.ivCommentUserProfile.load(comment.authorImageUrl)
+                binding.tvComment.text = comment.content
             }
 
             binding.tvNoComment.isVisible = comments.isEmpty()
@@ -315,7 +310,6 @@ class PostDetailActivity : AppCompatActivity() {
     }
 
     private fun initView() = with(binding) {
-        // 툴바 활성화
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false) // 기본 타이틀 숨기기
         supportActionBar?.setDisplayHomeAsUpEnabled(true)// 뒤로가기 버튼 활성화
