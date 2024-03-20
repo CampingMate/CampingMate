@@ -11,6 +11,7 @@ import com.brandon.campingmate.domain.usecase.UploadPostCommentUseCase
 import com.brandon.campingmate.presentation.postdetail.adapter.PostCommentListItem
 import com.brandon.campingmate.utils.Resource
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -41,6 +42,9 @@ class PostDetailViewModel(
 
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> = _user
+
+    private val _buttonUiState = MutableStateFlow(false)
+    val buttonUiState: Flow<Boolean> = _buttonUiState
 
     init {
         checkLoginStatus()
@@ -132,10 +136,9 @@ class PostDetailViewModel(
     fun getPost(postId: String?) {
         if (postId == null) return
         viewModelScope.launch {
-            // TODO 유저 정보 넘겨줘야 함
             when (val result = getPostByIdUseCase(postId)) {
                 Resource.Empty -> {}
-
+                // TODO 에러 시 알림
                 is Resource.Error -> {}
 
                 is Resource.Success -> {
@@ -144,6 +147,14 @@ class PostDetailViewModel(
                 }
             }
         }
+    }
+
+    fun checkValidComment(text: String) {
+        _buttonUiState.update { isUploadButtonEnable(text) }
+    }
+
+    private fun isUploadButtonEnable(text: String): Boolean {
+        return text.isNotBlank()
     }
 }
 

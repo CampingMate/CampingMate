@@ -5,6 +5,8 @@ import android.content.Context
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
+import android.text.InputFilter
+import android.text.method.ScrollingMovementMethod
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -14,6 +16,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -110,7 +113,7 @@ class PostDetailActivity : AppCompatActivity() {
     }
 
     private fun initListener() = with(binding) {
-        btnSend.setDebouncedOnClickListener {
+        btnUploadComment.setDebouncedOnClickListener {
             val content = etCommentInput.text.toString()
             viewModel.handleEvent(PostDetailEvent.UploadComment(content))
         }
@@ -191,6 +194,10 @@ class PostDetailActivity : AppCompatActivity() {
             }
         })
 
+        etCommentInput.addTextChangedListener {
+            viewModel.checkValidComment(it.toString())
+        }
+
     }
 
     private fun initViewModel() = with(viewModel) {
@@ -203,6 +210,12 @@ class PostDetailActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.event.flowWithLifecycle(lifecycle).collectLatest { event ->
                 onEvent(event)
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.buttonUiState.flowWithLifecycle(lifecycle).collectLatest {
+                binding.btnUploadComment.isEnabled = it
             }
         }
     }
@@ -274,11 +287,14 @@ class PostDetailActivity : AppCompatActivity() {
 
 
         bottomSheetBehavior = BottomSheetBehavior.from(binding.sheetContainer)
-
         bottomSheetBehavior?.let {
             it.state = BottomSheetBehavior.STATE_HIDDEN
             it.peekHeight = 650.toPx(this@PostDetailActivity)
         }
+
+        val filterArray = arrayOf<InputFilter>(InputFilter.LengthFilter(150))
+        etCommentInput.filters = filterArray
+        etCommentInput.movementMethod = ScrollingMovementMethod()
 
     }
 

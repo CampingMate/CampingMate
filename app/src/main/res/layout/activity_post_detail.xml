@@ -290,21 +290,23 @@
             android:backgroundTint="@android:color/transparent"
             android:hint="텍스트를 입력하세요"
             android:padding="8dp"
+            android:maxLines="4"
+            android:scrollbars="vertical"
             android:textFontWeight="500"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btn_send"
+            app:layout_constraintEnd_toStartOf="@id/btn_upload_comment"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/btn_send"
+            android:id="@+id/btn_upload_comment"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:background="@drawable/shape_rounded_corner_background_r10"
             android:backgroundTint="@color/view_gray"
             android:padding="6dp"
-            android:src="@drawable/ic_text_input"
+            android:src="@drawable/ic_selector_postdetail_upload_comment"
             app:layout_constraintBottom_toBottomOf="@id/et_comment_input"
             app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
