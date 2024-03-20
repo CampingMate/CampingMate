@@ -6,14 +6,13 @@ import android.content.Context
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.inputmethod.InputMethodManager
-import android.widget.ImageView
 import android.text.InputFilter
 import android.text.method.ScrollingMovementMethod
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
@@ -170,7 +169,7 @@ class PostDetailActivity : AppCompatActivity() {
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
 
-                binding.commentBarContainer.isVisible = (slideOffset < -0.8).not()
+                binding.clCommentBarContainer.isVisible = (slideOffset < -0.8).not()
                 when (slideOffset) {
                     in 0f..1f -> binding.nsContainer.alpha = 0.5f
                     in -1f..0f -> binding.nsContainer.alpha = 1 - 0.5f * (slideOffset + 1)
@@ -311,7 +310,6 @@ class PostDetailActivity : AppCompatActivity() {
     }
 
     private fun initView() = with(binding) {
-        // 툴바 활성화
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false) // 기본 타이틀 숨기기
         supportActionBar?.setDisplayHomeAsUpEnabled(true)// 뒤로가기 버튼 활성화
@@ -421,6 +419,19 @@ class PostDetailActivity : AppCompatActivity() {
                 etCommentInput.hint = "로그인 후 사용해주세요"
             }
         }
+    }
+
+    private fun showImagePreviewDialog(imageUrl: String) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_image_preview, null)
+        val imageView = dialogView.findViewById<ImageView>(R.id.iv_image_preview)
+
+        Glide.with(this).load(imageUrl).into(imageView)
+
+        val dialog = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen).apply {
+            setContentView(dialogView)
+            dialogView.setOnClickListener { dismiss() } // 다이얼로그 바깥을 누르면 닫히도록 설정
+        }
+        dialog.show()
     }
 
 }
