@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.view.isGone
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -22,7 +23,9 @@ import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.domain.model.NaverItem
 import com.brandon.campingmate.presentation.board.BoardEvent
 import com.brandon.campingmate.presentation.campdetail.CampDetailActivity
+import com.brandon.campingmate.presentation.common.SnackbarUtil
 import com.brandon.campingmate.presentation.profile.ProfileViewModel
+import com.google.firebase.firestore.FirebaseFirestore
 import com.kakao.sdk.user.UserApiClient
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
@@ -60,12 +63,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var imageList = mutableListOf<String>()
     private var bookMarkedList = mutableListOf<LocationBasedListItem>()
     private val markers = mutableListOf<Marker>()
-    private val bookmarkMarkers = mutableListOf<Marker>()
-    private val userId = "3378474735"
+    private var bookmarkMarkers = mutableListOf<Marker>()
     private val viewModel by lazy {
         ViewModelProvider(this)[MapViewModel::class.java]
     }
     private lateinit var fusedLocationSource: FusedLocationSource
+    private val db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -136,14 +139,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun initViewModel() = with(viewModel) {
 
-        paramHashmap?.observe(viewLifecycleOwner) {
-            getCampList(it)
-        }
         campList.observe(viewLifecycleOwner) {
             if (campList.value?.isNotEmpty() == true) {
                 campDataList = campList.value!!
                 campDataList.sortWith(compareBy<LocationBasedListItem> { it.mapX }.thenBy { it.mapY })
-
+                val temp = mutableListOf<Marker>()
                 for (camp in campDataList) {
                     val marker = Marker()
                     if (camp.mapX.isNullOrEmpty() || camp.mapY.isNullOrEmpty()) {
@@ -152,6 +152,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     marker.captionText = camp.facltNm.toString()
                     marker.captionRequestedWidth = 400
                     marker.setCaptionAligns(Align.Top)
+                    marker.tag = camp.contentId
                     marker.captionOffset = 5
                     marker.captionTextSize = 16f
                     marker.position = LatLng(camp.mapY.toDouble(), camp.mapX.toDouble())
@@ -174,12 +175,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         viewModel.getImgList(param)
                         true
                     }
-                    markers.add(marker)
-                }
-                //Log.d("test","campdatalist개수 = ${campDataList.size}")
+                    temp.add(marker)
 
+                }
+                //북마크 로드
+                markers.addAll(temp)
+                getBookmarkedList(campDataList)
             }
-            viewModel.getBookmarkedCamp(userId, campDataList)
         }
 
         imageRes.observe(viewLifecycleOwner) {
@@ -190,44 +192,52 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
 
         bookmarkedList.observe(viewLifecycleOwner) {
-            if (bookmarkedList.value?.isNotEmpty() == true) {
-                bookMarkedList = bookmarkedList.value!!
-
-                for (camp in bookMarkedList) {
-                    val marker = Marker()
-                    if (camp.mapX.isNullOrEmpty() || camp.mapY.isNullOrEmpty()) {
-                        continue
-                    }
-                    marker.captionText = camp.facltNm.toString()
-                    marker.captionRequestedWidth = 400
-                    marker.setCaptionAligns(Align.Top)
-                    marker.captionOffset = 5
-                    marker.captionTextSize = 16f
-                    marker.position = LatLng(camp.mapY.toDouble(), camp.mapX.toDouble())
-                    marker.setOnClickListener {
-                        val tag = camp.induty
-                        val loc = camp.lctCl
-                        imgAdapter.clear()
-                        binding.clMapBottomDialog.setOnClickListener(null)
-                        binding.tvDialogtag.text = "$tag · $loc"
-                        binding.tvDialogcampname.text = camp.facltNm
-                        binding.tvDialoglocation.text = camp.addr1
-                        binding.clMapBottomDialog.isGone = false
-                        binding.clMapBottomDialog.setOnClickListener { view ->
-                            val intent = Intent(requireContext(), CampDetailActivity::class.java)
-                            var data = camp.contentId
-                            intent.putExtra("campData", data)
-                            startActivity(intent)
-                        }
-                        val param = viewModel.getImgParamHashmap(camp.contentId.toString())
-                        viewModel.getImgList(param)
-                        true
-                    }
-                    bookmarkMarkers.add(marker)
-                }
-
+            Timber.tag("북마크 갱신 확인").d("mapview onStart()")
+            bookMarkedList = bookmarkedList.value!!
+            val temp = mutableListOf<Marker>()
+            bookmarkMarkers.forEach {
+                hideMarker(it)
             }
+            markers.removeAll(bookmarkMarkers)
+
+            for (camp in bookMarkedList) {
+                val marker = Marker()
+                if (camp.mapX.isNullOrEmpty() || camp.mapY.isNullOrEmpty()) {
+                    continue
+                }
+                marker.captionText = camp.facltNm.toString()
+                marker.captionRequestedWidth = 400
+                marker.setCaptionAligns(Align.Top)
+                marker.icon = MarkerIcons.RED
+                marker.captionOffset = 5
+                marker.captionTextSize = 16f
+                marker.position = LatLng(camp.mapY.toDouble(), camp.mapX.toDouble())
+                marker.setOnClickListener {
+                    val tag = camp.induty
+                    val loc = camp.lctCl
+                    imgAdapter.clear()
+                    binding.clMapBottomDialog.setOnClickListener(null)
+                    binding.tvDialogtag.text = "$tag · $loc"
+                    binding.tvDialogcampname.text = camp.facltNm
+                    binding.tvDialoglocation.text = camp.addr1
+                    binding.clMapBottomDialog.isGone = false
+                    binding.clMapBottomDialog.setOnClickListener { view ->
+                        val intent = Intent(requireContext(), CampDetailActivity::class.java)
+                        var data = camp.contentId
+                        intent.putExtra("campData", data)
+                        startActivity(intent)
+                    }
+                    val param = viewModel.getImgParamHashmap(camp.contentId.toString())
+                    viewModel.getImgList(param)
+                    true
+                }
+                temp.add(marker)
+            }
+            bookmarkMarkers = temp
+            markers.addAll(temp)
+            showCampSite(naverMap?.cameraPosition?.zoom!!, markers, naverMap!!, campDataList)
         }
+
 
     }
 
@@ -285,7 +295,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 //        }
         var bookmark = false
         naverMap?.addOnCameraIdleListener {
-            Timber.tag("test").d(naverMap?.cameraPosition?.zoom.toString())
+            //Timber.tag("test").d(naverMap?.cameraPosition?.zoom.toString())
             if (bookmark) {
                 showCampSite(
                     naverMap?.cameraPosition?.zoom!!,
@@ -308,17 +318,25 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 showCampSite(naverMap?.cameraPosition?.zoom!!, markers, naverMap!!, campDataList)
                 bookmark = false
             } else {
-                binding.btnBookmark.text = "북마크"
-                markers.forEach {
-                    hideMarker(it)
+                UserApiClient.instance.me { user, _ ->
+                    if (user?.id == null) {
+                        SnackbarUtil.showSnackBar(it)
+                        return@me
+                    } else {
+                        binding.btnBookmark.text = "북마크"
+                        markers.forEach {
+                            hideMarker(it)
+                        }
+                        showCampSite(
+                            naverMap?.cameraPosition?.zoom!!,
+                            bookmarkMarkers,
+                            naverMap!!,
+                            bookMarkedList
+                        )
+                        bookmark = true
+                    }
                 }
-                showCampSite(
-                    naverMap?.cameraPosition?.zoom!!,
-                    bookmarkMarkers,
-                    naverMap!!,
-                    bookMarkedList
-                )
-                bookmark = true
+
             }
         }
 
@@ -366,12 +384,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onStart() {
         super.onStart()
+        getBookmarkedList(campDataList)
         mapView?.onStart()
         Timber.tag("mapfragment").d("mapview onStart()")
     }
 
     override fun onResume() {
         super.onResume()
+        with(viewModel){
+
+        }
         mapView?.onResume()
         Timber.tag("mapfragment").d("mapview onResume()")
     }
@@ -379,6 +401,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     override fun onPause() {
         super.onPause()
         mapView?.onPause()
+
         Timber.tag("mapfragment").d("mapview onPause()")
     }
 
@@ -516,5 +539,18 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    private fun getBookmarkedList(campData: MutableList<LocationBasedListItem>) {
+        UserApiClient.instance.me { user, error ->
+            if (user?.id != null) {
+                val docRef = db.collection("users").document("Kakao${user?.id}")
+                docRef.get().addOnSuccessListener {
+                    viewModel.getBookmarkedCamp(it.id, campData)
+                    Log.d("로그인 정보","북마크 리스트 = ${it.id}")
+                }
+            } else {
+                Toast.makeText(requireContext(),"error = ${error}",Toast.LENGTH_SHORT).show()
+            }
+        }
 
+    }
 }

@@ -14,6 +14,11 @@ interface PostRepository {
         lastVisibleDoc: DocumentSnapshot?
     ): Resource<Posts>
 
+    suspend fun getComments(
+        postId: String,
+        pageSize: Int,
+    ): Result<List<PostComment>>
+
     suspend fun getPostById(
         postId: String
     ): Resource<Post>
@@ -27,5 +32,5 @@ interface PostRepository {
     suspend fun uploadComment(
         postId: String,
         postComment: PostComment
-    ): Result<String>
+    ): Result<PostComment>
 }
