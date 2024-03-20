@@ -10,4 +10,6 @@ sealed class PostDetailEvent {
 
     object SwipeRefresh : PostDetailEvent()
 
+    object InfiniteScroll : PostDetailEvent()
+
 }

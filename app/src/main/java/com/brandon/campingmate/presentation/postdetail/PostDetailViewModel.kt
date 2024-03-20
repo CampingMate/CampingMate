@@ -55,12 +55,19 @@ class PostDetailViewModel(
 
             PostDetailEvent.UploadCommentSuccess -> _event.tryEmit(PostDetailEvent.UploadCommentSuccess)
             PostDetailEvent.SwipeRefresh -> refreshComments()
+            PostDetailEvent.InfiniteScroll -> infiniteScroll()
         }
     }
 
     private fun refreshComments() {
-        if (_uiState.value.isLoadingComments) return
-        _uiState.value = _uiState.value.copy(isLoadingComments = true)
+        if (_uiState.value.isSwipeLoadingComments) return
+        _uiState.value = _uiState.value.copy(isSwipeLoadingComments = true)
+        getComments()
+    }
+
+    private fun infiniteScroll() {
+        if (_uiState.value.isInfiniteLoadingComments) return
+        _uiState.value = _uiState.value.copy(isInfiniteLoadingComments = true)
         getComments()
     }
 
@@ -82,7 +89,11 @@ class PostDetailViewModel(
             ).fold(
                 onSuccess = {
                     _uiState.update { currentState ->
-                        currentState.copy(comments = currentState.comments + it, isLoadingComments = false)
+                        currentState.copy(
+                            comments = currentState.comments + it,
+                            isSwipeLoadingComments = false,
+                            isInfiniteLoadingComments = false
+                        )
                     }
                 },
                 onFailure = { e ->

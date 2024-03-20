@@ -6,13 +6,15 @@ import com.brandon.campingmate.presentation.postdetail.adapter.PostCommentListIt
 data class PostDetailUiState(
     val post: Post?,
     val comments: List<PostCommentListItem>,
-    val isLoadingComments: Boolean,
+    val isSwipeLoadingComments: Boolean,
+    val isInfiniteLoadingComments: Boolean
 ) {
     companion object {
         fun init() = PostDetailUiState(
             post = null,
             comments = emptyList(),
-            isLoadingComments = false,
+            isSwipeLoadingComments = false,
+            isInfiniteLoadingComments = false
         )
     }
 }
