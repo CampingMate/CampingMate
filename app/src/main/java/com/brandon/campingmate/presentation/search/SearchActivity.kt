@@ -6,28 +6,23 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.KeyEvent
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.brandon.campingmate.R
-import com.brandon.campingmate.databinding.FragmentSearchBinding
+import com.brandon.campingmate.databinding.ActivitySearchBinding
 import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.search.adapter.SearchListAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
 
-class SearchFragment : Fragment() {
-
-    private var _binding: FragmentSearchBinding? = null
-    private val binding get() = _binding!!
-
+class SearchActivity : AppCompatActivity() {
+    private val binding by lazy {  ActivitySearchBinding.inflate(layoutInflater)  }
     private val listAdapter: SearchListAdapter by lazy { SearchListAdapter() }
 
     private val viewModel by lazy {
@@ -35,6 +30,7 @@ class SearchFragment : Fragment() {
     }
 
     lateinit var behavior: BottomSheetBehavior<ConstraintLayout>
+    private var temp:String? = ""
 
 
     companion object {
@@ -42,19 +38,17 @@ class SearchFragment : Fragment() {
         var doNmList = mutableListOf<String>()
 
     }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentSearchBinding.inflate(inflater, container, false)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(binding.root)
+        temp = intent.getStringExtra("searchData")
+        Log.d("SearchActivity", "${temp}")
+        setting(temp!!)
         initView()
         initViewModel()
-        return binding.root
     }
-
     private fun initViewModel() = with(viewModel) {
-        keyword.observe(viewLifecycleOwner){
+        keyword.observe(this@SearchActivity){
             Log.d("checkLog", "keyword 옵저빙")
             binding.loadingAnimation.visibility = View.GONE
 //            binding.loadingAnimationInfinity.visibility = View.GONE
@@ -62,7 +56,7 @@ class SearchFragment : Fragment() {
             myNewList.addAll(it)
             listAdapter.submitList(myNewList)
         }
-        myList.observe(viewLifecycleOwner){
+        myList.observe(this@SearchActivity){
             binding.loadingAnimation.visibility = View.GONE
 //            binding.loadingAnimationInfinity.visibility = View.GONE
             val myNewList = mutableListOf<CampEntity>()
@@ -72,12 +66,13 @@ class SearchFragment : Fragment() {
     }
 
     private fun initView() = with(binding) {
-        bottomSheet() //바텀시트 연결
-        scrollTab() //바텀시트 스크롤탭
+        imageView.setOnClickListener {
+            finish()
+        }
         //리사이클러뷰 연결
         recyclerView.adapter = listAdapter
         recyclerView.layoutManager =
-            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(this@SearchActivity, LinearLayoutManager.VERTICAL, false)
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -222,14 +217,14 @@ class SearchFragment : Fragment() {
             }
             viewModel.callData()
             behavior.state = BottomSheetBehavior.STATE_HIDDEN
-            val drawable = context?.let { it1 -> ContextCompat.getDrawable(it1, R.drawable.ic_filter_checked) }
+            val drawable = ContextCompat.getDrawable(this@SearchActivity, R.drawable.ic_filter_checked)
             ivSetting.setImageDrawable(drawable)
         }
         /**
          * 엔터누를시 검색
          */
         tvEdit.setOnKeyListener{_, KeyCode, event ->
-            if((event.action==KeyEvent.ACTION_DOWN) && (KeyCode==KeyEvent.KEYCODE_ENTER)){
+            if((event.action== KeyEvent.ACTION_DOWN) && (KeyCode== KeyEvent.KEYCODE_ENTER)){
                 loadingAnimation.visibility = View.VISIBLE
                 val searchText = binding.tvEdit.text.toString()
                 viewModel.setUpParkParameter(searchText)
@@ -266,6 +261,33 @@ class SearchFragment : Fragment() {
         }
         ivDelete.setOnClickListener {
             tvEdit.text.clear()
+        }
+    }
+
+    private fun setting(temp: String) {
+        bottomSheet() //바텀시트 연결
+        scrollTab() //바텀시트 스크롤탭
+        Log.d("SearchActivity", "setting진입, ${temp}")
+        when(temp){
+            "검색바" -> {
+                binding.tvEdit.requestFocus()
+                val manager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                manager.showSoftInput(binding.tvEdit, InputMethodManager.SHOW_IMPLICIT)
+                binding.tvEdit.post {
+                    if (!manager.isActive(binding.tvEdit)) {
+                        manager.showSoftInput(binding.tvEdit, InputMethodManager.SHOW_IMPLICIT)
+                    }
+                }
+            }
+            "글램핑", "일반야영장", "자동차야영장", "카라반" -> {
+                when(temp){
+                    "글램핑" -> binding.chipGlamping.isChecked = true
+                    "일반야영장" -> binding.chipBase.isChecked = true
+                    "자동차야영장" -> binding.chipCar.isChecked = true
+                    "카라반" -> binding.chipCaravan.isChecked = true
+                }
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            }
         }
     }
 
@@ -336,8 +358,4 @@ class SearchFragment : Fragment() {
         })
     }
 
-    override fun onDestroy() {
-        _binding = null
-        super.onDestroy()
-    }
 }
