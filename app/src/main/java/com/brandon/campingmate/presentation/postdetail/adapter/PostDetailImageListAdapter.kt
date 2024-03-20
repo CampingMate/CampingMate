@@ -7,8 +7,8 @@ import coil.load
 import com.brandon.campingmate.databinding.ItemPostdetailImageBinding
 import timber.log.Timber
 
-class PostDetailImageAdapter(private var imageUrls: List<String>) :
-    RecyclerView.Adapter<PostDetailImageAdapter.ImageViewHolder>() {
+class PostDetailImageListAdapter(private var imageUrls: List<String>) :
+    RecyclerView.Adapter<PostDetailImageListAdapter.ImageViewHolder>() {
 
     inner class ImageViewHolder(private val binding: ItemPostdetailImageBinding) :
         RecyclerView.ViewHolder(binding.root) {

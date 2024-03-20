@@ -1,14 +1,9 @@
 package com.brandon.campingmate.presentation.campdetail
 
-import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.location.Geocoder
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -19,6 +14,7 @@ import android.view.animation.AlphaAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,6 +26,7 @@ import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.campdetail.adapter.CommentListAdapter
 import com.brandon.campingmate.presentation.campdetail.adapter.ViewPagerAdapter
 import com.brandon.campingmate.presentation.common.SnackbarUtil
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.kakao.sdk.user.UserApiClient
@@ -41,7 +38,7 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.Marker
-import com.naver.maps.map.util.FusedLocationSource
+import org.checkerframework.common.subtyping.qual.Bottom
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -66,7 +63,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private var campName: String? = null
     private var myImage: String = ""
     var isTop = true
-    private lateinit var fusedLocationSource: FusedLocationSource
+    lateinit var behavior: BottomSheetBehavior<ConstraintLayout>
 
     companion object {
         private const val REQUEST_CODE_IMAGE_PICK = 1001
@@ -78,12 +75,12 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         Log.d("Detail", "onCreate")
         initView()
         initViewModel()
+        initBottomSheet()
         checkBookmarked()
         clickBookmarked()
         mapView = binding.fcMap
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync(this)
-        fusedLocationSource = FusedLocationSource(this, 1005)
     }
 
     private fun initViewPager() {
@@ -102,13 +99,20 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         campEntity.observe(this@CampDetailActivity) {
             if (it != null) {
                 initSetting(it)
-
             }
         }
         campComment.observe(this@CampDetailActivity) {
             if (it != null) {
                 listAdapter.submitList(it)
             }
+        }
+        checkLastComment.observe(this@CampDetailActivity){
+            if(it != null){
+                binding.commentContent.text = it
+            }
+        }
+        commentCount.observe(this@CampDetailActivity){
+            binding.commentCount.text = it
         }
     }
 
@@ -208,6 +212,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         myId?.let { viewModel.setUpParkParameter(it) }
         viewModel.callIdData(myId!!)
         viewModel.registerRealtimeUpdates(myId!!)
+        viewModel.checkComment(myId!!) //댓글 미리보기
         //리사이클러뷰 연결
         recyclerComment.adapter = listAdapter
         recyclerComment.layoutManager =
@@ -258,10 +263,21 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                 return onTouchEvent(event)
             }
         })
-
+        commentBottomSheet.setOnClickListener {
+            behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+        }
+        bottomSheetCancle.setOnClickListener {
+            behavior.state = BottomSheetBehavior.STATE_HIDDEN
+        }
     }
 
-    private fun scrollListener() = with(binding) {
+    private fun initBottomSheet() = with(binding) {
+        behavior = BottomSheetBehavior.from(bottomSheet)
+        behavior.isHideable = true
+        behavior.state = BottomSheetBehavior.STATE_HIDDEN
+    }
+
+    private fun scrollListener() = with(binding){
         val fadeIn = AlphaAnimation(0f, 1f).apply { duration = 1000 }
         val fadeOut = AlphaAnimation(1f, 0f).apply { duration = 1000 }
         scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
@@ -476,6 +492,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     override fun onMapReady(p0: NaverMap) {
+        Log.d("Detail", "onMapReady")
         naverMap = p0
         //한번도 카메라 영역 제한
         naverMap?.minZoom = 6.0
@@ -502,8 +519,8 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun makeMarker(mapX: String?, mapY: String?, campName: String?, map: NaverMap?) {
         if (mapX != null && mapY != null) {
-            val mapY = if (mapY.isEmpty()) 37.0 else mapY!!.toDouble()
-            val mapX = if (mapX.isEmpty()) 127.0 else mapX!!.toDouble()
+            val mapY = if (mapY.isNullOrEmpty()) 45.0 else mapY!!.toDouble()
+            val mapX = if (mapX.isNullOrEmpty()) 130.0 else mapX!!.toDouble()
             val cameraPosition = CameraPosition(LatLng(mapY, mapX), 10.0)
             val marker = Marker()
             Timber.tag("makeMarker").d("mapx =${mapX}, mapy = ${mapY}")
@@ -517,37 +534,5 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             map?.cameraPosition = cameraPosition
         }
     }
-
-//    private fun openMap(
-//        endLat: Double, endlon: Double, name: String?
-//    ) {
-//        val url =
-//            "nmap://route/car?dlat=${endLat}&dlng=${endlon}&dname=${name}"
-//        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-//        intent.addCategory(Intent.CATEGORY_BROWSABLE)
-//
-//        val installCheck = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//            this.packageManager.queryIntentActivities(
-//                Intent(Intent.ACTION_MAIN, null).addCategory(Intent.CATEGORY_LAUNCHER),
-//                PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY.toLong())
-//            )
-//        } else {
-//            this.packageManager.queryIntentActivities(
-//                Intent(Intent.ACTION_MAIN, null).addCategory(Intent.CATEGORY_LAUNCHER),
-//                PackageManager.GET_META_DATA
-//            )
-//        }
-//        if (installCheck.isEmpty()) {
-//            val uri = "market://details?id=com.nhn.android.nmap"
-//            startActivity(
-//                Intent(
-//                    Intent.ACTION_VIEW,
-//                    Uri.parse(uri)
-//                )
-//            )
-//        } else {
-//            startActivity(intent)
-//        }
-//    }
 
 }

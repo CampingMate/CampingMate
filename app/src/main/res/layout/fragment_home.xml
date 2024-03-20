@@ -317,6 +317,7 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="16dp"
                 android:orientation="horizontal"
+                app:chipSpacingHorizontal="6dp"
                 app:singleLine="true"
                 app:singleSelection="true"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -416,7 +417,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="50dp"
                 android:fontFamily="@font/spoqahansansneo_bold"
-                android:text="후기가 많은 캠핑장"
+                android:text="댓글 많은 캠핑장"
                 android:textSize="20sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/rv_district_item" />

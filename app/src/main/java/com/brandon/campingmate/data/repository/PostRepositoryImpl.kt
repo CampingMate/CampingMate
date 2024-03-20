@@ -9,6 +9,7 @@ import com.brandon.campingmate.domain.model.Posts
 import com.brandon.campingmate.domain.repository.PostRepository
 import com.brandon.campingmate.utils.Resource
 import com.brandon.campingmate.utils.mappers.toCommentDTO
+import com.brandon.campingmate.utils.mappers.toPostComment
 import com.brandon.campingmate.utils.mappers.toPostDTO
 import com.brandon.campingmate.utils.mappers.toPostEntity
 import com.brandon.campingmate.utils.mappers.toPostsEntity
@@ -38,6 +39,15 @@ class PostRepositoryImpl(
         }
     }
 
+    override suspend fun getComments(
+        postId: String,
+        pageSize: Int,
+    ): Result<List<PostComment>> {
+        return firestoreDataSource.getComments(postId, pageSize).mapCatching { dtoList ->
+            dtoList.map { dto -> dto.toPostComment() }
+        }
+    }
+
     override suspend fun getPostById(postId: String): Resource<Post> {
         return try {
             when (val result = firestoreDataSource.getPostById(postId)) {
@@ -63,7 +73,7 @@ class PostRepositoryImpl(
         }
     }
 
-    override suspend fun uploadComment(postId: String, postComment: PostComment): Result<String> {
+    override suspend fun uploadComment(postId: String, postComment: PostComment): Result<PostComment> {
         return firestoreDataSource.uploadPostComment(postId, postComment.toCommentDTO())
     }
 }
