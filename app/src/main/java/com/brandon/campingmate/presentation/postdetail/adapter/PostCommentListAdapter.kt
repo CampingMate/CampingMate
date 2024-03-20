@@ -11,7 +11,7 @@ import com.brandon.campingmate.databinding.ItemPostLoadingBinding
 import com.brandon.campingmate.databinding.ItemPostUnknownBinding
 import com.bumptech.glide.Glide
 
-class PostCommentListAdapter :
+class PostCommentListAdapter(private val onClick: (PostCommentListItem.PostCommentItem) -> Unit) :
     ListAdapter<PostCommentListItem, PostCommentListAdapter.PostCommentViewHolder>(object :
         DiffUtil.ItemCallback<PostCommentListItem>() {
         override fun areItemsTheSame(
@@ -49,6 +49,10 @@ class PostCommentListAdapter :
                     tvComment.text = item.content
                     tvTimestamp.text = item.timestamp
                     Glide.with(binding.root).load(item.authorImageUrl).into(binding.ivUserProfile)
+
+                    ivSideMenu.setOnClickListener {
+                        onClick(item)
+                    }
                 }
             }
         }

@@ -9,6 +9,7 @@ fun PostComment.toCommentDTO(): PostCommentDTO {
     return PostCommentDTO(
         commentId = commentId,
         postId = postId,
+        authorId = authorId,
         authorName = authorName,
         authorImageUrl = authorImageUrl,
         content = content,
@@ -20,6 +21,7 @@ fun PostCommentDTO.toPostComment(): PostComment {
     return PostComment(
         commentId = commentId,
         postId = postId,
+        authorId = authorId,
         authorName = authorName,
         authorImageUrl = authorImageUrl,
         content = content,
@@ -27,11 +29,12 @@ fun PostCommentDTO.toPostComment(): PostComment {
     )
 }
 
-fun PostComment.toPostCommentListItem(): PostCommentListItem {
+fun PostComment.toPostCommentListItem(): PostCommentListItem.PostCommentItem {
     return PostCommentListItem.PostCommentItem(
         commentId = commentId,
         postId = postId,
         authorName = authorName,
+        authorId = authorId,
         authorImageUrl = authorImageUrl,
         content = content,
         timestamp = timestamp.toFormattedString()

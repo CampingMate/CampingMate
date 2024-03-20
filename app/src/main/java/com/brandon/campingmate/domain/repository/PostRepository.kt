@@ -10,13 +10,13 @@ import com.google.firebase.firestore.DocumentSnapshot
 interface PostRepository {
 
     suspend fun getPosts(
-        pageSize: Int,
-        lastVisibleDoc: DocumentSnapshot?
+        pageSize: Int, lastVisibleDoc: DocumentSnapshot?
     ): Resource<Posts>
 
     suspend fun getComments(
         postId: String,
         pageSize: Int,
+        shouldFetchFromFirst: Boolean,
     ): Result<List<PostComment>>
 
     suspend fun getPostById(
@@ -30,7 +30,8 @@ interface PostRepository {
     ): Result<String>
 
     suspend fun uploadComment(
-        postId: String,
-        postComment: PostComment
+        postId: String, postComment: PostComment
     ): Result<PostComment>
+
+    suspend fun deletePostCommentById(commentId: String, postId: String): Result<String>
 }
