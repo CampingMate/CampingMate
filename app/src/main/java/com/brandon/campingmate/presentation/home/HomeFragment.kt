@@ -26,7 +26,7 @@ import com.brandon.campingmate.presentation.home.adapter.HomeAdapter
 import com.brandon.campingmate.presentation.home.adapter.PetAdapter
 import com.brandon.campingmate.presentation.home.adapter.ReviewAdapter
 import com.brandon.campingmate.presentation.main.MainActivity
-import com.brandon.campingmate.presentation.search.SearchFragment
+import com.brandon.campingmate.presentation.search.SearchActivity
 import com.brandon.campingmate.presentation.splash.SplashViewModel
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.ChipGroup
@@ -315,7 +315,9 @@ class HomeFragment : Fragment() {
             val reviewData = mutableListOf<HomeEntity>()
             if(!it.isNullOrEmpty()){
                 reviewData.addAll(it)
+                reviewData.sortByDescending { it.commentList.size }
                 Log.d("Home", "#csh reviewData: $reviewData")
+                Log.d("Home", "#csh reviewData size: ${reviewData.size}")
             }else{
                 reviewData.addAll(city)
                 reviewData.shuffle()
@@ -444,12 +446,12 @@ class HomeFragment : Fragment() {
 //            val main = activity as MainActivity
 //            main.binding.viewPager.setCurrentItem(2, false)
 
-            val intent = Intent(requireContext(), SearchFragment::class.java).apply{
+            val intent = Intent(requireContext(), SearchActivity::class.java).apply{
                 var temp:String=""
                 when(layout){
-                    binding.loCategoryCar -> temp="차박"
+                    binding.loCategoryCar -> temp="자동차야영장"
                     binding.loCategoryCaravan -> temp="카라반"
-                    binding.loCategoryGeneral ->temp="일반야영"
+                    binding.loCategoryGeneral ->temp="일반야영장"
                     binding.loCategoryGlamping ->temp="글램핑"
                     binding.loSearch ->temp="검색바"
                 }

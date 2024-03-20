@@ -3,7 +3,9 @@ package com.brandon.campingmate.presentation.profile
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -11,7 +13,9 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -25,6 +29,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -49,6 +54,7 @@ import com.kakao.sdk.user.UserApiClient
 class ProfileFragment : Fragment() {
 
     private lateinit var imageLauncher: ActivityResultLauncher<Intent>
+    private lateinit var permissionLauncher: ActivityResultLauncher<String>
     private var _binding: FragmentProfileBinding? = null
     private var profileImgUri: Uri? = null
     private val binding get() = _binding!!
@@ -89,6 +95,7 @@ class ProfileFragment : Fragment() {
 
         clickEditListener()
         clickEditProfile()
+        initActivityResultContracts()
 
         swipeRecyclerView(binding.rvBookmarked)
         swipeRecyclerView(binding.rvWriting)
@@ -210,7 +217,7 @@ class ProfileFragment : Fragment() {
             rvBookmarked.visibility = View.GONE
             tvWritingSize.visibility = View.GONE
             tvWritingSize.text = "0"
-            rvWriting.visibility= View.GONE
+            rvWriting.visibility = View.GONE
 
         }
     }
@@ -307,12 +314,19 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    private fun clickEditImg() {
-        with(binding) {
-            btnEditImg.setOnClickListener {
-                val intent = Intent(Intent.ACTION_PICK)
-                intent.type = "image/*"
-                imageLauncher.launch(intent)
+    private fun initActivityResultContracts() {
+        permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                getImg()
+            } else {
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setMessage("프로필 이미지 수정을 하시려면\n파일 및 미디어 권한을 허용해주세요")
+                    .setPositiveButton("확인", DialogInterface.OnClickListener { _, _ ->
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(Uri.parse("package:" + requireActivity().packageName))
+                        startActivity(intent)
+                    })
+                    .setNegativeButton("취소", null)
+                builder.show()
             }
         }
 
@@ -323,6 +337,36 @@ class ProfileFragment : Fragment() {
                 Glide.with(requireContext()).load(profileImgUri).into(binding.ivProfileImg)
             }
         }
+    }
+
+    private fun checkPermissionVersion() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermission(android.Manifest.permission.READ_MEDIA_IMAGES)
+        } else {
+            requestPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+    }
+
+    private fun requestPermission(permission: String) {
+        if (ContextCompat.checkSelfPermission(requireContext(), permission) != PackageManager.PERMISSION_GRANTED) {
+            permissionLauncher.launch(permission)
+        } else {
+            getImg()
+        }
+    }
+
+    private fun clickEditImg() {
+        with(binding) {
+            btnEditImg.setOnClickListener {
+                checkPermissionVersion()
+            }
+        }
+    }
+
+    private fun getImg() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        imageLauncher.launch(intent)
     }
 
     private fun clickEditListener() {
@@ -529,7 +573,6 @@ class ProfileFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        Glide.with(requireActivity()).clear(binding.ivProfileImg)
     }
 
 }
