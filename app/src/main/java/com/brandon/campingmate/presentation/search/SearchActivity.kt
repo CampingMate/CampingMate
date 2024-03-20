@@ -67,10 +67,8 @@ class SearchActivity : AppCompatActivity() {
 
     private fun initView() = with(binding) {
         imageView.setOnClickListener {
-
+            finish()
         }
-        bottomSheet() //바텀시트 연결
-        scrollTab() //바텀시트 스크롤탭
         //리사이클러뷰 연결
         recyclerView.adapter = listAdapter
         recyclerView.layoutManager =
@@ -267,6 +265,8 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun setting(temp: String) {
+        bottomSheet() //바텀시트 연결
+        scrollTab() //바텀시트 스크롤탭
         Log.d("SearchActivity", "setting진입, ${temp}")
         when(temp){
             "검색바" -> {
@@ -279,17 +279,14 @@ class SearchActivity : AppCompatActivity() {
                     }
                 }
             }
-            "글램핑" -> {
-
-            }
-            "일반야영장" -> {
-
-            }
-            "자동차야영장" -> {
-
-            }
-            "카라반" -> {
-
+            "글램핑", "일반야영장", "자동차야영장", "카라반" -> {
+                when(temp){
+                    "글램핑" -> binding.chipGlamping.isChecked = true
+                    "일반야영장" -> binding.chipBase.isChecked = true
+                    "자동차야영장" -> binding.chipCar.isChecked = true
+                    "카라반" -> binding.chipCaravan.isChecked = true
+                }
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
             }
         }
     }
