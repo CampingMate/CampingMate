@@ -53,8 +53,11 @@ class PostDetailViewModel(
     fun handleEvent(event: PostDetailEvent) {
         when (event) {
             is PostDetailEvent.UploadComment -> {
-                Timber.d("댓글 업로드 이벤트 발생")
                 uploadComment(event.comment)
+            }
+
+            is PostDetailEvent.MakeToast -> {
+                _event.tryEmit(PostDetailEvent.MakeToast(event.message))
             }
 
             PostDetailEvent.UploadCommentSuccess -> _event.tryEmit(PostDetailEvent.UploadCommentSuccess)
@@ -90,15 +93,17 @@ class PostDetailViewModel(
             getPostCommentsUseCase(
                 postId = _uiState.value.post?.postId,
                 pageSize = pageSize,
+                shouldFetchFromFirst = _uiState.value.isSwipeLoadingComments
             ).fold(
                 onSuccess = { newComments ->
-
+                    if (newComments.isEmpty()) handleEvent(PostDetailEvent.MakeToast("새로운 댓글이 더 이상 없어요."))
                     _uiState.update { currentState ->
                         val uniqueOldComments = currentState.comments.filterNot { oldComment ->
                             newComments.any { newItem -> newItem.commentId == oldComment.commentId }
                         }
+                        val refreshTrigger = _uiState.value.isSwipeLoadingComments
                         currentState.copy(
-                            comments = uniqueOldComments + newComments,
+                            comments = if (refreshTrigger) newComments else uniqueOldComments + newComments,
                             isSwipeLoadingComments = false,
                             isInfiniteLoadingComments = false
                         )

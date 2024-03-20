@@ -6,6 +6,10 @@ sealed class PostDetailEvent {
         val comment: String,
     ) : PostDetailEvent()
 
+    data class MakeToast(
+        val message: String
+    ) : PostDetailEvent()
+
     object UploadCommentSuccess : PostDetailEvent()
 
     object SwipeRefresh : PostDetailEvent()

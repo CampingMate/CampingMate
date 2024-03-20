@@ -10,6 +10,7 @@ import android.text.method.ScrollingMovementMethod
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
@@ -228,6 +229,10 @@ class PostDetailActivity : AppCompatActivity() {
                 hideKeyboard()
             }
 
+            is PostDetailEvent.MakeToast -> {
+                showToast(event.message)
+            }
+
             else -> {}
         }
     }
@@ -249,12 +254,10 @@ class PostDetailActivity : AppCompatActivity() {
             }
         }
         state.comments.let { comments ->
-            val firstComment = comments.firstOrNull()
+            val firstComment = comments.lastOrNull()
             firstComment?.let { comment ->
-                if (comment is PostCommentListItem.PostCommentItem) {
-                    binding.ivCommentUserProfile.load(comment.authorImageUrl)
-                    binding.tvComment.text = comment.content
-                }
+                binding.ivCommentUserProfile.load(comment.authorImageUrl)
+                binding.tvComment.text = comment.content
             }
 
             binding.tvNoComment.isVisible = comments.isEmpty()
@@ -333,8 +336,11 @@ class PostDetailActivity : AppCompatActivity() {
     }
 
     private fun showSnackbar(message: String) {
-        val rootView = binding.root
-        Snackbar.make(rootView, message, Snackbar.LENGTH_LONG).show()
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
 }
