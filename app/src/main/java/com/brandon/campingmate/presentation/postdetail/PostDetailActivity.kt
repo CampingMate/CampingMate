@@ -1,6 +1,5 @@
 package com.brandon.campingmate.presentation.postdetail
 
-import LinearVerticalItemDecoration
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Rect
@@ -18,6 +17,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.brandon.campingmate.R
 import com.brandon.campingmate.data.local.preferences.EncryptedPrefs
@@ -33,7 +33,8 @@ import com.brandon.campingmate.domain.usecase.GetUserUserCase
 import com.brandon.campingmate.domain.usecase.UploadPostCommentUseCase
 import com.brandon.campingmate.network.firestore.FirebaseService
 import com.brandon.campingmate.network.firestore.FirebaseService.fireStoreDB
-import com.brandon.campingmate.presentation.postdetail.adapter.PostDetailCommentListAdapter
+import com.brandon.campingmate.presentation.postdetail.adapter.PostCommentListAdapter
+import com.brandon.campingmate.presentation.postdetail.adapter.PostCommentListItem
 import com.brandon.campingmate.presentation.postdetail.adapter.PostDetailImageListAdapter
 import com.brandon.campingmate.utils.toFormattedString
 import com.brandon.campingmate.utils.toPx
@@ -55,8 +56,8 @@ class PostDetailActivity : AppCompatActivity() {
         PostDetailImageListAdapter(emptyList())
     }
 
-    private val commentListAdapter: PostDetailCommentListAdapter by lazy {
-        PostDetailCommentListAdapter()
+    private val commentListAdapter: PostCommentListAdapter by lazy {
+        PostCommentListAdapter()
     }
 
     private val viewModel: PostDetailViewModel by viewModels {
@@ -172,11 +173,22 @@ class PostDetailActivity : AppCompatActivity() {
 
         sheetRefresh.setOnRefreshListener {
             viewModel.handleEvent(PostDetailEvent.SwipeRefresh)
-//            val handler = Handler(Looper.getMainLooper())
-//            handler.postDelayed({
-//                sheetRefresh.isRefreshing = false
-//            }, 1000)
         }
+
+        rvComments.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0) {
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                    val totalItemCount = layoutManager.itemCount
+                    val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+
+                    if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition + 1 >= totalItemCount) {
+                        viewModel.handleEvent(PostDetailEvent.InfiniteScroll)
+                    }
+                }
+            }
+        })
 
     }
 
@@ -225,16 +237,22 @@ class PostDetailActivity : AppCompatActivity() {
         state.comments.let { comments ->
             val firstComment = comments.firstOrNull()
             firstComment?.let { comment ->
-                binding.ivCommentUserProfile.load(comment.authorImageUrl)
-                binding.tvComment.text = comment.content
+                if (comment is PostCommentListItem.PostCommentItem) {
+                    binding.ivCommentUserProfile.load(comment.authorImageUrl)
+                    binding.tvComment.text = comment.content
+                }
             }
+
             binding.tvNoComment.isVisible = comments.isEmpty()
 
-            Timber.tag("COMMENT").d("Count: ${comments.size}")
-            commentListAdapter.submitList(comments)
+            if (state.isInfiniteLoadingComments) {
+                commentListAdapter.submitList(comments + listOf(PostCommentListItem.Loading))
+            } else {
+                commentListAdapter.submitList(comments.filterIsInstance<PostCommentListItem.PostCommentItem>())
+            }
         }
 
-        if (!state.isLoadingComments) {
+        if (!state.isSwipeLoadingComments) {
             binding.sheetRefresh.isRefreshing = false
         }
     }
@@ -253,13 +271,6 @@ class PostDetailActivity : AppCompatActivity() {
             LinearLayoutManager(this@PostDetailActivity, LinearLayoutManager.VERTICAL, false)
         rvComments.adapter = commentListAdapter
 
-        rvComments.addItemDecoration(LinearVerticalItemDecoration(200))
-
-//        bottomSheetBehavior = CustomBottomSheetBehavior.from(bottomSheetLayout.root)
-//
-//        val layoutParams = bottomSheetLayout.root.layoutParams as CoordinatorLayout.LayoutParams
-//        layoutParams.behavior = bottomSheetBehavior
-//        bottomSheetLayout.root.layoutParams = layoutParams
 
         bottomSheetBehavior = BottomSheetBehavior.from(binding.sheetContainer)
 
@@ -284,9 +295,7 @@ class PostDetailActivity : AppCompatActivity() {
     private fun setupOnBackPressedHandling() {
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                // 여기에서 애니메이션 적용 후 활동 종료
                 if (bottomSheetBehavior?.state == BottomSheetBehavior.STATE_EXPANDED || bottomSheetBehavior?.state == BottomSheetBehavior.STATE_COLLAPSED) {
-                    // 바텀시트가 확장되거나 축소된 상태일 때, 바텀시트를 숨깁니다.
                     bottomSheetBehavior?.state = BottomSheetBehavior.STATE_HIDDEN
                 } else {
                     ActivityCompat.finishAfterTransition(this@PostDetailActivity)
