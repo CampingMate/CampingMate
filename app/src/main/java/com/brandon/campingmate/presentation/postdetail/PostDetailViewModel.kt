@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.brandon.campingmate.domain.model.User
+import com.brandon.campingmate.domain.usecase.DeletePostCommentUseCase
 import com.brandon.campingmate.domain.usecase.GetPostByIdUseCase
 import com.brandon.campingmate.domain.usecase.GetPostCommentsUseCase
 import com.brandon.campingmate.domain.usecase.GetUserUserCase
@@ -27,6 +28,7 @@ class PostDetailViewModel(
     private val uploadPostCommentUseCase: UploadPostCommentUseCase,
     private val getPostCommentsUseCase: GetPostCommentsUseCase,
     private val getUserUserCase: GetUserUserCase,
+    private val deletePostComment: DeletePostCommentUseCase
 ) : ViewModel() {
 
 
@@ -52,17 +54,50 @@ class PostDetailViewModel(
 
     fun handleEvent(event: PostDetailEvent) {
         when (event) {
-            is PostDetailEvent.UploadComment -> {
-                uploadComment(event.comment)
-            }
-
-            is PostDetailEvent.MakeToast -> {
-                _event.tryEmit(PostDetailEvent.MakeToast(event.message))
-            }
-
+            is PostDetailEvent.UploadComment -> uploadComment(event.comment)
+            is PostDetailEvent.MakeToast -> _event.tryEmit(PostDetailEvent.MakeToast(event.message))
+            is PostDetailEvent.ShowBottomSheetMenuIfUserExists -> checkOwnership(event.item)
+            is PostDetailEvent.DeletePostComment -> deletePostComment(event.commentId)
             PostDetailEvent.UploadCommentSuccess -> _event.tryEmit(PostDetailEvent.UploadCommentSuccess)
             PostDetailEvent.SwipeRefresh -> refreshComments()
             PostDetailEvent.InfiniteScroll -> infiniteScroll()
+            else -> Unit
+        }
+    }
+
+    private fun deletePostComment(commentId: String?) {
+        if (commentId == null) {
+            _event.tryEmit(PostDetailEvent.MakeToast("댓글 삭제 중 오류가 발생했습니다"))
+        }
+        viewModelScope.launch {
+            deletePostComment(commentId, _uiState.value.post?.postId).fold(
+                onSuccess = {
+                    _event.tryEmit(PostDetailEvent.MakeToast("댓글이 삭제되었습니다"))
+                    _uiState.update { currentState ->
+                        val removedComments =
+                            currentState.comments.filterNot { comment -> comment.commentId == commentId }
+                        _uiState.value.copy(comments = removedComments)
+                    }
+                },
+                onFailure = {
+                    _event.tryEmit(PostDetailEvent.MakeToast("댓글 삭제에 실패했습니다"))
+                }
+            )
+        }
+    }
+
+    private fun checkOwnership(item: PostCommentListItem.PostCommentItem) {
+        if (item.authorId.isNullOrBlank()) {
+            _event.tryEmit(PostDetailEvent.ShowBottomSheetMenu(isOwner = false, postCommentId = null))
+        } else {
+            if (_user.value?.userId == item.authorId) {
+                _event.tryEmit(
+                    PostDetailEvent.ShowBottomSheetMenu(
+                        isOwner = true,
+                        postCommentId = item.commentId
+                    )
+                )
+            }
         }
     }
 
@@ -172,6 +207,7 @@ class PostDetailViewModelFactory(
     private val uploadPostCommentUseCase: UploadPostCommentUseCase,
     private val getPostCommentsUseCase: GetPostCommentsUseCase,
     private val getUserUserCase: GetUserUserCase,
+    private val deletePostCommentUseCase: DeletePostCommentUseCase,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         Timber.d("Creating PostDetailViewModel instance")
@@ -181,6 +217,7 @@ class PostDetailViewModelFactory(
                 uploadPostCommentUseCase,
                 getPostCommentsUseCase,
                 getUserUserCase,
+                deletePostCommentUseCase,
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

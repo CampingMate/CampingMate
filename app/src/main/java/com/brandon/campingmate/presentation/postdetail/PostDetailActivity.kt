@@ -32,6 +32,7 @@ import com.brandon.campingmate.data.repository.PostRepositoryImpl
 import com.brandon.campingmate.data.repository.UserRepositoryImpl
 import com.brandon.campingmate.databinding.ActivityPostDetailBinding
 import com.brandon.campingmate.databinding.BottomSheetPostdetailCommnetSideMenuBinding
+import com.brandon.campingmate.domain.usecase.DeletePostCommentUseCase
 import com.brandon.campingmate.domain.usecase.GetPostByIdUseCase
 import com.brandon.campingmate.domain.usecase.GetPostCommentsUseCase
 import com.brandon.campingmate.domain.usecase.GetUserUserCase
@@ -66,7 +67,7 @@ class PostDetailActivity : AppCompatActivity() {
     private val commentListAdapter: PostCommentListAdapter by lazy {
         PostCommentListAdapter(
             onClick = { commentItem ->
-                showPostCommentBottomSheetMenu(commentItem)
+                viewModel.handleEvent(PostDetailEvent.ShowBottomSheetMenuIfUserExists(commentItem))
             }
         )
     }
@@ -95,6 +96,12 @@ class PostDetailActivity : AppCompatActivity() {
                     ), FirestoreDataSourceImpl(
                         fireStoreDB
                     )
+                )
+            ),
+            DeletePostCommentUseCase(
+                PostRepositoryImpl(
+                    FirestoreDataSourceImpl(fireStoreDB),
+                    FireBaseStorageDataSourceImpl(FirebaseService.firebaseStorage)
                 )
             )
         )
@@ -240,6 +247,10 @@ class PostDetailActivity : AppCompatActivity() {
                 showToast(event.message)
             }
 
+            is PostDetailEvent.ShowBottomSheetMenu -> {
+                showBottomSheetCommentMenu(event.isOwner, event.postCommentId)
+            }
+
             else -> {}
         }
     }
@@ -350,17 +361,26 @@ class PostDetailActivity : AppCompatActivity() {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun showPostCommentBottomSheetMenu(commentItem: PostCommentListItem.PostCommentItem) {
+    private fun showBottomSheetCommentMenu(
+        isOwner: Boolean,
+        postCommentId: String?,
+    ) {
         val bottomSheetDialog = BottomSheetDialog(this)
         val bottomSheetBinding = BottomSheetPostdetailCommnetSideMenuBinding.inflate(layoutInflater)
 
-        // TODO 댓글에 유저정보 확인 후 뷰 구용
+        if (isOwner) {
+            bottomSheetBinding.btnMenuOwner.isVisible = true
+            bottomSheetBinding.btnMenuNotOwner.isVisible = false
+        } else {
+            bottomSheetBinding.btnMenuOwner.isVisible = false
+            bottomSheetBinding.btnMenuNotOwner.isVisible = true
+        }
 
         bottomSheetDialog.setContentView(bottomSheetBinding.root)
+
         bottomSheetBinding.btnMenuOwner.setOnClickListener {
-            bottomSheetDialog.dismiss()
-        }
-        bottomSheetBinding.btnMenuNotOwner.setOnClickListener {
+            Timber.tag("DELETE").d("삭제 이벤트 발생")
+            viewModel.handleEvent(PostDetailEvent.DeletePostComment(postCommentId))
             bottomSheetDialog.dismiss()
         }
         bottomSheetDialog.show()
