@@ -1,5 +1,6 @@
 package com.brandon.campingmate.presentation.campdetail
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -14,6 +15,7 @@ import android.view.animation.AlphaAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
@@ -24,6 +26,7 @@ import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.campdetail.adapter.CommentListAdapter
 import com.brandon.campingmate.presentation.campdetail.adapter.ViewPagerAdapter
 import com.brandon.campingmate.presentation.common.SnackbarUtil
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.kakao.sdk.user.UserApiClient
@@ -35,6 +38,7 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.Marker
+import org.checkerframework.common.subtyping.qual.Bottom
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -59,6 +63,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private var campName: String? = null
     private var myImage: String = ""
     var isTop = true
+    lateinit var behavior: BottomSheetBehavior<ConstraintLayout>
 
     companion object {
         private const val REQUEST_CODE_IMAGE_PICK = 1001
@@ -70,6 +75,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         Log.d("Detail", "onCreate")
         initView()
         initViewModel()
+        initBottomSheet()
         checkBookmarked()
         clickBookmarked()
         mapView = binding.fcMap
@@ -99,6 +105,14 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             if (it != null) {
                 listAdapter.submitList(it)
             }
+        }
+        checkLastComment.observe(this@CampDetailActivity){
+            if(it != null){
+                binding.commentContent.text = it
+            }
+        }
+        commentCount.observe(this@CampDetailActivity){
+            binding.commentCount.text = it
         }
     }
 
@@ -190,6 +204,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         myId?.let { viewModel.setUpParkParameter(it) }
         viewModel.callIdData(myId!!)
         viewModel.registerRealtimeUpdates(myId!!)
+        viewModel.checkComment(myId!!) //댓글 미리보기
         //리사이클러뷰 연결
         recyclerComment.adapter = listAdapter
         recyclerComment.layoutManager =
@@ -240,20 +255,32 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                 return onTouchEvent(event)
             }
         })
+        commentBottomSheet.setOnClickListener {
+            behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+        }
+        bottomSheetCancle.setOnClickListener {
+            behavior.state = BottomSheetBehavior.STATE_HIDDEN
+        }
     }
 
-    private fun scrollListener() = with(binding){
+    private fun initBottomSheet() = with(binding) {
+        behavior = BottomSheetBehavior.from(bottomSheet)
+        behavior.isHideable = true
+        behavior.state = BottomSheetBehavior.STATE_HIDDEN
+    }
+
+    private fun scrollListener() = with(binding) {
         val fadeIn = AlphaAnimation(0f, 1f).apply { duration = 1000 }
         val fadeOut = AlphaAnimation(1f, 0f).apply { duration = 1000 }
         scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-            if(scrollY == 0){ //최상단일경우
-                if(!isTop){
+            if (scrollY == 0) { //최상단일경우
+                if (!isTop) {
                     floating.startAnimation(fadeOut)
                     floating.visibility = View.GONE
                     isTop = true
                 }
-            } else{ //최상단이 아닐경우
-                if(isTop){
+            } else { //최상단이 아닐경우
+                if (isTop) {
                     floating.startAnimation(fadeIn)
                     floating.visibility = View.VISIBLE
                     isTop = false
@@ -261,7 +288,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
         floating.setOnClickListener {
-            scrollView.smoothScrollTo(0,0)
+            scrollView.smoothScrollTo(0, 0)
         }
     }
 
@@ -316,7 +343,8 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                             } else {
                                 val myComment =
                                     myId?.let { it1 ->
-                                        CampCommentEntity(userId, userName, content, date, Uri.EMPTY,
+                                        CampCommentEntity(
+                                            userId, userName, content, date, Uri.EMPTY,
                                             it1
                                         )
                                     }

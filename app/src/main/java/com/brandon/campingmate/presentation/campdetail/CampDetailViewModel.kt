@@ -27,7 +27,11 @@ class CampDetailViewModel : ViewModel() {
     private val _campEntity: MutableLiveData<CampEntity?> = MutableLiveData()
     val campEntity: LiveData<CampEntity?> get() = _campEntity
     private val _campComment: MutableLiveData<MutableList<CampCommentEntity>> = MutableLiveData()
+    private val _checkLastComment: MutableLiveData<String?> = MutableLiveData()
+    val checkLastComment: LiveData<String?> get() = _checkLastComment
     val campComment: LiveData<MutableList<CampCommentEntity>> get() = _campComment
+    private val _commentCount: MutableLiveData<String?> = MutableLiveData()
+    val commentCount: LiveData<String?> get() = _commentCount
     private lateinit var listenerRegistration: ListenerRegistration
     fun setUpParkParameter(contentId: String) {
         val authKey = BuildConfig.camp_data_key
@@ -180,5 +184,32 @@ class CampDetailViewModel : ViewModel() {
         } else {
             // 이미지가 선택되지 않은 경우에 대한 처리
         }
+    }
+
+    fun checkComment(myId: String) {
+        val db = Firebase.firestore
+        var baseQuery: Query = db.collection("camps").whereEqualTo("contentId", myId)
+        baseQuery.get()
+            .addOnSuccessListener { documents ->
+                if (documents.isEmpty) {
+                    _checkLastComment.value = "등록된 댓글이 없습니다. 첫 댓글을 작성해보세요!"
+                } else {
+                    val lastCommentList = documents.documents.lastOrNull()?.get("commentList") as? List<Map<*, *>>
+                    if (!lastCommentList.isNullOrEmpty()) {
+                        val lastComment = lastCommentList.lastOrNull()?.get("content") as? String
+                        val commentSize = lastCommentList.size ?: 0
+                        _commentCount.value = commentSize.toString()
+                        if (lastComment != null) {
+                            _checkLastComment.value = lastComment
+                        } else {
+                            _checkLastComment.value = "등록된 댓글이 없습니다. 첫 댓글을 작성해보세요!"
+                        }
+                    } else {
+                        _checkLastComment.value = "등록된 댓글이 없습니다. 첫 댓글을 작성해보세요!"
+                    }
+                }
+            }
+            .addOnFailureListener { exception ->
+            }
     }
 }
