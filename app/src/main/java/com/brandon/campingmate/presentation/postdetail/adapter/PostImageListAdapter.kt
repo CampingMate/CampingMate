@@ -2,13 +2,23 @@ package com.brandon.campingmate.presentation.postdetail.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.brandon.campingmate.databinding.ItemPostdetailImageBinding
 import timber.log.Timber
 
-class PostDetailImageListAdapter(private var imageUrls: List<String>) :
-    RecyclerView.Adapter<PostDetailImageListAdapter.ImageViewHolder>() {
+class PostImageListAdapter(private val onClick: (String) -> Unit) :
+    ListAdapter<String, PostImageListAdapter.ImageViewHolder>(object : DiffUtil.ItemCallback<String>() {
+        override fun areItemsTheSame(oldItem: String, newItem: String): Boolean {
+            return oldItem == newItem
+        }
+
+        override fun areContentsTheSame(oldItem: String, newItem: String): Boolean {
+            return true
+        }
+    }) {
 
     inner class ImageViewHolder(private val binding: ItemPostdetailImageBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -17,6 +27,9 @@ class PostDetailImageListAdapter(private var imageUrls: List<String>) :
                 listener(onError = { _, _ ->
                     Timber.tag("IMAGE").e("Failed to load image from $imageUrl") // 이미지 로드 실패 시 로그 출력
                 })
+            }
+            binding.root.setOnClickListener {
+                onClick(imageUrl)
             }
         }
     }
@@ -30,17 +43,9 @@ class PostDetailImageListAdapter(private var imageUrls: List<String>) :
         return ImageViewHolder(binding)
     }
 
-    override fun getItemCount(): Int {
-        return imageUrls.size
-    }
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-        holder.onBind(imageUrls[position])
+        holder.onBind(getItem(position))
     }
 
-    fun setImageUrls(imageUrls: List<String>?) {
-        if (imageUrls != null) {
-            this.imageUrls = imageUrls
-        }
-    }
 }
