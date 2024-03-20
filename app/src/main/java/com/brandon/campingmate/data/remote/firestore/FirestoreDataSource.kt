@@ -12,8 +12,13 @@ interface FirestoreDataSource {
     suspend fun getPosts(pageSize: Int, lastVisibleDoc: DocumentSnapshot?): Resource<PostsDTO>
     suspend fun getPostById(postId: String): Resource<PostDTO>
     suspend fun getUserById(userId: String): Result<UserDTO?>
-    suspend fun getComments(postId: String, pageSize: Int): Result<List<PostCommentDTO>>
+    suspend fun getComments(
+        postId: String,
+        pageSize: Int,
+        shouldFetchFromFirst: Boolean
+    ): Result<List<PostCommentDTO>>
 
     suspend fun uploadPost(postEntity: PostDTO): Result<String>
     suspend fun uploadPostComment(postId: String, postCommentDTO: PostCommentDTO): Result<PostComment>
+    suspend fun deletePostCommentById(commentId: String, postId: String): Result<String>
 }

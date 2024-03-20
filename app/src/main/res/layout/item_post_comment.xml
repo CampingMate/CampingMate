@@ -12,7 +12,6 @@
         android:background="@drawable/shape_circle_background"
         android:clipToOutline="true"
         android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="@id/tv_comment"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/tv_user_name" />
 
@@ -34,17 +33,19 @@
         android:layout_height="24dp"
         android:layout_marginEnd="16dp"
         android:src="@drawable/ic_side_menu"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_user_name" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tv_comment"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="16dp"
         android:text="댓글 내용입니다"
         android:textFontWeight="500"
-        android:textSize="13sp"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/tv_user_name"
         app:layout_constraintTop_toBottomOf="@id/tv_user_name" />
@@ -54,6 +55,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
         android:text="XXXX-XX-XX XX:XX"
         android:textColor="@color/board_gray"
         android:textSize="11sp"

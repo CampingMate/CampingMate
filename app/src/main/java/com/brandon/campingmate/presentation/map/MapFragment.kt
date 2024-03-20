@@ -86,7 +86,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mapView?.getMapAsync(this)
         initView()
         initViewModel()
-        fusedLocationSource = FusedLocationSource(this, 1004)
+        fusedLocationSource = FusedLocationSource(this, 1005)
         //Timber.tag("mapfragment").d("mapview getMapAsync()")
         return binding.root
     }
