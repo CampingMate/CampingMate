@@ -10,9 +10,10 @@ class GetPostCommentsUseCase(
     suspend operator fun invoke(
         postId: String?,
         pageSize: Int,
-    ): Result<List<PostCommentListItem>> {
+        shouldFetchFromFirst: Boolean,
+    ): Result<List<PostCommentListItem.PostCommentItem>> {
         if (postId.isNullOrBlank()) throw IllegalArgumentException("Post ID cannot be blank or null.")
-        return postRepository.getComments(postId, pageSize).mapCatching { modelList ->
+        return postRepository.getComments(postId, pageSize, shouldFetchFromFirst).mapCatching { modelList ->
             modelList.map { model -> model.toPostCommentListItem() }
         }
     }
