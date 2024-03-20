@@ -17,6 +17,7 @@ interface PostRepository {
     suspend fun getComments(
         postId: String,
         pageSize: Int,
+        shouldFetchFromFirst: Boolean,
     ): Result<List<PostComment>>
 
     suspend fun getPostById(

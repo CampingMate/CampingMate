@@ -42,11 +42,13 @@ class FirestoreDataSourceImpl(
     override suspend fun getComments(
         postId: String,
         pageSize: Int,
+        shouldFetchFromFirst: Boolean,
     ): Result<List<PostCommentDTO>> {
         return withContext(IO) {
             runCatching {
                 val query = firestore.collection("posts").document(postId).collection("comments")
                     .orderBy("timestamp", Query.Direction.ASCENDING)
+                if (shouldFetchFromFirst) lastVisibleCommentDoc = null
                 val paginatedQuery = lastVisibleCommentDoc?.let { query.startAfter(it) } ?: query
                 val snapshot = paginatedQuery.limit(pageSize.toLong()).get().await()
                 lastVisibleCommentDoc = snapshot.documents.lastOrNull() ?: lastVisibleCommentDoc

@@ -42,10 +42,12 @@ class PostRepositoryImpl(
     override suspend fun getComments(
         postId: String,
         pageSize: Int,
+        shouldFetchFromFirst: Boolean,
     ): Result<List<PostComment>> {
-        return firestoreDataSource.getComments(postId, pageSize).mapCatching { dtoList ->
-            dtoList.map { dto -> dto.toPostComment() }
-        }
+        return firestoreDataSource.getComments(postId, pageSize, shouldFetchFromFirst)
+            .mapCatching { dtoList ->
+                dtoList.map { dto -> dto.toPostComment() }
+            }
     }
 
     override suspend fun getPostById(postId: String): Resource<Post> {
