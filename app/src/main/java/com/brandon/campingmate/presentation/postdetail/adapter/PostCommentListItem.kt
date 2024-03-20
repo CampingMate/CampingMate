@@ -1,12 +1,10 @@
-package com.brandon.campingmate.domain.model
+package com.brandon.campingmate.presentation.postdetail.adapter
 
-import com.google.firebase.Timestamp
-
-data class PostComment(
+data class PostCommentListItem(
     val commentId: String?,
     val postId: String?,
     val authorName: String?,
     val authorImageUrl: String?,
     val content: String?,
-    val timestamp: Timestamp?
+    val timestamp: String?
 )

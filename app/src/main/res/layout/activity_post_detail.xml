@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".presentation.postdetail.PostDetailActivity">
 
-    <androidx.core.widget.NestedScrollView
+    <ScrollView
+        android:id="@+id/ns_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
@@ -14,6 +15,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
 
             <!-- Toolbar -->
             <androidx.appcompat.widget.Toolbar
@@ -32,7 +34,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    tools:text="글 상세"
+                    android:text="글 상세"
                     android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
                     android:textColor="@android:color/black" />
             </androidx.appcompat.widget.Toolbar>
@@ -44,7 +46,10 @@
                 android:layout_height="48dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:background="@color/view_gray"
+                android:background="@drawable/shape_rounded_corner_background_r6"
+                android:backgroundTint="@color/hint_gray"
+                android:clipToOutline="true"
+                android:scaleType="centerCrop"
                 android:src="@drawable/ic_profile"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/toolbar" />
@@ -55,21 +60,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                tools:text="홍길동"
                 android:textSize="16sp"
                 app:layout_constraintStart_toEndOf="@id/iv_user_profile"
-                app:layout_constraintTop_toTopOf="@id/iv_user_profile" />
+                app:layout_constraintTop_toTopOf="@id/iv_user_profile"
+                tools:text="홍길동" />
 
             <!-- Created At -->
             <TextView
                 android:id="@+id/tv_created_at"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="XXXX-XX-XX XX:XX"
                 android:textColor="@color/board_gray"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@id/iv_user_profile"
-                app:layout_constraintStart_toStartOf="@id/tv_username" />
+                app:layout_constraintStart_toStartOf="@id/tv_username"
+                tools:text="XXXX-XX-XX XX:XX" />
 
             <!-- Post Title -->
             <TextView
@@ -78,12 +83,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="20dp"
-                tools:text="글 제목"
                 android:textFontWeight="500"
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/iv_user_profile" />
+                app:layout_constraintTop_toBottomOf="@id/iv_user_profile"
+                tools:text="글 제목" />
 
             <!-- Post Content -->
             <TextView
@@ -92,10 +97,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="20dp"
-                tools:text="화장실이 몇개있는지 개수대가 몇개있는지 더 알고싶은데 관련정보가 없네요\n아시는분 댓글좀 달아주세요!"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_title" />
+                app:layout_constraintTop_toBottomOf="@id/tv_title"
+                tools:text="화장실이 몇개있는지 개수대가 몇개있는지 더 알고싶은데 관련정보가 없네요\n아시는분 댓글좀 달아주세요!" />
 
             <!-- Images RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView
@@ -111,34 +116,155 @@
                 tools:background="@color/view_gray"
                 tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-            <!-- Comments Title -->
-            <TextView
-                android:id="@+id/tv_title_comment"
+
+            <!-- Comments RecyclerView -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/btn_recent_commnet"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="20dp"
-                tools:text="댓글"
-                android:textFontWeight="500"
-                android:textSize="24sp"
+                android:layout_marginTop="28dp"
+                android:background="@drawable/shape_rounded_corner_background_r6"
+                android:backgroundTint="#F6F6F6"
+                android:padding="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/rv_post_image" />
+                app:layout_constraintTop_toBottomOf="@id/rv_post_image">
 
-            <!-- Comments RecyclerView -->
+                <TextView
+                    android:id="@+id/tv_title_comment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:text="최근 댓글 내용"
+                    android:textFontWeight="500"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/iv_comment_user_profile"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/shape_circle_background"
+                    android:backgroundTint="@color/bottom_gray"
+                    android:clipToOutline="true"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_comment"
+                    app:layout_constraintStart_toStartOf="@id/tv_title_comment"
+                    app:layout_constraintTop_toTopOf="@+id/tv_comment" />
+
+                <TextView
+                    android:id="@+id/tv_comment"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:text="댓글이 아직 없습니다. 첫 댓글을 남겨보세요!"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/iv_comment_user_profile"
+                    app:layout_constraintTop_toBottomOf="@id/tv_title_comment" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/sheet_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/shape_bottom_sheet_background"
+        app:behavior_hideable="true"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <!--        핸들러        -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_sheet_handle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_bottom_sheet_background"
+            android:backgroundTint="#EBEBEB"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <View
+                android:id="@+id/view_handle"
+                android:layout_width="30dp"
+                android:layout_height="3dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/shape_rounded_corner_background_r6"
+                android:backgroundTint="@color/hint_gray"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_bottom_sheet_title_comment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="댓글"
+                android:textFontWeight="700"
+                android:textSize="24dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/view_handle" />
+
+            <ImageView
+                android:id="@+id/btn_close"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_close_thin"
+                app:layout_constraintBottom_toBottomOf="@id/tv_bottom_sheet_title_comment"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_bottom_sheet_title_comment" />
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/hint_gray"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_bottom_sheet_title_comment" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!--        댓글목록      -->
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/sheet_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cl_sheet_handle">
+
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/tv_comments"
+                android:id="@+id/rv_comments"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="12dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_title_comment"
-                tools:background="@color/view_gray" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
+                android:background="@color/white"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                android:paddingBottom="240dp" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
+        <TextView
+            android:id="@+id/tv_no_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="200dp"
+            android:text="현재 댓글이 없습니다."
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cl_sheet_handle" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Comment Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -151,6 +277,7 @@
         android:backgroundTint="@color/comment_bar_gray"
         android:elevation="1dp"
         android:padding="4dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -181,4 +308,13 @@
             app:layout_constraintBottom_toBottomOf="@id/et_comment_input"
             app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <View
+        android:id="@+id/overlay_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#66000000"
+        android:visibility="gone" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

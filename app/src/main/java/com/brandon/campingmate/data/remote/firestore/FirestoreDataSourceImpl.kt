@@ -4,7 +4,9 @@ import com.brandon.campingmate.data.remote.dto.PostCommentDTO
 import com.brandon.campingmate.data.remote.dto.PostDTO
 import com.brandon.campingmate.data.remote.dto.PostsDTO
 import com.brandon.campingmate.data.remote.dto.UserDTO
+import com.brandon.campingmate.domain.model.PostComment
 import com.brandon.campingmate.utils.Resource
+import com.brandon.campingmate.utils.mappers.toPostComment
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -16,6 +18,9 @@ import timber.log.Timber
 class FirestoreDataSourceImpl(
     private val firestore: FirebaseFirestore
 ) : FirestoreDataSource {
+
+    private var lastVisibleCommentDoc: DocumentSnapshot? = null
+
     override suspend fun getPosts(pageSize: Int, lastVisibleDoc: DocumentSnapshot?): Resource<PostsDTO> {
         return try {
             withContext(IO) {
@@ -34,15 +39,34 @@ class FirestoreDataSourceImpl(
         }
     }
 
+    override suspend fun getComments(
+        postId: String,
+        pageSize: Int,
+    ): Result<List<PostCommentDTO>> {
+        return withContext(IO) {
+            runCatching {
+                val query = firestore.collection("posts").document(postId).collection("comments")
+                    .orderBy("timestamp", Query.Direction.ASCENDING)
+                val paginatedQuery = lastVisibleCommentDoc?.let { query.startAfter(it) } ?: query
+                val snapshot = paginatedQuery.limit(pageSize.toLong()).get().await()
+                lastVisibleCommentDoc = snapshot.documents.lastOrNull() ?: lastVisibleCommentDoc
+                val comments = snapshot.documents.mapNotNull { it.toObject(PostCommentDTO::class.java) }
+                comments
+            }
+        }
+    }
+
     override suspend fun uploadPostComment(
         postId: String, postCommentDto: PostCommentDTO
-    ): Result<String> = withContext(IO) {
+    ): Result<PostComment> = withContext(IO) {
         runCatching {
             val commentsCollection = firestore.collection("posts").document(postId).collection("comments")
             val newCommentRef = commentsCollection.document()
             val newCommentId = newCommentRef.id
-            commentsCollection.document(newCommentId).set(postCommentDto).await()
-            newCommentId
+            val newPost = postCommentDto.copy(commentId = newCommentId)
+            Timber.tag("USER").d("datasource url: ${newPost.authorImageUrl}")
+            commentsCollection.document(newCommentId).set(newPost).await()
+            newPost.toPostComment()
         }
     }
 
