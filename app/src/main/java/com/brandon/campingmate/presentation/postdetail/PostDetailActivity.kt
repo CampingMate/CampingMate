@@ -1,10 +1,14 @@
 package com.brandon.campingmate.presentation.postdetail
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Context
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
 import android.text.InputFilter
 import android.text.method.ScrollingMovementMethod
 import android.view.MenuItem
@@ -43,10 +47,11 @@ import com.brandon.campingmate.network.firestore.FirebaseService.fireStoreDB
 import com.brandon.campingmate.presentation.common.SnackbarUtil
 import com.brandon.campingmate.presentation.postdetail.adapter.PostCommentListAdapter
 import com.brandon.campingmate.presentation.postdetail.adapter.PostCommentListItem
-import com.brandon.campingmate.presentation.postdetail.adapter.PostDetailImageListAdapter
+import com.brandon.campingmate.presentation.postdetail.adapter.PostImageListAdapter
 import com.brandon.campingmate.utils.setDebouncedOnClickListener
 import com.brandon.campingmate.utils.toFormattedString
 import com.brandon.campingmate.utils.toPx
+import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
@@ -62,8 +67,10 @@ class PostDetailActivity : AppCompatActivity() {
 
     private val binding: ActivityPostDetailBinding by lazy { ActivityPostDetailBinding.inflate(layoutInflater) }
 
-    private val imageListAdapter: PostDetailImageListAdapter by lazy {
-        PostDetailImageListAdapter(emptyList())
+    private val imageListAdapter: PostImageListAdapter by lazy {
+        PostImageListAdapter(onClick = { uri ->
+            showImagePreviewDialog(uri)
+        })
     }
 
     private val commentListAdapter: PostCommentListAdapter by lazy {
@@ -162,8 +169,8 @@ class PostDetailActivity : AppCompatActivity() {
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                // 슬라이드하는 동안 배경 투명도 조절
-                binding.clCommentBarContainer.isVisible = (slideOffset < -0.8).not()
+
+                binding.commentBarContainer.isVisible = (slideOffset < -0.8).not()
                 when (slideOffset) {
                     in 0f..1f -> binding.nsContainer.alpha = 0.5f
                     in -1f..0f -> binding.nsContainer.alpha = 1 - 0.5f * (slideOffset + 1)
@@ -173,7 +180,7 @@ class PostDetailActivity : AppCompatActivity() {
         })
 
         val rootView = binding.root
-        var previousHeightDiff: Int = 0
+        var previousHeightDiff = 0
         rootView.viewTreeObserver.addOnGlobalLayoutListener {
             val rect = Rect()
             rootView.getWindowVisibleDisplayFrame(rect)
@@ -279,8 +286,7 @@ class PostDetailActivity : AppCompatActivity() {
             }
             post.imageUrls?.let { imageUrls ->
                 binding.rvPostImage.isVisible = imageUrls.isEmpty().not()
-                imageListAdapter.setImageUrls(imageUrls)
-                imageListAdapter.notifyDataSetChanged()
+                imageListAdapter.submitList(imageUrls)
             }
         }
         state.comments.let { comments ->
