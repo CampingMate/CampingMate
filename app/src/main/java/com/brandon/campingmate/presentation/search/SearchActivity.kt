@@ -1,7 +1,6 @@
 package com.brandon.campingmate.presentation.search
 
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,13 +8,13 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.brandon.campingmate.R
-import com.brandon.campingmate.databinding.ActivityCampDetailBinding
 import com.brandon.campingmate.databinding.ActivitySearchBinding
 import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.search.adapter.SearchListAdapter
@@ -31,6 +30,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     lateinit var behavior: BottomSheetBehavior<ConstraintLayout>
+    private var temp:String? = ""
 
 
     companion object {
@@ -41,6 +41,9 @@ class SearchActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        temp = intent.getStringExtra("searchData")
+        Log.d("SearchActivity", "${temp}")
+        setting(temp!!)
         initView()
         initViewModel()
     }
@@ -63,8 +66,9 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun initView() = with(binding) {
-        val temp = intent.getStringExtra("searchData")
-        Log.d("SearchActivity", "${temp}")
+        imageView.setOnClickListener {
+
+        }
         bottomSheet() //바텀시트 연결
         scrollTab() //바텀시트 스크롤탭
         //리사이클러뷰 연결
@@ -259,6 +263,34 @@ class SearchActivity : AppCompatActivity() {
         }
         ivDelete.setOnClickListener {
             tvEdit.text.clear()
+        }
+    }
+
+    private fun setting(temp: String) {
+        Log.d("SearchActivity", "setting진입, ${temp}")
+        when(temp){
+            "검색바" -> {
+                binding.tvEdit.requestFocus()
+                val manager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                manager.showSoftInput(binding.tvEdit, InputMethodManager.SHOW_IMPLICIT)
+                binding.tvEdit.post {
+                    if (!manager.isActive(binding.tvEdit)) {
+                        manager.showSoftInput(binding.tvEdit, InputMethodManager.SHOW_IMPLICIT)
+                    }
+                }
+            }
+            "글램핑" -> {
+
+            }
+            "일반야영장" -> {
+
+            }
+            "자동차야영장" -> {
+
+            }
+            "카라반" -> {
+
+            }
         }
     }
 

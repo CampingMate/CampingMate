@@ -448,9 +448,9 @@ class HomeFragment : Fragment() {
             val intent = Intent(requireContext(), SearchActivity::class.java).apply{
                 var temp:String=""
                 when(layout){
-                    binding.loCategoryCar -> temp="차박"
+                    binding.loCategoryCar -> temp="자동차야영장"
                     binding.loCategoryCaravan -> temp="카라반"
-                    binding.loCategoryGeneral ->temp="일반야영"
+                    binding.loCategoryGeneral ->temp="일반야영장"
                     binding.loCategoryGlamping ->temp="글램핑"
                     binding.loSearch ->temp="검색바"
                 }
