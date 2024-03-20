@@ -315,7 +315,9 @@ class HomeFragment : Fragment() {
             val reviewData = mutableListOf<HomeEntity>()
             if(!it.isNullOrEmpty()){
                 reviewData.addAll(it)
+                reviewData.sortByDescending { it.commentList.size }
                 Log.d("Home", "#csh reviewData: $reviewData")
+                Log.d("Home", "#csh reviewData size: ${reviewData.size}")
             }else{
                 reviewData.addAll(city)
                 reviewData.shuffle()
