@@ -113,7 +113,7 @@ class PostDetailViewModel(
         getComments()
     }
 
-    private fun checkLoginStatus() {
+    fun checkLoginStatus() {
         viewModelScope.launch {
             getUserUserCase().fold(
                 onSuccess = { user -> _user.value = user },
@@ -131,7 +131,9 @@ class PostDetailViewModel(
                 shouldFetchFromFirst = _uiState.value.isSwipeLoadingComments
             ).fold(
                 onSuccess = { newComments ->
-                    if (newComments.isEmpty()) handleEvent(PostDetailEvent.MakeToast("새로운 댓글이 더 이상 없어요."))
+                    if (_uiState.value.isInfiniteLoadingComments && newComments.isEmpty()) handleEvent(
+                        PostDetailEvent.MakeToast("새로운 댓글이 더 이상 없어요.")
+                    )
                     _uiState.update { currentState ->
                         val uniqueOldComments = currentState.comments.filterNot { oldComment ->
                             newComments.any { newItem -> newItem.commentId == oldComment.commentId }
