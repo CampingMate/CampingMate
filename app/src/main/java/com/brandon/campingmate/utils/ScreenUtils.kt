@@ -7,7 +7,7 @@ fun Float.toPx(context: Context): Int = (this * context.resources.displayMetrics
 
 fun Int.toPx(context: Context): Int = (this * context.resources.displayMetrics.density + 0.5f).toInt()
 
-fun View.setDebouncedOnClickListener(debounceTime: Long = 500L, action: (View) -> Unit) {
+fun View.setDebouncedOnClickListener(debounceTime: Long = 1000L, action: (View) -> Unit) {
     this.setOnClickListener(object : View.OnClickListener {
         private var lastClickTime: Long = 0
 

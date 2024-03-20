@@ -35,6 +35,7 @@ import com.brandon.campingmate.network.firestore.FirebaseService
 import com.brandon.campingmate.network.firestore.FirebaseService.fireStoreDB
 import com.brandon.campingmate.presentation.postdetail.adapter.PostDetailCommentListAdapter
 import com.brandon.campingmate.presentation.postdetail.adapter.PostDetailImageListAdapter
+import com.brandon.campingmate.utils.setDebouncedOnClickListener
 import com.brandon.campingmate.utils.toFormattedString
 import com.brandon.campingmate.utils.toPx
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -108,7 +109,7 @@ class PostDetailActivity : AppCompatActivity() {
     }
 
     private fun initListener() = with(binding) {
-        btnSend.setOnClickListener {
+        btnSend.setDebouncedOnClickListener {
             val content = etCommentInput.text.toString()
             viewModel.handleEvent(PostDetailEvent.UploadComment(content))
         }
@@ -172,10 +173,6 @@ class PostDetailActivity : AppCompatActivity() {
 
         sheetRefresh.setOnRefreshListener {
             viewModel.handleEvent(PostDetailEvent.SwipeRefresh)
-//            val handler = Handler(Looper.getMainLooper())
-//            handler.postDelayed({
-//                sheetRefresh.isRefreshing = false
-//            }, 1000)
         }
 
     }
