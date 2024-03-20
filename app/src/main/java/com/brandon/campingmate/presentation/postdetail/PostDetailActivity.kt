@@ -31,6 +31,7 @@ import com.brandon.campingmate.data.remote.firestore.FirestoreDataSourceImpl
 import com.brandon.campingmate.data.repository.PostRepositoryImpl
 import com.brandon.campingmate.data.repository.UserRepositoryImpl
 import com.brandon.campingmate.databinding.ActivityPostDetailBinding
+import com.brandon.campingmate.databinding.BottomSheetPostdetailCommnetSideMenuBinding
 import com.brandon.campingmate.domain.usecase.GetPostByIdUseCase
 import com.brandon.campingmate.domain.usecase.GetPostCommentsUseCase
 import com.brandon.campingmate.domain.usecase.GetUserUserCase
@@ -44,6 +45,7 @@ import com.brandon.campingmate.utils.setDebouncedOnClickListener
 import com.brandon.campingmate.utils.toFormattedString
 import com.brandon.campingmate.utils.toPx
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -62,7 +64,11 @@ class PostDetailActivity : AppCompatActivity() {
     }
 
     private val commentListAdapter: PostCommentListAdapter by lazy {
-        PostCommentListAdapter()
+        PostCommentListAdapter(
+            onClick = { commentItem ->
+                showPostCommentBottomSheetMenu(commentItem)
+            }
+        )
     }
 
     private val viewModel: PostDetailViewModel by viewModels {
@@ -114,6 +120,7 @@ class PostDetailActivity : AppCompatActivity() {
     }
 
     private fun initListener() = with(binding) {
+
         btnUploadComment.setDebouncedOnClickListener {
             val content = etCommentInput.text.toString()
             viewModel.handleEvent(PostDetailEvent.UploadComment(content))
@@ -341,6 +348,22 @@ class PostDetailActivity : AppCompatActivity() {
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showPostCommentBottomSheetMenu(commentItem: PostCommentListItem.PostCommentItem) {
+        val bottomSheetDialog = BottomSheetDialog(this)
+        val bottomSheetBinding = BottomSheetPostdetailCommnetSideMenuBinding.inflate(layoutInflater)
+
+        // TODO 댓글에 유저정보 확인 후 뷰 구용
+
+        bottomSheetDialog.setContentView(bottomSheetBinding.root)
+        bottomSheetBinding.btnMenuOwner.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+        bottomSheetBinding.btnMenuNotOwner.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+        bottomSheetDialog.show()
     }
 
 }

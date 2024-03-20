@@ -45,7 +45,6 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.storage
 import com.kakao.sdk.user.UserApiClient
-import timber.log.Timber
 
 class ProfileFragment : Fragment() {
 
@@ -469,7 +468,7 @@ class ProfileFragment : Fragment() {
                         val background = RectF(itemView.right.toFloat() + dX, itemView.top.toFloat(), itemView.right.toFloat(), itemView.bottom.toFloat())
                         c.drawRect(background, paint)
 
-                        icon = BitmapFactory.decodeResource(resources, R.drawable.ic_delete)
+                        icon = BitmapFactory.decodeResource(resources, R.drawable.ic_post_comment_delete)
                         val iconTop = itemView.top.toFloat() + (height - width) / 2
                         val iconRight = itemView.right.toFloat() - width + dX
                         val iconDst = RectF(iconRight, iconTop, iconRight + width, iconTop + width)

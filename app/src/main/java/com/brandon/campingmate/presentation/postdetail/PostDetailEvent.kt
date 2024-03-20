@@ -16,4 +16,6 @@ sealed class PostDetailEvent {
 
     object InfiniteScroll : PostDetailEvent()
 
+    object Delete
+
 }

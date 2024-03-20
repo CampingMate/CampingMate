@@ -5,6 +5,7 @@ sealed class PostCommentListItem {
     data class PostCommentItem(
         val commentId: String?,
         val postId: String?,
+        val authorId: String?,
         val authorName: String?,
         val authorImageUrl: String?,
         val content: String?,

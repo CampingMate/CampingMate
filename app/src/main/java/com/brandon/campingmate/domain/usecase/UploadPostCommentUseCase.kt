@@ -21,6 +21,7 @@ class UploadPostCommentUseCase(
         val postComment = PostComment(
             commentId = null,
             postId = postId,
+            authorId = user.userId,
             authorName = user.nickName,
             authorImageUrl = user.profileImage,
             content = comment,
