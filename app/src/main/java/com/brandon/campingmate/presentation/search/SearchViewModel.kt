@@ -23,15 +23,21 @@ class SearchViewModel : ViewModel() {
     private val _myList: MutableLiveData<MutableList<CampEntity>> = MutableLiveData()
     val myList: LiveData<MutableList<CampEntity>> get() = _myList
     var lastVisible: DocumentSnapshot? = null
+    var lastVisibleKeyword: DocumentSnapshot? = null
     var isLoadingData: Boolean = false
-    var pageNo: Int = 1
+    var isLoadingDataKeyword: Boolean = false
+    var myKeywordList = mutableListOf<String>()
+    private val db = Firebase.firestore
+    private var baseQuery: Query = db.collection("camps")
+    var isKeyword: Boolean = false
+    var isFilter: Boolean = false
 
     fun setUpParkParameter(text: String) {
         val authKey =
             "wDP6fsVX3kKuaOD7OKrRHaAgPUNtxYUy387PNJRBAW/F6GUdZgv5LyyIAkVXED3leDg3aUD+TFIgBHWCgMBdzQ=="
         communicateNetWork(
             hashMapOf(
-                "numOfRows" to "10",
+                "numOfRows" to "25",
                 "pageNo" to "1",
                 "MobileOS" to "AND",
                 "MobileApp" to "CampingMate",
@@ -63,9 +69,11 @@ class SearchViewModel : ViewModel() {
     }
 
     private fun callKeywordData(myList: MutableList<String>) {
-        val db = Firebase.firestore
-        var baseQuery: Query = db.collection("camps")
+        isKeyword = true
+        isFilter = false
         val result = baseQuery.whereIn("contentId", myList)
+        myKeywordList.addAll(myList)
+        Log.d("checkLog", "$myKeywordList")
         result.limit(5)
             .get()
             .addOnSuccessListener { documents ->
@@ -74,13 +82,58 @@ class SearchViewModel : ViewModel() {
                     val camp = document.toObject(CampEntity::class.java)
                     newCampListKeyword.add(camp)
                 }
-                _keyword.value = newCampListKeyword
+                if (documents.size() > 0) {
+                    _keyword.value = newCampListKeyword
+                    lastVisibleKeyword = when (documents.size()) {
+                        5 -> documents.documents[documents.size() - 1]
+                        else -> null
+                    }
+                }
+                Log.d("checkLog", "${lastVisibleKeyword?.get("facltNm")}")
             }
     }
+    fun loadMoreDataKeyword() {
+        if (isLoadingDataKeyword) {
+            return
+        }
+        Log.d("checkLog", "loadMoreDataKeyword 호출")
+        isLoadingDataKeyword = true
+        val result = baseQuery.whereIn("contentId", myKeywordList)
+
+        if (lastVisibleKeyword != null) {
+            val next = result
+                .startAfter(lastVisibleKeyword!!)
+                .limit(5)
+
+            next.get()
+                .addOnSuccessListener { documents ->
+                    val newCampListKeyword = mutableListOf<CampEntity>()
+                    for (document in documents) {
+                        val camp = document.toObject(CampEntity::class.java)
+                        newCampListKeyword.add(camp)
+                    }
+                    val currentList = _keyword.value ?: mutableListOf()
+                    currentList.addAll(newCampListKeyword)
+                    Log.d("checkLog", "리스트 확인 : ${currentList.size}")
+                    _keyword.value = currentList
+                    if (documents.size() > 0) {
+                        lastVisibleKeyword = documents.documents[documents.size() - 1]
+                    } else {
+                        lastVisibleKeyword = null  // 더 이상 데이터가 없을 때 lastVisible을 null로 설정
+                    }
+                    isLoadingDataKeyword = false
+                }
+                .addOnFailureListener { exception ->
+                    Log.d("checkLog", "로딩에러 -> ${exception}")
+                    isLoadingDataKeyword = false
+                }
+        }
+    }
+
 
     fun callData() {
-        val db = Firebase.firestore
-        var baseQuery: Query = db.collection("camps")
+        isKeyword = false
+        isFilter = true
         var result = if (doNmList.isNotEmpty()) {
             baseQuery.whereIn("doNm", doNmList)
         } else {
@@ -157,8 +210,6 @@ class SearchViewModel : ViewModel() {
         }
         isLoadingData = true
         Log.d("Search", "loadMoreData")
-        val db = Firebase.firestore
-        var baseQuery: Query = db.collection("camps")
         if (lastVisible != null) {
             var result = if (doNmList.isNotEmpty()) {
                 baseQuery.whereIn("doNm", doNmList)
@@ -234,6 +285,5 @@ class SearchViewModel : ViewModel() {
                 }
         }
     }
-
 
 }

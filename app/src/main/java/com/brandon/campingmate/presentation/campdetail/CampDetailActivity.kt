@@ -3,7 +3,6 @@ package com.brandon.campingmate.presentation.campdetail
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -11,6 +10,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
+import android.view.animation.AlphaAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -19,15 +19,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.ActivityCampDetailBinding
+import com.brandon.campingmate.domain.model.CampCommentEntity
 import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.campdetail.adapter.CommentListAdapter
 import com.brandon.campingmate.presentation.campdetail.adapter.ViewPagerAdapter
 import com.brandon.campingmate.presentation.common.SnackbarUtil
-import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.storage.storage
 import com.kakao.sdk.user.UserApiClient
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
@@ -41,7 +39,6 @@ import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.UUID
 
 class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -61,6 +58,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private var mapY: String? = null
     private var campName: String? = null
     private var myImage: String = ""
+    var isTop = true
 
     companion object {
         private const val REQUEST_CODE_IMAGE_PICK = 1001
@@ -95,7 +93,6 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         campEntity.observe(this@CampDetailActivity) {
             if (it != null) {
                 initSetting(it)
-                makeMarker()
             }
         }
         campComment.observe(this@CampDetailActivity) {
@@ -199,6 +196,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             LinearLayoutManager(this@CampDetailActivity, LinearLayoutManager.VERTICAL, false)
         scrollTab()
         comment()
+        scrollListener()
 
         btnDetailsattel.setOnClickListener {
             when (maptype) {
@@ -244,6 +242,29 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         })
     }
 
+    private fun scrollListener() = with(binding){
+        val fadeIn = AlphaAnimation(0f, 1f).apply { duration = 1000 }
+        val fadeOut = AlphaAnimation(1f, 0f).apply { duration = 1000 }
+        scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+            if(scrollY == 0){ //최상단일경우
+                if(!isTop){
+                    floating.startAnimation(fadeOut)
+                    floating.visibility = View.GONE
+                    isTop = true
+                }
+            } else{ //최상단이 아닐경우
+                if(isTop){
+                    floating.startAnimation(fadeIn)
+                    floating.visibility = View.VISIBLE
+                    isTop = false
+                }
+            }
+        }
+        floating.setOnClickListener {
+            scrollView.smoothScrollTo(0,0)
+        }
+    }
+
     /**
      * 댓글
      */
@@ -274,14 +295,19 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                             if (myImage.isNotBlank()) {
                                 val myImageUri = Uri.parse(myImage)
                                 viewModel.uploadImage(myImageUri) { imageUrl ->
-                                    val myComment = CampCommentEntity(
-                                        userId,
-                                        userName,
-                                        content,
-                                        date,
-                                        Uri.parse(imageUrl)
-                                    )
-                                    viewModel.uploadComment(myId!!, myComment)
+                                    val myComment = myId?.let { it1 ->
+                                        CampCommentEntity(
+                                            userId,
+                                            userName,
+                                            content,
+                                            date,
+                                            Uri.parse(imageUrl),
+                                            it1
+                                        )
+                                    }
+                                    if (myComment != null) {
+                                        viewModel.uploadComment(myId!!, myComment)
+                                    }
                                     commentEdit.text.clear()
                                     selectedImage.setImageURI(null)
                                     selectedImage.visibility = View.GONE
@@ -289,8 +315,14 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                                 }
                             } else {
                                 val myComment =
-                                    CampCommentEntity(userId, userName, content, date, Uri.EMPTY)
-                                viewModel.uploadComment(myId!!, myComment)
+                                    myId?.let { it1 ->
+                                        CampCommentEntity(userId, userName, content, date, Uri.EMPTY,
+                                            it1
+                                        )
+                                    }
+                                if (myComment != null) {
+                                    viewModel.uploadComment(myId!!, myComment)
+                                }
                                 commentEdit.text.clear()
                             }
                         }
@@ -431,6 +463,10 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         naverMap?.maxZoom = 18.0
         naverMap?.extent =
             LatLngBounds(LatLng(32.973077, 124.270981), LatLng(38.856197, 130.051725))
+        if (mapX!!.isNotEmpty() && mapY!!.isNotEmpty() && campName!!.isNotEmpty()) {
+            makeMarker(mapX, mapY, campName)
+        }
+
     }
 
     private fun View.hideKeyboardInput() {
@@ -444,19 +480,19 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         Log.d("test", "맵뷰 파괴됨")
     }
 
-    private fun makeMarker() {
+    private fun makeMarker(mapX: String?, mapY: String?, campName: String?) {
         if (mapX != null && mapY != null) {
-            val mapY = if (mapY.isNullOrEmpty()) 45.0 else mapY!!.toDouble()
-            val mapX = if (mapX.isNullOrEmpty()) 130.0 else mapX!!.toDouble()
+            val mapY = if (mapY.isEmpty()) 37.0 else mapY!!.toDouble()
+            val mapX = if (mapX.isEmpty()) 127.0 else mapX!!.toDouble()
             val cameraPosition = CameraPosition(LatLng(mapY, mapX), 10.0)
             val marker = Marker()
-            Timber.tag("test").d(naverMap.toString())
+            Timber.tag("makeMarker").d("mapx =${mapX}, mapy = ${mapY}")
             marker.position = LatLng(mapY, mapX)
             marker.captionText = campName.toString()
             marker.captionRequestedWidth = 200
             marker.setCaptionAligns(Align.Top)
             marker.captionOffset = 10
-            marker.captionTextSize = 18f
+            marker.captionTextSize = 16f
             marker.map = naverMap
             naverMap?.cameraPosition = cameraPosition
         }

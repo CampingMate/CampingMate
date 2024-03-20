@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.viewPager.adapter = ViewPager2Adapter(supportFragmentManager, lifecycle)
         binding.viewPager.isUserInputEnabled = false
-//        binding.viewPager.offscreenPageLimit = 1
+        //binding.viewPager.offscreenPageLimit = 1
         binding.bottomNavigation.setupWithViewPager2(binding.viewPager)
 
         binding.bottomNavigation.setOnTabSelectListener(object : AnimatedBottomBar.OnTabSelectListener {

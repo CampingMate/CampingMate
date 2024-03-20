@@ -108,23 +108,6 @@ class ImagePicker(
         }
     }
 
-//    private fun setupSnackbar() {
-//        val shapeDrawable = GradientDrawable().apply {
-//            shape = GradientDrawable.RECTANGLE
-//            cornerRadii = floatArrayOf(50f, 50f, 50f, 50f, 50f, 50f, 50f, 50f)
-//        }
-//
-//        selectionSnackbar = Snackbar.make(binding.root, "", Snackbar.LENGTH_SHORT).apply {
-//            val snackbarView = view
-//            snackbarView.background = shapeDrawable
-//            val layoutParams = snackbarView.layoutParams as CoordinatorLayout.LayoutParams
-//            layoutParams.gravity = Gravity.BOTTOM or Gravity.CENTER
-//            layoutParams.width = FrameLayout.LayoutParams.WRAP_CONTENT
-//            layoutParams.setMargins(20, 20, 20, 20) // 스낵바 여백 설정
-//            snackbarView.layoutParams = layoutParams
-//        }
-//    }
-
     private fun setupView() = with(binding) {
         setupRoundedCorners(cornerRadius)
         if (bottomSheetUsageDescription != null) {
@@ -212,13 +195,6 @@ class ImagePicker(
                             AnimationUtils.loadAnimation(requireContext(), R.anim.slide_down)
                         binding.clSnackbar.startAnimation(slideDownAnimation)
                         binding.clSnackbar.isVisible = false
-//                        slideDownAnimation.setAnimationListener(object : Animation.AnimationListener {
-//                            override fun onAnimationStart(animation: Animation?) {}
-//                            override fun onAnimationRepeat(animation: Animation?) {}
-//                            override fun onAnimationEnd(animation: Animation?) {
-//                                // 애니메이션 종료 후 스낵바 숨기기
-//                            }
-//                        })
                     }
                 }
             }
