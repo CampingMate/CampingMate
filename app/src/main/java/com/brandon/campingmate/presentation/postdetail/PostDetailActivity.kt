@@ -5,15 +5,19 @@ import android.content.Context
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
+import android.text.InputFilter
+import android.text.method.ScrollingMovementMethod
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,6 +31,8 @@ import com.brandon.campingmate.data.remote.firestore.FirestoreDataSourceImpl
 import com.brandon.campingmate.data.repository.PostRepositoryImpl
 import com.brandon.campingmate.data.repository.UserRepositoryImpl
 import com.brandon.campingmate.databinding.ActivityPostDetailBinding
+import com.brandon.campingmate.databinding.BottomSheetPostdetailCommnetSideMenuBinding
+import com.brandon.campingmate.domain.usecase.DeletePostCommentUseCase
 import com.brandon.campingmate.domain.usecase.GetPostByIdUseCase
 import com.brandon.campingmate.domain.usecase.GetPostCommentsUseCase
 import com.brandon.campingmate.domain.usecase.GetUserUserCase
@@ -40,6 +46,7 @@ import com.brandon.campingmate.utils.setDebouncedOnClickListener
 import com.brandon.campingmate.utils.toFormattedString
 import com.brandon.campingmate.utils.toPx
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -58,7 +65,11 @@ class PostDetailActivity : AppCompatActivity() {
     }
 
     private val commentListAdapter: PostCommentListAdapter by lazy {
-        PostCommentListAdapter()
+        PostCommentListAdapter(
+            onClick = { commentItem ->
+                viewModel.handleEvent(PostDetailEvent.ShowBottomSheetMenuIfUserExists(commentItem))
+            }
+        )
     }
 
     private val viewModel: PostDetailViewModel by viewModels {
@@ -86,6 +97,12 @@ class PostDetailActivity : AppCompatActivity() {
                         fireStoreDB
                     )
                 )
+            ),
+            DeletePostCommentUseCase(
+                PostRepositoryImpl(
+                    FirestoreDataSourceImpl(fireStoreDB),
+                    FireBaseStorageDataSourceImpl(FirebaseService.firebaseStorage)
+                )
             )
         )
     }
@@ -110,7 +127,8 @@ class PostDetailActivity : AppCompatActivity() {
     }
 
     private fun initListener() = with(binding) {
-        btnSend.setDebouncedOnClickListener {
+
+        btnUploadComment.setDebouncedOnClickListener {
             val content = etCommentInput.text.toString()
             viewModel.handleEvent(PostDetailEvent.UploadComment(content))
         }
@@ -191,6 +209,10 @@ class PostDetailActivity : AppCompatActivity() {
             }
         })
 
+        etCommentInput.addTextChangedListener {
+            viewModel.checkValidComment(it.toString())
+        }
+
     }
 
     private fun initViewModel() = with(viewModel) {
@@ -205,6 +227,12 @@ class PostDetailActivity : AppCompatActivity() {
                 onEvent(event)
             }
         }
+
+        lifecycleScope.launch {
+            viewModel.buttonUiState.flowWithLifecycle(lifecycle).collectLatest {
+                binding.btnUploadComment.isEnabled = it
+            }
+        }
     }
 
     private fun onEvent(event: PostDetailEvent) {
@@ -213,6 +241,14 @@ class PostDetailActivity : AppCompatActivity() {
                 binding.etCommentInput.text.clear()
                 showSnackbar("댓글이 업로드되었습니다.")
                 hideKeyboard()
+            }
+
+            is PostDetailEvent.MakeToast -> {
+                showToast(event.message)
+            }
+
+            is PostDetailEvent.ShowBottomSheetMenu -> {
+                showBottomSheetCommentMenu(event.isOwner, event.postCommentId)
             }
 
             else -> {}
@@ -236,12 +272,10 @@ class PostDetailActivity : AppCompatActivity() {
             }
         }
         state.comments.let { comments ->
-            val firstComment = comments.firstOrNull()
+            val firstComment = comments.lastOrNull()
             firstComment?.let { comment ->
-                if (comment is PostCommentListItem.PostCommentItem) {
-                    binding.ivCommentUserProfile.load(comment.authorImageUrl)
-                    binding.tvComment.text = comment.content
-                }
+                binding.ivCommentUserProfile.load(comment.authorImageUrl)
+                binding.tvComment.text = comment.content
             }
 
             binding.tvNoComment.isVisible = comments.isEmpty()
@@ -274,11 +308,14 @@ class PostDetailActivity : AppCompatActivity() {
 
 
         bottomSheetBehavior = BottomSheetBehavior.from(binding.sheetContainer)
-
         bottomSheetBehavior?.let {
             it.state = BottomSheetBehavior.STATE_HIDDEN
             it.peekHeight = 650.toPx(this@PostDetailActivity)
         }
+
+        val filterArray = arrayOf<InputFilter>(InputFilter.LengthFilter(150))
+        etCommentInput.filters = filterArray
+        etCommentInput.movementMethod = ScrollingMovementMethod()
 
     }
 
@@ -317,8 +354,36 @@ class PostDetailActivity : AppCompatActivity() {
     }
 
     private fun showSnackbar(message: String) {
-        val rootView = binding.root
-        Snackbar.make(rootView, message, Snackbar.LENGTH_LONG).show()
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showBottomSheetCommentMenu(
+        isOwner: Boolean,
+        postCommentId: String?,
+    ) {
+        val bottomSheetDialog = BottomSheetDialog(this)
+        val bottomSheetBinding = BottomSheetPostdetailCommnetSideMenuBinding.inflate(layoutInflater)
+
+        if (isOwner) {
+            bottomSheetBinding.btnMenuOwner.isVisible = true
+            bottomSheetBinding.btnMenuNotOwner.isVisible = false
+        } else {
+            bottomSheetBinding.btnMenuOwner.isVisible = false
+            bottomSheetBinding.btnMenuNotOwner.isVisible = true
+        }
+
+        bottomSheetDialog.setContentView(bottomSheetBinding.root)
+
+        bottomSheetBinding.btnMenuOwner.setOnClickListener {
+            Timber.tag("DELETE").d("삭제 이벤트 발생")
+            viewModel.handleEvent(PostDetailEvent.DeletePostComment(postCommentId))
+            bottomSheetDialog.dismiss()
+        }
+        bottomSheetDialog.show()
     }
 
 }
