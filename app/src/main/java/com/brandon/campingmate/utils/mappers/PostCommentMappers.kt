@@ -27,7 +27,7 @@ fun PostCommentDTO.toPostComment(): PostComment {
     )
 }
 
-fun PostComment.toPostCommentListItem(): PostCommentListItem {
+fun PostComment.toPostCommentListItem(): PostCommentListItem.PostCommentItem {
     return PostCommentListItem.PostCommentItem(
         commentId = commentId,
         postId = postId,

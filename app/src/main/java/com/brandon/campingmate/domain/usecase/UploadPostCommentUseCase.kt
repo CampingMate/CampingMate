@@ -11,7 +11,11 @@ import timber.log.Timber
 class UploadPostCommentUseCase(
     private val postRepository: PostRepository
 ) {
-    suspend operator fun invoke(postId: String?, user: User?, comment: String): Result<PostCommentListItem> {
+    suspend operator fun invoke(
+        postId: String?,
+        user: User?,
+        comment: String
+    ): Result<PostCommentListItem.PostCommentItem> {
         if (postId.isNullOrBlank()) throw IllegalArgumentException("Post ID cannot be null.")
         if (user == null) throw IllegalArgumentException("User cannot be null.")
         val postComment = PostComment(

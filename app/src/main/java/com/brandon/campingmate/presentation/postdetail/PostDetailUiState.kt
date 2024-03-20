@@ -5,7 +5,7 @@ import com.brandon.campingmate.presentation.postdetail.adapter.PostCommentListIt
 
 data class PostDetailUiState(
     val post: Post?,
-    val comments: List<PostCommentListItem>,
+    val comments: List<PostCommentListItem.PostCommentItem>,
     val isSwipeLoadingComments: Boolean,
     val isInfiniteLoadingComments: Boolean
 ) {

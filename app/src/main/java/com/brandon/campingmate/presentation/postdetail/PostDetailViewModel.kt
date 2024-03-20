@@ -91,10 +91,14 @@ class PostDetailViewModel(
                 postId = _uiState.value.post?.postId,
                 pageSize = pageSize,
             ).fold(
-                onSuccess = {
+                onSuccess = { newComments ->
+
                     _uiState.update { currentState ->
+                        val uniqueOldComments = currentState.comments.filterNot { oldComment ->
+                            newComments.any { newItem -> newItem.commentId == oldComment.commentId }
+                        }
                         currentState.copy(
-                            comments = currentState.comments + it,
+                            comments = uniqueOldComments + newComments,
                             isSwipeLoadingComments = false,
                             isInfiniteLoadingComments = false
                         )
@@ -110,7 +114,7 @@ class PostDetailViewModel(
         }
     }
 
-    private fun addCommentToTop(postComment: PostCommentListItem) {
+    private fun addCommentToTop(postComment: PostCommentListItem.PostCommentItem) {
         _uiState.update { currentState -> currentState.copy(comments = listOf(postComment) + currentState.comments) }
     }
 
