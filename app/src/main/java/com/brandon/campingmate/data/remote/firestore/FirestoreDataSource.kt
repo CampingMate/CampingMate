@@ -20,4 +20,5 @@ interface FirestoreDataSource {
 
     suspend fun uploadPost(postEntity: PostDTO): Result<String>
     suspend fun uploadPostComment(postId: String, postCommentDTO: PostCommentDTO): Result<PostComment>
+    suspend fun deletePostCommentById(commentId: String, postId: String): Result<String>
 }

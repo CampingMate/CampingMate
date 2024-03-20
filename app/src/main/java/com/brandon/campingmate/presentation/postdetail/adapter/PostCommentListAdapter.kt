@@ -49,6 +49,10 @@ class PostCommentListAdapter :
                     tvComment.text = item.content
                     tvTimestamp.text = item.timestamp
                     Glide.with(binding.root).load(item.authorImageUrl).into(binding.ivUserProfile)
+
+                    ivSideMenu.setOnClickListener {
+
+                    }
                 }
             }
         }

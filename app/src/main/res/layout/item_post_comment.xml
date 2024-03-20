@@ -20,10 +20,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="14dp"
+        android:layout_marginTop="12dp"
         android:text="유저 닉네임"
         android:textColor="@color/board_gray"
-        android:textSize="14sp"
+        android:textSize="13sp"
         app:layout_constraintStart_toEndOf="@id/iv_user_profile"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -33,14 +33,15 @@
         android:layout_height="24dp"
         android:layout_marginEnd="16dp"
         android:src="@drawable/ic_side_menu"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_user_name" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tv_comment"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="6dp"
         android:layout_marginEnd="16dp"
         android:text="댓글 내용입니다"
         android:textFontWeight="500"

@@ -78,6 +78,10 @@ class PostRepositoryImpl(
     override suspend fun uploadComment(postId: String, postComment: PostComment): Result<PostComment> {
         return firestoreDataSource.uploadPostComment(postId, postComment.toCommentDTO())
     }
+
+    override suspend fun deletePostCommentById(commentId: String, postId: String): Result<String> {
+        return firestoreDataSource.deletePostCommentById(commentId, postId)
+    }
 }
 
 

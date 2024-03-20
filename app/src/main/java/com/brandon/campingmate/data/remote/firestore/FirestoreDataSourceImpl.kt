@@ -107,4 +107,13 @@ class FirestoreDataSourceImpl(
                 ?: throw NoSuchElementException("Can't find the User using local myID: $userId")
         }
     }
+
+    override suspend fun deletePostCommentById(commentId: String, postId: String): Result<String> =
+        withContext(IO) {
+            runCatching {
+                firestore.collection("posts").document(postId)
+                    .collection("comments").document(commentId).delete()
+                "Post comment($commentId) is deleted"
+            }
+        }
 }
