@@ -55,11 +55,16 @@ class SearchFragment : Fragment() {
 
     private fun initViewModel() = with(viewModel) {
         keyword.observe(viewLifecycleOwner){
+            Log.d("checkLog", "keyword 옵저빙")
             binding.loadingAnimation.visibility = View.GONE
-            listAdapter.submitList(it)
+//            binding.loadingAnimationInfinity.visibility = View.GONE
+            val myNewList = mutableListOf<CampEntity>()
+            myNewList.addAll(it)
+            listAdapter.submitList(myNewList)
         }
         myList.observe(viewLifecycleOwner){
             binding.loadingAnimation.visibility = View.GONE
+//            binding.loadingAnimationInfinity.visibility = View.GONE
             val myNewList = mutableListOf<CampEntity>()
             myNewList.addAll(it)
             listAdapter.submitList(myNewList)
@@ -83,8 +88,16 @@ class SearchFragment : Fragment() {
 
                 if (visibleItemCount + firstVisibleItemPosition >= totalItemCount && firstVisibleItemPosition >= 0) {
                     // 목록의 끝에 도달했을 때, 더 많은 데이터 로드
-                    if(!viewModel.isLoadingData){
-                        viewModel.loadMoreData()
+//                    binding.loadingAnimationInfinity.visibility = View.VISIBLE
+                    if(viewModel.isFilter){
+                        if(!viewModel.isLoadingData){
+                            viewModel.loadMoreData()
+                        }
+                    }
+                    if(viewModel.isKeyword){
+                        if(!viewModel.isLoadingDataKeyword){
+                            viewModel.loadMoreDataKeyword()
+                        }
                     }
                 }
             }
