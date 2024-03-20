@@ -164,13 +164,13 @@ class SearchActivity : AppCompatActivity() {
          */
         btnApply.setOnClickListener {
             loadingAnimation.visibility = View.VISIBLE
-            SearchFragment.doNmList.clear()
-            SearchFragment.activatedChips.clear()
+            doNmList.clear()
+            activatedChips.clear()
 
             for (chipId in chipIds) {
                 val chip = root.findViewById<Chip>(chipId)
                 if (chip.isChecked) {
-                    SearchFragment.activatedChips.add(chip.text.toString())
+                    activatedChips.add(chip.text.toString())
                     if (chip.text.toString() in listOf(
                             "서울",
                             "부산",
@@ -211,7 +211,7 @@ class SearchActivity : AppCompatActivity() {
                             "제주" -> "제주시"
                             else -> ""
                         }
-                        SearchFragment.doNmList.add(value)
+                        doNmList.add(value)
                     }
                 }
             }

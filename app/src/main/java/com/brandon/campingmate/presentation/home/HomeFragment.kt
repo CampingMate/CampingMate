@@ -27,7 +27,6 @@ import com.brandon.campingmate.presentation.home.adapter.PetAdapter
 import com.brandon.campingmate.presentation.home.adapter.ReviewAdapter
 import com.brandon.campingmate.presentation.main.MainActivity
 import com.brandon.campingmate.presentation.search.SearchActivity
-import com.brandon.campingmate.presentation.search.SearchFragment
 import com.brandon.campingmate.presentation.splash.SplashViewModel
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.ChipGroup
