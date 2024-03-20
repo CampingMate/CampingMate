@@ -19,6 +19,7 @@ class HomeViewModel: ViewModel() {
 
     fun loadReviewItem(){
         viewModelScope.launch {
+            _reviewItem.value?.clear()
             val db = Firebase.firestore
             val allCamps: Query = db.collection("camps").whereNotEqualTo("commentList", listOf<String>())
 //            val allCamps: Query = db.collection("reviewTest").whereNotEqualTo("commentList", listOf<String>())
