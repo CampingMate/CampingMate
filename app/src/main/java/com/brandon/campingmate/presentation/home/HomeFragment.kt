@@ -24,6 +24,7 @@ import com.brandon.campingmate.network.retrofit.NetWorkClient.holidayNetWork
 import com.brandon.campingmate.presentation.campdetail.CampDetailActivity
 import com.brandon.campingmate.presentation.home.adapter.HomeAdapter
 import com.brandon.campingmate.presentation.home.adapter.PetAdapter
+import com.brandon.campingmate.presentation.home.adapter.ReviewAdapter
 import com.brandon.campingmate.presentation.main.MainActivity
 import com.brandon.campingmate.presentation.search.SearchFragment
 import com.brandon.campingmate.presentation.splash.SplashViewModel
@@ -44,7 +45,7 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding ?: throw IllegalStateException("Attempt to access binding when not set.")
 
     private val viewModel by lazy {
-        ViewModelProvider(this)[SplashViewModel::class.java]
+        ViewModelProvider(this)[HomeViewModel::class.java]
     }
 
     private var districtItem = mutableListOf<HomeEntity>()
@@ -77,7 +78,26 @@ class HomeFragment : Fragment() {
 //        initView(allCity, "district")
 //        initView(allCity, "theme")
         initPetView()
+        initReviewItem()
 
+//        val db = Firebase.firestore
+//        val documentRef = db.collection("reviewTest_empty")
+//        for(i in 0 until 5){
+//            var num = "${1111 * (i+1)}"
+//            val model = hashMapOf(
+//                "contentId" to num,
+//                "firstImageUrl" to "",
+//                "facltNm" to num,
+//                "lineIntro" to num,
+//                "addr1" to num,
+//                "induty1" to num,
+//                "induty2" to num,
+//                "induty3" to num,
+//                "induty4" to num
+//            )
+//            documentRef.add(model)
+//
+//        }
 
         onLayoutClickListener(binding.loCategoryCar)
         onLayoutClickListener(binding.loCategoryCaravan)
@@ -261,6 +281,17 @@ class HomeFragment : Fragment() {
                 else -> {
                     if(group == binding.chipDistrictGroup) {
                         Log.d("Home", "#csh 2 isChecked ${binding.chipAllCity.isChecked}")
+//                        if(binding.chipAllCity.isChecked==true) {
+//                            Log.d("Home", "#csh 3 isChecked ${binding.chipAllCity.isChecked}")
+//                            binding.chipAllCity.isCheckable = false
+//                            binding.chipAllCity.isChecked=false
+//                        }else{
+//                            binding.chipAllCity.isCheckable = true
+//                        }
+//                            binding.chipAllCity.isChecked=false
+//                        }else{
+//                            binding.chipAllCity.isCheckable = true
+//                        }
                         binding.chipAllCity.isChecked=true
                         viewModelGet("district")
                     }
@@ -274,6 +305,30 @@ class HomeFragment : Fragment() {
         binding.chipDistrictGroup.setOnCheckedChangeListener(chipGroup)
         binding.chipThemeGroup.setOnCheckedChangeListener(chipGroup)
 
+    }
+
+    private fun initReviewItem(){
+        Log.d("Home", "#csh initReviewItem()")
+        viewModel.loadReviewItem()
+        viewModel.reviewItem.observe(viewLifecycleOwner){
+            Log.d("Home", "#csh it: $it")
+            val reviewData = mutableListOf<HomeEntity>()
+            if(!it.isNullOrEmpty()){
+                reviewData.addAll(it)
+                Log.d("Home", "#csh reviewData: $reviewData")
+            }else{
+                reviewData.addAll(city)
+                reviewData.shuffle()
+                Log.d("Home", "#csh reviewData empty: $reviewData")
+            }
+
+            val context = requireContext()
+            val reviewAdapter = ReviewAdapter(context, reviewData)
+            binding.rvReviewItem.adapter = reviewAdapter
+            binding.rvReviewItem.layoutManager =
+                LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            binding.rvReviewItem.itemAnimator = null
+        }
     }
 
     private fun initPetView(){
@@ -370,22 +425,38 @@ class HomeFragment : Fragment() {
 
     private fun onLayoutClickListener(layout: LinearLayout){
         layout.setOnClickListener {
-            val bundle = Bundle()
-            when(layout){
-                binding.loCategoryGlamping -> bundle.putString("HomeBundle", "글램핑")
-                binding.loCategoryCaravan -> bundle.putString("HomeBundle", "카라반")
-                binding.loCategoryCar -> bundle.putString("HomeBundle", "자동차야영장")
-                binding.loCategoryGeneral -> bundle.putString("HomeBundle", "일반야영장")
-                binding.loSearch -> bundle.putString("HomeBundle", "검색")
-            }
-            val frag = SearchFragment().apply {
-                arguments = bundle
-            }
+//            val bundle = Bundle()
+//            when(layout){
+//                binding.loCategoryGlamping -> bundle.putString("HomeBundle", "글램핑")
+//                binding.loCategoryCaravan -> bundle.putString("HomeBundle", "카라반")
+//                binding.loCategoryCar -> bundle.putString("HomeBundle", "자동차야영장")
+//                binding.loCategoryGeneral -> bundle.putString("HomeBundle", "일반야영장")
+//                binding.loSearch -> bundle.putString("HomeBundle", "검색")
+//            }
+//            val frag = SearchFragment().apply {
+//                arguments = bundle
+//            }
+//
+//            requireActivity().supportFragmentManager.beginTransaction()
+//                .replace(R.id.lo_home_fragment, frag)
+//                .addToBackStack(null)
+//                .commit()
+//            val main = activity as MainActivity
+//            main.binding.viewPager.setCurrentItem(2, false)
 
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.lo_home_fragment, frag)
-                .addToBackStack(null)
-                .commit()
+            val intent = Intent(requireContext(), SearchFragment::class.java).apply{
+                var temp:String=""
+                when(layout){
+                    binding.loCategoryCar -> temp="차박"
+                    binding.loCategoryCaravan -> temp="카라반"
+                    binding.loCategoryGeneral ->temp="일반야영"
+                    binding.loCategoryGlamping ->temp="글램핑"
+                    binding.loSearch ->temp="검색바"
+                }
+                putExtra("searchData", temp)
+            }
+            requireContext().startActivity(intent)
+
         }
     }
 

@@ -37,6 +37,8 @@ class SplashViewModel:ViewModel() {
             _isGet.value=0
             val db = Firebase.firestore
             val allCity: Query = db.collection("camps").limit(10)
+//            val allCity: Query = db.collection("reviewTest")
+//            val allCity: Query = db.collection("reviewTest_empty")
             val allTheme : Query = allCity.whereNotEqualTo("themaEnvrnCl", listOf<String>()).limit(10)
             allCity.get().addOnSuccessListener {documents ->
                 for (document in documents) {
