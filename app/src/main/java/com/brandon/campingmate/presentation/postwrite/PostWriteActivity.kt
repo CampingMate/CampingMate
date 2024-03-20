@@ -41,6 +41,7 @@ import com.brandon.campingmate.network.firestore.FirebaseService.firebaseStorage
 import com.brandon.campingmate.presentation.postdetail.PostDetailActivity
 import com.brandon.campingmate.presentation.postdetail.PostDetailActivity.Companion.EXTRA_POST_ID
 import com.brandon.campingmate.presentation.postwrite.adapter.PostWriteImageAdapter
+import com.brandon.campingmate.utils.setDebouncedOnClickListener
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -189,7 +190,7 @@ class PostWriteActivity : AppCompatActivity() {
     }
 
     private fun initListener() = with(binding) {
-        btnPostUpload.setOnClickListener {
+        btnPostUpload.setDebouncedOnClickListener {
             val title = binding.tvTitle.text.toString()
             val content = binding.tvContent.text.toString()
             viewModel.handleEvent(
