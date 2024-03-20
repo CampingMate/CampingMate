@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.brandon.campingmate.domain.model.User
-import com.brandon.campingmate.domain.usecase.CheckUserLoggedInUseCase
+import com.brandon.campingmate.domain.usecase.GetUserUserCase
 import com.brandon.campingmate.domain.usecase.UploadPostUseCase
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,7 +20,7 @@ import timber.log.Timber
 
 class PostWriteViewModel(
     private val uploadPostUseCase: UploadPostUseCase,
-    private val checkUserLoggedInUseCase: CheckUserLoggedInUseCase,
+    private val getUserUserCase: GetUserUserCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PostWriteImageUiState.init())
@@ -31,8 +31,8 @@ class PostWriteViewModel(
     )
     val event: SharedFlow<PostWriteEvent> = _event.asSharedFlow()
 
-    private val _isLoggedIn = MutableStateFlow<User?>(null)
-    val isLoggedIn: StateFlow<User?> = _isLoggedIn
+    private val _user = MutableStateFlow<User?>(null)
+    val user: StateFlow<User?> = _user
 
     init {
         checkLoginStatus()
@@ -40,8 +40,8 @@ class PostWriteViewModel(
 
     private fun checkLoginStatus() {
         viewModelScope.launch {
-            checkUserLoggedInUseCase().fold(
-                onSuccess = { user -> _isLoggedIn.value = user },
+            getUserUserCase().fold(
+                onSuccess = { user -> _user.value = user },
                 onFailure = { e -> Timber.d("로그인 중 에러 발생, 예외: $e") }
             )
         }
@@ -93,7 +93,7 @@ class PostWriteViewModel(
             uploadPostUseCase(
                 title = title,
                 content = content,
-                user = _isLoggedIn.value,
+                user = _user.value,
                 imageUris = uiState.value.imageUris
             ).fold(
                 onSuccess = { postId -> handleEvent(PostWriteEvent.PostUploadSuccess(postId)) },
@@ -104,14 +104,14 @@ class PostWriteViewModel(
 
 class PostWriteViewModelFactory(
     private val uploadPostUseCase: UploadPostUseCase,
-    private val checkUserLoggedInUseCase: CheckUserLoggedInUseCase,
+    private val getUserUserCase: GetUserUserCase,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         Timber.d("Creating PostWriteViewModel instance")
         if (modelClass.isAssignableFrom(PostWriteViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST") return PostWriteViewModel(
                 uploadPostUseCase,
-                checkUserLoggedInUseCase
+                getUserUserCase
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

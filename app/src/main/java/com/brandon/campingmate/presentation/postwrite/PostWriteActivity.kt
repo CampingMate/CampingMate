@@ -34,13 +34,14 @@ import com.brandon.campingmate.data.remote.firestore.FirestoreDataSourceImpl
 import com.brandon.campingmate.data.repository.PostRepositoryImpl
 import com.brandon.campingmate.data.repository.UserRepositoryImpl
 import com.brandon.campingmate.databinding.ActivityPostWriteBinding
-import com.brandon.campingmate.domain.usecase.CheckUserLoggedInUseCase
+import com.brandon.campingmate.domain.usecase.GetUserUserCase
 import com.brandon.campingmate.domain.usecase.UploadPostUseCase
 import com.brandon.campingmate.network.firestore.FirebaseService.fireStoreDB
 import com.brandon.campingmate.network.firestore.FirebaseService.firebaseStorage
 import com.brandon.campingmate.presentation.postdetail.PostDetailActivity
 import com.brandon.campingmate.presentation.postdetail.PostDetailActivity.Companion.EXTRA_POST_ID
 import com.brandon.campingmate.presentation.postwrite.adapter.PostWriteImageAdapter
+import com.brandon.campingmate.utils.setDebouncedOnClickListener
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -61,7 +62,7 @@ class PostWriteActivity : AppCompatActivity() {
                     )
                 )
             ),
-            CheckUserLoggedInUseCase(
+            GetUserUserCase(
                 UserRepositoryImpl(
                     PreferencesDataSourceImpl(
                         sharedPreferences
@@ -117,7 +118,7 @@ class PostWriteActivity : AppCompatActivity() {
     private fun initViewModel() = with(viewModel) {
 
         lifecycleScope.launch {
-            isLoggedIn.flowWithLifecycle(lifecycle).collect { user ->
+            user.flowWithLifecycle(lifecycle).collect { user ->
                 if (user != null) {
                     // 사용자가 로그인 한 경우
                     Timber.tag("LOGIN").d("회원입니다: $user")
@@ -189,7 +190,7 @@ class PostWriteActivity : AppCompatActivity() {
     }
 
     private fun initListener() = with(binding) {
-        btnPostUpload.setOnClickListener {
+        btnPostUpload.setDebouncedOnClickListener {
             val title = binding.tvTitle.text.toString()
             val content = binding.tvContent.text.toString()
             viewModel.handleEvent(
@@ -245,7 +246,6 @@ class PostWriteActivity : AppCompatActivity() {
             bottomSheetUsageDescription = null,
             onSelectionComplete = { selectedImages ->
                 viewModel.handleEvent(PostWriteEvent.ImageSelected(selectedImages))
-                Timber.tag("PICK").d("됐다 걸려들었어!: $selectedImages")
             })
         bottomSheet.show(supportFragmentManager, bottomSheet.tag)
     }

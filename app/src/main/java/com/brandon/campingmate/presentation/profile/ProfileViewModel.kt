@@ -16,13 +16,16 @@ class ProfileViewModel : ViewModel() {
     val bookmarkedList: LiveData<List<CampEntity>> get() = _bookmarkedList
     private val bookmarkCamp: MutableList<CampEntity> = mutableListOf()
 
-    private val _postList : MutableLiveData<List<Post>> = MutableLiveData()
-    val postList : LiveData<List<Post>> get() = _postList
-    private val writingPost : MutableList<Post> = mutableListOf()
+    private val _postList: MutableLiveData<List<Post>> = MutableLiveData()
+    val postList: LiveData<List<Post>> get() = _postList
+    private val writingPost: MutableList<Post> = mutableListOf()
+    private var removeBookmarkItem: CampEntity? = null
+    private var removePostItem: Post? = null
+
 
     fun getBookmark(userID: String) {
         val db = FirebaseFirestore.getInstance()
-        val docRef = db.collection("users").document("Kakao${userID}")
+        val docRef = db.collection("users").document(userID)
         val contentIds = mutableListOf<String>()
         docRef.get().addOnSuccessListener {
             if (it.exists()) {
@@ -52,10 +55,11 @@ class ProfileViewModel : ViewModel() {
             _bookmarkedList.value = bookmarkCamp
         }
     }
+
     fun getPosts(userID: String) {
         val db = Firebase.firestore
         val baseQuery: Query = db.collection("posts")
-        val result = baseQuery.whereIn("authorId", listOf("Kakao${userID}"))
+        val result = baseQuery.whereIn("authorId", listOf(userID))
         writingPost.clear()
         result.get().addOnSuccessListener {
             for (doc in it) {
@@ -64,5 +68,56 @@ class ProfileViewModel : ViewModel() {
             }
             _postList.value = writingPost
         }
+    }
+
+    fun removeBookmarkCamp(userID: String, contentID: String) {
+        _bookmarkedList.value = _bookmarkedList.value?.toMutableList()?.apply {
+            removeBookmarkItem = find { it.contentId == contentID }
+            remove(removeBookmarkItem)
+        } ?: mutableListOf()
+
+        val db = FirebaseFirestore.getInstance()
+        val docRef = db.collection("users").document(userID)
+        val updateBookmarkList = mutableListOf<String>()
+        _bookmarkedList.value?.forEach {
+            updateBookmarkList.add(it.contentId.toString())
+        }
+        docRef.update("bookmarked", updateBookmarkList)
+    }
+
+    fun undoBookmarkCamp(userID: String) {
+        _bookmarkedList.value = _bookmarkedList.value?.toMutableList()?.apply {
+            removeBookmarkItem?.let { add(it) }
+        } ?: mutableListOf()
+        val db = FirebaseFirestore.getInstance()
+        val docRef = db.collection("users").document(userID)
+        val updateBookmarkList = mutableListOf<String>()
+        _bookmarkedList.value?.forEach {
+            updateBookmarkList.add(it.contentId.toString())
+        }
+        docRef.update("bookmarked", updateBookmarkList)
+    }
+
+    fun removePostAdapter(postID: String) {
+        _postList.value = _postList.value?.toMutableList()?.apply {
+            removePostItem = find { it.postId == postID }
+            remove(removePostItem)
+        } ?: mutableListOf()
+    }
+
+    fun removePostDB() {
+        val db = FirebaseFirestore.getInstance()
+        val docRef = db.collection("posts")
+        docRef.whereEqualTo("postId", removePostItem?.postId).get().addOnSuccessListener {
+            for (doc in it) {
+                doc.reference.delete()
+            }
+        }
+    }
+
+    fun undoPost() {
+        _postList.value = _postList.value?.toMutableList()?.apply {
+            removePostItem?.let { add(it) }
+        } ?: mutableListOf()
     }
 }

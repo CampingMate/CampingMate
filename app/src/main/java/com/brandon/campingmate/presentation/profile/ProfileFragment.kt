@@ -4,6 +4,12 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.RectF
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
@@ -21,7 +27,9 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.brandon.campingmate.R
 import com.brandon.campingmate.data.local.preferences.EncryptedPrefs
 import com.brandon.campingmate.databinding.FragmentProfileBinding
@@ -31,10 +39,13 @@ import com.brandon.campingmate.presentation.profile.adapter.ProfileBookmarkAdapt
 import com.brandon.campingmate.presentation.profile.adapter.ProfilePostAdapter
 import com.brandon.campingmate.utils.profileImgUpload
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.storage
 import com.kakao.sdk.user.UserApiClient
+import timber.log.Timber
 
 class ProfileFragment : Fragment() {
 
@@ -46,6 +57,7 @@ class ProfileFragment : Fragment() {
     private val bookmarkAdapter: ProfileBookmarkAdapter by lazy { ProfileBookmarkAdapter() }
     private val postAdapter: ProfilePostAdapter by lazy { ProfilePostAdapter() }
     private val db = FirebaseFirestore.getInstance()
+    var userId: String? = EncryptedPrefs.getMyId()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,6 +70,7 @@ class ProfileFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        userId = EncryptedPrefs.getMyId()
         checkLogin()
     }
 //    override fun onResume() {
@@ -78,24 +91,25 @@ class ProfileFragment : Fragment() {
         clickEditListener()
         clickEditProfile()
 
+        swipeRecyclerView(binding.rvBookmarked)
+        swipeRecyclerView(binding.rvWriting)
+
         clickLogout()
 
     }
 
     private fun checkLogin() {
-        UserApiClient.instance.me { user, _ ->
-            if (user?.id != null) {
-                initLogin()
-                setBookmarkedAdapter(user.id.toString())
-                setPostAdapter(user.id.toString())
-            } else initLogout()
-        }
-
+        if (userId != null) {
+            initLogin()
+            setBookmarkedAdapter(userId!!)
+            setPostAdapter(userId!!)
+        } else initLogout()
     }
 
     private fun setBookmarkedAdapter(userId: String) = with(binding) {
         rvBookmarked.adapter = bookmarkAdapter
-        rvBookmarked.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
+        rvBookmarked.layoutManager = layoutManager
         viewModel.getBookmark(userId)
         viewModel.bookmarkedList.observe(viewLifecycleOwner) {
             val newList = mutableListOf<CampEntity>()
@@ -111,41 +125,49 @@ class ProfileFragment : Fragment() {
                 tvTabBookmarked.visibility = View.VISIBLE
                 rvBookmarked.visibility = View.GONE
             }
+            layoutManager.scrollToPosition(it.size - 1)
         }
     }
 
     private fun setPostAdapter(userId: String) = with(binding) {
         rvWriting.adapter = postAdapter
-        rvWriting.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
+        rvWriting.layoutManager = layoutManager
         viewModel.getPosts(userId)
         viewModel.postList.observe(viewLifecycleOwner) {
             postAdapter.submitList(it.toList())
             if (it.isNotEmpty()) {
                 tvWritingSize.text = it.size.toString()
                 tvWritingSize.visibility = View.VISIBLE
+            } else {
+                tvWritingSize.text = it.size.toString()
+                if (lineWriting.visibility == View.VISIBLE) {
+                    tvTabWriting.visibility = View.VISIBLE
+                }
             }
+            layoutManager.scrollToPosition(it.size - 1)
         }
     }
 
     private fun initLogin() {
         with(binding) {
-            UserApiClient.instance.me { user, error ->
-                val docRef = db.collection("users").document("Kakao${user?.id}")
-                docRef.get().addOnSuccessListener {
-                    if (!it.exists()) {
-                        //ivProfileImg.setImageURI(Uri.parse(user?.kakaoAccount?.profile?.profileImageUrl))
+            val docRef = db.collection("users").document(userId.toString())
+            docRef.get().addOnSuccessListener {
+                if (!it.exists()) {
+                    UserApiClient.instance.me { user, error ->
+                        ivProfileImg.setImageURI(Uri.parse(user?.kakaoAccount?.profile?.profileImageUrl))
                         tvProfileName.textSize = 24f
                         tvProfileName.text = user?.kakaoAccount?.profile?.nickname
                         tvProfileEmail.text = user?.kakaoAccount?.email
-                    } else {
-                        if (profileImgUri == null) {
-                            ivProfileImg.scaleType = ImageView.ScaleType.CENTER_CROP
-                            Glide.with(requireContext()).load(it.getString("profileImage")).into(ivProfileImg)
-                            ivProfileImg.visibility = View.VISIBLE
-                            tvProfileName.textSize = 24f
-                            tvProfileName.text = it.getString("nickName").toString()
-                            tvProfileEmail.text = it.getString("userEmail").toString()
-                        }
+                    }
+                } else {
+                    if (profileImgUri == null) {
+                        ivProfileImg.scaleType = ImageView.ScaleType.CENTER_CROP
+                        Glide.with(requireContext()).load(it.getString("profileImage")).into(ivProfileImg)
+                        ivProfileImg.visibility = View.VISIBLE
+                        tvProfileName.textSize = 24f
+                        tvProfileName.text = it.getString("nickName").toString()
+                        tvProfileEmail.text = it.getString("userEmail").toString()
                     }
                 }
             }
@@ -187,11 +209,12 @@ class ProfileFragment : Fragment() {
             tvBookmarkedSize.visibility = View.GONE
             tvBookmarkedSize.text = "0"
             rvBookmarked.visibility = View.GONE
+            tvWritingSize.visibility = View.GONE
             tvWritingSize.text = "0"
+            rvWriting.visibility= View.GONE
 
         }
     }
-
 
     private fun clickLogin() {
         binding.btnGoLogin.setOnClickListener {
@@ -200,7 +223,6 @@ class ProfileFragment : Fragment() {
             startActivity(intent)
         }
     }
-
 
     private fun clickEditProfile() {
         with(binding) {
@@ -314,22 +336,20 @@ class ProfileFragment : Fragment() {
     private fun handleClickEdit(confirm: Boolean) {
         with(binding) {
             if (confirm) {
-                UserApiClient.instance.me { user, _ ->
-                    val documentRef = db.collection("users").document("Kakao${user?.id}")
-                    val updateNickname = hashMapOf<String, Any>("nickName" to "${tvProfileName.text}")
-                    if (profileImgUri != null) {
-                        profileImgUpload(profileImgUri!!, "Kakao${user?.id}")
-                        Firebase.storage.getReference("profileImage").child("Kakao${user?.id}").downloadUrl.addOnCompleteListener {
-                            if (it.isSuccessful) {
-                                val profileImgURI = hashMapOf<String, Any>("profileImage" to it.result.toString())
-                                documentRef.update(profileImgURI)
-                            }
+                val documentRef = db.collection("users").document(userId.toString())
+                val updateNickname = hashMapOf<String, Any>("nickName" to "${tvProfileName.text}")
+                if (profileImgUri != null) {
+                    profileImgUpload(profileImgUri!!, userId.toString())
+                    Firebase.storage.getReference("profileImage").child(userId.toString()).downloadUrl.addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            val profileImgURI = hashMapOf<String, Any>("profileImage" to it.result.toString())
+                            documentRef.update(profileImgURI)
                         }
-                        //profileImgUri = null
                     }
-                    documentRef.get().addOnSuccessListener {
-                        documentRef.update(updateNickname)
-                    }
+                    //profileImgUri = null
+                }
+                documentRef.get().addOnSuccessListener {
+                    documentRef.update(updateNickname)
                 }
                 tvProfileName.text = tvProfileName.text
             } else {
@@ -396,6 +416,71 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    private fun swipeRecyclerView(recyclerView: RecyclerView) {
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                when (recyclerView) {
+                    binding.rvBookmarked -> {
+                        val bookmarkID = bookmarkAdapter.currentList[position]
+                        viewModel.removeBookmarkCamp(userId.toString(), bookmarkID.contentId.toString())
+                        val undoSnackbar = Snackbar.make(binding.root, "해당 북마크를 삭제했습니다.", 5000)
+                        undoSnackbar.setAction("되돌리기") {
+                            viewModel.undoBookmarkCamp(userId.toString())
+                        }
+                        undoSnackbar.show()
+                    }
+
+                    binding.rvWriting -> {
+                        val postID = postAdapter.currentList[position]
+                        viewModel.removePostAdapter(postID.postId.toString())
+                        val undoSnackbar = Snackbar.make(binding.root, "해당 작성 글을 삭제했습니다.", 5000)
+                        undoSnackbar.setAction("되돌리기") {
+                            viewModel.undoPost()
+                        }
+                        undoSnackbar.show()
+                        val snackbarCallBack = object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                                super.onDismissed(transientBottomBar, event)
+                                if (event != DISMISS_EVENT_ACTION) {
+                                    viewModel.removePostDB()
+                                }
+                            }
+                        }
+                        undoSnackbar.addCallback(snackbarCallBack)
+                    }
+                }
+
+            }
+
+            override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
+                val icon: Bitmap
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                    val itemView = viewHolder.itemView
+                    val height = (itemView.bottom - itemView.top).toFloat()
+                    val width = height / 4
+                    val paint = Paint()
+                    if (dX < 0) {
+                        paint.color = Color.WHITE
+                        val background = RectF(itemView.right.toFloat() + dX, itemView.top.toFloat(), itemView.right.toFloat(), itemView.bottom.toFloat())
+                        c.drawRect(background, paint)
+
+                        icon = BitmapFactory.decodeResource(resources, R.drawable.ic_delete)
+                        val iconTop = itemView.top.toFloat() + (height - width) / 2
+                        val iconRight = itemView.right.toFloat() - width + dX
+                        val iconDst = RectF(iconRight, iconTop, iconRight + width, iconTop + width)
+                        c.drawBitmap(icon, null, iconDst, null)
+                    }
+                }
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+            }
+        })
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+    }
 
     private fun clickLogout() {
         with(binding) {
@@ -445,6 +530,7 @@ class ProfileFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        Glide.with(requireActivity()).clear(binding.ivProfileImg)
     }
 
 }

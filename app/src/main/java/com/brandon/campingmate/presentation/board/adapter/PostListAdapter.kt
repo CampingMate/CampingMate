@@ -34,25 +34,23 @@ import com.bumptech.glide.Glide
  * ViewType 의 확장성을 고려한 type 처리
  */
 class PostListAdapter(private val onClickItem: (Post) -> Unit) :
-    ListAdapter<PostListItem, PostListAdapter.PostViewHolder>(
-        object : DiffUtil.ItemCallback<PostListItem>() {
-            override fun areItemsTheSame(oldItem: PostListItem, newItem: PostListItem): Boolean {
-                return when {
-                    oldItem is PostListItem.PostItem && newItem is PostListItem.PostItem -> oldItem == newItem  // 모든 필드 비교
-                    oldItem is PostListItem.Loading && newItem is PostListItem.Loading -> true  // Loading 은 object(싱글턴 객체)로 항상 같다
-                    else -> false
-                }
-            }
-
-            override fun areContentsTheSame(oldItem: PostListItem, newItem: PostListItem): Boolean {
-                return when {
-                    oldItem is PostListItem.PostItem && newItem is PostListItem.PostItem -> true    // 앞서 모든 필드 비교로 체크
-                    oldItem is PostListItem.Loading && newItem is PostListItem.Loading -> true
-                    else -> false
-                }
+    ListAdapter<PostListItem, PostListAdapter.PostViewHolder>(object : DiffUtil.ItemCallback<PostListItem>() {
+        override fun areItemsTheSame(oldItem: PostListItem, newItem: PostListItem): Boolean {
+            return when {
+                oldItem is PostListItem.PostItem && newItem is PostListItem.PostItem -> oldItem == newItem  // 모든 필드 비교
+                oldItem is PostListItem.Loading && newItem is PostListItem.Loading -> true  // Loading 은 object(싱글턴 객체)로 항상 같다
+                else -> false
             }
         }
-    ) {
+
+        override fun areContentsTheSame(oldItem: PostListItem, newItem: PostListItem): Boolean {
+            return when {
+                oldItem is PostListItem.PostItem && newItem is PostListItem.PostItem -> true    // 앞서 모든 필드 비교로 체크
+                oldItem is PostListItem.Loading && newItem is PostListItem.Loading -> true
+                else -> false
+            }
+        }
+    }) {
 
 
     abstract class PostViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -60,8 +58,7 @@ class PostListAdapter(private val onClickItem: (Post) -> Unit) :
     }
 
     class PostItemViewHolder(
-        private val binding: ItemPostBinding,
-        private val onClickItem: (Post) -> Unit
+        private val binding: ItemPostBinding, private val onClickItem: (Post) -> Unit
     ) : PostViewHolder(binding.root) {
         override fun onBind(item: PostListItem) = with(binding) {
             if (item is PostListItem.PostItem) {
@@ -73,9 +70,7 @@ class PostListAdapter(private val onClickItem: (Post) -> Unit) :
                     ivPostImage.isVisible = false
                 } else {
                     ivPostImage.isVisible = true
-                    Glide.with(itemView.context)
-                        .load(imageUrl)
-                        .into(ivPostImage)
+                    Glide.with(itemView.context).load(imageUrl).into(ivPostImage)
                 }
             }
             binding.root.setOnClickListener {
@@ -106,11 +101,8 @@ class PostListAdapter(private val onClickItem: (Post) -> Unit) :
         return when (PostListViewType.from(viewType)) {
             PostListViewType.POSTITEM -> PostItemViewHolder(
                 ItemPostBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false
-                ),
-                onClickItem
+                    LayoutInflater.from(parent.context), parent, false
+                ), onClickItem
             )
 
             PostListViewType.LOADING -> PostLoadingViewHolder(
@@ -123,9 +115,7 @@ class PostListAdapter(private val onClickItem: (Post) -> Unit) :
 
             else -> PostUnknownViewHolder(
                 ItemPostUnknownBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false
+                    LayoutInflater.from(parent.context), parent, false
                 )
             )
         }
