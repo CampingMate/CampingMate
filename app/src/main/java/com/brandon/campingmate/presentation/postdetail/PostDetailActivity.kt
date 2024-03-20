@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,6 +40,7 @@ import com.brandon.campingmate.domain.usecase.GetUserUserCase
 import com.brandon.campingmate.domain.usecase.UploadPostCommentUseCase
 import com.brandon.campingmate.network.firestore.FirebaseService
 import com.brandon.campingmate.network.firestore.FirebaseService.fireStoreDB
+import com.brandon.campingmate.presentation.common.SnackbarUtil
 import com.brandon.campingmate.presentation.postdetail.adapter.PostCommentListAdapter
 import com.brandon.campingmate.presentation.postdetail.adapter.PostCommentListItem
 import com.brandon.campingmate.presentation.postdetail.adapter.PostDetailImageListAdapter
@@ -65,11 +67,9 @@ class PostDetailActivity : AppCompatActivity() {
     }
 
     private val commentListAdapter: PostCommentListAdapter by lazy {
-        PostCommentListAdapter(
-            onClick = { commentItem ->
-                viewModel.handleEvent(PostDetailEvent.ShowBottomSheetMenuIfUserExists(commentItem))
-            }
-        )
+        PostCommentListAdapter(onClick = { commentItem ->
+            viewModel.handleEvent(PostDetailEvent.ShowBottomSheetMenuIfUserExists(commentItem))
+        })
     }
 
     private val viewModel: PostDetailViewModel by viewModels {
@@ -97,8 +97,7 @@ class PostDetailActivity : AppCompatActivity() {
                         fireStoreDB
                     )
                 )
-            ),
-            DeletePostCommentUseCase(
+            ), DeletePostCommentUseCase(
                 PostRepositoryImpl(
                     FirestoreDataSourceImpl(fireStoreDB),
                     FireBaseStorageDataSourceImpl(FirebaseService.firebaseStorage)
@@ -126,10 +125,16 @@ class PostDetailActivity : AppCompatActivity() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.checkLoginStatus()
+    }
+
     private fun initListener() = with(binding) {
 
         btnUploadComment.setDebouncedOnClickListener {
             val content = etCommentInput.text.toString()
+            if (content.isBlank()) return@setDebouncedOnClickListener
             viewModel.handleEvent(PostDetailEvent.UploadComment(content))
         }
 
@@ -149,16 +154,16 @@ class PostDetailActivity : AppCompatActivity() {
                 when (newState) {
                     BottomSheetBehavior.STATE_HIDDEN -> {
                         hideKeyboard()
-                        binding.commentBarContainer.isVisible = false
+                        binding.clCommentBarContainer.isVisible = false
                     }
 
-                    else -> binding.commentBarContainer.isVisible = true
+                    else -> binding.clCommentBarContainer.isVisible = true
                 }
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
                 // 슬라이드하는 동안 배경 투명도 조절
-                binding.commentBarContainer.isVisible = (slideOffset < -0.8).not()
+                binding.clCommentBarContainer.isVisible = (slideOffset < -0.8).not()
                 when (slideOffset) {
                     in 0f..1f -> binding.nsContainer.alpha = 0.5f
                     in -1f..0f -> binding.nsContainer.alpha = 1 - 0.5f * (slideOffset + 1)
@@ -217,6 +222,12 @@ class PostDetailActivity : AppCompatActivity() {
 
     private fun initViewModel() = with(viewModel) {
         lifecycleScope.launch {
+            viewModel.user.flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED).collectLatest { user ->
+                configureCommentInputField(user != null)
+            }
+        }
+
+        lifecycleScope.launch {
             viewModel.uiState.flowWithLifecycle(lifecycle).collectLatest { state ->
                 onBind(state)
             }
@@ -234,6 +245,7 @@ class PostDetailActivity : AppCompatActivity() {
             }
         }
     }
+
 
     private fun onEvent(event: PostDetailEvent) {
         when (event) {
@@ -384,6 +396,25 @@ class PostDetailActivity : AppCompatActivity() {
             bottomSheetDialog.dismiss()
         }
         bottomSheetDialog.show()
+    }
+
+    private fun configureCommentInputField(isUserLoggedIn: Boolean) {
+        with(binding) {
+            if (isUserLoggedIn) {
+                clCommentBarContainer.setOnClickListener(null)
+                etCommentInput.isFocusable = true
+                etCommentInput.isFocusableInTouchMode = true
+                etCommentInput.hint = "텍스트를 입력하세요"
+            } else {
+                etCommentInput.setOnClickListener {
+                    Timber.tag("SHOW").d("로그인 필요 알림")
+                    SnackbarUtil.showSnackBar(binding.root)
+                }
+                etCommentInput.isFocusable = false
+                etCommentInput.isFocusableInTouchMode = false
+                etCommentInput.hint = "로그인 후 사용해주세요"
+            }
+        }
     }
 
 }
