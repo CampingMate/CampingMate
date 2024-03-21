@@ -90,14 +90,13 @@ class PostDetailViewModel(
         if (item.authorId.isNullOrBlank()) {
             _event.tryEmit(PostDetailEvent.ShowBottomSheetMenu(isOwner = false, postCommentId = null))
         } else {
-            if (_user.value?.userId == item.authorId) {
-                _event.tryEmit(
-                    PostDetailEvent.ShowBottomSheetMenu(
-                        isOwner = true,
-                        postCommentId = item.commentId
-                    )
+            val isOwner = _user.value?.userId == item.authorId
+            _event.tryEmit(
+                PostDetailEvent.ShowBottomSheetMenu(
+                    isOwner = isOwner,
+                    postCommentId = if (isOwner) item.commentId else null
                 )
-            }
+            )
         }
     }
 
@@ -179,7 +178,7 @@ class PostDetailViewModel(
     }
 
 
-    fun getPost(postId: String?) {
+    fun getPostById(postId: String?) {
         if (postId == null) return
         viewModelScope.launch {
             when (val result = getPostByIdUseCase(postId)) {

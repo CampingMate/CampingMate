@@ -9,4 +9,5 @@ data class CampCommentEntity(
     val date: String,
     val imageUrl: Uri?,
     val campId: String,
+    val userProfile: Uri?
 )

@@ -96,6 +96,7 @@ class CampDetailViewModel : ViewModel() {
                     "userName" to myComment.userName,
                     "content" to myComment.content,
                     "date" to myComment.date,
+                    "userProfile" to myComment.userProfile,
                 )
                 if(myComment.imageUrl.toString().isNotBlank()){
                     newComment["img"] = myComment.imageUrl.toString()
@@ -134,12 +135,14 @@ class CampDetailViewModel : ViewModel() {
                         val commentList = doc.get("commentList") as? MutableList<Map<String, Any?>> ?: mutableListOf()
                         for (comment in commentList) {
                             val userId = comment["userId"] as String
-                            val userName = comment["userName"] as String
+                            val userName = comment["userName"] as? String ?: "유저"
                             val content = comment["content"] as String
                             val date = comment["date"] as String
                             val imageUrlString = comment["img"] as String
                             val imageUrl = Uri.parse(imageUrlString)
-                            val data = CampCommentEntity(userId, userName, content, date, imageUrl, myId)
+                            val userProfileString = comment["userProfile"] as String
+                            val userProfileUrl = Uri.parse(userProfileString)
+                            val data = CampCommentEntity(userId, userName, content, date, imageUrl, myId, userProfileUrl)
                             comments.add(data)
                         }
                     }
@@ -210,6 +213,53 @@ class CampDetailViewModel : ViewModel() {
                 }
             }
             .addOnFailureListener { exception ->
+            }
+    }
+    fun deleteComment(campId: String, comments: CampCommentEntity){
+        val db = FirebaseFirestore.getInstance()
+        val campRef = db.collection("camps").whereEqualTo("contentId", campId)
+        campRef.get()
+            .addOnSuccessListener { documents ->
+                if (documents.isEmpty) {
+                    return@addOnSuccessListener
+                }
+                // 해당 캠핑장의 댓글 리스트를 가져와서 삭제할 댓글을 찾음
+                val campDoc = documents.documents[0]
+                val commentList = campDoc.get("commentList") as? MutableList<Map<String, Any?>> ?: mutableListOf()
+                val iterator = commentList.iterator()
+
+                // 삭제할 댓글을 찾아서 리스트에서 제거
+                while (iterator.hasNext()) {
+                    val comment = iterator.next()
+                    val userId = comment["userId"] as String
+                    val userName = comment["userName"] as String
+                    val content = comment["content"] as String
+                    val date = comment["date"] as String
+                    val imageUrl = comment["img"] as String
+                    val userProfile = comment["userProfile"] as String
+
+                    if (userId == comments.userId &&
+                        userName == comments.userName &&
+                        content == comments.content &&
+                        date == comments.date &&
+                        imageUrl == comments.imageUrl.toString() &&
+                        userProfile == comments.userProfile.toString()
+                    ) {
+                        iterator.remove()
+                        break
+                    }
+                }
+                // 업데이트된 댓글 리스트를 Firestore에 반영
+                campDoc.reference.update("commentList", commentList)
+                    .addOnSuccessListener {
+                        Log.d("CampDetailActivity", "댓글 삭제 성공")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("CampDetailActivity", "댓글 삭제 실패: $e")
+                    }
+            }
+            .addOnFailureListener { e ->
+                Log.e("CampDetailActivity", "캠핑장 쿼리 실패: $e")
             }
     }
 }
