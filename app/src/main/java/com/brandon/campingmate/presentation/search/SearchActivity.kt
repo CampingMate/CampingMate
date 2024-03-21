@@ -51,17 +51,27 @@ class SearchActivity : AppCompatActivity() {
         keyword.observe(this@SearchActivity){
             Log.d("checkLog", "keyword 옵저빙")
             binding.loadingAnimation.visibility = View.GONE
-//            binding.loadingAnimationInfinity.visibility = View.GONE
             val myNewList = mutableListOf<CampEntity>()
             myNewList.addAll(it)
             listAdapter.submitList(myNewList)
+            checkItem(myNewList)
         }
         myList.observe(this@SearchActivity){
             binding.loadingAnimation.visibility = View.GONE
-//            binding.loadingAnimationInfinity.visibility = View.GONE
             val myNewList = mutableListOf<CampEntity>()
             myNewList.addAll(it)
             listAdapter.submitList(myNewList)
+            checkItem(myNewList)
+        }
+    }
+
+    private fun checkItem(myNewList: MutableList<CampEntity>) = with(binding) {
+        if(myNewList.isEmpty()){
+            recyclerView.visibility = View.INVISIBLE
+            tvNoResult.visibility = View.VISIBLE
+        } else{
+            recyclerView.visibility = View.VISIBLE
+            tvNoResult.visibility = View.INVISIBLE
         }
     }
 
