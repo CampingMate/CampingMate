@@ -3,7 +3,9 @@ package com.brandon.campingmate.presentation.board
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.brandon.campingmate.domain.model.User
 import com.brandon.campingmate.domain.usecase.GetPostsUseCase
+import com.brandon.campingmate.domain.usecase.GetUserUserCase
 import com.brandon.campingmate.presentation.board.BoardViewModel.RefreshTrigger.SCROLL
 import com.brandon.campingmate.presentation.board.BoardViewModel.RefreshTrigger.SWIPE
 import com.brandon.campingmate.presentation.board.BoardViewModel.RefreshTrigger.UPLOAD
@@ -22,6 +24,7 @@ import timber.log.Timber
 
 class BoardViewModel(
     private val getPostUseCase: GetPostsUseCase,
+    private val getUserUserCase: GetUserUserCase,
 ) : ViewModel() {
 
     enum class RefreshTrigger {
@@ -35,10 +38,23 @@ class BoardViewModel(
         MutableSharedFlow<BoardEvent>(extraBufferCapacity = 10, onBufferOverflow = BufferOverflow.DROP_LATEST)
     val event: SharedFlow<BoardEvent> = _event.asSharedFlow()
 
+    private val _user = MutableStateFlow<User?>(null)
+    val user: StateFlow<User?> = _user
+
 
     init {
         Timber.tag("BOARD").d("ViewModel is being created")
         loadPosts(SWIPE)
+        checkLoginStatus()
+    }
+
+    fun checkLoginStatus() {
+        viewModelScope.launch {
+            getUserUserCase().fold(
+                onSuccess = { user -> _user.value = user },
+                onFailure = { e -> Timber.d("로그인 중 에러 발생, 예외: $e") }
+            )
+        }
     }
 
     fun handleEvent(event: BoardEvent) {
@@ -123,11 +139,12 @@ class BoardViewModel(
 
 class BoardViewModelFactory(
     private val getPostsUseCase: GetPostsUseCase,
+    private val getUserUserCase: GetUserUserCase
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         Timber.d("Creating BoardViewModel instance")
         if (modelClass.isAssignableFrom(BoardViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST") return BoardViewModel(getPostsUseCase) as T
+            @Suppress("UNCHECKED_CAST") return BoardViewModel(getPostsUseCase, getUserUserCase) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
