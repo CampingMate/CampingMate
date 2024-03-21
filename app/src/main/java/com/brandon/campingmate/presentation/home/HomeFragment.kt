@@ -26,7 +26,7 @@ import com.brandon.campingmate.presentation.home.adapter.HomeAdapter
 import com.brandon.campingmate.presentation.home.adapter.PetAdapter
 import com.brandon.campingmate.presentation.home.adapter.ReviewAdapter
 import com.brandon.campingmate.presentation.main.MainActivity
-import com.brandon.campingmate.presentation.search.SearchFragment
+import com.brandon.campingmate.presentation.search.SearchActivity
 import com.brandon.campingmate.presentation.splash.SplashViewModel
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.ChipGroup
@@ -125,6 +125,21 @@ class HomeFragment : Fragment() {
 ////            val intent = Intent(requireContext(), SearchFragment::class.java)
 ////            startActivity(intent)
 //        }
+        binding.ivMoreIcon.setOnClickListener {
+            val checkedChipId = binding.chipDistrictGroup.checkedChipId
+            val checkedChipName = when(checkedChipId){
+                R.id.chipCapital -> "수도권"
+                R.id.chipChungcheong -> "충청도"
+                R.id.chipGangwon -> "강원도"
+                R.id.chipGyeongsang -> "경상도"
+                R.id.chipJeolla -> "전라도"
+                else -> "전체"
+            }
+            val intent = Intent(requireContext(), LocationActivity::class.java).apply {
+                putExtra("checkedChipName", checkedChipName)
+            }
+            requireContext().startActivity(intent)
+        }
     }
     private fun viewModelGet(select:String){
         Log.d("Home","#csh viewModelGet()")
@@ -446,12 +461,12 @@ class HomeFragment : Fragment() {
 //            val main = activity as MainActivity
 //            main.binding.viewPager.setCurrentItem(2, false)
 
-            val intent = Intent(requireContext(), SearchFragment::class.java).apply{
+            val intent = Intent(requireContext(), SearchActivity::class.java).apply{
                 var temp:String=""
                 when(layout){
-                    binding.loCategoryCar -> temp="차박"
+                    binding.loCategoryCar -> temp="자동차야영장"
                     binding.loCategoryCaravan -> temp="카라반"
-                    binding.loCategoryGeneral ->temp="일반야영"
+                    binding.loCategoryGeneral ->temp="일반야영장"
                     binding.loCategoryGlamping ->temp="글램핑"
                     binding.loSearch ->temp="검색바"
                 }

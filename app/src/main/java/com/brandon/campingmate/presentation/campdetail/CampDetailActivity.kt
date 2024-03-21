@@ -1,6 +1,5 @@
 package com.brandon.campingmate.presentation.campdetail
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -24,6 +23,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.brandon.campingmate.R
+import com.brandon.campingmate.data.local.preferences.EncryptedPrefs
 import com.brandon.campingmate.databinding.ActivityCampDetailBinding
 import com.brandon.campingmate.domain.model.CampCommentEntity
 import com.brandon.campingmate.domain.model.CampEntity
@@ -55,7 +55,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         ViewModelProvider(this)[CampDetailViewModel::class.java]
     }
     private val listAdapter: CommentListAdapter by lazy { CommentListAdapter() }
-
+    var userId: String? = EncryptedPrefs.getMyId()
     private val db = FirebaseFirestore.getInstance()
     private val imageUrls = mutableListOf<String>()
     private var mapView: MapView? = null
@@ -76,7 +76,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        Log.d("Detail", "onCreate")
+        userId = EncryptedPrefs.getMyId()
         initView()
         initViewModel()
         initBottomSheet()
@@ -281,7 +281,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         behavior.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
-    private fun scrollListener() = with(binding) {
+    private fun scrollListener() = with(binding){
         val fadeIn = AlphaAnimation(0f, 1f).apply { duration = 1000 }
         val fadeOut = AlphaAnimation(1f, 0f).apply { duration = 1000 }
         scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
@@ -313,13 +313,12 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         commentSend.setOnClickListener {
             commentSend.hideKeyboardInput()
-            UserApiClient.instance.me { user, error ->
-                if (user?.id != null) {
-                    val userDocRef = db.collection("users").document("Kakao${user.id}")
+                if (userId != null) {
+                    val userDocRef = db.collection("users").document("Kakao${userId}")
                     userDocRef
                         .get()
                         .addOnSuccessListener {
-                            val userId = "Kakao${user.id}"
+                            val userId = "Kakao${userId}"
                             val userName = it.get("nickName")
                             val content = commentEdit.text.toString()
                             val date =
@@ -369,7 +368,6 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                 } else {
                     SnackbarUtil.showSnackBar(it)
                 }
-            }
         }
         selectedImageDelete.setOnClickListener {
             binding.selectedImage.setImageURI(null)

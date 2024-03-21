@@ -9,10 +9,6 @@
         android:icon="@drawable/ic_board"
         android:title="@string/main_nav_board" />
     <item
-        android:id="@+id/tab_chat"
-        android:icon="@drawable/ic_chat"
-        android:title="@string/main_nav_chat" />
-    <item
         android:id="@+id/tab_map"
         android:icon="@drawable/ic_map"
         android:title="@string/main_nav_map" />

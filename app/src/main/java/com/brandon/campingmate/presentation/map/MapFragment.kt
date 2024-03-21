@@ -284,15 +284,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         naverMap?.locationSource = fusedLocationSource
         naverMap?.locationTrackingMode = LocationTrackingMode.NoFollow
 
-//        var isFirst = false
-//        naverMap?.addOnLocationChangeListener { location ->
-//            if (!isFirst) {
-//                val currentPosition = LatLng(location.latitude, location.longitude)
-//                val cameraUpdate = CameraUpdate.scrollTo(currentPosition)
-//                naverMap?.moveCamera(cameraUpdate)
-//                isFirst = true
-//            }
-//        }
+        var isFirst = false
+        naverMap?.addOnLocationChangeListener { location ->
+            if (!isFirst) {
+                val currentPosition = LatLng(location.latitude, location.longitude)
+                val cameraUpdate = CameraUpdate.scrollTo(currentPosition)
+                naverMap?.moveCamera(cameraUpdate)
+                isFirst = true
+            }
+        }
         var bookmark = false
         naverMap?.addOnCameraIdleListener {
             //Timber.tag("test").d(naverMap?.cameraPosition?.zoom.toString())

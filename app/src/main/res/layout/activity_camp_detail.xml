@@ -517,7 +517,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
                         android:textSize="12sp"
-                        android:text="11"
+                        android:text="0"
                         android:layout_marginStart="5dp"
                         app:layout_constraintStart_toEndOf="@id/comment_title"
                         app:layout_constraintTop_toTopOf="@id/comment_title"
@@ -690,7 +690,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginEnd="16dp"
-                    android:src="@drawable/ic_text_input"
+                    android:src="@drawable/ic_selector_postdetail_upload_comment"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
