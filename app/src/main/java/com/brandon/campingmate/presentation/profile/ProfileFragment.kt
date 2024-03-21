@@ -154,19 +154,29 @@ class ProfileFragment : Fragment() {
     }
 
     private fun initLogin() {
+        userId?.let { viewModel.getUserData(it) }
         with(binding) {
-            val docRef = db.collection("users").document(userId.toString())
-            docRef.get().addOnSuccessListener {
+            viewModel.userData.observe(viewLifecycleOwner){
                 if (profileImgUri == null) {
                     ivProfileImg.scaleType = ImageView.ScaleType.CENTER_CROP
-                    Glide.with(binding.root).load(it.getString("profileImage")).into(ivProfileImg)
+                    Glide.with(binding.root).load(it?.profileImage).into(ivProfileImg)
                     ivProfileImg.visibility = View.VISIBLE
                     tvProfileName.textSize = 24f
-                    tvProfileName.text = it.getString("nickName").toString()
-                    tvProfileEmail.text = it.getString("userEmail").toString()
+                    tvProfileName.text = it?.nickName.toString()
+                    tvProfileEmail.text = it?.userEmail.toString()
                 }
             }
-
+//            val docRef = db.collection("users").document(userId.toString())
+//            docRef.get().addOnSuccessListener {
+//                if (profileImgUri == null) {
+//                    ivProfileImg.scaleType = ImageView.ScaleType.CENTER_CROP
+//                    Glide.with(binding.root).load(it.getString("profileImage")).into(ivProfileImg)
+//                    ivProfileImg.visibility = View.VISIBLE
+//                    tvProfileName.textSize = 24f
+//                    tvProfileName.text = it.getString("nickName").toString()
+//                    tvProfileEmail.text = it.getString("userEmail").toString()
+//                }
+//            }
             tvProfileName.visibility = View.VISIBLE
             tvProfileEmail.visibility = View.VISIBLE
 
