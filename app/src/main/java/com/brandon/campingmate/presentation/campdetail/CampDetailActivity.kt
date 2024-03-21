@@ -290,6 +290,17 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         behavior = BottomSheetBehavior.from(bottomSheet)
         behavior.isHideable = true
         behavior.state = BottomSheetBehavior.STATE_HIDDEN
+
+        behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if(newState == BottomSheetBehavior.STATE_HIDDEN){
+                    viewModel.checkComment(myId!!)
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+            }
+        })
     }
 
     private fun scrollListener() = with(binding){
