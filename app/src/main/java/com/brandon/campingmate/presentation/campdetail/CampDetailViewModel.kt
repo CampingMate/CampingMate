@@ -134,13 +134,13 @@ class CampDetailViewModel : ViewModel() {
                     for (doc in snapshot) {
                         val commentList = doc.get("commentList") as? MutableList<Map<String, Any?>> ?: mutableListOf()
                         for (comment in commentList) {
-                            val userId = comment["userId"] as String
+                            val userId = comment["userId"] as? String ?: ""
                             val userName = comment["userName"] as? String ?: "유저"
-                            val content = comment["content"] as String
-                            val date = comment["date"] as String
-                            val imageUrlString = comment["img"] as String
+                            val content = comment["content"] as? String ?: ""
+                            val date = comment["date"] as? String ?: ""
+                            val imageUrlString = comment["img"] as? String ?: ""
                             val imageUrl = Uri.parse(imageUrlString)
-                            val userProfileString = comment["userProfile"] as String
+                            val userProfileString = comment["userProfile"] as? String ?: ""
                             val userProfileUrl = Uri.parse(userProfileString)
                             val data = CampCommentEntity(userId, userName, content, date, imageUrl, myId, userProfileUrl)
                             comments.add(data)
