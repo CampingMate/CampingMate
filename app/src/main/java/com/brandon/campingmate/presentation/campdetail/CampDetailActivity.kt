@@ -282,6 +282,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             behavior.peekHeight = (screenHeight * peekHeightRatio).toInt()
         }
         bottomSheetCancle.setOnClickListener {
+            viewModel.checkComment(myId!!)
             behavior.state = BottomSheetBehavior.STATE_HIDDEN
         }
     }
