@@ -154,11 +154,11 @@ class SearchActivity : AppCompatActivity() {
             R.id.chipWinterSnow,
             R.id.chipSunset,
             R.id.chipWaterLeisure,
-            R.id.chipGrass,
-            R.id.chipCrushedStone,
-            R.id.chipTech,
-            R.id.chipGravel,
-            R.id.chipSoil
+//            R.id.chipGrass,
+//            R.id.chipCrushedStone,
+//            R.id.chipTech,
+//            R.id.chipGravel,
+//            R.id.chipSoil
         )
         /**
          * 초기화버튼 클릭시 칩 초기화
@@ -336,9 +336,9 @@ class SearchActivity : AppCompatActivity() {
         searchThema.setOnClickListener {
             scrollToView(tvSearchThema)
         }
-        searchBottom.setOnClickListener {
-            scrollToView(tvSearchBottom)
-        }
+//        searchBottom.setOnClickListener {
+//            scrollToView(tvSearchBottom)
+//        }
     }
 
     private fun scrollToView(view: View) {
