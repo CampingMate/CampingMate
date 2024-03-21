@@ -169,11 +169,11 @@ class SearchViewModel : ViewModel() {
                 "겨울눈꽃명소" -> result = result.whereIn("winterSnow", listOf("겨울눈꽃명소"))
                 "일몰명소" -> result = result.whereIn("sunset", listOf("일몰명소"))
                 "수상레저" -> result = result.whereIn("waterLeisure", listOf("수상레저"))
-                "잔디" -> result = result.whereIn("siteBottomCl1", listOf("잔디"))
-                "파쇄석" -> result = result.whereIn("siteBottomCl2", listOf("파쇄석"))
-                "테크" -> result = result.whereIn("siteBottomCl3", listOf("테크"))
-                "자갈" -> result = result.whereIn("siteBottomCl4", listOf("자갈"))
-                "맨흙" -> result = result.whereIn("siteBottomCl5", listOf("맨흙"))
+//                "잔디" -> result = result.whereIn("siteBottomCl1", listOf("잔디"))
+//                "파쇄석" -> result = result.whereIn("siteBottomCl2", listOf("파쇄석"))
+//                "테크" -> result = result.whereIn("siteBottomCl3", listOf("테크"))
+//                "자갈" -> result = result.whereIn("siteBottomCl4", listOf("자갈"))
+//                "맨흙" -> result = result.whereIn("siteBottomCl5", listOf("맨흙"))
                 else -> Unit
             }
         }
@@ -246,11 +246,11 @@ class SearchViewModel : ViewModel() {
                     "겨울눈꽃명소" -> baseQuery = baseQuery.whereIn("winterSnow", listOf("겨울눈꽃명소"))
                     "일몰명소" -> baseQuery = baseQuery.whereIn("sunset", listOf("일몰명소"))
                     "수상레저" -> baseQuery = baseQuery.whereIn("waterLeisure", listOf("수상레저"))
-                    "잔디" -> baseQuery = baseQuery.whereIn("siteBottomCl1", listOf("잔디"))
-                    "파쇄석" -> baseQuery = baseQuery.whereIn("siteBottomCl2", listOf("파쇄석"))
-                    "테크" -> baseQuery = baseQuery.whereIn("siteBottomCl3", listOf("테크"))
-                    "자갈" -> baseQuery = baseQuery.whereIn("siteBottomCl4", listOf("자갈"))
-                    "맨흙" -> baseQuery = baseQuery.whereIn("siteBottomCl5", listOf("맨흙"))
+//                    "잔디" -> baseQuery = baseQuery.whereIn("siteBottomCl1", listOf("잔디"))
+//                    "파쇄석" -> baseQuery = baseQuery.whereIn("siteBottomCl2", listOf("파쇄석"))
+//                    "테크" -> baseQuery = baseQuery.whereIn("siteBottomCl3", listOf("테크"))
+//                    "자갈" -> baseQuery = baseQuery.whereIn("siteBottomCl4", listOf("자갈"))
+//                    "맨흙" -> baseQuery = baseQuery.whereIn("siteBottomCl5", listOf("맨흙"))
                     else -> Unit
                 }
             }
