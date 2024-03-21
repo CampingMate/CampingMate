@@ -82,14 +82,14 @@ class BoardFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        Timber.tag("BOARD").d("BoardFragment onCreateView")
+        Timber.d("BoardFragment onCreateView")
         _binding = FragmentBoardBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Timber.tag("BOARD").d("BoardFragment onViewCreated")
+        Timber.d("BoardFragment onViewCreated")
 
 //        upLoadFakePosts(5)
         initResultLauncher()
@@ -100,35 +100,34 @@ class BoardFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        Timber.tag("BOARD").d("BoardFragment onStart")
+        Timber.d("BoardFragment onStart")
     }
 
     override fun onResume() {
         super.onResume()
-        Timber.tag("BOARD").d("BoardFragment onResume")
         viewModel.checkLoginStatus()
         Timber.d("BoardFragment onResume")
     }
 
     override fun onPause() {
         super.onPause()
-        Timber.tag("BOARD").d("BoardFragment onPause")
+        Timber.d("BoardFragment onPause")
     }
 
     override fun onStop() {
         super.onStop()
-        Timber.tag("BOARD").d("BoardFragment onStop")
+        Timber.d("BoardFragment onStop")
         hideKeyboard()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Timber.tag("BOARD").d("BoardFragment onDestroyView")
+        Timber.d("BoardFragment onDestroyView")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Timber.tag("BOARD").d("BoardFragment onDestroy")
+        Timber.d("BoardFragment onDestroy")
         _binding = null
     }
 
@@ -172,7 +171,7 @@ class BoardFragment : Fragment() {
         })
 
         btnWrite.setOnClickListener {
-            viewModel.handleEvent(BoardEvent.NavigateToPostWrite)
+            showToast("Error: 로딩중입니다.")
         }
 
         rvPostList.addOnItemTouchListener(object : RecyclerView.OnScrollListener(),

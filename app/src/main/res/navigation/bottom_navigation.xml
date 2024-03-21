@@ -5,6 +5,7 @@
     android:id="@+id/bottom_navigation"
     app:startDestination="@id/homeFragment">
 
+
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.brandon.campingmate.presentation.home.HomeFragment"
@@ -15,6 +16,11 @@
         android:name="com.brandon.campingmate.presentation.board.BoardFragment"
         android:label="fragment_board"
         tools:layout="@layout/fragment_board" />
+    <fragment
+        android:id="@+id/chatFragment"
+        android:name="com.brandon.campingmate.presentation.search.SearchFragment"
+        android:label="fragment_chat"
+        tools:layout="@layout/fragment_search" />
     <fragment
         android:id="@+id/mapFragment"
         android:name="com.brandon.campingmate.presentation.map.MapFragment"
