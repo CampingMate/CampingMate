@@ -8,8 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.network.retrofit.NetWorkClient
-import com.brandon.campingmate.presentation.search.SearchFragment.Companion.activatedChips
-import com.brandon.campingmate.presentation.search.SearchFragment.Companion.doNmList
+import com.brandon.campingmate.presentation.search.SearchActivity.Companion.activatedChips
+import com.brandon.campingmate.presentation.search.SearchActivity.Companion.doNmList
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot

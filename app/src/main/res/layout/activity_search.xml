@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.search.SearchFragment"
-    android:background="@color/white">
+    tools:context=".presentation.search.SearchActivity">
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -13,9 +14,9 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="12dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="20dp"
             android:src="@drawable/ic_arrow_back"
             app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
             app:layout_constraintEnd_toStartOf="@+id/linearLayout"
@@ -64,10 +65,10 @@
 
         <ImageView
             android:id="@+id/iv_setting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_gravity="center"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="20dp"
             android:src="@drawable/ic_filter"
             app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
             app:layout_constraintStart_toEndOf="@+id/linearLayout"
@@ -96,17 +97,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout"/>
-<!--        <com.airbnb.lottie.LottieAnimationView-->
-<!--            android:id="@+id/loading_animation_infinity"-->
-<!--            android:layout_width="50dp"-->
-<!--            android:layout_height="50dp"-->
-<!--            app:lottie_autoPlay="true"-->
-<!--            app:lottie_rawRes="@raw/lottie_search_loading"-->
-<!--            app:lottie_loop="true"-->
-<!--            android:visibility="gone"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/recyclerView"/>-->
+        <!--        <com.airbnb.lottie.LottieAnimationView-->
+        <!--            android:id="@+id/loading_animation_infinity"-->
+        <!--            android:layout_width="50dp"-->
+        <!--            android:layout_height="50dp"-->
+        <!--            app:lottie_autoPlay="true"-->
+        <!--            app:lottie_rawRes="@raw/lottie_search_loading"-->
+        <!--            app:lottie_loop="true"-->
+        <!--            android:visibility="gone"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/recyclerView"/>-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
     <!--    여기서부턴 바텀시트   -->
@@ -1008,4 +1009,5 @@
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

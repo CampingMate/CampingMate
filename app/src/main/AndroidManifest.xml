@@ -7,7 +7,10 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
+    <queries>
+        <package android:name="com.nhn.android.nmap" />
+        <package android:name="net.daum.android.map" />
+    </queries>
     <application
         android:name=".GlobalApplication"
         android:allowBackup="true"
@@ -21,6 +24,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CampingMate"
         tools:targetApi="31">
+        <activity
+            android:name=".presentation.home.LocationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.search.SearchActivity"
+            android:exported="false" />
         <activity
             android:name=".presentation.main.MainActivity"
             android:exported="false" />
@@ -45,6 +54,7 @@
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 

@@ -86,7 +86,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mapView?.getMapAsync(this)
         initView()
         initViewModel()
-        fusedLocationSource = FusedLocationSource(this, 1004)
+        fusedLocationSource = FusedLocationSource(this, 1005)
         //Timber.tag("mapfragment").d("mapview getMapAsync()")
         return binding.root
     }
@@ -284,15 +284,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         naverMap?.locationSource = fusedLocationSource
         naverMap?.locationTrackingMode = LocationTrackingMode.NoFollow
 
-//        var isFirst = false
-//        naverMap?.addOnLocationChangeListener { location ->
-//            if (!isFirst) {
-//                val currentPosition = LatLng(location.latitude, location.longitude)
-//                val cameraUpdate = CameraUpdate.scrollTo(currentPosition)
-//                naverMap?.moveCamera(cameraUpdate)
-//                isFirst = true
-//            }
-//        }
+        var isFirst = false
+        naverMap?.addOnLocationChangeListener { location ->
+            if (!isFirst) {
+                val currentPosition = LatLng(location.latitude, location.longitude)
+                val cameraUpdate = CameraUpdate.scrollTo(currentPosition)
+                naverMap?.moveCamera(cameraUpdate)
+                isFirst = true
+            }
+        }
         var bookmark = false
         naverMap?.addOnCameraIdleListener {
             //Timber.tag("test").d(naverMap?.cameraPosition?.zoom.toString())
@@ -547,8 +547,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     viewModel.getBookmarkedCamp(it.id, campData)
                     Log.d("로그인 정보","북마크 리스트 = ${it.id}")
                 }
-            } else {
-                Toast.makeText(requireContext(),"error = ${error}",Toast.LENGTH_SHORT).show()
             }
         }
 
