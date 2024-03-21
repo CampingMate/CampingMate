@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -84,8 +86,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mapView = binding.mvMap
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync(this)
-        initView()
-        initViewModel()
         fusedLocationSource = FusedLocationSource(this, 1005)
         //Timber.tag("mapfragment").d("mapview getMapAsync()")
         return binding.root
@@ -93,7 +93,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        initViewModel()
+        initView()
     }
 
     private fun initView() = with(binding) {
@@ -235,10 +236,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
             bookmarkMarkers = temp
             markers.addAll(temp)
-            showCampSite(naverMap?.cameraPosition?.zoom!!, markers, naverMap!!, campDataList)
+            if(naverMap != null){
+                showCampSite(naverMap?.cameraPosition?.zoom!!, markers, naverMap!!, campDataList)
+            }
         }
-
-
     }
 
     override fun onRequestPermissionsResult(
@@ -267,7 +268,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(p0: NaverMap) {
         naverMap = p0
-
+        //getBookmarkedList(campDataList)
         //한번도 카메라 영역 제한
         naverMap?.minZoom = 6.0
         naverMap?.maxZoom = 18.0
@@ -284,15 +285,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         naverMap?.locationSource = fusedLocationSource
         naverMap?.locationTrackingMode = LocationTrackingMode.NoFollow
 
-        var isFirst = false
-        naverMap?.addOnLocationChangeListener { location ->
-            if (!isFirst) {
-                val currentPosition = LatLng(location.latitude, location.longitude)
-                val cameraUpdate = CameraUpdate.scrollTo(currentPosition)
-                naverMap?.moveCamera(cameraUpdate)
-                isFirst = true
-            }
-        }
+//        var isFirst = false
+//        naverMap?.addOnLocationChangeListener { location ->
+//            if (!isFirst) {
+//                val currentPosition = LatLng(location.latitude, location.longitude)
+//                val cameraUpdate = CameraUpdate.scrollTo(currentPosition)
+//                naverMap?.moveCamera(cameraUpdate)
+//                isFirst = true
+//            }
+//        }
         var bookmark = false
         naverMap?.addOnCameraIdleListener {
             //Timber.tag("test").d(naverMap?.cameraPosition?.zoom.toString())
@@ -384,16 +385,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onStart() {
         super.onStart()
-        getBookmarkedList(campDataList)
         mapView?.onStart()
+        getBookmarkedList(campDataList)
         Timber.tag("mapfragment").d("mapview onStart()")
     }
 
     override fun onResume() {
         super.onResume()
-        with(viewModel){
-
-        }
         mapView?.onResume()
         Timber.tag("mapfragment").d("mapview onResume()")
     }
@@ -532,11 +530,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         map: NaverMap,
         campData: MutableList<LocationBasedListItem>
     ) {
+        val startTime = System.currentTimeMillis()
         when (zoom.toInt()) {
             in 13..18 -> updateMarkers(mMarkers, map)
             in 11..12 -> updateNoCaptionMarkers(mMarkers, map)
             in 6..10 -> updateCluster(map, campData, mMarkers)
         }
+        Log.d("Map check","showCampSite() : ${System.currentTimeMillis()-startTime}")
     }
 
     private fun getBookmarkedList(campData: MutableList<LocationBasedListItem>) {
