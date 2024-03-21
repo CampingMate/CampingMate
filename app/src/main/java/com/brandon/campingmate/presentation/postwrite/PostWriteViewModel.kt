@@ -8,6 +8,7 @@ import com.brandon.campingmate.domain.model.User
 import com.brandon.campingmate.domain.usecase.GetUserUserCase
 import com.brandon.campingmate.domain.usecase.UploadPostUseCase
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -25,6 +26,9 @@ class PostWriteViewModel(
 
     private val _uiState = MutableStateFlow(PostWriteImageUiState.init())
     val uiState: StateFlow<PostWriteImageUiState> = _uiState.asStateFlow()
+
+    private val _buttonUiState = MutableStateFlow(false)
+    val buttonUiState: Flow<Boolean> = _buttonUiState
 
     private val _event = MutableSharedFlow<PostWriteEvent>(
         extraBufferCapacity = 10, onBufferOverflow = BufferOverflow.DROP_LATEST
@@ -98,6 +102,23 @@ class PostWriteViewModel(
             ).fold(
                 onSuccess = { postId -> handleEvent(PostWriteEvent.PostUploadSuccess(postId)) },
                 onFailure = { e -> Timber.tag("POST UPLOAD").d("게시물 업로드 실패: ${e.message}") })
+        }
+    }
+
+    fun onTitleChanged(text: String) {
+        _uiState.update { it.copy(title = text) }
+        updateSubmitButtonState()
+    }
+
+
+    fun onBodyChanged(text: String) {
+        _uiState.update { it.copy(content = text) }
+        updateSubmitButtonState()
+    }
+
+    private fun updateSubmitButtonState() {
+        _buttonUiState.update {
+            _uiState.value.title.isNotBlank() && _uiState.value.content.isNotBlank()
         }
     }
 }
