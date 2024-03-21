@@ -44,6 +44,7 @@ class BoardViewModel(
 
     init {
         Timber.d("Initializing BoardViewModel")
+        _uiState.update { it.copy(isInitLoading = true) }
         loadPosts(SWIPE)
         checkLoginStatus()
     }
@@ -84,10 +85,11 @@ class BoardViewModel(
     }
 
     private fun loadPosts(trigger: RefreshTrigger, pageSize: Int = 10) {
-        if (uiState.value.isLoading) return
+        if (uiState.value.isLoading && uiState.value.isScrolling) return
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
+            if (trigger == SCROLL) _uiState.update { it.copy(isScrolling = true) }
 
             if (trigger == SWIPE) handleEvent(BoardEvent.MakeToast("새로고침"))
 
@@ -105,7 +107,6 @@ class BoardViewModel(
                         }
                         currentState.copy(isLoading = false)
                     }
-                    // TODO 에러 처리 로직 추가
                     is Resource.Error -> currentState.copy(isLoading = false)
 
                     is Resource.Success -> {
@@ -118,7 +119,9 @@ class BoardViewModel(
                             posts = newPosts,
                             lastVisibleDoc = result.data.lastVisibleDoc,
                             isLoading = false,
-                            shouldScrollToTop = trigger == UPLOAD
+                            isScrolling = false,
+                            shouldScrollToTop = trigger == UPLOAD,
+                            isInitLoading = false,
                         )
                     }
                 }

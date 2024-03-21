@@ -106,11 +106,13 @@ class BoardFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         viewModel.checkLoginStatus()
+        binding.shimmer.startShimmer()
         Timber.d("BoardFragment onResume")
     }
 
     override fun onPause() {
         super.onPause()
+        binding.shimmer.stopShimmer()
         Timber.d("BoardFragment onPause")
     }
 
@@ -221,7 +223,6 @@ class BoardFragment : Fragment() {
         }
     }
 
-
     private fun onEvent(event: BoardEvent) {
         when (event) {
             is BoardEvent.OpenContent -> {
@@ -253,9 +254,13 @@ class BoardFragment : Fragment() {
     }
 
     private fun onBind(state: BoardUiState) = with(binding) {
-        postListAdapter.submitList(state.posts + if (state.isLoading) listOf(PostListItem.Loading) else emptyList()) {
-            if (state.shouldScrollToTop) {
-                scrollToTop()
+        if (state.isScrolling) {
+            postListAdapter.submitList(state.posts + listOf(PostListItem.Loading))
+        } else {
+            postListAdapter.submitList(state.posts) {
+                if (state.shouldScrollToTop) {
+                    scrollToTop()
+                }
             }
         }
     }

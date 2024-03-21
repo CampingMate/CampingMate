@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="110dp"
+    android:background="?android:attr/selectableItemBackground"
+    android:orientation="vertical"
+    android:paddingHorizontal="16dp">
+
+
+    <View
+        android:id="@+id/tv_title"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="12dp"
+        android:background="@drawable/shape_rounded_corner_background_r6"
+        app:layout_constraintEnd_toStartOf="@id/iv_post_image"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <View
+        android:id="@+id/tv_content"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/shape_rounded_corner_background_r6"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="게시글 내용"
+        android:textColor="@color/board_gray"
+        android:textFontWeight="400"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toEndOf="@id/tv_title"
+        app:layout_constraintStart_toStartOf="@id/tv_title"
+        app:layout_constraintTop_toBottomOf="@id/tv_title"
+        tools:text="게시글 내용게시글 내용게시글 내용게시글 내용게시글 내용게시글 내용게시글 내용게시글 내용게시글 내용게시글 내용게시글 내용게시글 내용게시글 내용게시글 내용게시" />
+
+    <View
+        android:id="@+id/tv_timestamp"
+        android:layout_width="0dp"
+        android:layout_height="15dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="150dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/shape_rounded_corner_background_r6"
+        android:text="XXXX-XX-XX XX:XX"
+        android:textColor="@color/board_gray"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/tv_title"
+        app:layout_constraintStart_toStartOf="@id/tv_title" />
+
+
+    <ImageView
+        android:id="@+id/iv_post_image"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:background="@drawable/shape_rounded_corner_background_r8"
+        android:clipToOutline="true"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="@id/tv_timestamp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_title" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider_light"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
