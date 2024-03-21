@@ -3,16 +3,16 @@ package com.brandon.campingmate.presentation.main
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupWithNavController
-import com.brandon.campingmate.R
-import com.brandon.campingmate.databinding.ActivityMain2Binding
+import com.brandon.campingmate.databinding.ActivityMainBinding
+import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.domain.model.HomeEntity
+import com.kakao.sdk.common.util.Utility
+import nl.joery.animatedbottombar.AnimatedBottomBar
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
-    val binding by lazy { ActivityMain2Binding.inflate(layoutInflater) }
+    val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     var homeCity = ArrayList<HomeEntity>()
     var homeTheme = ArrayList<HomeEntity>()
 
@@ -27,21 +27,25 @@ class MainActivity : AppCompatActivity() {
         Timber.plant(Timber.DebugTree())
 
         homeCity = intent.getParcelableArrayListExtra("homeCity") ?: arrayListOf()
-        homeTheme = intent.getParcelableArrayListExtra("homeTheme") ?: arrayListOf()
-        Log.d("Main", "#csh homeCity: $homeCity")
-        Log.d("Main", "#csh homeTheme: $homeTheme")
+        homeTheme = intent.getParcelableArrayListExtra("homeTheme")?: arrayListOf()
+        Log.d("Main","#csh homeCity: $homeCity")
+        Log.d("Main","#csh homeTheme: $homeTheme")
 
-        initView()
+        binding.viewPager.adapter = ViewPager2Adapter(supportFragmentManager, lifecycle)
+        binding.viewPager.isUserInputEnabled = false
+        //binding.viewPager.offscreenPageLimit = 1
+        binding.bottomNavigation.setupWithViewPager2(binding.viewPager)
 
-    }
-
-    private fun initView() {
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.fragment_container) as? NavHostFragment
-        val navController = navHostFragment?.navController
-        if (navController != null) {
-            binding.bottomNavigation.setupWithNavController(navController)
-        }
+        binding.bottomNavigation.setOnTabSelectListener(object : AnimatedBottomBar.OnTabSelectListener {
+            override fun onTabSelected(
+                lastIndex: Int,
+                lastTab: AnimatedBottomBar.Tab?,
+                newIndex: Int,
+                newTab: AnimatedBottomBar.Tab
+            ) {
+                binding.viewPager.setCurrentItem(newIndex, false)
+            }
+        })
     }
 }
 

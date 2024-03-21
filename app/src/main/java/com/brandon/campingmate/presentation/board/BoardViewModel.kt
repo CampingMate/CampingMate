@@ -43,7 +43,7 @@ class BoardViewModel(
 
 
     init {
-        Timber.tag("BOARD").d("ViewModel is being created")
+        Timber.d("Initializing BoardViewModel")
         loadPosts(SWIPE)
         checkLoginStatus()
     }
@@ -128,11 +128,6 @@ class BoardViewModel(
 
     fun resetScrollToTopFlag() {
         _uiState.update { it.copy(shouldScrollToTop = false) }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        Timber.tag("BOARD").d("ViewModel is being cleared")
     }
 
 }
