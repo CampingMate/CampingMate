@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -18,18 +17,21 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.brandon.campingmate.R
 import com.brandon.campingmate.data.local.preferences.EncryptedPrefs
 import com.brandon.campingmate.databinding.ActivityCampDetailBinding
+import com.brandon.campingmate.databinding.BottomSheetPostdetailCommnetSideMenuBinding
 import com.brandon.campingmate.domain.model.CampCommentEntity
 import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.campdetail.adapter.CommentListAdapter
 import com.brandon.campingmate.presentation.campdetail.adapter.ViewPagerAdapter
 import com.brandon.campingmate.presentation.common.SnackbarUtil
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.kakao.sdk.user.UserApiClient
@@ -564,6 +566,39 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             startActivity(intent)
         }
 
+    }
+    fun showBottomSheetCommentMenu(
+        comment: CampCommentEntity,
+    ) {
+        val isOwner = comment.userId == userId
+        val campId = comment.campId
+
+        showBottomSheetCommentMenu(isOwner, campId, comment)
+    }
+    private fun showBottomSheetCommentMenu(
+        isOwner: Boolean, campId: String?, comment: CampCommentEntity
+    ){
+        val bottomSheetDialog = BottomSheetDialog(this)
+        val bottomSheetBinding = BottomSheetPostdetailCommnetSideMenuBinding.inflate(layoutInflater)
+
+        if (isOwner) {
+            bottomSheetBinding.btnMenuOwner.isVisible = true
+            bottomSheetBinding.btnMenuNotOwner.isVisible = false
+        } else {
+            bottomSheetBinding.btnMenuOwner.isVisible = false
+            bottomSheetBinding.btnMenuNotOwner.isVisible = true
+        }
+
+        bottomSheetDialog.setContentView(bottomSheetBinding.root)
+
+        bottomSheetBinding.btnMenuOwner.setOnClickListener {
+            Timber.tag("DELETE").d("삭제 이벤트 발생")
+            // 삭제 동작 처리
+            viewModel.deleteComment(campId!!, comment)
+            bottomSheetDialog.dismiss()
+        }
+
+        bottomSheetDialog.show()
     }
 
 }
