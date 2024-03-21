@@ -157,22 +157,13 @@ class ProfileFragment : Fragment() {
         with(binding) {
             val docRef = db.collection("users").document(userId.toString())
             docRef.get().addOnSuccessListener {
-                if (!it.exists()) {
-                    UserApiClient.instance.me { user, error ->
-                        ivProfileImg.setImageURI(Uri.parse(user?.kakaoAccount?.profile?.profileImageUrl))
-                        tvProfileName.textSize = 24f
-                        tvProfileName.text = user?.kakaoAccount?.profile?.nickname
-                        tvProfileEmail.text = user?.kakaoAccount?.email
-                    }
-                } else {
-                    if (profileImgUri == null) {
-                        ivProfileImg.scaleType = ImageView.ScaleType.CENTER_CROP
-                        Glide.with(binding.root).load(it.getString("profileImage")).into(ivProfileImg)
-                        ivProfileImg.visibility = View.VISIBLE
-                        tvProfileName.textSize = 24f
-                        tvProfileName.text = it.getString("nickName").toString()
-                        tvProfileEmail.text = it.getString("userEmail").toString()
-                    }
+                if (profileImgUri == null) {
+                    ivProfileImg.scaleType = ImageView.ScaleType.CENTER_CROP
+                    Glide.with(binding.root).load(it.getString("profileImage")).into(ivProfileImg)
+                    ivProfileImg.visibility = View.VISIBLE
+                    tvProfileName.textSize = 24f
+                    tvProfileName.text = it.getString("nickName").toString()
+                    tvProfileEmail.text = it.getString("userEmail").toString()
                 }
             }
 
@@ -388,7 +379,7 @@ class ProfileFragment : Fragment() {
                             documentRef.update(profileImgURI)
                         }
                     }
-                    //profileImgUri = null
+                    profileImgUri = null
                 }
                 documentRef.get().addOnSuccessListener {
                     documentRef.update(updateNickname)
