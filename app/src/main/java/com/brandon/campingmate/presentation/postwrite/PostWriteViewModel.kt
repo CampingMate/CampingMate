@@ -94,14 +94,21 @@ class PostWriteViewModel(
 
     private fun uploadPost(title: String, content: String) {
         viewModelScope.launch {
+            _uiState.update { it.copy(isUploading = true) }
             uploadPostUseCase(
                 title = title,
                 content = content,
                 user = _user.value,
                 imageUris = uiState.value.imageUris
             ).fold(
-                onSuccess = { postId -> handleEvent(PostWriteEvent.PostUploadSuccess(postId)) },
-                onFailure = { e -> Timber.tag("POST UPLOAD").d("게시물 업로드 실패: ${e.message}") })
+                onSuccess = { postId ->
+                    handleEvent(PostWriteEvent.PostUploadSuccess(postId))
+                    _uiState.update { it.copy(isUploading = false) }
+                },
+                onFailure = { e ->
+                    Timber.tag("POST UPLOAD").d("게시물 업로드 실패: ${e.message}")
+                    _uiState.update { it.copy(isUploading = false) }
+                })
         }
     }
 
