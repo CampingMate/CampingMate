@@ -84,8 +84,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mapView = binding.mvMap
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync(this)
-        initView()
-        initViewModel()
         fusedLocationSource = FusedLocationSource(this, 1005)
         //Timber.tag("mapfragment").d("mapview getMapAsync()")
         return binding.root
@@ -93,7 +91,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        initViewModel()
+        initView()
     }
 
     private fun initView() = with(binding) {
@@ -235,7 +234,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
             bookmarkMarkers = temp
             markers.addAll(temp)
-            showCampSite(naverMap?.cameraPosition?.zoom!!, markers, naverMap!!, campDataList)
+            if(naverMap != null){
+                showCampSite(naverMap?.cameraPosition?.zoom!!, markers, naverMap!!, campDataList)
+            }
+
         }
 
 
@@ -384,8 +386,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onStart() {
         super.onStart()
-        getBookmarkedList(campDataList)
         mapView?.onStart()
+        getBookmarkedList(campDataList)
         Timber.tag("mapfragment").d("mapview onStart()")
     }
 
