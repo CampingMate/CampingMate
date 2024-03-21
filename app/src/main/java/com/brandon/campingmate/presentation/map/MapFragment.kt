@@ -547,8 +547,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     viewModel.getBookmarkedCamp(it.id, campData)
                     Log.d("로그인 정보","북마크 리스트 = ${it.id}")
                 }
-            } else {
-                Toast.makeText(requireContext(),"error = ${error}",Toast.LENGTH_SHORT).show()
             }
         }
 

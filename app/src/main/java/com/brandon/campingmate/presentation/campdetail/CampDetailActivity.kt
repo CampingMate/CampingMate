@@ -1,9 +1,13 @@
 package com.brandon.campingmate.presentation.campdetail
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -106,12 +110,12 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                 listAdapter.submitList(it)
             }
         }
-        checkLastComment.observe(this@CampDetailActivity){
-            if(it != null){
+        checkLastComment.observe(this@CampDetailActivity) {
+            if (it != null) {
                 binding.commentContent.text = it
             }
         }
-        commentCount.observe(this@CampDetailActivity){
+        commentCount.observe(this@CampDetailActivity) {
             binding.commentCount.text = it
         }
     }
@@ -202,7 +206,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             makeMarker(it.mapX, it.mapY, it.facltNm, naverMap)
         }
         binding.btnDetailroute.setOnClickListener { view ->
-            //openMap(it.mapY!!.toDouble(), it.mapX!!.toDouble(), it.facltNm)
+            openMap(it.mapY!!.toDouble(), it.mapX!!.toDouble(), it.facltNm)
         }
 
     }
@@ -277,7 +281,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         behavior.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
-    private fun scrollListener() = with(binding){
+    private fun scrollListener() = with(binding) {
         val fadeIn = AlphaAnimation(0f, 1f).apply { duration = 1000 }
         val fadeOut = AlphaAnimation(1f, 0f).apply { duration = 1000 }
         scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
@@ -533,6 +537,35 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             marker.map = map
             map?.cameraPosition = cameraPosition
         }
+    }
+
+
+    private fun openMap(
+        endLat: Double, endlon: Double, name: String?
+    ) {
+        val url =
+            "nmap://route/car?dlat=${endLat}&dlng=${endlon}&dname=${name}&appname=com.brandon.campingmate"
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        var installCheck: PackageInfo? = null
+        try {
+            installCheck = packageManager.getPackageInfo("com.nhn.android.nmap", 0)
+
+        } catch (e: PackageManager.NameNotFoundException) {
+            null
+        }
+        if (installCheck?.packageName.isNullOrEmpty()) {
+            val uri =
+                "http://m.map.naver.com/route.nhn?menu=route&ename=${name}&ex=${endlon}&ey=${endLat}&pathType=0&showMap=true"
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse(uri)
+                )
+            )
+        } else {
+            startActivity(intent)
+        }
+
     }
 
 }
