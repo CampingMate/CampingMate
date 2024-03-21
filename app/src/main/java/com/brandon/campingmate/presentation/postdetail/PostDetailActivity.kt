@@ -114,7 +114,6 @@ class PostDetailActivity : AppCompatActivity() {
 
     private var bottomSheetBehavior: BottomSheetBehavior<View>? = null
 
-
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -252,7 +251,6 @@ class PostDetailActivity : AppCompatActivity() {
         }
     }
 
-
     private fun onEvent(event: PostDetailEvent) {
         when (event) {
             PostDetailEvent.UploadCommentSuccess -> {
@@ -261,13 +259,11 @@ class PostDetailActivity : AppCompatActivity() {
                 hideKeyboard()
             }
 
-            is PostDetailEvent.MakeToast -> {
-                showToast(event.message)
-            }
-
-            is PostDetailEvent.ShowBottomSheetMenu -> {
-                showBottomSheetCommentMenu(event.isOwner, event.postCommentId)
-            }
+            is PostDetailEvent.MakeToast -> showToast(event.message)
+            is PostDetailEvent.ShowBottomSheetMenu -> showBottomSheetCommentMenu(
+                event.isOwner,
+                event.postCommentId
+            )
 
             else -> {}
         }
@@ -300,7 +296,7 @@ class PostDetailActivity : AppCompatActivity() {
             if (state.isInfiniteLoadingComments) {
                 commentListAdapter.submitList(comments + listOf(PostCommentListItem.Loading))
             } else {
-                commentListAdapter.submitList(comments.filterIsInstance<PostCommentListItem.PostCommentItem>())
+                commentListAdapter.submitList(comments)
             }
         }
 
