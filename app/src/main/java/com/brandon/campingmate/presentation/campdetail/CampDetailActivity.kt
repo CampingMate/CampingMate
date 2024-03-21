@@ -30,6 +30,7 @@ import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.campdetail.adapter.CommentListAdapter
 import com.brandon.campingmate.presentation.campdetail.adapter.ViewPagerAdapter
 import com.brandon.campingmate.presentation.common.SnackbarUtil
+import com.brandon.campingmate.utils.toPx
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.firestore.DocumentReference
@@ -108,6 +109,13 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         campComment.observe(this@CampDetailActivity) {
             if (it != null) {
                 listAdapter.submitList(it)
+                if(it.isEmpty()){
+                    binding.recyclerComment.visibility = View.INVISIBLE
+                    binding.tvNoComment.visibility = View.VISIBLE
+                } else{
+                    binding.recyclerComment.visibility = View.VISIBLE
+                    binding.tvNoComment.visibility = View.INVISIBLE
+                }
             }
         }
         checkLastComment.observe(this@CampDetailActivity) {
@@ -268,7 +276,10 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         })
         commentBottomSheet.setOnClickListener {
-            behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+            behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            val screenHeight = resources.displayMetrics.heightPixels // 화면의 높이를 가져옴
+            val peekHeightRatio = 0.7 // 바텀시트가 화면의 70%까지 보이도록 설정
+            behavior.peekHeight = (screenHeight * peekHeightRatio).toInt()
         }
         bottomSheetCancle.setOnClickListener {
             behavior.state = BottomSheetBehavior.STATE_HIDDEN
