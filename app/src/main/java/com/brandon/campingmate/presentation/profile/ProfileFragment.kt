@@ -154,29 +154,28 @@ class ProfileFragment : Fragment() {
     }
 
     private fun initLogin() {
-        userId?.let { viewModel.getUserData(it) }
         with(binding) {
-            viewModel.userData.observe(viewLifecycleOwner){
-                if (profileImgUri == null) {
-                    ivProfileImg.scaleType = ImageView.ScaleType.CENTER_CROP
-                    Glide.with(binding.root).load(it?.profileImage).into(ivProfileImg)
-                    ivProfileImg.visibility = View.VISIBLE
-                    tvProfileName.textSize = 24f
-                    tvProfileName.text = it?.nickName.toString()
-                    tvProfileEmail.text = it?.userEmail.toString()
+            val docRef = db.collection("users").document(userId.toString())
+            docRef.get().addOnSuccessListener {
+                if (!it.exists()) {
+                    UserApiClient.instance.me { user, error ->
+                        ivProfileImg.setImageURI(Uri.parse(user?.kakaoAccount?.profile?.profileImageUrl))
+                        tvProfileName.textSize = 24f
+                        tvProfileName.text = user?.kakaoAccount?.profile?.nickname
+                        tvProfileEmail.text = user?.kakaoAccount?.email
+                    }
+                } else {
+                    if (profileImgUri == null) {
+                        ivProfileImg.scaleType = ImageView.ScaleType.CENTER_CROP
+                        Glide.with(binding.root).load(it.getString("profileImage")).into(ivProfileImg)
+                        ivProfileImg.visibility = View.VISIBLE
+                        tvProfileName.textSize = 24f
+                        tvProfileName.text = it.getString("nickName").toString()
+                        tvProfileEmail.text = it.getString("userEmail").toString()
+                    }
                 }
             }
-//            val docRef = db.collection("users").document(userId.toString())
-//            docRef.get().addOnSuccessListener {
-//                if (profileImgUri == null) {
-//                    ivProfileImg.scaleType = ImageView.ScaleType.CENTER_CROP
-//                    Glide.with(binding.root).load(it.getString("profileImage")).into(ivProfileImg)
-//                    ivProfileImg.visibility = View.VISIBLE
-//                    tvProfileName.textSize = 24f
-//                    tvProfileName.text = it.getString("nickName").toString()
-//                    tvProfileEmail.text = it.getString("userEmail").toString()
-//                }
-//            }
+
             tvProfileName.visibility = View.VISIBLE
             tvProfileEmail.visibility = View.VISIBLE
 
@@ -389,7 +388,7 @@ class ProfileFragment : Fragment() {
                             documentRef.update(profileImgURI)
                         }
                     }
-                    profileImgUri = null
+                    //profileImgUri = null
                 }
                 documentRef.get().addOnSuccessListener {
                     documentRef.update(updateNickname)
