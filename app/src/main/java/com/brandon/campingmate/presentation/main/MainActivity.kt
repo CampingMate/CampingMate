@@ -15,6 +15,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.brandon.campingmate.databinding.ActivityMainBinding
 import com.brandon.campingmate.domain.model.CampEntity
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
+import com.brandon.campingmate.R
 import com.brandon.campingmate.domain.model.HomeEntity
 import com.brandon.campingmate.presentation.splash.SplashViewModel
 import com.kakao.sdk.common.util.Utility
@@ -54,21 +57,17 @@ class MainActivity : AppCompatActivity() {
 //        Log.d("Main","#csh homeCity: $homeCity")
 //        Log.d("Main","#csh homeTheme: $homeTheme")
 
-        binding.viewPager.adapter = ViewPager2Adapter(supportFragmentManager, lifecycle)
-        binding.viewPager.isUserInputEnabled = false
-        //binding.viewPager.offscreenPageLimit = 1
-        binding.bottomNavigation.setupWithViewPager2(binding.viewPager)
+        initView()
 
-        binding.bottomNavigation.setOnTabSelectListener(object : AnimatedBottomBar.OnTabSelectListener {
-            override fun onTabSelected(
-                lastIndex: Int,
-                lastTab: AnimatedBottomBar.Tab?,
-                newIndex: Int,
-                newTab: AnimatedBottomBar.Tab
-            ) {
-                binding.viewPager.setCurrentItem(newIndex, false)
-            }
-        })
+    }
+
+    private fun initView() {
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container) as? NavHostFragment
+        val navController = navHostFragment?.navController
+        if (navController != null) {
+            binding.bottomNavigation.setupWithNavController(navController)
+        }
     }
 
     private fun startSplash() {
