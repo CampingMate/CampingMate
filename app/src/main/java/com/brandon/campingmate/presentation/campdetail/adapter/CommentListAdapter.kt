@@ -61,6 +61,9 @@ class CommentListAdapter(
                 .into(ivCommentImg)
             ivCommentImg.clipToOutline = true
             tvCommentUsername.text = item.userName.toString()
+            Glide.with(binding.root)
+                .load(item.userProfile)
+                .into(ivUserProfile)
 
             binding.root.setOnLongClickListener {
                 UserApiClient.instance.me { user, error ->

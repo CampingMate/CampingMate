@@ -69,7 +69,6 @@ class LoginActivity : AppCompatActivity() {
 //                startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
                 val db = Firebase.firestore
                 UserApiClient.instance.me { user, _ ->
-                    profileImgUpload(Uri.parse(user?.kakaoAccount?.profile?.profileImageUrl), "Kakao${user?.id}")
 
                     val documentRef = db.collection("users").document("Kakao${user?.id}")
                     val userModel = hashMapOf(
@@ -81,6 +80,7 @@ class LoginActivity : AppCompatActivity() {
                     )
                     documentRef.get().addOnSuccessListener {
                         if (!it.exists()) {
+                            profileImgUpload(Uri.parse(user?.kakaoAccount?.profile?.profileImageUrl), "Kakao${user?.id}")
                             documentRef.set(userModel)
                             Firebase.storage.getReference("profileImage").child("Kakao${user?.id}").downloadUrl.addOnCompleteListener {
                                 if (it.isSuccessful) {
