@@ -122,7 +122,7 @@ class PostDetailActivity : AppCompatActivity() {
 
 
         val postId = intent.getStringExtra(EXTRA_POST_ID)
-        viewModel.getPost(postId)
+        viewModel.getPostById(postId)
 
         initView()
         initListener()
