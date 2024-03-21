@@ -65,8 +65,12 @@ class LoginActivity : AppCompatActivity() {
                 }
             } else if (token != null) {
                 Toast.makeText(this, "로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show()
+//                val intent = Intent(this, MainActivity::class.java)
+//                startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
                 val db = Firebase.firestore
                 UserApiClient.instance.me { user, _ ->
+                    profileImgUpload(Uri.parse(user?.kakaoAccount?.profile?.profileImageUrl), "Kakao${user?.id}")
+
                     val documentRef = db.collection("users").document("Kakao${user?.id}")
                     val userModel = hashMapOf(
                         "userId" to "Kakao${user?.id}",
@@ -77,7 +81,6 @@ class LoginActivity : AppCompatActivity() {
                     )
                     documentRef.get().addOnSuccessListener {
                         if (!it.exists()) {
-                            profileImgUpload(Uri.parse(user?.kakaoAccount?.profile?.profileImageUrl), "Kakao${user?.id}")
                             documentRef.set(userModel)
                             Firebase.storage.getReference("profileImage").child("Kakao${user?.id}").downloadUrl.addOnCompleteListener {
                                 if (it.isSuccessful) {

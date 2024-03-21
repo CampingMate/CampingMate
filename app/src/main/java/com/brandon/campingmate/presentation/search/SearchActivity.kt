@@ -51,27 +51,17 @@ class SearchActivity : AppCompatActivity() {
         keyword.observe(this@SearchActivity){
             Log.d("checkLog", "keyword 옵저빙")
             binding.loadingAnimation.visibility = View.GONE
+//            binding.loadingAnimationInfinity.visibility = View.GONE
             val myNewList = mutableListOf<CampEntity>()
             myNewList.addAll(it)
             listAdapter.submitList(myNewList)
-            checkItem(myNewList)
         }
         myList.observe(this@SearchActivity){
             binding.loadingAnimation.visibility = View.GONE
+//            binding.loadingAnimationInfinity.visibility = View.GONE
             val myNewList = mutableListOf<CampEntity>()
             myNewList.addAll(it)
             listAdapter.submitList(myNewList)
-            checkItem(myNewList)
-        }
-    }
-
-    private fun checkItem(myNewList: MutableList<CampEntity>) = with(binding) {
-        if(myNewList.isEmpty()){
-            recyclerView.visibility = View.INVISIBLE
-            tvNoResult.visibility = View.VISIBLE
-        } else{
-            recyclerView.visibility = View.VISIBLE
-            tvNoResult.visibility = View.INVISIBLE
         }
     }
 
@@ -154,11 +144,11 @@ class SearchActivity : AppCompatActivity() {
             R.id.chipWinterSnow,
             R.id.chipSunset,
             R.id.chipWaterLeisure,
-//            R.id.chipGrass,
-//            R.id.chipCrushedStone,
-//            R.id.chipTech,
-//            R.id.chipGravel,
-//            R.id.chipSoil
+            R.id.chipGrass,
+            R.id.chipCrushedStone,
+            R.id.chipTech,
+            R.id.chipGravel,
+            R.id.chipSoil
         )
         /**
          * 초기화버튼 클릭시 칩 초기화
@@ -336,9 +326,9 @@ class SearchActivity : AppCompatActivity() {
         searchThema.setOnClickListener {
             scrollToView(tvSearchThema)
         }
-//        searchBottom.setOnClickListener {
-//            scrollToView(tvSearchBottom)
-//        }
+        searchBottom.setOnClickListener {
+            scrollToView(tvSearchBottom)
+        }
     }
 
     private fun scrollToView(view: View) {

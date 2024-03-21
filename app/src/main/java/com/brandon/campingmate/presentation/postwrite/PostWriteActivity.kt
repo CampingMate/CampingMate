@@ -10,8 +10,6 @@ import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.text.InputFilter
-import android.text.method.ScrollingMovementMethod
 import android.view.MenuItem
 import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
@@ -25,7 +23,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -89,7 +86,7 @@ class PostWriteActivity : AppCompatActivity() {
 
     private val editTexts
         get() = listOf(
-            binding.etTitle, binding.etContent
+            binding.tvTitle, binding.tvContent
         )
 
 
@@ -144,13 +141,6 @@ class PostWriteActivity : AppCompatActivity() {
             }
         }
 
-        lifecycleScope.launch {
-            buttonUiState.flowWithLifecycle(lifecycle).collectLatest { state ->
-                Timber.tag("BUTTON").d("활성화여부: $state")
-                binding.btnPostUpload.isEnabled = state
-            }
-        }
-
     }
 
     private fun onBind(state: PostWriteImageUiState) {
@@ -197,17 +187,12 @@ class PostWriteActivity : AppCompatActivity() {
         // 커스텀 ItemAnimator 설정
         rvPostImage.itemAnimator = null
 
-        etTitle.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(40))
-        etTitle.movementMethod = ScrollingMovementMethod()
-
-        etContent.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(200))
-        etContent.movementMethod = ScrollingMovementMethod()
     }
 
     private fun initListener() = with(binding) {
         btnPostUpload.setDebouncedOnClickListener {
-            val title = binding.etTitle.text.toString()
-            val content = binding.etContent.text.toString()
+            val title = binding.tvTitle.text.toString()
+            val content = binding.tvContent.text.toString()
             viewModel.handleEvent(
                 PostWriteEvent.UploadPost(
                     title = title,
@@ -249,14 +234,6 @@ class PostWriteActivity : AppCompatActivity() {
                 }
             }
         })
-
-        etTitle.addTextChangedListener {
-            viewModel.onTitleChanged(it.toString())
-        }
-
-        etContent.addTextChangedListener {
-            viewModel.onBodyChanged(it.toString())
-        }
     }
 
     private fun showImagePickerBottomSheet(uris: List<Uri> = emptyList()) {

@@ -16,23 +16,29 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.brandon.campingmate.BuildConfig
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.FragmentHomeBinding
+import com.brandon.campingmate.domain.model.CampEntity
+import com.brandon.campingmate.domain.model.HolidayEntity
 import com.brandon.campingmate.domain.model.HolidayItem
 import com.brandon.campingmate.domain.model.HomeEntity
 import com.brandon.campingmate.network.retrofit.NetWorkClient.holidayNetWork
+import com.brandon.campingmate.presentation.campdetail.CampDetailActivity
 import com.brandon.campingmate.presentation.home.adapter.HomeAdapter
 import com.brandon.campingmate.presentation.home.adapter.PetAdapter
 import com.brandon.campingmate.presentation.home.adapter.ReviewAdapter
 import com.brandon.campingmate.presentation.main.MainActivity
 import com.brandon.campingmate.presentation.search.SearchActivity
+import com.brandon.campingmate.presentation.splash.SplashViewModel
+import com.bumptech.glide.Glide
 import com.google.android.material.chip.ChipGroup
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.launch
-import timber.log.Timber
+import nl.joery.animatedbottombar.AnimatedBottomBar
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import kotlin.math.max
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -485,11 +491,11 @@ class HomeFragment : Fragment() {
         lifecycleScope.launch {
             val data = communicateNetWork(parse,100)
 
-            val dataSort = data.sortedBy { it.locdate }
+            val dataSort = data?.sortedBy { it.locdate }
             val dataFilter = dataSort?.filter { it.locdate != null && it.locdate >= formatDate.toInt()}
             if(dataFilter?.size!!<5) {
                 holidayList.addAll(dataFilter)
-                val addItem = communicateNetWork("${parse.toInt() + 1}", 5 - dataFilter.size!!)
+                val addItem = communicateNetWork("${parse.toInt() + 1}", 5 - dataFilter?.size!!)
                 holidayList.addAll(addItem)
             }else{
                 holidayList.addAll(dataFilter.take(5))
@@ -524,22 +530,18 @@ class HomeFragment : Fragment() {
 ////            binding.tvDday.text = "(D-${})"
         }
     }
-
-    private suspend fun communicateNetWork(year: String, num: Int): MutableList<HolidayItem> {
-        try {
-            val authKey = BuildConfig.camp_data_key
+    private suspend fun communicateNetWork(year: String, num:Int) : MutableList<HolidayItem>{
+        val authKey = BuildConfig.camp_data_key
             val date = LocalDate.now()
             val dateFormat = date.format(DateTimeFormatter.BASIC_ISO_DATE)
 //            val parseYear = dateFormat.substring(0,3)
 //        Log.d("Home", "parseYear=${parseYear}")
-            val responseData = holidayNetWork.getRestDeInfo(authKey, year, "json", num)
+            val responseData = holidayNetWork.getRestDeInfo(authKey,year,"json",num)
             val holidayInfo = responseData.response.body.items.item
-            Timber.tag("Home").d("holidayInfo=%s", responseData)
-            return holidayInfo
-        } catch (e: Exception) {
-            Timber.tag("HOLIDAY").d("Error: $e")
-            return mutableListOf()
-        }
+           Log.d("Home", "holidayInfo=${responseData}")
+
+        return holidayInfo
+
     }
 
     override fun onDestroy() {
