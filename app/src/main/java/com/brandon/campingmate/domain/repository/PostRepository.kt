@@ -3,15 +3,14 @@ package com.brandon.campingmate.domain.repository
 import android.net.Uri
 import com.brandon.campingmate.domain.model.Post
 import com.brandon.campingmate.domain.model.PostComment
-import com.brandon.campingmate.domain.model.Posts
 import com.brandon.campingmate.utils.Resource
-import com.google.firebase.firestore.DocumentSnapshot
 
 interface PostRepository {
 
     suspend fun getPosts(
-        pageSize: Int, lastVisibleDoc: DocumentSnapshot?
-    ): Resource<Posts>
+        pageSize: Int,
+        shouldFetchFromFirst: Boolean,
+    ): Result<List<Post>>
 
     suspend fun getComments(
         postId: String,

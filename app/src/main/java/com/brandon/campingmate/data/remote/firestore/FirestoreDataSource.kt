@@ -2,14 +2,12 @@ package com.brandon.campingmate.data.remote.firestore
 
 import com.brandon.campingmate.data.remote.dto.PostCommentDTO
 import com.brandon.campingmate.data.remote.dto.PostDTO
-import com.brandon.campingmate.data.remote.dto.PostsDTO
 import com.brandon.campingmate.data.remote.dto.UserDTO
 import com.brandon.campingmate.domain.model.PostComment
 import com.brandon.campingmate.utils.Resource
-import com.google.firebase.firestore.DocumentSnapshot
 
 interface FirestoreDataSource {
-    suspend fun getPosts(pageSize: Int, lastVisibleDoc: DocumentSnapshot?): Resource<PostsDTO>
+    suspend fun getPosts(pageSize: Int, shouldFetchFromFirst: Boolean): Result<List<PostDTO>>
     suspend fun getPostById(postId: String): Resource<PostDTO>
     suspend fun getUserById(userId: String): Result<UserDTO?>
     suspend fun getComments(

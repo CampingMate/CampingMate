@@ -134,6 +134,7 @@ class BoardFragment : Fragment() {
     }
 
     private fun initListener() = with(binding) {
+
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 searchView.clearFocus()
@@ -166,7 +167,7 @@ class BoardFragment : Fragment() {
                     val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
 
                     if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition + 1 >= totalItemCount) {
-                        viewModel.handleEvent(BoardEvent.LoadPosts(BoardViewModel.RefreshTrigger.SCROLL))
+                        viewModel.handleEvent(BoardEvent.LoadMoreRequested)
                     }
                 }
             }
@@ -189,17 +190,18 @@ class BoardFragment : Fragment() {
 
         })
 
-        swipeRefreshLayout.setOnRefreshListener {
-            viewModel.handleEvent(BoardEvent.LoadPosts(BoardViewModel.RefreshTrigger.SWIPE))
-            binding.swipeRefreshLayout.isRefreshing = false
+        swipeRefresh.setOnRefreshListener {
+            viewModel.handleEvent(BoardEvent.RefreshRequested)
+            binding.swipeRefresh.isRefreshing = false
         }
 
     }
 
     private fun initView() = with(binding) {
         rvPostList.adapter = postListAdapter
-        linearLayoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        rvPostList.layoutManager = linearLayoutManager
+        rvPostList.layoutManager = LinearLayoutManager(requireContext()).also {
+            linearLayoutManager = it
+        }
         rvPostList.setHasFixedSize(true)
     }
 
@@ -253,14 +255,11 @@ class BoardFragment : Fragment() {
         }
     }
 
-    private fun onBind(state: BoardUiState) = with(binding) {
-        if (state.isScrolling) {
-            postListAdapter.submitList(state.posts + listOf(PostListItem.Loading))
-        } else {
-            postListAdapter.submitList(state.posts) {
-                if (state.shouldScrollToTop) {
-                    scrollToTop()
-                }
+    private fun onBind(state: BoardUiState) = with(state) {
+        postListAdapter.submitList(posts + if (isLoadingMore) listOf(PostListItem.Loading) else emptyList()) {
+            if (shouldScrollToTop) {
+                binding.rvPostList.smoothScrollToPosition(0)
+                viewModel.clearScrollToTopFlag()
             }
         }
     }
@@ -269,21 +268,13 @@ class BoardFragment : Fragment() {
         postWriteResultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 if (result.resultCode == Activity.RESULT_OK) {
-                    postListAdapter.submitList(null)
-                    viewModel.handleEvent(BoardEvent.LoadPosts(BoardViewModel.RefreshTrigger.UPLOAD))
+                    viewModel.handleEvent(BoardEvent.RefreshPostsAndScrollToTopRequested)
                 }
             }
     }
 
     private fun hideKeyboard() {
         binding.searchView.clearFocus()
-    }
-
-    private fun scrollToTop() {
-        binding.rvPostList.post {
-            linearLayoutManager.scrollToPositionWithOffset(0, 0)
-        }
-        viewModel.resetScrollToTopFlag()
     }
 
     private fun showToast(message: String) {
