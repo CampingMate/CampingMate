@@ -69,7 +69,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private var myImage: String = ""
     var isTop = true
     lateinit var behavior: BottomSheetBehavior<ConstraintLayout>
-
+    private var sendLoading:Boolean = false
     companion object {
         private const val REQUEST_CODE_IMAGE_PICK = 1001
     }
@@ -323,7 +323,9 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             openGalleryForImage()
         }
         commentSend.setOnClickListener {
-            commentSend.hideKeyboardInput()
+            if(!sendLoading){
+                sendLoading = true
+                commentSend.hideKeyboardInput()
                 if (userId != null) {
                     val userDocRef = db.collection("users").document("${userId}")
                     userDocRef
@@ -332,6 +334,10 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                             val userId = "${userId}"
                             val userName = it.get("nickName")
                             val content = commentEdit.text.toString()
+                            if(content.isBlank()){
+                                sendLoading = false
+                                return@addOnSuccessListener
+                            }
                             val date =
                                 SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(
                                     Date()
@@ -381,6 +387,8 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                 } else {
                     SnackbarUtil.showSnackBar(it)
                 }
+                sendLoading = false
+            }
         }
         selectedImageDelete.setOnClickListener {
             binding.selectedImage.setImageURI(null)
