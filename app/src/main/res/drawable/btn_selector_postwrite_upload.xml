@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 버튼 활성화 상태일 때의 배경 색상 -->
+    <item android:drawable="@drawable/btn_postwrite_upload_enable" android:state_enabled="true" />
+    <!-- 버튼 비활성화 상태일 때의 배경 색상 -->
+    <item android:drawable="@drawable/btn_postwrite_upload" />
+</selector>

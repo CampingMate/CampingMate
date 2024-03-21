@@ -21,15 +21,20 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.brandon.campingmate.R
+import com.brandon.campingmate.data.local.preferences.EncryptedPrefs
+import com.brandon.campingmate.data.local.preferences.PreferencesDataSourceImpl
 import com.brandon.campingmate.data.remote.firebasestorage.FireBaseStorageDataSourceImpl
 import com.brandon.campingmate.data.remote.firestore.FirestoreDataSourceImpl
 import com.brandon.campingmate.data.repository.PostRepositoryImpl
+import com.brandon.campingmate.data.repository.UserRepositoryImpl
 import com.brandon.campingmate.databinding.FragmentBoardBinding
 import com.brandon.campingmate.domain.usecase.GetPostsUseCase
+import com.brandon.campingmate.domain.usecase.GetUserUserCase
 import com.brandon.campingmate.network.firestore.FirebaseService.fireStoreDB
 import com.brandon.campingmate.network.firestore.FirebaseService.firebaseStorage
 import com.brandon.campingmate.presentation.board.adapter.PostListAdapter
 import com.brandon.campingmate.presentation.board.adapter.PostListItem
+import com.brandon.campingmate.presentation.common.SnackbarUtil
 import com.brandon.campingmate.presentation.postdetail.PostDetailActivity
 import com.brandon.campingmate.presentation.postwrite.PostWriteActivity
 import kotlinx.coroutines.flow.collectLatest
@@ -48,6 +53,15 @@ class BoardFragment : Fragment() {
                     FirestoreDataSourceImpl(fireStoreDB), FireBaseStorageDataSourceImpl(firebaseStorage)
                 )
             ),
+            GetUserUserCase(
+                UserRepositoryImpl(
+                    PreferencesDataSourceImpl(
+                        EncryptedPrefs.sharedPreferences
+                    ), FirestoreDataSourceImpl(
+                        fireStoreDB
+                    )
+                )
+            )
         )
     }
     private val postListAdapter: PostListAdapter by lazy {
@@ -92,6 +106,8 @@ class BoardFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         Timber.tag("BOARD").d("BoardFragment onResume")
+        viewModel.checkLoginStatus()
+        Timber.d("BoardFragment onResume")
     }
 
     override fun onPause() {
@@ -188,6 +204,12 @@ class BoardFragment : Fragment() {
 
     private fun initViewModel() = with(viewModel) {
         lifecycleScope.launch {
+            user.flowWithLifecycle(lifecycle).collectLatest { user ->
+                updateUiForLogin(user != null)
+            }
+        }
+
+        lifecycleScope.launch {
             uiState.flowWithLifecycle(lifecycle).collectLatest { state ->
                 onBind(state)
             }
@@ -199,6 +221,7 @@ class BoardFragment : Fragment() {
             }
         }
     }
+
 
     private fun onEvent(event: BoardEvent) {
         when (event) {
@@ -261,6 +284,18 @@ class BoardFragment : Fragment() {
 
     private fun showToast(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun updateUiForLogin(isLogin: Boolean) = with(binding) {
+        if (isLogin) {
+            btnWrite.setOnClickListener {
+                viewModel.handleEvent(BoardEvent.NavigateToPostWrite)
+            }
+        } else {
+            btnWrite.setOnClickListener {
+                SnackbarUtil.showSnackBar(binding.root)
+            }
+        }
     }
 
 }
