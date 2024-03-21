@@ -96,6 +96,7 @@ class CampDetailViewModel : ViewModel() {
                     "userName" to myComment.userName,
                     "content" to myComment.content,
                     "date" to myComment.date,
+                    "userProfile" to myComment.userProfile,
                 )
                 if(myComment.imageUrl.toString().isNotBlank()){
                     newComment["img"] = myComment.imageUrl.toString()
@@ -134,12 +135,14 @@ class CampDetailViewModel : ViewModel() {
                         val commentList = doc.get("commentList") as? MutableList<Map<String, Any?>> ?: mutableListOf()
                         for (comment in commentList) {
                             val userId = comment["userId"] as String
-                            val userName = comment["userName"] as String
+                            val userName = comment["userName"] as? String ?: "유저"
                             val content = comment["content"] as String
                             val date = comment["date"] as String
                             val imageUrlString = comment["img"] as String
                             val imageUrl = Uri.parse(imageUrlString)
-                            val data = CampCommentEntity(userId, userName, content, date, imageUrl, myId)
+                            val userProfileString = comment["userProfile"] as String
+                            val userProfileUrl = Uri.parse(userProfileString)
+                            val data = CampCommentEntity(userId, userName, content, date, imageUrl, myId, userProfileUrl)
                             comments.add(data)
                         }
                     }

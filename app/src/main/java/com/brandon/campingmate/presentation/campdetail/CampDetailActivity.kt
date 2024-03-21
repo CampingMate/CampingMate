@@ -18,7 +18,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
@@ -42,7 +41,6 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.Marker
-import org.checkerframework.common.subtyping.qual.Bottom
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -314,11 +312,11 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         commentSend.setOnClickListener {
             commentSend.hideKeyboardInput()
                 if (userId != null) {
-                    val userDocRef = db.collection("users").document("Kakao${userId}")
+                    val userDocRef = db.collection("users").document("${userId}")
                     userDocRef
                         .get()
                         .addOnSuccessListener {
-                            val userId = "Kakao${userId}"
+                            val userId = "${userId}"
                             val userName = it.get("nickName")
                             val content = commentEdit.text.toString()
                             val date =
@@ -330,6 +328,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                             } else {
                                 ""
                             }
+                            val userProfile = it.get("profileImage")
                             if (myImage.isNotBlank()) {
                                 val myImageUri = Uri.parse(myImage)
                                 viewModel.uploadImage(myImageUri) { imageUrl ->
@@ -340,7 +339,8 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                                             content,
                                             date,
                                             Uri.parse(imageUrl),
-                                            it1
+                                            it1,
+                                            Uri.parse(userProfile.toString()),
                                         )
                                     }
                                     if (myComment != null) {
@@ -356,7 +356,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                                     myId?.let { it1 ->
                                         CampCommentEntity(
                                             userId, userName, content, date, Uri.EMPTY,
-                                            it1
+                                            it1, Uri.parse(userProfile.toString())
                                         )
                                     }
                                 if (myComment != null) {
