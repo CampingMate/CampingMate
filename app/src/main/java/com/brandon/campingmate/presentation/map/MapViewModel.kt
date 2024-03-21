@@ -171,8 +171,6 @@ class MapViewModel : ViewModel(){
         }
     }
 
-
-
     fun getImgList(map: HashMap<String,String>?) {
         viewModelScope.launch {
             val response = map?.let { NetWorkClient.imageNetWork.getImage(it) }

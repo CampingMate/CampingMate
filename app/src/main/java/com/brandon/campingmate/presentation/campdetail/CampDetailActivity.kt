@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -18,19 +17,22 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.brandon.campingmate.R
 import com.brandon.campingmate.data.local.preferences.EncryptedPrefs
 import com.brandon.campingmate.databinding.ActivityCampDetailBinding
+import com.brandon.campingmate.databinding.BottomSheetPostdetailCommnetSideMenuBinding
 import com.brandon.campingmate.domain.model.CampCommentEntity
 import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.campdetail.adapter.CommentListAdapter
 import com.brandon.campingmate.presentation.campdetail.adapter.ViewPagerAdapter
 import com.brandon.campingmate.presentation.common.SnackbarUtil
+import com.brandon.campingmate.utils.toPx
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.kakao.sdk.user.UserApiClient
@@ -42,7 +44,6 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.Marker
-import org.checkerframework.common.subtyping.qual.Bottom
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -68,7 +69,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private var myImage: String = ""
     var isTop = true
     lateinit var behavior: BottomSheetBehavior<ConstraintLayout>
-
+    private var sendLoading:Boolean = false
     companion object {
         private const val REQUEST_CODE_IMAGE_PICK = 1001
     }
@@ -108,6 +109,13 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         campComment.observe(this@CampDetailActivity) {
             if (it != null) {
                 listAdapter.submitList(it)
+                if(it.isEmpty()){
+                    binding.recyclerComment.visibility = View.INVISIBLE
+                    binding.tvNoComment.visibility = View.VISIBLE
+                } else{
+                    binding.recyclerComment.visibility = View.VISIBLE
+                    binding.tvNoComment.visibility = View.INVISIBLE
+                }
             }
         }
         checkLastComment.observe(this@CampDetailActivity) {
@@ -268,7 +276,10 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         })
         commentBottomSheet.setOnClickListener {
-            behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+            behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            val screenHeight = resources.displayMetrics.heightPixels // 화면의 높이를 가져옴
+            val peekHeightRatio = 0.7 // 바텀시트가 화면의 70%까지 보이도록 설정
+            behavior.peekHeight = (screenHeight * peekHeightRatio).toInt()
         }
         bottomSheetCancle.setOnClickListener {
             behavior.state = BottomSheetBehavior.STATE_HIDDEN
@@ -312,15 +323,21 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             openGalleryForImage()
         }
         commentSend.setOnClickListener {
-            commentSend.hideKeyboardInput()
+            if(!sendLoading){
+                sendLoading = true
+                commentSend.hideKeyboardInput()
                 if (userId != null) {
-                    val userDocRef = db.collection("users").document("Kakao${userId}")
+                    val userDocRef = db.collection("users").document("${userId}")
                     userDocRef
                         .get()
                         .addOnSuccessListener {
-                            val userId = "Kakao${userId}"
+                            val userId = "${userId}"
                             val userName = it.get("nickName")
                             val content = commentEdit.text.toString()
+                            if(content.isBlank()){
+                                sendLoading = false
+                                return@addOnSuccessListener
+                            }
                             val date =
                                 SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(
                                     Date()
@@ -330,6 +347,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                             } else {
                                 ""
                             }
+                            val userProfile = it.get("profileImage")
                             if (myImage.isNotBlank()) {
                                 val myImageUri = Uri.parse(myImage)
                                 viewModel.uploadImage(myImageUri) { imageUrl ->
@@ -340,7 +358,8 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                                             content,
                                             date,
                                             Uri.parse(imageUrl),
-                                            it1
+                                            it1,
+                                            Uri.parse(userProfile.toString()),
                                         )
                                     }
                                     if (myComment != null) {
@@ -356,7 +375,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                                     myId?.let { it1 ->
                                         CampCommentEntity(
                                             userId, userName, content, date, Uri.EMPTY,
-                                            it1
+                                            it1, Uri.parse(userProfile.toString())
                                         )
                                     }
                                 if (myComment != null) {
@@ -368,6 +387,8 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                 } else {
                     SnackbarUtil.showSnackBar(it)
                 }
+                sendLoading = false
+            }
         }
         selectedImageDelete.setOnClickListener {
             binding.selectedImage.setImageURI(null)
@@ -564,6 +585,39 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             startActivity(intent)
         }
 
+    }
+    fun showBottomSheetCommentMenu(
+        comment: CampCommentEntity,
+    ) {
+        val isOwner = comment.userId == userId
+        val campId = comment.campId
+
+        showBottomSheetCommentMenu(isOwner, campId, comment)
+    }
+    private fun showBottomSheetCommentMenu(
+        isOwner: Boolean, campId: String?, comment: CampCommentEntity
+    ){
+        val bottomSheetDialog = BottomSheetDialog(this)
+        val bottomSheetBinding = BottomSheetPostdetailCommnetSideMenuBinding.inflate(layoutInflater)
+
+        if (isOwner) {
+            bottomSheetBinding.btnMenuOwner.isVisible = true
+            bottomSheetBinding.btnMenuNotOwner.isVisible = false
+        } else {
+            bottomSheetBinding.btnMenuOwner.isVisible = false
+            bottomSheetBinding.btnMenuNotOwner.isVisible = true
+        }
+
+        bottomSheetDialog.setContentView(bottomSheetBinding.root)
+
+        bottomSheetBinding.btnMenuOwner.setOnClickListener {
+            Timber.tag("DELETE").d("삭제 이벤트 발생")
+            // 삭제 동작 처리
+            viewModel.deleteComment(campId!!, comment)
+            bottomSheetDialog.dismiss()
+        }
+
+        bottomSheetDialog.show()
     }
 
 }

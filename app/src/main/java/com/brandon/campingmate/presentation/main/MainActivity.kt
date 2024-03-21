@@ -6,13 +6,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.brandon.campingmate.R
-import com.brandon.campingmate.databinding.ActivityMain2Binding
+import com.brandon.campingmate.databinding.ActivityMainBinding
 import com.brandon.campingmate.domain.model.HomeEntity
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
-    val binding by lazy { ActivityMain2Binding.inflate(layoutInflater) }
+    val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     var homeCity = ArrayList<HomeEntity>()
     var homeTheme = ArrayList<HomeEntity>()
 

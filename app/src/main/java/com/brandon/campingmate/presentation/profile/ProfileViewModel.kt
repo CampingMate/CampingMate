@@ -3,8 +3,9 @@ package com.brandon.campingmate.presentation.profile
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.brandon.campingmate.data.remote.dto.PostDTO
+import com.brandon.campingmate.data.remote.dto.UserDTO
 import com.brandon.campingmate.domain.model.CampEntity
-import com.brandon.campingmate.domain.model.Post
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -12,16 +13,27 @@ import com.google.firebase.firestore.firestore
 import timber.log.Timber
 
 class ProfileViewModel : ViewModel() {
+    private val _userData : MutableLiveData<UserDTO?> = MutableLiveData()
+    val userData : LiveData<UserDTO?> get() = _userData
     private val _bookmarkedList: MutableLiveData<List<CampEntity>> = MutableLiveData()
     val bookmarkedList: LiveData<List<CampEntity>> get() = _bookmarkedList
     private val bookmarkCamp: MutableList<CampEntity> = mutableListOf()
 
-    private val _postList: MutableLiveData<List<Post>> = MutableLiveData()
-    val postList: LiveData<List<Post>> get() = _postList
-    private val writingPost: MutableList<Post> = mutableListOf()
+    private val _postList: MutableLiveData<List<PostDTO>> = MutableLiveData()
+    val postList: LiveData<List<PostDTO>> get() = _postList
+    private val writingPost: MutableList<PostDTO> = mutableListOf()
     private var removeBookmarkItem: CampEntity? = null
-    private var removePostItem: Post? = null
+    private var removePostItem: PostDTO? = null
 
+    fun getUserData(userID : String) {
+        val db = FirebaseFirestore.getInstance()
+        val docRef = db.collection("users").document(userID)
+        docRef.get().addOnSuccessListener {
+            val item = it.toObject(UserDTO::class.java)
+            Timber.tag("아이디아이템검사").d(item.toString())
+            _userData.value = item
+        }
+    }
 
     fun getBookmark(userID: String) {
         val db = FirebaseFirestore.getInstance()
@@ -63,7 +75,7 @@ class ProfileViewModel : ViewModel() {
         writingPost.clear()
         result.get().addOnSuccessListener {
             for (doc in it) {
-                val post = doc.toObject(Post::class.java)
+                val post = doc.toObject(PostDTO::class.java)
                 writingPost.add(post)
             }
             _postList.value = writingPost
