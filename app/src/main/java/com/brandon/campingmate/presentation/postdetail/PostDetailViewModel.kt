@@ -179,7 +179,7 @@ class PostDetailViewModel(
     }
 
 
-    fun getPost(postId: String?) {
+    fun getPostById(postId: String?) {
         if (postId == null) return
         viewModelScope.launch {
             when (val result = getPostByIdUseCase(postId)) {
