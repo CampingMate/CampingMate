@@ -13,6 +13,8 @@ import com.brandon.campingmate.presentation.main.MainActivity
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class SplashViewModel:ViewModel() {
@@ -31,6 +33,9 @@ class SplashViewModel:ViewModel() {
     private val _isGet : MutableLiveData<Int> = MutableLiveData()
     val isGet : LiveData<Int> get() = _isGet
 
+    private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
+    val isLoading : StateFlow<Boolean> get() = _isLoading
+
     fun loadData(){
         Log.d("Splash ViewModel","#csh getData start")
         viewModelScope.launch {
@@ -47,6 +52,8 @@ class SplashViewModel:ViewModel() {
                     _allCityData.add(cityList)
                 }
                 _isGet.value = _isGet.value!! + 1
+                if(_isGet.value == 2)
+                    _isLoading.value = false
             }
             allTheme.get().addOnSuccessListener {documents ->
                 for (document in documents) {
@@ -55,6 +62,8 @@ class SplashViewModel:ViewModel() {
                     _allThemeData.add(themeList)
                 }
                 _isGet.value = _isGet.value!! + 1
+                if(_isGet.value == 2)
+                    _isLoading.value = false
             }
         }
     }

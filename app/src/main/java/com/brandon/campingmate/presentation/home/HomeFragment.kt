@@ -56,13 +56,14 @@ class HomeFragment : Fragment() {
     private lateinit var themeAdapter: HomeAdapter
     private val db = Firebase.firestore
     private val allCity: Query = db.collection("camps")
-    private lateinit var city : ArrayList<HomeEntity>
-    private lateinit var theme : ArrayList<HomeEntity>
+    private lateinit var city : MutableList<HomeEntity>
+    private lateinit var theme : MutableList<HomeEntity>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.d("Home", "#csh onCreateView")
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -72,6 +73,7 @@ class HomeFragment : Fragment() {
         val main = activity as MainActivity
         city = main.homeCity
         theme = main.homeTheme
+        Log.d("Home", "#csh onViewCreated city : $city")
         holidayInfo()
         viewModelGet("district")
         viewModelGet("theme")
@@ -143,8 +145,8 @@ class HomeFragment : Fragment() {
     }
     private fun viewModelGet(select:String){
         Log.d("Home","#csh viewModelGet()")
-        Log.d("Home", "#csh city: ${city}")
-        Log.d("Home", "#csh theme: ${theme}")
+        Log.d("Home", "#csh viewModelGet city: ${city}")
+        Log.d("Home", "#csh viewModelGet theme: ${theme}")
 
         if(select == "district") {
 //        districtAdapter = HomeAdapter(requireContext(), viewModel.allCityData.value!!)
@@ -483,7 +485,7 @@ class HomeFragment : Fragment() {
 
     private fun holidayInfo(){
         Log.d("Home", "#csh holidayInfo start")
-        val holidayList = mutableListOf<HolidayItem>()
+        val holidayList = mutableListOf<HolidayItem?>()
 
         val nowDate = LocalDate.now()
         val formatDate = nowDate.format(DateTimeFormatter.BASIC_ISO_DATE)
@@ -502,12 +504,12 @@ class HomeFragment : Fragment() {
             }
             holidayList.forEach { it ->
                 var dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
-                var dDay = ChronoUnit.DAYS.between(LocalDate.parse(formatDate, dateFormatter), LocalDate.parse(it.locdate.toString(), dateFormatter))
-                it.dDay = dDay
+                var dDay = ChronoUnit.DAYS.between(LocalDate.parse(formatDate, dateFormatter), LocalDate.parse(it?.locdate.toString(), dateFormatter))
+                it?.dDay = dDay
             }
             Log.d("Home", "#csh check D-Day=${holidayList}")
-            binding.tvHolidayName.text = "다음 휴일인 ${holidayList[0].dateName}까지 "
-            binding.tvDday.text = "${holidayList[0].dDay}일"
+            binding.tvHolidayName.text = "다음 휴일인 ${holidayList[0]?.dateName}까지 "
+            binding.tvDday.text = "${holidayList[0]?.dDay}일"
 //
 //
 //            var maxDiff = Long.MAX_VALUE
