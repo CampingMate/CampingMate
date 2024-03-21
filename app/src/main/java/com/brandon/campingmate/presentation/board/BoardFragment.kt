@@ -21,11 +21,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.brandon.campingmate.R
+import com.brandon.campingmate.data.local.preferences.EncryptedPrefs
+import com.brandon.campingmate.data.local.preferences.PreferencesDataSourceImpl
 import com.brandon.campingmate.data.remote.firebasestorage.FireBaseStorageDataSourceImpl
 import com.brandon.campingmate.data.remote.firestore.FirestoreDataSourceImpl
 import com.brandon.campingmate.data.repository.PostRepositoryImpl
+import com.brandon.campingmate.data.repository.UserRepositoryImpl
 import com.brandon.campingmate.databinding.FragmentBoardBinding
 import com.brandon.campingmate.domain.usecase.GetPostsUseCase
+import com.brandon.campingmate.domain.usecase.GetUserUserCase
 import com.brandon.campingmate.network.firestore.FirebaseService.fireStoreDB
 import com.brandon.campingmate.network.firestore.FirebaseService.firebaseStorage
 import com.brandon.campingmate.presentation.board.adapter.PostListAdapter
@@ -48,6 +52,15 @@ class BoardFragment : Fragment() {
                     FirestoreDataSourceImpl(fireStoreDB), FireBaseStorageDataSourceImpl(firebaseStorage)
                 )
             ),
+            GetUserUserCase(
+                UserRepositoryImpl(
+                    PreferencesDataSourceImpl(
+                        EncryptedPrefs.sharedPreferences
+                    ), FirestoreDataSourceImpl(
+                        fireStoreDB
+                    )
+                )
+            )
         )
     }
     private val postListAdapter: PostListAdapter by lazy {

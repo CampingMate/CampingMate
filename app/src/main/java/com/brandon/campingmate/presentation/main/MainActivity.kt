@@ -18,6 +18,7 @@ import com.brandon.campingmate.domain.model.CampEntity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.brandon.campingmate.R
+import com.brandon.campingmate.databinding.ActivityMain2Binding
 import com.brandon.campingmate.domain.model.HomeEntity
 import com.brandon.campingmate.presentation.splash.SplashViewModel
 import com.kakao.sdk.common.util.Utility
@@ -26,7 +27,7 @@ import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
-    val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+    val binding by lazy { ActivityMain2Binding.inflate(layoutInflater) }
     var homeCity =  mutableListOf<HomeEntity>()
     var homeTheme =  mutableListOf<HomeEntity>()
     private lateinit var splashScreen: SplashScreen
