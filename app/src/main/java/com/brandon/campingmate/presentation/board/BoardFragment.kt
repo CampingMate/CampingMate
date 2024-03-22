@@ -106,13 +106,13 @@ class BoardFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         viewModel.checkLoginStatus()
-        binding.shimmer.startShimmer()
+        binding.shimmerView.startShimmer()
         Timber.d("BoardFragment onResume")
     }
 
     override fun onPause() {
         super.onPause()
-        binding.shimmer.stopShimmer()
+        binding.shimmerView.stopShimmer()
         Timber.d("BoardFragment onPause")
     }
 
@@ -262,6 +262,8 @@ class BoardFragment : Fragment() {
                 viewModel.clearScrollToTopFlag()
             }
         }
+
+        binding.shimmerView.isVisible = isInitialLoading
     }
 
     private fun initResultLauncher() {

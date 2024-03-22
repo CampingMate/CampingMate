@@ -111,6 +111,7 @@ class BoardViewModel(
                             posts = if (shouldFetchFromFirst) newPosts else currentState.posts + newPosts,
                             isRefreshing = false,
                             isLoadingMore = false,
+                            isInitialLoading = false,
                             shouldScrollToTop = shouldScrollToTop,
                         )
                     }
