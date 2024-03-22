@@ -6,11 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.brandon.campingmate.domain.model.User
 import com.brandon.campingmate.domain.usecase.GetPostsUseCase
 import com.brandon.campingmate.domain.usecase.GetUserUserCase
-import com.brandon.campingmate.presentation.board.BoardViewModel.RefreshTrigger.SCROLL
-import com.brandon.campingmate.presentation.board.BoardViewModel.RefreshTrigger.SWIPE
-import com.brandon.campingmate.presentation.board.BoardViewModel.RefreshTrigger.UPLOAD
-import com.brandon.campingmate.utils.Resource
-import com.brandon.campingmate.utils.mappers.toPostListItem
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,10 +22,6 @@ class BoardViewModel(
     private val getUserUserCase: GetUserUserCase,
 ) : ViewModel() {
 
-    enum class RefreshTrigger {
-        SCROLL, SWIPE, UPLOAD
-    }
-
     private val _uiState = MutableStateFlow(BoardUiState.init())
     val uiState: StateFlow<BoardUiState> = _uiState.asStateFlow()
 
@@ -44,7 +35,8 @@ class BoardViewModel(
 
     init {
         Timber.tag("BOARD").d("ViewModel is being created")
-        loadPosts(SWIPE)
+        _uiState.update { it.copy(isInitialLoading = true) }
+        getPosts()
         checkLoginStatus()
     }
 
@@ -59,74 +51,77 @@ class BoardViewModel(
 
     fun handleEvent(event: BoardEvent) {
         when (event) {
-            is BoardEvent.LoadPosts -> {
-                Timber.d("데이터 불러오기 이벤트")
-                loadPosts(event.trigger)
-            }
-
             is BoardEvent.OpenContent -> {
-                Timber.d("문서 열기 이벤트")
                 _event.tryEmit(BoardEvent.OpenContent(event.post))
             }
 
-            is BoardEvent.MakeToast -> {
-                Timber.d("토스트 만들기 이벤트")
-                _event.tryEmit(BoardEvent.MakeToast(event.message))
+            is BoardEvent.NavigateToPostWrite -> {
+                _event.tryEmit(BoardEvent.NavigateToPostWrite)
             }
 
-            is BoardEvent.NavigateToPostWrite -> {
-                Timber.d("게시물 작성 이벤트")
-                _event.tryEmit(BoardEvent.NavigateToPostWrite)
+            BoardEvent.RefreshRequested -> {
+                refreshPosts()
+            }
+
+            BoardEvent.LoadMoreRequested -> {
+                loadMorePosts()
+            }
+
+            BoardEvent.RefreshPostsAndScrollToTopRequested -> {
+                refreshPostsAndScrollToTop()
             }
 
             else -> {}
         }
     }
 
-    private fun loadPosts(trigger: RefreshTrigger, pageSize: Int = 10) {
-        if (uiState.value.isLoading) return
+    private fun refreshPostsAndScrollToTop() {
+        getPosts(shouldFetchFromFirst = true, shouldScrollToTop = true)
+    }
 
+    private fun loadMorePosts() {
+        if (_uiState.value.isLoadingMore) return
+        Timber.tag("LOAD").d("loadMorePosts")
+        _uiState.update { it.copy(isLoadingMore = true) }
+        getPosts()
+    }
+
+    private fun refreshPosts() {
+        if (_uiState.value.isRefreshing) return
+        _uiState.update { it.copy(isRefreshing = true) }
+        getPosts(shouldFetchFromFirst = true)
+    }
+
+    private fun getPosts(
+        pageSize: Int = 10,
+        shouldFetchFromFirst: Boolean = false,
+        shouldScrollToTop: Boolean = false
+    ) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-
-            if (trigger == SWIPE) handleEvent(BoardEvent.MakeToast("새로고침"))
-
-            val result = when (trigger) {
-                SCROLL -> getPostUseCase(pageSize, _uiState.value.lastVisibleDoc)
-                else -> getPostUseCase(pageSize, null) // SWIPE와 UPLOAD는 처음부터 목록을 로드
-            }
-
-
-            _uiState.update { currentState ->
-                when (result) {
-                    is Resource.Empty -> {
-                        if (trigger == SCROLL) {
-                            handleEvent(BoardEvent.MakeToast("더이상 볼 문서가 없습니다."))
-                        }
-                        currentState.copy(isLoading = false)
-                    }
-                    // TODO 에러 처리 로직 추가
-                    is Resource.Error -> currentState.copy(isLoading = false)
-
-                    is Resource.Success -> {
-                        val newPosts = if (trigger == SCROLL) {
-                            currentState.posts + result.data.posts.toPostListItem()
-                        } else {
-                            result.data.posts.toPostListItem()
-                        }
+            getPostUseCase(
+                pageSize = pageSize,
+                shouldFetchFromFirst = shouldFetchFromFirst
+            ).fold(
+                onSuccess = { newPosts ->
+                    if (_uiState.value.isLoadingMore && newPosts.isEmpty()) handleEvent(BoardEvent.MakeToast("새로운 게시글이 더 이상 없어요."))
+                    if (_uiState.value.isRefreshing) handleEvent(BoardEvent.MakeToast("새로고침"))
+                    _uiState.update { currentState ->
+                        Timber.tag("LOAD").d("newPosts: $newPosts")
                         currentState.copy(
-                            posts = newPosts,
-                            lastVisibleDoc = result.data.lastVisibleDoc,
-                            isLoading = false,
-                            shouldScrollToTop = trigger == UPLOAD
+                            posts = if (shouldFetchFromFirst) newPosts else currentState.posts + newPosts,
+                            isRefreshing = false,
+                            isLoadingMore = false,
+                            isInitialLoading = false,
+                            shouldScrollToTop = shouldScrollToTop,
                         )
                     }
-                }
-            }
+                },
+                onFailure = {}
+            )
         }
     }
 
-    fun resetScrollToTopFlag() {
+    fun clearScrollToTopFlag() {
         _uiState.update { it.copy(shouldScrollToTop = false) }
     }
 

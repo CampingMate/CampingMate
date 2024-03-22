@@ -2,7 +2,6 @@ package com.brandon.campingmate.data.remote.firestore
 
 import com.brandon.campingmate.data.remote.dto.PostCommentDTO
 import com.brandon.campingmate.data.remote.dto.PostDTO
-import com.brandon.campingmate.data.remote.dto.PostsDTO
 import com.brandon.campingmate.data.remote.dto.UserDTO
 import com.brandon.campingmate.domain.model.PostComment
 import com.brandon.campingmate.utils.Resource
@@ -19,23 +18,20 @@ class FirestoreDataSourceImpl(
     private val firestore: FirebaseFirestore
 ) : FirestoreDataSource {
 
+    private var lastVisiblePostDoc: DocumentSnapshot? = null
     private var lastVisibleCommentDoc: DocumentSnapshot? = null
 
-    override suspend fun getPosts(pageSize: Int, lastVisibleDoc: DocumentSnapshot?): Resource<PostsDTO> {
-        return try {
-            withContext(IO) {
+    override suspend fun getPosts(pageSize: Int, shouldFetchFromFirst: Boolean): Result<List<PostDTO>> {
+        return withContext(IO) {
+            runCatching {
                 val query = firestore.collection("posts").orderBy("timestamp", Query.Direction.DESCENDING)
-                val paginatedQuery = lastVisibleDoc?.let { query.startAfter(it) } ?: query
+                if (shouldFetchFromFirst) lastVisiblePostDoc = null
+                val paginatedQuery = lastVisiblePostDoc?.let { query.startAfter(it) } ?: query
                 val snapshot = paginatedQuery.limit(pageSize.toLong()).get().await()
+                lastVisiblePostDoc = snapshot.documents.lastOrNull() ?: lastVisiblePostDoc
                 val posts = snapshot.documents.mapNotNull { it.toObject(PostDTO::class.java) }
-                if (posts.isNotEmpty()) {
-                    Resource.Success(PostsDTO(posts, snapshot.documents.lastOrNull()))
-                } else {
-                    Resource.Empty
-                }
+                posts
             }
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "UnknownError")
         }
     }
 
