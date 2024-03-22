@@ -110,4 +110,7 @@ dependencies {
 
     // EncryptedSharedPreferences
     implementation("androidx.security:security-crypto-ktx:1.1.0-alpha03")
+
+    // Shimmer
+    implementation("com.facebook.shimmer:shimmer:0.5.0")
 }
