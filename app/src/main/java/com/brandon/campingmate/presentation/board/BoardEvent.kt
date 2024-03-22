@@ -7,14 +7,17 @@ sealed class BoardEvent {
         val post: Post,
     ) : BoardEvent()
 
-    data class LoadPosts(
-        val trigger: BoardViewModel.RefreshTrigger
-    ) : BoardEvent()
-
     data class MakeToast(
         val message: String
     ) : BoardEvent()
 
     object NavigateToPostWrite : BoardEvent()
+
+    object RefreshRequested : BoardEvent()
+
+    object LoadMoreRequested : BoardEvent()
+
+    object RefreshPostsAndScrollToTopRequested : BoardEvent()
+
 
 }
