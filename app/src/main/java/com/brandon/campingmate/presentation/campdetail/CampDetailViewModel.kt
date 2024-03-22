@@ -2,6 +2,8 @@ package com.brandon.campingmate.presentation.campdetail
 
 import android.net.Uri
 import android.util.Log
+import android.view.View
+import android.view.WindowId
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,6 +20,9 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.UUID
 
 class CampDetailViewModel : ViewModel() {
@@ -33,6 +38,7 @@ class CampDetailViewModel : ViewModel() {
     private val _commentCount: MutableLiveData<String?> = MutableLiveData()
     val commentCount: LiveData<String?> get() = _commentCount
     private lateinit var listenerRegistration: ListenerRegistration
+    private val db = FirebaseFirestore.getInstance()
     fun setUpParkParameter(contentId: String) {
         val authKey = BuildConfig.camp_data_key
         communicateNetWork(hashMapOf(
@@ -82,7 +88,7 @@ class CampDetailViewModel : ViewModel() {
             }
     }
 
-    fun uploadComment(myId: String, myComment: CampCommentEntity) {
+    private fun uploadComment(myId: String, myComment: CampCommentEntity) {
         val db = Firebase.firestore
         val campRef = db.collection("camps")
             .whereEqualTo("contentId", myId)
@@ -260,6 +266,52 @@ class CampDetailViewModel : ViewModel() {
             }
             .addOnFailureListener { e ->
                 Log.e("CampDetailActivity", "캠핑장 쿼리 실패: $e")
+            }
+    }
+
+    fun bringUserData(
+        userId: String,
+        content: String,
+        myImage: String,
+        campId: String,
+    ){
+        val userDocRef = db.collection("users").document(userId)
+        userDocRef
+            .get()
+            .addOnSuccessListener {
+                val userName = it.get("nickName")
+                val date =
+                    SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(
+                        Date()
+                    )
+                val userProfile = it.get("profileImage")
+                if (myImage.isNotBlank()) {
+                    val myImageUri = Uri.parse(myImage)
+                    uploadImage(myImageUri) { imageUrl ->
+                        val myComment = CampCommentEntity(
+                            userId,
+                            userName,
+                            content,
+                            date,
+                            Uri.parse(imageUrl),
+                            userId,
+                            Uri.parse(userProfile.toString()),
+                        )
+                        uploadComment(campId, myComment)
+                    }
+                } else {
+                    val myComment =
+                        CampCommentEntity(
+                            userId,
+                            userName,
+                            content,
+                            date,
+                            Uri.EMPTY,
+                            userId,
+                            Uri.parse(userProfile.toString())
+                        )
+                    uploadComment(campId, myComment)
+                }
             }
     }
 }
