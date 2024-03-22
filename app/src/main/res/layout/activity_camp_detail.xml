@@ -620,12 +620,23 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/bottom_sheet_comment" />
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/loading_animation"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:lottie_autoPlay="true"
+            app:lottie_rawRes="@raw/lottie_search_loading"
+            app:lottie_loop="true"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bottom_sheet_comment"/>
         <TextView
             android:id="@+id/tv_no_comment"
             android:layout_width="match_parent"
             android:layout_height="300dp"
             android:text="등록된 댓글이 없습니다."
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="50dp"
             android:gravity="center"
             android:textSize="20sp"
             android:visibility="invisible"

@@ -27,9 +27,9 @@ class CampDetailViewModel : ViewModel() {
     private val _campEntity: MutableLiveData<CampEntity?> = MutableLiveData()
     val campEntity: LiveData<CampEntity?> get() = _campEntity
     private val _campComment: MutableLiveData<MutableList<CampCommentEntity>> = MutableLiveData()
+    val campComment: LiveData<MutableList<CampCommentEntity>> get() = _campComment
     private val _checkLastComment: MutableLiveData<String?> = MutableLiveData()
     val checkLastComment: LiveData<String?> get() = _checkLastComment
-    val campComment: LiveData<MutableList<CampCommentEntity>> get() = _campComment
     private val _commentCount: MutableLiveData<String?> = MutableLiveData()
     val commentCount: LiveData<String?> get() = _commentCount
     private lateinit var listenerRegistration: ListenerRegistration
