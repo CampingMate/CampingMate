@@ -106,7 +106,6 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             Glide.with(this).load(image).preload()
         }
     }
-
     private fun initViewModel() = with(viewModel) {
         imageResult.observe(this@CampDetailActivity) {
             if (it.isNotEmpty()) {
@@ -137,6 +136,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                     selectedImage.visibility = View.GONE
                     selectedImageDelete.visibility = View.GONE
                 }
+                binding.loadingAnimation.visibility = View.INVISIBLE
             }
         }
         checkLastComment.observe(this@CampDetailActivity) {
