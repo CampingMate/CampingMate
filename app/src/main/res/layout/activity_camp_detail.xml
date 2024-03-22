@@ -21,6 +21,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/shimmer_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:background="#dddddd"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <include layout="@layout/item_camp_detail_image_loading"/>
+
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/view_pager"
                     android:layout_width="match_parent"

@@ -120,60 +120,67 @@
         android:background="@drawable/search_bottom_background"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-        <TextView
-            android:id="@+id/search_type"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/linear_category"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="22dp"
-            android:text="@string/search_type"
-            android:textSize="15sp"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:gravity="center">
 
-        <TextView
-            android:id="@+id/search_location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="28dp"
-            android:text="@string/search_location"
-            android:textSize="15sp"
-            app:layout_constraintBottom_toBottomOf="@id/search_type"
-            app:layout_constraintStart_toEndOf="@id/search_type"
-            app:layout_constraintTop_toTopOf="@id/search_type" />
+            <TextView
+                android:id="@+id/search_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/search_type"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:textSize="20sp"/>
 
-        <TextView
-            android:id="@+id/search_convenience"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="28dp"
-            android:text="@string/search_convenience"
-            android:textSize="15sp"
-            app:layout_constraintBottom_toBottomOf="@id/search_location"
-            app:layout_constraintStart_toEndOf="@id/search_location"
-            app:layout_constraintTop_toTopOf="@id/search_location" />
+            <TextView
+                android:id="@+id/search_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/search_location"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:textSize="20sp"/>
 
-        <TextView
-            android:id="@+id/search_thema"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="28dp"
-            android:text="@string/search_thema"
-            android:textSize="15sp"
-            app:layout_constraintBottom_toBottomOf="@id/search_convenience"
-            app:layout_constraintStart_toEndOf="@id/search_convenience"
-            app:layout_constraintTop_toTopOf="@id/search_convenience" />
+            <TextView
+                android:id="@+id/search_convenience"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/search_convenience"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:textSize="20sp"/>
 
-        <TextView
-            android:id="@+id/search_bottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="28dp"
-            android:text="@string/search_bottom_shape"
-            android:textSize="15sp"
-            app:layout_constraintBottom_toBottomOf="@id/search_thema"
-            app:layout_constraintStart_toEndOf="@id/search_thema"
-            app:layout_constraintTop_toTopOf="@id/search_thema" />
+            <TextView
+                android:id="@+id/search_thema"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/search_thema"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:textSize="20sp"/>
+
+        </LinearLayout>
+
+<!--        <TextView-->
+<!--            android:id="@+id/search_bottom"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="28dp"-->
+<!--            android:text="@string/search_bottom_shape"-->
+<!--            android:textSize="15sp"-->
+<!--            app:layout_constraintBottom_toBottomOf="@id/search_thema"-->
+<!--            app:layout_constraintStart_toEndOf="@id/search_thema"-->
+<!--            app:layout_constraintTop_toTopOf="@id/search_thema" />-->
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scrollView"
@@ -181,7 +188,7 @@
             android:layout_height="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/search_type">
+            app:layout_constraintTop_toBottomOf="@id/linear_category">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -201,12 +208,14 @@
 
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/chip_type_group"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:singleSelection="true"
                     android:layout_marginEnd="16dp"
                     android:layout_marginTop="14dp"
-                    app:layout_constraintStart_toStartOf="@id/tv_search_type"
+                    android:layout_marginStart="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_search_type">
 
                     <com.google.android.material.chip.Chip
@@ -298,10 +307,12 @@
 
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/chip_location_group"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    app:layout_constraintStart_toStartOf="@id/tv_search_location"
+                    android:layout_marginStart="16dp"
+                    app:layout_goneMarginEnd="16dp"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_search_location"
                     app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginEnd="16dp">
@@ -539,37 +550,15 @@
 
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/chip_convenience_group"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:singleSelection="true"
                     android:layout_marginTop="14dp"
                     android:layout_marginEnd="16dp"
-                    app:layout_constraintStart_toStartOf="@id/tv_search_convenience"
+                    android:layout_marginStart="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_search_convenience">
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chipBathroom"
-                        style="@style/CustomChipChoice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:checkable="true"
-                        android:clickable="true"
-                        android:fontFamily="@font/spoqahansansneo_regular"
-                        android:text="@string/search_chip_bathroom"
-                        app:chipCornerRadius="6dp"
-                        app:chipStrokeWidth="1dp" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chipShower"
-                        style="@style/CustomChipChoice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:checkable="true"
-                        android:clickable="true"
-                        android:fontFamily="@font/spoqahansansneo_regular"
-                        android:text="@string/search_chip_shower"
-                        app:chipCornerRadius="6dp"
-                        app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipBrazier"
@@ -604,18 +593,6 @@
                         android:clickable="true"
                         android:fontFamily="@font/spoqahansansneo_regular"
                         android:text="@string/search_chip_refrigerator"
-                        app:chipCornerRadius="6dp"
-                        app:chipStrokeWidth="1dp" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chipFireSee"
-                        style="@style/CustomChipChoice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:checkable="true"
-                        android:clickable="true"
-                        android:fontFamily="@font/spoqahansansneo_regular"
-                        android:text="@string/search_chip_fire_see"
                         app:chipCornerRadius="6dp"
                         app:chipStrokeWidth="1dp" />
 
@@ -732,12 +709,14 @@
 
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/chip_thema_group"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:singleSelection="true"
                     android:layout_marginTop="14dp"
                     android:layout_marginEnd="16dp"
-                    app:layout_constraintStart_toStartOf="@id/tv_search_thema"
+                    android:layout_marginStart="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_search_thema">
 
                     <com.google.android.material.chip.Chip

@@ -28,8 +28,8 @@
         <item name="android:textColor">@color/chip_txt</item>
         <item name="chipStrokeColor">@color/chip_str</item>
         <item name="android:textSize">14sp</item>
-        <item name="chipEndPadding">12dp</item>
-        <item name="chipStartPadding">12dp</item>
+        <item name="chipEndPadding">6dp</item>
+        <item name="chipStartPadding">6dp</item>
         <item name="chipMinHeight">50dp</item>
     </style>
 <!--  원래 customChipChoice의 chipEnd/startPadding은 12였다.  -->
