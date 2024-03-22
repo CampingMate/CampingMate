@@ -526,7 +526,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         val nwLon = naverMap?.contentBounds?.northWest?.longitude
         Log.d("Detail", " mart 좌표 파라미터 확인 = ${seLat}, ${seLon}, ${nwLat}, ${nwLon}")
         if(seLat != null&& seLon != null && nwLat != null && nwLon != null){
-            //viewModel.callMart(seLat,seLon,nwLat,nwLon )
+            viewModel.callMart(seLat,seLon,nwLat,nwLon )
         }
         viewModel.martMarker.observe(this@CampDetailActivity){markers->
             for(marker in markers){

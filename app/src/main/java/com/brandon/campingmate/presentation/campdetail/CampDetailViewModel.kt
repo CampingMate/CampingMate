@@ -2,8 +2,6 @@ package com.brandon.campingmate.presentation.campdetail
 
 import android.net.Uri
 import android.util.Log
-import android.view.View
-import android.view.WindowId
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,14 +10,12 @@ import com.brandon.campingmate.BuildConfig
 import com.brandon.campingmate.R
 import com.brandon.campingmate.domain.model.CampCommentEntity
 import com.brandon.campingmate.domain.model.CampEntity
-import com.brandon.campingmate.domain.model.Mart
 import com.brandon.campingmate.network.retrofit.NetWorkClient
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
-import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.storage
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.overlay.Align
@@ -336,6 +332,9 @@ class CampDetailViewModel : ViewModel() {
                         val marker = Marker()
                         marker.captionText = mart.data.get("name").toString()
                         marker.icon = MarkerIcons.BLUE
+                        if(mart.data.get("mapY").toString().isEmpty() || mart.data.get("mapX").toString().isEmpty()){
+                            continue
+                        }
                         marker.position = LatLng(mart.data.get("mapY").toString().toDouble(),mart.data.get("mapX").toString().toDouble())
                         marker.captionRequestedWidth = 400
                         marker.setCaptionAligns(Align.Top)
