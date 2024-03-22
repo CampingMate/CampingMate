@@ -63,6 +63,7 @@ class ProfileFragment : Fragment() {
     private val postAdapter: ProfilePostAdapter by lazy { ProfilePostAdapter() }
     private val db = FirebaseFirestore.getInstance()
     var userId: String? = EncryptedPrefs.getMyId()
+    var undoSnackbar: Snackbar? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -144,6 +145,7 @@ class ProfileFragment : Fragment() {
             if (it.isNotEmpty()) {
                 tvWritingSize.text = it.size.toString()
                 tvWritingSize.visibility = View.VISIBLE
+                tvTabWriting.visibility = View.GONE
             } else {
                 tvWritingSize.text = it.size.toString()
                 if (lineWriting.visibility == View.VISIBLE) {
@@ -156,7 +158,7 @@ class ProfileFragment : Fragment() {
     private fun initLogin() {
         userId?.let { viewModel.getUserData(it) }
         with(binding) {
-            viewModel.userData.observe(viewLifecycleOwner){
+            viewModel.userData.observe(viewLifecycleOwner) {
                 if (profileImgUri == null) {
                     ivProfileImg.scaleType = ImageView.ScaleType.CENTER_CROP
                     Glide.with(binding.root).load(it?.profileImage).into(ivProfileImg)
@@ -166,17 +168,7 @@ class ProfileFragment : Fragment() {
                     tvProfileEmail.text = it?.userEmail.toString()
                 }
             }
-//            val docRef = db.collection("users").document(userId.toString())
-//            docRef.get().addOnSuccessListener {
-//                if (profileImgUri == null) {
-//                    ivProfileImg.scaleType = ImageView.ScaleType.CENTER_CROP
-//                    Glide.with(binding.root).load(it.getString("profileImage")).into(ivProfileImg)
-//                    ivProfileImg.visibility = View.VISIBLE
-//                    tvProfileName.textSize = 24f
-//                    tvProfileName.text = it.getString("nickName").toString()
-//                    tvProfileEmail.text = it.getString("userEmail").toString()
-//                }
-//            }
+
             tvProfileName.visibility = View.VISIBLE
             tvProfileEmail.visibility = View.VISIBLE
 
@@ -334,7 +326,7 @@ class ProfileFragment : Fragment() {
             if (result.resultCode == Activity.RESULT_OK) {
                 profileImgUri = result.data?.data
                 binding.ivProfileImg.scaleType = ImageView.ScaleType.CENTER_CROP
-                Glide.with(requireContext()).load(profileImgUri).into(binding.ivProfileImg)
+                Glide.with(binding.root).load(profileImgUri).into(binding.ivProfileImg)
             }
         }
     }
@@ -442,18 +434,17 @@ class ProfileFragment : Fragment() {
             tabWriting.setOnClickListener {
                 lineBookmarked.visibility = View.INVISIBLE
                 lineWriting.visibility = View.VISIBLE
-
-                if (tvBookmarkedSize.text.toString().toInt() > 0) {
+                if (tvWritingSize.text.toString().toInt() > 0) {
                     rvBookmarked.visibility = View.GONE
                     rvWriting.visibility = View.VISIBLE
                     tvTabLoginText.visibility = View.GONE
                     tvTabBookmarked.visibility = View.GONE
                     tvTabWriting.visibility = View.GONE
                 } else {
+                    tvTabWriting.visibility = View.VISIBLE
                     rvBookmarked.visibility = View.GONE
                     tvTabLoginText.visibility = View.GONE
                     tvTabBookmarked.visibility = View.GONE
-                    tvTabWriting.visibility = View.VISIBLE
                 }
             }
         }
@@ -471,23 +462,35 @@ class ProfileFragment : Fragment() {
                     binding.rvBookmarked -> {
                         val bookmarkID = bookmarkAdapter.currentList[position]
                         viewModel.removeBookmarkCamp(userId.toString(), bookmarkID.contentId.toString())
-                        val undoSnackbar = Snackbar.make(binding.root, "해당 북마크를 삭제했습니다.", 5000)
-                        undoSnackbar.setAction("되돌리기") {
-                            viewModel.undoBookmarkCamp(userId.toString())
-                            binding.rvBookmarked.post { binding.rvBookmarked.smoothScrollToPosition(bookmarkAdapter.itemCount) }
+                        undoSnackbar = Snackbar.make(binding.root, "해당 북마크를 삭제했습니다.", 5000).apply {
+                            anchorView = (activity)?.findViewById(R.id.bottom_navigation)
                         }
-                        undoSnackbar.show()
+                        undoSnackbar?.setAction("되돌리기") {
+                            viewModel.undoBookmarkCamp(userId.toString())
+                            if (binding.lineBookmarked.visibility == View.VISIBLE) {
+                                binding.rvBookmarked.post { binding.rvBookmarked.smoothScrollToPosition(bookmarkAdapter.itemCount) }
+                            } else {
+                                binding.rvBookmarked.visibility = View.GONE
+                            }
+                        }
+                        undoSnackbar?.show()
                     }
 
                     binding.rvWriting -> {
                         val postID = postAdapter.currentList[position]
                         viewModel.removePostAdapter(postID.postId.toString())
-                        val undoSnackbar = Snackbar.make(binding.root, "해당 작성 글을 삭제했습니다.", 5000)
-                        undoSnackbar.setAction("되돌리기") {
-                            viewModel.undoPost()
-                            binding.rvWriting.post { binding.rvWriting.smoothScrollToPosition(postAdapter.itemCount) }
+                        undoSnackbar = Snackbar.make(binding.root, "해당 작성 글을 삭제했습니다.", 5000).apply {
+                            anchorView = (activity)?.findViewById(R.id.bottom_navigation)
                         }
-                        undoSnackbar.show()
+                        undoSnackbar?.setAction("되돌리기") {
+                            viewModel.undoPost()
+                            if (binding.lineWriting.visibility == View.VISIBLE) {
+                                binding.rvWriting.post { binding.rvWriting.smoothScrollToPosition(postAdapter.itemCount) }
+                            } else {
+                                binding.rvWriting.visibility = View.GONE
+                            }
+                        }
+                        undoSnackbar?.show()
                         val snackbarCallBack = object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
                             override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                                 super.onDismissed(transientBottomBar, event)
@@ -496,7 +499,7 @@ class ProfileFragment : Fragment() {
                                 }
                             }
                         }
-                        undoSnackbar.addCallback(snackbarCallBack)
+                        undoSnackbar?.addCallback(snackbarCallBack)
                     }
                 }
 
@@ -570,6 +573,11 @@ class ProfileFragment : Fragment() {
             }
 
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        undoSnackbar?.dismiss()
     }
 
     override fun onDestroyView() {

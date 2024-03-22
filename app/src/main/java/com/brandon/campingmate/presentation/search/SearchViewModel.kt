@@ -32,20 +32,24 @@ class SearchViewModel : ViewModel() {
     var isKeyword: Boolean = false
     var isFilter: Boolean = false
 
-    fun setUpParkParameter(text: String) {
-        val authKey =
-            "wDP6fsVX3kKuaOD7OKrRHaAgPUNtxYUy387PNJRBAW/F6GUdZgv5LyyIAkVXED3leDg3aUD+TFIgBHWCgMBdzQ=="
-        communicateNetWork(
-            hashMapOf(
-                "numOfRows" to "25",
-                "pageNo" to "1",
-                "MobileOS" to "AND",
-                "MobileApp" to "CampingMate",
-                "serviceKey" to authKey,
-                "_type" to "json",
-                "keyword" to text
+    fun setUpParameter(text: String) {
+        if(text.isBlank()){
+            _keyword.value = mutableListOf()
+        } else{
+            val authKey =
+                "wDP6fsVX3kKuaOD7OKrRHaAgPUNtxYUy387PNJRBAW/F6GUdZgv5LyyIAkVXED3leDg3aUD+TFIgBHWCgMBdzQ=="
+            communicateNetWork(
+                hashMapOf(
+                    "numOfRows" to "25",
+                    "pageNo" to "1",
+                    "MobileOS" to "AND",
+                    "MobileApp" to "CampingMate",
+                    "serviceKey" to authKey,
+                    "_type" to "json",
+                    "keyword" to text
+                )
             )
-        )
+        }
     }
 
     fun communicateNetWork(param: HashMap<String, String>?) {
@@ -64,6 +68,8 @@ class SearchViewModel : ViewModel() {
             }
             if (contentIds.isNotEmpty()) {
                 callKeywordData(contentIds)
+            } else{
+                _keyword.value = mutableListOf()
             }
         }
     }
@@ -92,6 +98,7 @@ class SearchViewModel : ViewModel() {
                 Log.d("checkLog", "${lastVisibleKeyword?.get("facltNm")}")
             }
     }
+
     fun loadMoreDataKeyword() {
         if (isLoadingDataKeyword) {
             return
@@ -187,8 +194,8 @@ class SearchViewModel : ViewModel() {
                     newCampList.add(camp)
                 }
                 _myList.value = newCampList
-                if(documents.size() > 0){
-                    lastVisible = when(documents.size()){
+                if (documents.size() > 0) {
+                    lastVisible = when (documents.size()) {
                         5 -> documents.documents[documents.size() - 1]
                         4 -> documents.documents[documents.size() - 2]
                         3 -> documents.documents[documents.size() - 3]
@@ -204,8 +211,9 @@ class SearchViewModel : ViewModel() {
                 Log.w("TAG", "Error getting documents.", exception)
             }
     }
+
     fun loadMoreData() {
-        if(isLoadingData){
+        if (isLoadingData) {
             return
         }
         isLoadingData = true
