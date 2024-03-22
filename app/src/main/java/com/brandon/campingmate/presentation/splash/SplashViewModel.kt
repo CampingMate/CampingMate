@@ -13,28 +13,35 @@ import com.brandon.campingmate.presentation.main.MainActivity
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class SplashViewModel:ViewModel() {
-//    private val _allCityData : MutableLiveData<MutableList<CampEntity>> = MutableLiveData()
-//    val allCityData : LiveData<MutableList<CampEntity>> get() = _allCityData
+    private val _allCityData : MutableLiveData<MutableList<HomeEntity>> = MutableLiveData(mutableListOf())
+    val allCityData : LiveData<MutableList<HomeEntity>> get() = _allCityData
+
+    private val _allThemeData : MutableLiveData<MutableList<HomeEntity>> = MutableLiveData(mutableListOf())
+    val allThemeData : LiveData<MutableList<HomeEntity>> get() = _allThemeData
+
+//    private val _allCityData = mutableListOf<HomeEntity>()
+//    val allCityData : MutableList<HomeEntity> get() = _allCityData
 //
-//    private val _allThemeData : MutableLiveData<MutableList<CampEntity>> = MutableLiveData()
-//    val allThemeData : LiveData<MutableList<CampEntity>> get() = _allThemeData
+//    private val _allThemeData = mutableListOf<HomeEntity>()
+//    val allThemeData : MutableList<HomeEntity> get() = _allThemeData
 
-    private val _allCityData = mutableListOf<HomeEntity>()
-    val allCityData : MutableList<HomeEntity> get() = _allCityData
+//    private val _isGet : MutableLiveData<Int> = MutableLiveData()
+//    val isGet : LiveData<Int> get() = _isGet
 
-    private val _allThemeData = mutableListOf<HomeEntity>()
-    val allThemeData : MutableList<HomeEntity> get() = _allThemeData
+    private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
+    val isLoading : StateFlow<Boolean> get() = _isLoading
 
-    private val _isGet : MutableLiveData<Int> = MutableLiveData()
-    val isGet : LiveData<Int> get() = _isGet
+    private val _isGet: MutableStateFlow<Map<String, Boolean>> = MutableStateFlow(mapOf("city" to false, "theme" to false))
+    val isGet : StateFlow<Map<String, Boolean>> get() = _isGet
 
     fun loadData(){
-        Log.d("Splash ViewModel","#csh getData start")
+        Log.d("Splash ViewModel","#csh loadData start")
         viewModelScope.launch {
-            _isGet.value=0
             val db = Firebase.firestore
             val allCity: Query = db.collection("camps").limit(10)
 //            val allCity: Query = db.collection("reviewTest")
@@ -43,23 +50,36 @@ class SplashViewModel:ViewModel() {
             allCity.get().addOnSuccessListener {documents ->
                 for (document in documents) {
                     val cityList = document.toObject(HomeEntity::class.java)
-//                    _allCityData.value?.add(cityList)
-                    _allCityData.add(cityList)
+                    _allCityData.value?.add(cityList)
+//                    _allCityData.add(cityList)
                 }
-                _isGet.value = _isGet.value!! + 1
+                Log.d("Splash ViewModel ","#csh _allCityData = ${_allCityData.value}")
+                _isGet.value = _isGet.value.toMutableMap().apply {
+                    this["city"] = true
+                }
+                setLoadingState()
             }
             allTheme.get().addOnSuccessListener {documents ->
                 for (document in documents) {
                     val themeList = document.toObject(HomeEntity::class.java)
-//                    _allThemeData.value?.add(themeList)
-                    _allThemeData.add(themeList)
+                    _allThemeData.value?.add(themeList)
+//                    _allThemeData.add(themeList)
                 }
-                _isGet.value = _isGet.value!! + 1
+                Log.d("Splash ViewModel ","#csh _allThemeData = ${_allThemeData.value}")
+                _isGet.value = _isGet.value.toMutableMap().apply {
+                    this["theme"] = true
+                }
+                setLoadingState()
             }
         }
     }
 
-    fun getData(){
-
+    fun setLoadingState(){
+        Log.d("Splash ViewModel ","#csh setLoadingState")
+        val allLoaded = _isGet.value.all{it.value}
+        if(allLoaded){
+            _isLoading.value=false
+        }
+        Log.d("Splash ViewModel ","#csh setLoadingState _isLoading.value : ${_isLoading.value}")
     }
 }

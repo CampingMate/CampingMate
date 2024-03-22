@@ -1,5 +1,6 @@
 package com.brandon.campingmate.presentation.home
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +11,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,6 +26,7 @@ import com.brandon.campingmate.presentation.home.adapter.PetAdapter
 import com.brandon.campingmate.presentation.home.adapter.ReviewAdapter
 import com.brandon.campingmate.presentation.main.MainActivity
 import com.brandon.campingmate.presentation.search.SearchActivity
+import com.brandon.campingmate.presentation.splash.SplashViewModel
 import com.google.android.material.chip.ChipGroup
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.Query
@@ -42,6 +45,10 @@ class HomeFragment : Fragment() {
         ViewModelProvider(this)[HomeViewModel::class.java]
     }
 
+    private val splashViewModel by lazy {
+        ViewModelProvider(this)[SplashViewModel::class.java]
+    }
+
     private var districtItem = mutableListOf<HomeEntity>()
     private var petItem = mutableListOf<HomeEntity?>()
     private var themeItem = mutableListOf<HomeEntity>()
@@ -50,48 +57,38 @@ class HomeFragment : Fragment() {
     private lateinit var themeAdapter: HomeAdapter
     private val db = Firebase.firestore
     private val allCity: Query = db.collection("camps")
-    private lateinit var city : ArrayList<HomeEntity>
-    private lateinit var theme : ArrayList<HomeEntity>
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        Log.d("Home", "#csh onAttach")
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.d("Home", "#csh onCreate")
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.d("Home", "#csh onCreateView")
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val main = activity as MainActivity
-        city = main.homeCity
-        theme = main.homeTheme
-        holidayInfo()
-        viewModelGet("district")
-        viewModelGet("theme")
-//        initView(allCity, "district")
-//        initView(allCity, "theme")
-        initPetView()
-        initReviewItem()
-
-//        val db = Firebase.firestore
-//        val documentRef = db.collection("reviewTest_empty")
-//        for(i in 0 until 5){
-//            var num = "${1111 * (i+1)}"
-//            val model = hashMapOf(
-//                "contentId" to num,
-//                "firstImageUrl" to "",
-//                "facltNm" to num,
-//                "lineIntro" to num,
-//                "addr1" to num,
-//                "induty1" to num,
-//                "induty2" to num,
-//                "induty3" to num,
-//                "induty4" to num
-//            )
-//            documentRef.add(model)
-//
-//        }
+        Log.d("Home", "#csh onViewCreated")
+//        Log.d("Home", "#csh onViewCreated city : $city")
+//        holidayInfo()
+//        viewModelGet("district")
+//        viewModelGet("theme")
+////        initView(allCity, "district")
+////        initView(allCity, "theme")
+//        initPetView()
+//        initReviewItem()
+        init()
 
         onLayoutClickListener(binding.loCategoryCar)
         onLayoutClickListener(binding.loCategoryCaravan)
@@ -99,26 +96,7 @@ class HomeFragment : Fragment() {
         onLayoutClickListener(binding.loCategoryGlamping)
         onLayoutClickListener(binding.loSearch)
 
-//        binding.cvSearch.setOnClickListener {
-////            val intent = Intent(requireContext(), SearchFragment::class.java)
-////            startActivity(intent)
-//        }
-//        binding.loCategoryCar.setOnClickListener {
-////            val intent = Intent(requireContext(), SearchFragment::class.java)
-////            startActivity(intent)
-//        }
-//        binding.loCategoryCaravan.setOnClickListener {
-////            val intent = Intent(requireContext(), SearchFragment::class.java)
-////            startActivity(intent)
-//        }
-//        binding.loCategoryGeneral.setOnClickListener {
-////            val intent = Intent(requireContext(), SearchFragment::class.java)
-////            startActivity(intent)
-//        }
-//        binding.loCategoryGlamping.setOnClickListener {
-////            val intent = Intent(requireContext(), SearchFragment::class.java)
-////            startActivity(intent)
-//        }
+
         binding.ivMoreIcon.setOnClickListener {
             val checkedChipId = binding.chipDistrictGroup.checkedChipId
             val checkedChipName = when(checkedChipId){
@@ -135,14 +113,55 @@ class HomeFragment : Fragment() {
             requireContext().startActivity(intent)
         }
     }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        Log.d("Home", "#csh onActivityCreated")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d("Home", "#csh onStart")
+    }
+
+    private fun init(){
+        Log.d("Home", "#csh init")
+        holidayInfo()
+        initPetView()
+        var isReview = true
+
+        splashViewModel.isGet.asLiveData().observe(viewLifecycleOwner) { isDataLoaded ->
+            val isCityLoaded = isDataLoaded["city"]?:false
+            val isThemeLoaded = isDataLoaded["theme"]?:false
+
+            if (isCityLoaded) {
+                viewModelGet("district")
+//        initView(allCity, "district")
+//        initView(allCity, "theme")
+                if(isReview) {
+                    initReviewItem()
+                    isReview=false
+                }
+            }
+            if (isThemeLoaded) {
+                viewModelGet("theme")
+//        initView(allCity, "district")
+//        initView(allCity, "theme")
+            }
+
+        }
+        splashViewModel.loadData()
+    }
+
     private fun viewModelGet(select:String){
+        Log.d("Splash", "#csh viewModelGet")
+
         Log.d("Home","#csh viewModelGet()")
-        Log.d("Home", "#csh city: ${city}")
-        Log.d("Home", "#csh theme: ${theme}")
+
 
         if(select == "district") {
 //        districtAdapter = HomeAdapter(requireContext(), viewModel.allCityData.value!!)
-            districtAdapter = HomeAdapter(requireContext(), city)
+            districtAdapter = HomeAdapter(requireContext(), splashViewModel.allCityData.value)
             binding.rvDistrictItem.adapter = districtAdapter
             binding.rvDistrictItem.layoutManager =
                 GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
@@ -151,7 +170,7 @@ class HomeFragment : Fragment() {
 
         else {
 //        themeAdapter = HomeAdapter(requireContext(), viewModel.allThemeData.value!!)
-            themeAdapter = HomeAdapter(requireContext(), theme)
+            themeAdapter = HomeAdapter(requireContext(), splashViewModel.allThemeData.value)
             binding.rvThemeItem.adapter = themeAdapter
             binding.rvThemeItem.layoutManager =
                 GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
@@ -160,6 +179,7 @@ class HomeFragment : Fragment() {
 
 
         selectChip()
+
 
     }
 
@@ -216,60 +236,6 @@ class HomeFragment : Fragment() {
 
     private fun selectChip() {
         Log.d("Home", "selectChip()")
-//        val chipDistricList = listOf<Int>(R.id.chipCapital, R.id.chipChungcheong, R.id.chipGangwon, R.id.chipGyeongsang, R.id.chipJeolla)
-//        val chipThemeList = listOf<Int>(R.id.chipSpringFlower, R.id.chipWalk, R.id.chipActivity, R.id.chipSwim, R.id.chipSunset, R.id.chipFallFlower, R.id.chipWinterFlower)
-//        ChipGroup.OnCheckedStateChangeListener { group, checkedIds ->
-//            when(checkedIds){
-//                chipDistricList -> {
-//                    when(chipDistricList){
-//                        R.id.chipCapital -> initDistrictView("Capital")
-//                    }
-//                }
-//                chipThemeList ->
-//                -> initDistrictView("Capital")
-//                 -> initDistrictView("Chungcheong")
-//                 -> initDistrictView("Gangwon")
-//                 -> initDistrictView("Gyeongsang")
-//                 -> initDistrictView("Jeolla")
-//                 -> initThemeView("SpringFlower")
-//                 -> initThemeView("Walk")
-//                 -> initThemeView("Activity")
-//                 -> initThemeView("Swim")
-//                 -> initThemeView("Sunset")
-//                 -> initThemeView("FallFlower")
-//                 -> initThemeView("WinterFlower")
-//            }
-//        }
-//        val chipGroups : ChipGroup = binding.chipThemeGroup
-//        chipGroups.setOnCheckedStateChangeListener { group, checkedIds ->
-//            val chipCapital = binding.chipCapital
-//            val chipChungcheong = binding.chipChungcheong
-//            val chipGangwon = binding.chipGangwon
-//            val chipGyeongsang = binding.chipGyeongsang
-//            val chipJeolla = binding.chipJeolla
-//            val chipSpringFlower = binding.chipSpringFlower
-//            val chipWalk = binding.chipWalk
-//            val chipActivity = binding.chipActivity
-//            val chipSwim = binding.chipSwim
-//            val chipSunset = binding.chipSunset
-//            val chipFallFlower = binding.chipFallFlower
-//            val chipWinterFlower = binding.chipWinterFlower
-//
-//            val isChipCapital = checkedIds.contains(chipCapital.id)
-//            val isChipChungcheong = checkedIds.contains(chipChungcheong.id)
-//            val isChipGangwon = checkedIds.contains(chipGangwon.id)
-//            val isChipGyeongsang = checkedIds.contains(chipGyeongsang.id)
-//            val isChipJeolla = checkedIds.contains(chipJeolla.id)
-//            val isChipSpringFlower = checkedIds.contains(chipSpringFlower.id)
-//            val isChipWalk = checkedIds.contains(chipWalk.id)
-//            val isChipActivity = checkedIds.contains(chipActivity.id)
-//            val isChipSwim = checkedIds.contains(chipSwim.id)
-//            val isChipSunset = checkedIds.contains(chipSunset.id)
-//            val isChipFallFlower = checkedIds.contains(chipFallFlower.id)
-//            val isChipWinterFlower = checkedIds.contains(chipWinterFlower.id)
-//
-//            val isChecked = chipCapital.isChecked
-//        }
         binding.chipAllCity.isChecked=true
         binding.chipAllTeme.isChecked=true
         val chipGroup = ChipGroup.OnCheckedChangeListener { group, checkedId ->
@@ -328,7 +294,8 @@ class HomeFragment : Fragment() {
                 Log.d("Home", "#csh reviewData: $reviewData")
                 Log.d("Home", "#csh reviewData size: ${reviewData.size}")
             }else{
-                reviewData.addAll(city)
+                Log.d("Home", "#csh reviewData empty: ${splashViewModel.allCityData.value}")
+                reviewData.addAll(splashViewModel.allCityData.value!!)
                 reviewData.shuffle()
                 Log.d("Home", "#csh reviewData empty: $reviewData")
             }
@@ -436,25 +403,6 @@ class HomeFragment : Fragment() {
 
     private fun onLayoutClickListener(layout: LinearLayout){
         layout.setOnClickListener {
-//            val bundle = Bundle()
-//            when(layout){
-//                binding.loCategoryGlamping -> bundle.putString("HomeBundle", "글램핑")
-//                binding.loCategoryCaravan -> bundle.putString("HomeBundle", "카라반")
-//                binding.loCategoryCar -> bundle.putString("HomeBundle", "자동차야영장")
-//                binding.loCategoryGeneral -> bundle.putString("HomeBundle", "일반야영장")
-//                binding.loSearch -> bundle.putString("HomeBundle", "검색")
-//            }
-//            val frag = SearchFragment().apply {
-//                arguments = bundle
-//            }
-//
-//            requireActivity().supportFragmentManager.beginTransaction()
-//                .replace(R.id.lo_home_fragment, frag)
-//                .addToBackStack(null)
-//                .commit()
-//            val main = activity as MainActivity
-//            main.binding.viewPager.setCurrentItem(2, false)
-
             val intent = Intent(requireContext(), SearchActivity::class.java).apply{
                 var temp:String=""
                 when(layout){
@@ -477,7 +425,7 @@ class HomeFragment : Fragment() {
 
     private fun holidayInfo(){
         Log.d("Home", "#csh holidayInfo start")
-        val holidayList = mutableListOf<HolidayItem>()
+        val holidayList = mutableListOf<HolidayItem?>()
 
         val nowDate = LocalDate.now()
         val formatDate = nowDate.format(DateTimeFormatter.BASIC_ISO_DATE)
@@ -496,12 +444,12 @@ class HomeFragment : Fragment() {
             }
             holidayList.forEach { it ->
                 var dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
-                var dDay = ChronoUnit.DAYS.between(LocalDate.parse(formatDate, dateFormatter), LocalDate.parse(it.locdate.toString(), dateFormatter))
-                it.dDay = dDay
+                var dDay = ChronoUnit.DAYS.between(LocalDate.parse(formatDate, dateFormatter), LocalDate.parse(it?.locdate.toString(), dateFormatter))
+                it?.dDay = dDay
             }
             Log.d("Home", "#csh check D-Day=${holidayList}")
-            binding.tvHolidayName.text = "다음 휴일인 ${holidayList[0].dateName}까지 "
-            binding.tvDday.text = "${holidayList[0].dDay}일"
+            binding.tvHolidayName.text = "다음 휴일인 ${holidayList[0]?.dateName}까지 "
+            binding.tvDday.text = "${holidayList[0]?.dDay}일"
 //
 //
 //            var maxDiff = Long.MAX_VALUE

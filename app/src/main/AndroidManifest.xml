@@ -30,9 +30,9 @@
         <activity
             android:name=".presentation.search.SearchActivity"
             android:exported="false" />
-        <activity
-            android:name=".presentation.main.MainActivity"
-            android:exported="false" />
+<!--        <activity-->
+<!--            android:name=".presentation.main.MainActivity"-->
+<!--            android:exported="false" />-->
         <activity
             android:name=".presentation.campdetail.CampDetailActivity"
             android:exported="false" />
@@ -64,8 +64,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".presentation.splash.SplashActivity"
-            android:exported="true">
+            android:name=".presentation.main.MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.App.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

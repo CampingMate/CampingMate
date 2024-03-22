@@ -83,6 +83,7 @@ dependencies {
 
     // Android splash
     implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.core:core-splashscreen:1.0.0-rc01")
 
     // Bottom navigation theme
     implementation("nl.joery.animatedbottombar:library:1.1.0")
@@ -113,4 +114,7 @@ dependencies {
 
     // Shimmer
     implementation("com.facebook.shimmer:shimmer:0.5.0")
+
+    //lifecycle
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.3.1")
 }
