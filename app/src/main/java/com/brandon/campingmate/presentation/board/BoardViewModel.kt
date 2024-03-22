@@ -81,7 +81,6 @@ class BoardViewModel(
 
     private fun loadMorePosts() {
         if (_uiState.value.isLoadingMore) return
-        Timber.tag("LOAD").d("loadMorePosts")
         _uiState.update { it.copy(isLoadingMore = true) }
         getPosts()
     }
@@ -106,7 +105,6 @@ class BoardViewModel(
                     if (_uiState.value.isLoadingMore && newPosts.isEmpty()) handleEvent(BoardEvent.MakeToast("새로운 게시글이 더 이상 없어요."))
                     if (_uiState.value.isRefreshing) handleEvent(BoardEvent.MakeToast("새로고침"))
                     _uiState.update { currentState ->
-                        Timber.tag("LOAD").d("newPosts: $newPosts")
                         currentState.copy(
                             posts = if (shouldFetchFromFirst) newPosts else currentState.posts + newPosts,
                             isRefreshing = false,

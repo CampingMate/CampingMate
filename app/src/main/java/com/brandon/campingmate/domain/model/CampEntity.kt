@@ -64,7 +64,7 @@ data class CampEntity(
     val prmisnDe: String? = "",
     val resveCl: String? = "",
     val resveUrl: String? = "",
-    val sbrsCl: List<String>? = emptyList(),
+    val sbrsCl: String? = "",
     val sbrsEtc: String? = "",
     val sigunguNm: String? = "",
     val siteBottomCl1: String? = "",
