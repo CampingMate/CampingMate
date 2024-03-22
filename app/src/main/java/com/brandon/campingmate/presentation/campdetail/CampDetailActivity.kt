@@ -520,6 +520,19 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             Log.d("Detail", "onmapready 안에 마커만들기 실행됨")
             makeMarker(mapX, mapY, campName, naverMap)
         }
+        val seLat = naverMap?.contentBounds?.southEast?.latitude
+        val seLon = naverMap?.contentBounds?.southEast?.longitude
+        val nwLat = naverMap?.contentBounds?.northWest?.latitude
+        val nwLon = naverMap?.contentBounds?.northWest?.longitude
+        Log.d("Detail", " mart 좌표 파라미터 확인 = ${seLat}, ${seLon}, ${nwLat}, ${nwLon}")
+        if(seLat != null&& seLon != null && nwLat != null && nwLon != null){
+            //viewModel.callMart(seLat,seLon,nwLat,nwLon )
+        }
+        viewModel.martMarker.observe(this@CampDetailActivity){markers->
+            for(marker in markers){
+                marker.map = naverMap
+            }
+        }
     }
 
     private fun View.hideKeyboardInput() {

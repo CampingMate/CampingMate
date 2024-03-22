@@ -12,13 +12,19 @@ import com.brandon.campingmate.BuildConfig
 import com.brandon.campingmate.R
 import com.brandon.campingmate.domain.model.CampCommentEntity
 import com.brandon.campingmate.domain.model.CampEntity
+import com.brandon.campingmate.domain.model.Mart
 import com.brandon.campingmate.network.retrofit.NetWorkClient
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.storage
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.overlay.Align
+import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.util.MarkerIcons
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -38,6 +44,8 @@ class CampDetailViewModel : ViewModel() {
     private val _commentCount: MutableLiveData<String?> = MutableLiveData()
     val commentCount: LiveData<String?> get() = _commentCount
     private lateinit var listenerRegistration: ListenerRegistration
+    val martMarker: LiveData<MutableList<Marker>> get() = _martMarker
+    private val _martMarker: MutableLiveData<MutableList<Marker>> = MutableLiveData()
     private val db = FirebaseFirestore.getInstance()
     fun setUpParkParameter(contentId: String) {
         val authKey = BuildConfig.camp_data_key
@@ -88,7 +96,7 @@ class CampDetailViewModel : ViewModel() {
             }
     }
 
-    private fun uploadComment(myId: String, myComment: CampCommentEntity) {
+    fun uploadComment(myId: String, myComment: CampCommentEntity) {
         val db = Firebase.firestore
         val campRef = db.collection("camps")
             .whereEqualTo("contentId", myId)
@@ -312,6 +320,34 @@ class CampDetailViewModel : ViewModel() {
                         )
                     uploadComment(campId, myComment)
                 }
+            }
+    }
+
+    fun callMart(seLat :Double ,seLon :Double,nwLat :Double,nwLon :Double){
+        val db = Firebase.firestore
+        var baseQuery: Query = db.collection("mart")
+            .whereGreaterThanOrEqualTo("latitude",(seLat-0.05)).whereLessThanOrEqualTo("latitude",(nwLat+0.05))
+        baseQuery.whereGreaterThan("longitude",(seLon+0.05)).whereLessThanOrEqualTo("longitude",(nwLon-0.05))
+        baseQuery.get()
+            .addOnSuccessListener { documents ->
+                if(!documents.isEmpty){
+                    val markers = mutableListOf<Marker>()
+                    for(mart in documents){
+                        val marker = Marker()
+                        marker.captionText = mart.data.get("name").toString()
+                        marker.icon = MarkerIcons.BLUE
+                        marker.position = LatLng(mart.data.get("mapY").toString().toDouble(),mart.data.get("mapX").toString().toDouble())
+                        marker.captionRequestedWidth = 400
+                        marker.setCaptionAligns(Align.Top)
+                        marker.captionOffset = 5
+                        marker.captionTextSize = 16f
+                        markers.add(marker)
+                    }
+                    _martMarker.value = markers
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("CampDetailViewModel", "Error: ", exception)
             }
     }
 }
