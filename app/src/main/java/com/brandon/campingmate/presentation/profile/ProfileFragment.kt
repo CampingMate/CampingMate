@@ -44,12 +44,14 @@ import com.brandon.campingmate.presentation.profile.adapter.ProfileBookmarkAdapt
 import com.brandon.campingmate.presentation.profile.adapter.ProfilePostAdapter
 import com.brandon.campingmate.utils.profileImgUpload
 import com.bumptech.glide.Glide
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.storage
 import com.kakao.sdk.user.UserApiClient
+import timber.log.Timber
 
 class ProfileFragment : Fragment() {
 
@@ -76,7 +78,9 @@ class ProfileFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        Timber.tag("스타트전UserID검사").d(userId)
         userId = EncryptedPrefs.getMyId()
+        Timber.tag("스타트후UserID검사").d(userId)
         checkLogin()
     }
 //    override fun onResume() {
@@ -107,6 +111,7 @@ class ProfileFragment : Fragment() {
 
     private fun checkLogin() {
         if (userId != null) {
+            Timber.tag("프로필UserID검사").d(userId)
             initLogin()
             setBookmarkedAdapter(userId!!)
             setPostAdapter(userId!!)
@@ -156,6 +161,7 @@ class ProfileFragment : Fragment() {
     }
 
     private fun initLogin() {
+        Timber.tag("이닛UserID검사").d(userId)
         userId?.let { viewModel.getUserData(it) }
         with(binding) {
             viewModel.userData.observe(viewLifecycleOwner) {
@@ -373,18 +379,31 @@ class ProfileFragment : Fragment() {
             if (confirm) {
                 val documentRef = db.collection("users").document(userId.toString())
                 val updateNickname = hashMapOf<String, Any>("nickName" to "${tvProfileName.text}")
+
                 if (profileImgUri != null) {
-                    profileImgUpload(profileImgUri!!, userId.toString())
-                    Firebase.storage.getReference("profileImage").child(userId.toString()).downloadUrl.addOnCompleteListener {
-                        if (it.isSuccessful) {
-                            val profileImgURI = hashMapOf<String, Any>("profileImage" to it.result.toString())
-                            documentRef.update(profileImgURI)
+                    // profileImgUpload 함수 호출 시 콜백을 전달
+                    profileImgUpload(profileImgUri!!, userId.toString()) { isSuccess, uri ->
+                        if (isSuccess && uri != null) {
+                            // 업로드 성공 및 URL 획득 성공 시
+                            val profileImgURI = hashMapOf<String, Any>("profileImage" to uri.toString())
+                            documentRef.update(profileImgURI).addOnFailureListener { e ->
+                                // 이미지 URL 업데이트 실패
+                                Timber.tag("ProfileImgEditError").d(e.toString())
+                            }
+                        }
+                        // 이미지 업로드 성공 여부와 상관없이 닉네임 업데이트
+                        documentRef.update(updateNickname).addOnFailureListener { e ->
+                            // 닉네임 업데이트 실패
+                            Timber.tag("ProfileNameEditError").d(e.toString())
                         }
                     }
                     profileImgUri = null
-                }
-                documentRef.get().addOnSuccessListener {
-                    documentRef.update(updateNickname)
+                } else {
+                    // 프로필 이미지가 변경되지 않은 경우 닉네임만 업데이트
+                    documentRef.update(updateNickname).addOnFailureListener { e ->
+                        // 닉네임 업데이트 실패
+                        Timber.tag("ProfileNameEditError").d(e.toString())
+                    }
                 }
                 tvProfileName.text = tvProfileName.text
             } else {
@@ -548,15 +567,36 @@ class ProfileFragment : Fragment() {
                 }
 
                 dialog.findViewById<TextView>(R.id.btn_logout_comfirm)?.setOnClickListener {
-                    Toast.makeText(requireContext(), "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
-                    //By.sounghyun
-                    UserApiClient.instance.logout { error ->
-                        if (error != null) {
-                            Toast.makeText(requireContext(), "로그아웃 실패 $error", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(requireContext(), "로그아웃 성공", Toast.LENGTH_SHORT).show()
+                    when {
+                        //By.sounghyun
+                        userId.toString().startsWith("Kakao") -> {
+                            UserApiClient.instance.logout { error ->
+                                if (error != null) {
+                                    Toast.makeText(requireContext(), "로그아웃 실패 $error", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(requireContext(), "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+
+                        userId.toString().startsWith("Google") -> {
+                            activity?.let {
+                                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                    .requestIdToken(getString(R.string.google_web_client_id))
+                                    .requestEmail()
+                                    .build()
+                                val firebaseAuth = FirebaseAuth.getInstance()
+                                val googleSignInClient = GoogleSignIn.getClient(it, gso)
+                                // Firebase sign out
+                                firebaseAuth.signOut()
+                                // Google sign out
+                                googleSignInClient.signOut().addOnCompleteListener { _ ->
+                                    Toast.makeText(it, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
+                                }
+                            }
                         }
                     }
+                    //카카오톡 회원탈퇴
 //                    UserApiClient.instance.unlink { error ->
 //                        if (error != null) {
 //                            Toast.makeText(requireContext(), "회원 탈퇴 실패 $error", Toast.LENGTH_SHORT).show()
@@ -568,6 +608,7 @@ class ProfileFragment : Fragment() {
                     //화면 상에서 비로그인 화면으로 되돌리기
                     initLogout()
                     EncryptedPrefs.deleteMyId()
+                    userId = null
                     dialog.dismiss()
                 }
             }

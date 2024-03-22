@@ -2,4 +2,5 @@
 <resources>
     <string name="kakao_native_app_key">15713e37f798efa70eaee029c610e3cb</string>
     <string name="kakao_redirection_scheme">kakao15713e37f798efa70eaee029c610e3cb</string>
+    <string name="google_web_client_id">728824974913-ovcdn82vm9e9pf2fb8jm7tuf9mgc4hh9.apps.googleusercontent.com</string>
 </resources>

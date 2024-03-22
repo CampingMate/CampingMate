@@ -36,7 +36,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.kakao.sdk.user.UserApiClient
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.CameraPosition
@@ -106,6 +105,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             Glide.with(this).load(image).preload()
         }
     }
+
     private fun initViewModel() = with(viewModel) {
         imageResult.observe(this@CampDetailActivity) {
             if (it.isNotEmpty()) {
@@ -122,7 +122,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         campComment.observe(this@CampDetailActivity) {
             if (it != null) {
                 listAdapter.submitList(it)
-                with(binding){
+                with(binding) {
                     if (it.isEmpty()) {
                         recyclerComment.visibility = View.INVISIBLE
                         tvNoComment.visibility = View.VISIBLE
@@ -314,9 +314,9 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         behavior.isHideable = true
         behavior.state = BottomSheetBehavior.STATE_HIDDEN
 
-        behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
+        behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-                if(newState == BottomSheetBehavior.STATE_HIDDEN){
+                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
                     viewModel.checkComment(myId!!)
                 }
             }
@@ -434,42 +434,37 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun checkBookmarked() = with(binding) {
-        UserApiClient.instance.me { user, error ->
-            if (user?.id != null) {
-                val userDocRef = db.collection("users").document("Kakao${user?.id}")
-                userDocRef.get().addOnSuccessListener {
-                    val bookmarkedList = it.get("bookmarked") as? List<*>
-                    if (bookmarkedList != null && bookmarkedList.contains(myId)) {
-                        ivArrowBookmark.setImageResource(R.drawable.ic_bookmark_checked)
-                    } else {
-                        ivArrowBookmark.setImageResource(R.drawable.ic_bookmark)
-                    }
+        if (userId != null) {
+            val userDocRef = db.collection("users").document(userId!!)
+            userDocRef.get().addOnSuccessListener {
+                val bookmarkedList = it.get("bookmarked") as? List<*>
+                if (bookmarkedList != null && bookmarkedList.contains(myId)) {
+                    ivArrowBookmark.setImageResource(R.drawable.ic_bookmark_checked)
+                } else {
+                    ivArrowBookmark.setImageResource(R.drawable.ic_bookmark)
                 }
-            } else {
-                ivArrowBookmark.setImageResource(R.drawable.ic_bookmark)
             }
+        } else {
+            ivArrowBookmark.setImageResource(R.drawable.ic_bookmark)
         }
     }
 
     private fun clickBookmarked() = with(binding) {
         ivArrowBookmark.setOnClickListener {
-            UserApiClient.instance.me { user, error ->
-                if (user?.id == null) {
-                    SnackbarUtil.showSnackBar(it)
-                } else {
-                    val userDocRef = db.collection("users").document("Kakao${user?.id}")
-                    userDocRef.get().addOnSuccessListener { document ->
-                        val bookmarkedList = document.get("bookmarked") as? List<*>
-                        Timber.tag("북마크리스트검사").d(bookmarkedList.toString())
-                        if (bookmarkedList?.contains(myId) == true) {
-                            modifyBookmarked(userDocRef, bookmarkedList, deleteFromList = true)
-                            Timber.tag("북마크삭제검사").d(bookmarkedList.toString())
-                        } else {
-                            modifyBookmarked(userDocRef, bookmarkedList, deleteFromList = false)
-                            Timber.tag("북마크추가검사").d(bookmarkedList.toString())
-                        }
+            if (userId == null) {
+                SnackbarUtil.showSnackBar(it)
+            } else {
+                val userDocRef = db.collection("users").document(userId!!)
+                userDocRef.get().addOnSuccessListener { document ->
+                    val bookmarkedList = document.get("bookmarked") as? List<*>
+                    Timber.tag("북마크리스트검사").d(bookmarkedList.toString())
+                    if (bookmarkedList?.contains(myId) == true) {
+                        modifyBookmarked(userDocRef, bookmarkedList, deleteFromList = true)
+                        Timber.tag("북마크삭제검사").d(bookmarkedList.toString())
+                    } else {
+                        modifyBookmarked(userDocRef, bookmarkedList, deleteFromList = false)
+                        Timber.tag("북마크추가검사").d(bookmarkedList.toString())
                     }
-
                 }
             }
         }
@@ -614,7 +609,8 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
         bottomSheetDialog.show()
     }
-    private fun View.hideKeyboard(){
+
+    private fun View.hideKeyboard() {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(windowToken, 0)
     }

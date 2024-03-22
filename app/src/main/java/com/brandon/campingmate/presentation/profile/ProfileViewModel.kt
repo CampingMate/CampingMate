@@ -30,8 +30,12 @@ class ProfileViewModel : ViewModel() {
         val docRef = db.collection("users").document(userID)
         docRef.get().addOnSuccessListener {
             val item = it.toObject(UserDTO::class.java)
+            Timber.tag("getUser검사").d(item.toString())
             _userData.value = item
         }
+            .addOnFailureListener {
+                Timber.tag("LoadUserDataFail").d(it.toString())
+            }
     }
 
     fun getBookmark(userID: String) {
@@ -52,6 +56,9 @@ class ProfileViewModel : ViewModel() {
                 }
             }
         }
+            .addOnFailureListener {
+                Timber.tag("getBookmarkFail").d(it.toString())
+            }
     }
 
     private fun callBookmarkCamp(bookmarkedItemList: MutableList<String>) {
@@ -65,6 +72,9 @@ class ProfileViewModel : ViewModel() {
             }
             _bookmarkedList.value = bookmarkCamp
         }
+            .addOnFailureListener {
+                Timber.tag("callBookmarkCampFail").d(it.toString())
+            }
     }
 
     fun getPosts(userID: String) {
@@ -80,6 +90,9 @@ class ProfileViewModel : ViewModel() {
             writingPost.clear()
             callPosts(posts)
         }
+            .addOnFailureListener {
+                Timber.tag("getPostsFail").d(it.toString())
+            }
     }
 
     private fun callPosts(posts: MutableList<PostDTO>) {
