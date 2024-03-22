@@ -153,8 +153,9 @@ class PostWriteActivity : AppCompatActivity() {
 
     }
 
-    private fun onBind(state: PostWriteImageUiState) {
-        imageListAdapter.submitList(state.imageUris)
+    private fun onBind(state: PostWriteImageUiState) = with(state) {
+        imageListAdapter.submitList(imageUris)
+        binding.lottieUploading.isVisible = isUploading
     }
 
     private fun onEvent(event: PostWriteEvent) {
