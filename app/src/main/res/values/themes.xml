@@ -15,5 +15,10 @@
         <item name="tabIndicatorColor">#353535</item>
     </style>
 
-
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/brandColor</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_logo_img</item>
+        <item name="android:windowSplashScreenBrandingImage">@drawable/ic_brand_img</item>
+        <item name="postSplashScreenTheme">@style/Theme.CampingMate</item>
+    </style>
 </resources>

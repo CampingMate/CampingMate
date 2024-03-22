@@ -14,7 +14,7 @@ import com.brandon.campingmate.domain.model.HomeEntity
 import com.brandon.campingmate.presentation.campdetail.CampDetailActivity
 import com.bumptech.glide.Glide
 
-class HomeAdapter(private val mContext: Context, var mItems: MutableList<HomeEntity>) :
+class HomeAdapter(private val mContext: Context, var mItems: MutableList<HomeEntity>?) :
 
     RecyclerView.Adapter<HomeAdapter.Holder>() {
 
@@ -27,22 +27,22 @@ class HomeAdapter(private val mContext: Context, var mItems: MutableList<HomeEnt
     override fun onBindViewHolder(holder: HomeAdapter.Holder, position: Int) {
         holder.itemView.setOnClickListener {
             val intent = Intent(mContext, CampDetailActivity::class.java).apply {
-                putExtra("campData", mItems[position].contentId)
+                putExtra("campData", mItems?.get(position)?.contentId)
             }
             mContext.startActivity(intent)
         }
-        if (mItems[position]?.firstImageUrl == "")
+        if (mItems?.get(position)?.firstImageUrl == "")
             holder.campImg.setImageResource(R.drawable.ic_login_img)
         else {
             Glide.with(mContext)
-                .load(mItems[position]?.firstImageUrl)
+                .load(mItems?.get(position)?.firstImageUrl)
                 .into(holder.campImg)
         }
 
-        holder.campName.text = mItems[position]?.facltNm
+        holder.campName.text = mItems?.get(position)?.facltNm
     }
 
-    override fun getItemCount() = mItems.size
+    override fun getItemCount(): Int = mItems?.size!!
 
     inner class Holder(binding: ItemSmallCampBinding) : RecyclerView.ViewHolder(binding.root) {
         val campImg = binding.ivHomeCampImg
