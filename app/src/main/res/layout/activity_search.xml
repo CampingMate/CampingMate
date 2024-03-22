@@ -201,12 +201,14 @@
 
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/chip_type_group"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:singleSelection="true"
                     android:layout_marginEnd="16dp"
                     android:layout_marginTop="14dp"
-                    app:layout_constraintStart_toStartOf="@id/tv_search_type"
+                    android:layout_marginStart="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_search_type">
 
                     <com.google.android.material.chip.Chip
@@ -539,37 +541,15 @@
 
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/chip_convenience_group"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:singleSelection="true"
                     android:layout_marginTop="14dp"
                     android:layout_marginEnd="16dp"
-                    app:layout_constraintStart_toStartOf="@id/tv_search_convenience"
+                    android:layout_marginStart="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_search_convenience">
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chipBathroom"
-                        style="@style/CustomChipChoice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:checkable="true"
-                        android:clickable="true"
-                        android:fontFamily="@font/spoqahansansneo_regular"
-                        android:text="@string/search_chip_bathroom"
-                        app:chipCornerRadius="6dp"
-                        app:chipStrokeWidth="1dp" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chipShower"
-                        style="@style/CustomChipChoice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:checkable="true"
-                        android:clickable="true"
-                        android:fontFamily="@font/spoqahansansneo_regular"
-                        android:text="@string/search_chip_shower"
-                        app:chipCornerRadius="6dp"
-                        app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipBrazier"
@@ -604,18 +584,6 @@
                         android:clickable="true"
                         android:fontFamily="@font/spoqahansansneo_regular"
                         android:text="@string/search_chip_refrigerator"
-                        app:chipCornerRadius="6dp"
-                        app:chipStrokeWidth="1dp" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chipFireSee"
-                        style="@style/CustomChipChoice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:checkable="true"
-                        android:clickable="true"
-                        android:fontFamily="@font/spoqahansansneo_regular"
-                        android:text="@string/search_chip_fire_see"
                         app:chipCornerRadius="6dp"
                         app:chipStrokeWidth="1dp" />
 
@@ -732,12 +700,14 @@
 
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/chip_thema_group"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:singleSelection="true"
                     android:layout_marginTop="14dp"
                     android:layout_marginEnd="16dp"
-                    app:layout_constraintStart_toStartOf="@id/tv_search_thema"
+                    android:layout_marginStart="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_search_thema">
 
                     <com.google.android.material.chip.Chip

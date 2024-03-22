@@ -20,6 +20,7 @@ import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.search.adapter.SearchListAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
+import com.google.firebase.firestore.FirebaseFirestore
 
 class SearchActivity : AppCompatActivity() {
     private val binding by lazy {  ActivitySearchBinding.inflate(layoutInflater)  }
@@ -123,12 +124,9 @@ class SearchActivity : AppCompatActivity() {
             R.id.chipGyeongbuk,
             R.id.chipGyeongnam,
             R.id.chipJeju,
-            R.id.chipBathroom,
-            R.id.chipShower,
             R.id.chipBrazier,
             R.id.chipElectronic,
             R.id.chipRefrigerator,
-            R.id.chipFireSee,
             R.id.chipAircon,
             R.id.chipBed,
             R.id.chipTv,
