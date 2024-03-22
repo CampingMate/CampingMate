@@ -70,7 +70,8 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private var myImage: String = ""
     var isTop = true
     lateinit var behavior: BottomSheetBehavior<ConstraintLayout>
-    private var sendLoading:Boolean = false
+    private var sendLoading: Boolean = false
+
     companion object {
         private const val REQUEST_CODE_IMAGE_PICK = 1001
     }
@@ -78,7 +79,6 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        userId = EncryptedPrefs.getMyId()
         initView()
         initViewModel()
         initBottomSheet()
@@ -89,14 +89,20 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         mapView?.getMapAsync(this)
     }
 
+    override fun onResume() {
+        super.onResume()
+        userId = EncryptedPrefs.getMyId()
+    }
+
     private fun initViewPager() {
         preloadImages(imageUrls)
         binding.viewPager.adapter = ViewPagerAdapter(imageUrls)
         binding.viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
         binding.springDotsIndicator.attachTo(binding.viewPager)
     }
-    private fun preloadImages(urls: List<String>){
-        for(image in urls){
+
+    private fun preloadImages(urls: List<String>) {
+        for (image in urls) {
             Glide.with(this).load(image).preload()
         }
     }
@@ -116,12 +122,19 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         campComment.observe(this@CampDetailActivity) {
             if (it != null) {
                 listAdapter.submitList(it)
-                if(it.isEmpty()){
-                    binding.recyclerComment.visibility = View.INVISIBLE
-                    binding.tvNoComment.visibility = View.VISIBLE
-                } else{
-                    binding.recyclerComment.visibility = View.VISIBLE
-                    binding.tvNoComment.visibility = View.INVISIBLE
+                with(binding){
+                    if (it.isEmpty()) {
+                        recyclerComment.visibility = View.INVISIBLE
+                        tvNoComment.visibility = View.VISIBLE
+                    } else {
+                        recyclerComment.visibility = View.VISIBLE
+                        tvNoComment.visibility = View.INVISIBLE
+                    }
+                    loadingAnimation.visibility = View.INVISIBLE
+                    commentEdit.text.clear()
+                    selectedImage.setImageURI(null)
+                    selectedImage.visibility = View.GONE
+                    selectedImageDelete.visibility = View.GONE
                 }
                 binding.loadingAnimation.visibility = View.INVISIBLE
             }
@@ -313,7 +326,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         })
     }
 
-    private fun scrollListener() = with(binding){
+    private fun scrollListener() = with(binding) {
         val fadeIn = AlphaAnimation(0f, 1f).apply { duration = 1000 }
         val fadeOut = AlphaAnimation(1f, 0f).apply { duration = 1000 }
         scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
@@ -344,72 +357,30 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             openGalleryForImage()
         }
         commentSend.setOnClickListener {
-            if(!sendLoading){
-                sendLoading = true
-                loadingAnimation.visibility = View.VISIBLE
-                commentSend.hideKeyboardInput()
-                if (userId != null) {
-                    val userDocRef = db.collection("users").document("${userId}")
-                    userDocRef
-                        .get()
-                        .addOnSuccessListener {
-                            val userId = "${userId}"
-                            val userName = it.get("nickName")
-                            val content = commentEdit.text.toString()
-                            if(content.isBlank()){
-                                sendLoading = false
-                                return@addOnSuccessListener
-                            }
-                            val date =
-                                SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(
-                                    Date()
-                                )
-                            val myImage = if (selectedImage.visibility == View.VISIBLE) {
-                                myImage
-                            } else {
-                                ""
-                            }
-                            val userProfile = it.get("profileImage")
-                            if (myImage.isNotBlank()) {
-                                val myImageUri = Uri.parse(myImage)
-                                viewModel.uploadImage(myImageUri) { imageUrl ->
-                                    val myComment = myId?.let { it1 ->
-                                        CampCommentEntity(
-                                            userId,
-                                            userName,
-                                            content,
-                                            date,
-                                            Uri.parse(imageUrl),
-                                            it1,
-                                            Uri.parse(userProfile.toString()),
-                                        )
-                                    }
-                                    if (myComment != null) {
-                                        viewModel.uploadComment(myId!!, myComment)
-                                    }
-                                    commentEdit.text.clear()
-                                    selectedImage.setImageURI(null)
-                                    selectedImage.visibility = View.GONE
-                                    selectedImageDelete.visibility = View.GONE
-                                }
-                            } else {
-                                val myComment =
-                                    myId?.let { it1 ->
-                                        CampCommentEntity(
-                                            userId, userName, content, date, Uri.EMPTY,
-                                            it1, Uri.parse(userProfile.toString())
-                                        )
-                                    }
-                                if (myComment != null) {
-                                    viewModel.uploadComment(myId!!, myComment)
-                                }
-                                commentEdit.text.clear()
-                            }
-                            sendLoading = false
+            if (userId != null) {
+                if (!sendLoading) {
+                    sendLoading = true
+                    loadingAnimation.visibility = View.VISIBLE
+                    commentSend.hideKeyboardInput()
+
+                    val content = commentEdit.text.toString()
+                    if (content.isBlank()) {
+                        sendLoading = false
+                        return@setOnClickListener
+                    } else {
+                        val myImage = if (selectedImage.visibility == View.VISIBLE) {
+                            myImage
+                        } else {
+                            ""
                         }
-                } else {
-                    SnackbarUtil.showSnackBar(it)
+                        val campId = myId
+                        viewModel.bringUserData(userId!!, content, myImage, campId!!)
+                    }
                 }
+            } else {
+                SnackbarUtil.showSnackBar(it)
+                binding.root.hideKeyboard()
+                behavior.state = BottomSheetBehavior.STATE_HIDDEN
             }
         }
         selectedImageDelete.setOnClickListener {
@@ -608,6 +579,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
     }
+
     fun showBottomSheetCommentMenu(
         comment: CampCommentEntity,
     ) {
@@ -616,9 +588,10 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
         showBottomSheetCommentMenu(isOwner, campId, comment)
     }
+
     private fun showBottomSheetCommentMenu(
         isOwner: Boolean, campId: String?, comment: CampCommentEntity
-    ){
+    ) {
         val bottomSheetDialog = BottomSheetDialog(this)
         val bottomSheetBinding = BottomSheetPostdetailCommnetSideMenuBinding.inflate(layoutInflater)
 
@@ -641,5 +614,8 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
         bottomSheetDialog.show()
     }
-
+    private fun View.hideKeyboard(){
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken, 0)
+    }
 }

@@ -24,32 +24,23 @@ import com.google.android.material.chip.Chip
 class SearchActivity : AppCompatActivity() {
     private val binding by lazy {  ActivitySearchBinding.inflate(layoutInflater)  }
     private val listAdapter: SearchListAdapter by lazy { SearchListAdapter() }
-
     private val viewModel by lazy {
         ViewModelProvider(this)[SearchViewModel::class.java]
     }
-
     lateinit var behavior: BottomSheetBehavior<ConstraintLayout>
     private var temp:String? = ""
-
-
     companion object {
         var activatedChips = mutableListOf<String>()
         var doNmList = mutableListOf<String>()
-
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        temp = intent.getStringExtra("searchData")
-        Log.d("SearchActivity", "${temp}")
-        setting(temp!!)
         initView()
         initViewModel()
     }
     private fun initViewModel() = with(viewModel) {
         keyword.observe(this@SearchActivity){
-            Log.d("checkLog", "keyword 옵저빙")
             binding.loadingAnimation.visibility = View.GONE
             val myNewList = mutableListOf<CampEntity>()
             myNewList.addAll(it)
@@ -76,7 +67,9 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun initView() = with(binding) {
-        imageView.setOnClickListener {
+        temp = intent.getStringExtra("searchData")
+        setting(temp!!)
+        ivArrowBack.setOnClickListener {
             finish()
         }
         //리사이클러뷰 연결
@@ -93,7 +86,6 @@ class SearchActivity : AppCompatActivity() {
 
                 if (visibleItemCount + firstVisibleItemPosition >= totalItemCount && firstVisibleItemPosition >= 0) {
                     // 목록의 끝에 도달했을 때, 더 많은 데이터 로드
-//                    binding.loadingAnimationInfinity.visibility = View.VISIBLE
                     if(viewModel.isFilter){
                         if(!viewModel.isLoadingData){
                             viewModel.loadMoreData()
@@ -237,8 +229,15 @@ class SearchActivity : AppCompatActivity() {
             if((event.action== KeyEvent.ACTION_DOWN) && (KeyCode== KeyEvent.KEYCODE_ENTER)){
                 loadingAnimation.visibility = View.VISIBLE
                 val searchText = binding.tvEdit.text.toString()
-                viewModel.setUpParkParameter(searchText)
+                viewModel.setUpParameter(searchText)
                 binding.root.hideKeyboard()
+                binding.tvEdit.clearFocus()
+                val drawable = ContextCompat.getDrawable(this@SearchActivity, R.drawable.ic_filter)
+                ivSetting.setImageDrawable(drawable)
+                for (chipId in chipIds) {
+                    val chip = root.findViewById<Chip>(chipId)
+                    chip.isChecked = false
+                }
                 return@setOnKeyListener true
             } else{
                 return@setOnKeyListener false
@@ -288,6 +287,7 @@ class SearchActivity : AppCompatActivity() {
                         manager.showSoftInput(binding.tvEdit, InputMethodManager.SHOW_IMPLICIT)
                     }
                 }
+                binding.ivSearch.visibility = View.GONE
             }
             "글램핑", "일반야영장", "자동차야영장", "카라반" -> {
                 when(temp){
@@ -357,6 +357,8 @@ class SearchActivity : AppCompatActivity() {
         behavior.state = BottomSheetBehavior.STATE_HIDDEN // 초기 상태 설정
 
         binding.ivSetting.setOnClickListener {
+            binding.root.hideKeyboard()
+            binding.tvEdit.clearFocus()
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
         behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
