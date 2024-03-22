@@ -185,17 +185,14 @@ class PostWriteActivity : AppCompatActivity() {
 
 
     private fun initView() = with(binding) {
-        // 툴바 활성화
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false) // 기본 타이틀 숨기기
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // 뒤로가기 버튼 활성화
 
-        // 리사이클러뷰 설정
         rvPostImage.layoutManager =
             LinearLayoutManager(this@PostWriteActivity, LinearLayoutManager.HORIZONTAL, false)
         rvPostImage.adapter = imageListAdapter
 
-        // 커스텀 ItemAnimator 설정
         rvPostImage.itemAnimator = null
 
         etTitle.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(40))
@@ -207,6 +204,7 @@ class PostWriteActivity : AppCompatActivity() {
 
     private fun initListener() = with(binding) {
         btnPostUpload.setDebouncedOnClickListener {
+            hideKeyboard()
             val title = binding.etTitle.text.toString()
             val content = binding.etContent.text.toString()
             viewModel.handleEvent(
@@ -316,10 +314,6 @@ class PostWriteActivity : AppCompatActivity() {
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        currentFocus?.clearFocus()
-    }
 
     private fun hideKeyboard() {
         val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
