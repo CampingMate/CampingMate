@@ -31,6 +31,7 @@ import com.brandon.campingmate.presentation.campdetail.adapter.CommentListAdapte
 import com.brandon.campingmate.presentation.campdetail.adapter.ViewPagerAdapter
 import com.brandon.campingmate.presentation.common.SnackbarUtil
 import com.brandon.campingmate.utils.toPx
+import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.firestore.DocumentReference
@@ -89,15 +90,21 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun initViewPager() {
+        preloadImages(imageUrls)
         binding.viewPager.adapter = ViewPagerAdapter(imageUrls)
         binding.viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
         binding.springDotsIndicator.attachTo(binding.viewPager)
     }
-
+    private fun preloadImages(urls: List<String>){
+        for(image in urls){
+            Glide.with(this).load(image).preload()
+        }
+    }
     private fun initViewModel() = with(viewModel) {
         imageResult.observe(this@CampDetailActivity) {
             if (it.isNotEmpty()) {
                 imageUrls.addAll(it)
+                Log.d("imageUrls", "이미지 들어오는속도 확인 : ${imageUrls}")
                 initViewPager()
             }
         }
@@ -116,6 +123,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                     binding.recyclerComment.visibility = View.VISIBLE
                     binding.tvNoComment.visibility = View.INVISIBLE
                 }
+                binding.loadingAnimation.visibility = View.INVISIBLE
             }
         }
         checkLastComment.observe(this@CampDetailActivity) {
@@ -162,7 +170,9 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         if (it.siteBottomCl3 != "0") bottom += "테크, "
         if (it.siteBottomCl4 != "0") bottom += "자갈, "
         if (it.siteBottomCl5 != "0") bottom += "맨흙"
-        tvBottom.text = "바닥재질 - ${bottom}"
+//        tvBottom.text = "바닥재질 - ${bottom}"
+        tvBottom.text = ""
+        tvBottom.visibility = View.GONE
         if (it.intro.isNullOrBlank()) {
             tvIntroduceComment.text = "등록된 내용이 없습니다."
         } else {
@@ -336,6 +346,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         commentSend.setOnClickListener {
             if(!sendLoading){
                 sendLoading = true
+                loadingAnimation.visibility = View.VISIBLE
                 commentSend.hideKeyboardInput()
                 if (userId != null) {
                     val userDocRef = db.collection("users").document("${userId}")
@@ -394,11 +405,11 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                                 }
                                 commentEdit.text.clear()
                             }
+                            sendLoading = false
                         }
                 } else {
                     SnackbarUtil.showSnackBar(it)
                 }
-                sendLoading = false
             }
         }
         selectedImageDelete.setOnClickListener {
