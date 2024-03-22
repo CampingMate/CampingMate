@@ -13,8 +13,8 @@ import com.google.firebase.firestore.firestore
 import timber.log.Timber
 
 class ProfileViewModel : ViewModel() {
-    private val _userData : MutableLiveData<UserDTO?> = MutableLiveData()
-    val userData : LiveData<UserDTO?> get() = _userData
+    private val _userData: MutableLiveData<UserDTO?> = MutableLiveData()
+    val userData: LiveData<UserDTO?> get() = _userData
     private val _bookmarkedList: MutableLiveData<List<CampEntity>> = MutableLiveData()
     val bookmarkedList: LiveData<List<CampEntity>> get() = _bookmarkedList
     private val bookmarkCamp: MutableList<CampEntity> = mutableListOf()
@@ -25,12 +25,11 @@ class ProfileViewModel : ViewModel() {
     private var removeBookmarkItem: CampEntity? = null
     private var removePostItem: PostDTO? = null
 
-    fun getUserData(userID : String) {
+    fun getUserData(userID: String) {
         val db = FirebaseFirestore.getInstance()
         val docRef = db.collection("users").document(userID)
         docRef.get().addOnSuccessListener {
             val item = it.toObject(UserDTO::class.java)
-            Timber.tag("아이디아이템검사").d(item.toString())
             _userData.value = item
         }
     }
@@ -72,14 +71,20 @@ class ProfileViewModel : ViewModel() {
         val db = Firebase.firestore
         val baseQuery: Query = db.collection("posts")
         val result = baseQuery.whereIn("authorId", listOf(userID))
-        writingPost.clear()
+        val posts = mutableListOf<PostDTO>()
         result.get().addOnSuccessListener {
             for (doc in it) {
                 val post = doc.toObject(PostDTO::class.java)
-                writingPost.add(post)
+                posts.add(post)
             }
-            _postList.value = writingPost
+            writingPost.clear()
+            callPosts(posts)
         }
+    }
+
+    private fun callPosts(posts: MutableList<PostDTO>) {
+        posts.forEach { writingPost.add(it) }
+        _postList.value = writingPost
     }
 
     fun removeBookmarkCamp(userID: String, contentID: String) {
