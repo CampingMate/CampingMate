@@ -154,7 +154,7 @@ class SearchViewModel : ViewModel() {
                 "차박" -> result = result.whereIn("induty3", listOf("자동차야영장"))
                 "카라반" -> result = result.whereIn("induty4", listOf("카라반"))
                 "화로대" -> result = result.whereIn("fire", listOf("화로대"))
-                "전기" -> result = result.whereIn("electronic", listOf("전기"))
+                "전기" -> result = result.whereIn("sbrsCl", listOf("전기"))
                 "냉장고" -> result = result.whereIn("refrigerator", listOf("냉장고"))
                 "에어컨" -> result = result.whereIn("aircon", listOf("에어컨"))
                 "침대" -> result = result.whereIn("bed", listOf("침대"))
