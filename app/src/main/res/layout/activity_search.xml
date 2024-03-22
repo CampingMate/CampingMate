@@ -548,30 +548,6 @@
                     app:layout_constraintTop_toBottomOf="@+id/tv_search_convenience">
 
                     <com.google.android.material.chip.Chip
-                        android:id="@+id/chipBathroom"
-                        style="@style/CustomChipChoice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:checkable="true"
-                        android:clickable="true"
-                        android:fontFamily="@font/spoqahansansneo_regular"
-                        android:text="@string/search_chip_bathroom"
-                        app:chipCornerRadius="6dp"
-                        app:chipStrokeWidth="1dp" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chipShower"
-                        style="@style/CustomChipChoice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:checkable="true"
-                        android:clickable="true"
-                        android:fontFamily="@font/spoqahansansneo_regular"
-                        android:text="@string/search_chip_shower"
-                        app:chipCornerRadius="6dp"
-                        app:chipStrokeWidth="1dp" />
-
-                    <com.google.android.material.chip.Chip
                         android:id="@+id/chipBrazier"
                         style="@style/CustomChipChoice"
                         android:layout_width="wrap_content"
@@ -604,18 +580,6 @@
                         android:clickable="true"
                         android:fontFamily="@font/spoqahansansneo_regular"
                         android:text="@string/search_chip_refrigerator"
-                        app:chipCornerRadius="6dp"
-                        app:chipStrokeWidth="1dp" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chipFireSee"
-                        style="@style/CustomChipChoice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:checkable="true"
-                        android:clickable="true"
-                        android:fontFamily="@font/spoqahansansneo_regular"
-                        android:text="@string/search_chip_fire_see"
                         app:chipCornerRadius="6dp"
                         app:chipStrokeWidth="1dp" />
 
