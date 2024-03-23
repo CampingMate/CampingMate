@@ -297,20 +297,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         }
 
-        binding.btnBookmark.setOnClickListener {
-            if (bookmark) {
-                binding.btnBookmark.text = "전체"
-                bookmarkMarkers.forEach {
-                    hideMarker(it)
-                }
-                showCampSite(naverMap?.cameraPosition?.zoom!!, markers, naverMap!!, campDataList)
-                bookmark = false
-            } else {
+        binding.switchBookmark.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
                 if (userId == null) {
-                    SnackbarUtil.showSnackBar(it)
+                    SnackbarUtil.showSnackBar(buttonView)
 
                 } else {
-                    binding.btnBookmark.text = "북마크"
+                    binding.switchBookmark.text = "북마크"
                     markers.forEach {
                         hideMarker(it)
                     }
@@ -322,8 +315,17 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     )
                     bookmark = true
                 }
+            } else {
+                binding.switchBookmark.text = "전체"
+                bookmarkMarkers.forEach {
+                    hideMarker(it)
+                }
+                showCampSite(naverMap?.cameraPosition?.zoom!!, markers, naverMap!!, campDataList)
+                bookmark = false
             }
         }
+
+
 
         tedNaverClustering =
             TedNaverClustering.with<LocationBasedListItem>(requireContext(), naverMap!!)
