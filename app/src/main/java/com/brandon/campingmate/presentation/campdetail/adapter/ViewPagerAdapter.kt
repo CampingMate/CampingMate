@@ -1,5 +1,7 @@
 package com.brandon.campingmate.presentation.campdetail.adapter
 
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -15,11 +17,13 @@ class ViewPagerAdapter(imageList: MutableList<String>) : RecyclerView.Adapter<Vi
     override fun getItemCount(): Int = item.size
 
     override fun onBindViewHolder(holder: PagerViewHolder, position: Int) {
-//        holder.image.setImageResource(item[position])
+        val dimColor = Color.parseColor("#0D000000")
         Glide.with(holder.itemView.context)
             .load(item[position])
             .centerCrop()
             .into(holder.image)
+
+//        holder.image.setColorFilter(dimColor, PorterDuff.Mode.SRC_ATOP)
     }
 
     inner class PagerViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder
