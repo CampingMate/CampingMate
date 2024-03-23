@@ -4,6 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -74,12 +77,14 @@ class LoginActivity : AppCompatActivity() {
                     }
 
                     else -> { // Unknown
+                        binding.clLoginLoading.visibility = View.GONE
                         finish()
                         Timber.tag("KakaoLoginError").d("기타 에러")
                         //Toast.makeText(this, "기타 에러", Toast.LENGTH_SHORT).show()
                     }
                 }
             } else if (token != null) {
+                binding.clLoginLoading.visibility = View.VISIBLE
                 val db = Firebase.firestore
                 UserApiClient.instance.me { user, _ ->
                     val documentRef = db.collection("users").document("Kakao${user?.id}")
@@ -101,6 +106,7 @@ class LoginActivity : AppCompatActivity() {
                         }
                         Toast.makeText(this, "환영합니다.", Toast.LENGTH_SHORT).show()
                         EncryptedPrefs.saveMyId("Kakao${user?.id}")
+                        binding.clLoginLoading.visibility = View.GONE
                         finish()
                     }
                 }
@@ -160,6 +166,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun firebaseAuthWithGoogle(idToken: String?) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
+        binding.clLoginLoading.visibility = View.VISIBLE
         val db = Firebase.firestore
         firebaseAuth.signInWithCredential(credential).addOnSuccessListener { result ->
             val documentRef = db.collection("users").document("Google${result.user?.uid}")
@@ -181,11 +188,13 @@ class LoginActivity : AppCompatActivity() {
                 }
                 Toast.makeText(this, "환영합니다.", Toast.LENGTH_SHORT).show()
                 EncryptedPrefs.saveMyId("Google${result.user?.uid}")
+                binding.clLoginLoading.visibility = View.GONE
                 finish()
             }
         }
             .addOnFailureListener {
                 Timber.tag("GoogleLoginError").d(it.toString())
+                binding.clLoginLoading.visibility = View.GONE
                 finish()
             }
     }

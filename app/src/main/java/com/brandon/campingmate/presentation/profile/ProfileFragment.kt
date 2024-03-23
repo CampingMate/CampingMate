@@ -133,6 +133,7 @@ class ProfileFragment : Fragment() {
                 rvBookmarked.visibility = View.VISIBLE
             } else {
                 tvBookmarkedSize.text = it.size.toString()
+                tvBookmarkedSize.visibility= View.VISIBLE
                 tvTabBookmarked.visibility = View.VISIBLE
                 rvBookmarked.visibility = View.GONE
             }
@@ -152,6 +153,7 @@ class ProfileFragment : Fragment() {
                 tvTabWriting.visibility = View.GONE
             } else {
                 tvWritingSize.text = it.size.toString()
+                tvWritingSize.visibility = View.VISIBLE
                 if (lineWriting.visibility == View.VISIBLE) {
                     tvTabWriting.visibility = View.VISIBLE
                 }
@@ -590,6 +592,7 @@ class ProfileFragment : Fragment() {
 //                    }
 
                     //화면 상에서 비로그인 화면으로 되돌리기
+                    viewModel.clearBookmarkedList()
                     initLogout()
                     EncryptedPrefs.deleteMyId()
                     userId = null
