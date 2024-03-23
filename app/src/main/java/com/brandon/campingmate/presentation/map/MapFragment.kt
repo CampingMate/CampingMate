@@ -101,27 +101,25 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val map = viewModel.getBlParamHashmap()
         viewModel.getAllCampList(map)
 
-        btnSattel.setOnClickListener {
-            when (maptype) {
+        spinnerSattel.setOnSpinnerItemSelectedListener<String> { oldIndex, oldItem, newIndex, newItem ->
+            when (newIndex) {
+                0 -> {
+                    naverMap?.mapType = NaverMap.MapType.Basic
+                }
+
                 1 -> {
                     naverMap?.mapType = NaverMap.MapType.Satellite
-                    maptype += 1
-                    btnSattel.text = "위성도"
                 }
 
                 2 -> {
                     naverMap?.mapType = NaverMap.MapType.Terrain
-                    maptype += 1
-                    btnSattel.text = "지형도"
                 }
+                else-> naverMap?.mapType = NaverMap.MapType.Basic
 
-                3 -> {
-                    naverMap?.mapType = NaverMap.MapType.Basic
-                    maptype = 1
-                    btnSattel.text = "기본"
-                }
             }
         }
+
+
 
         ivDialogclose.setOnClickListener {
             clMapBottomDialog.isGone = true
