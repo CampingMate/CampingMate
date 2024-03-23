@@ -12,14 +12,30 @@ import com.brandon.campingmate.BuildConfig
 import com.brandon.campingmate.R
 import com.brandon.campingmate.domain.model.CampCommentEntity
 import com.brandon.campingmate.domain.model.CampEntity
+import com.brandon.campingmate.domain.model.Mart
 import com.brandon.campingmate.network.retrofit.NetWorkClient
+import com.firebase.geofire.GeoFireUtils
+import com.firebase.geofire.GeoLocation
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
+import com.google.common.collect.Lists
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.overlay.Align
+import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.util.MarkerIcons
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -39,6 +55,8 @@ class CampDetailViewModel : ViewModel() {
     val commentCount: LiveData<String?> get() = _commentCount
     private lateinit var listenerRegistration: ListenerRegistration
     private val db = FirebaseFirestore.getInstance()
+    val martMarker: LiveData<MutableList<Marker>> get() = _martMarker
+    private val _martMarker: MutableLiveData<MutableList<Marker>> = MutableLiveData()
     fun setUpParkParameter(contentId: String) {
         val authKey = BuildConfig.camp_data_key
         communicateNetWork(hashMapOf(
@@ -312,6 +330,69 @@ class CampDetailViewModel : ViewModel() {
                         )
                     uploadComment(campId, myComment)
                 }
+            }
+    }
+
+    fun callMart(lat :Double ,lon :Double){
+        val db = Firebase.firestore
+        val center = GeoLocation(lat, lon)
+        // 반경 15km
+        val radiusInM = 15.0 * 1000.0
+
+        val bounds = GeoFireUtils.getGeoHashQueryBounds(center, radiusInM)
+        val tasks: MutableList<Task<QuerySnapshot>> = ArrayList()
+        for (b in bounds) {
+            val q = db.collection("mart")
+                .orderBy("geohash")
+                .limit(15)
+                .startAt(b.startHash)
+                .endAt(b.endHash)
+            tasks.add(q.get())
+        }
+        Tasks.whenAllComplete(tasks)
+            .addOnCompleteListener {
+                val matchingDocs: MutableList<DocumentSnapshot> = ArrayList()
+                for(task in tasks){
+                    val snap = task.result
+                    for(doc in snap!!.documents){
+
+                        val lat = doc.getDouble("latitude")!!
+                        val lng = doc.getDouble("longitude")!!
+
+                        val docLocation = GeoLocation(lat, lng)
+                        val distanceInM = GeoFireUtils.getDistanceBetween(docLocation, center)
+                        if (distanceInM <= radiusInM) {
+                            matchingDocs.add(doc)
+                        }
+                    }
+                }
+                _martMarker.value = mutableListOf()
+                val markers = mutableListOf<Marker>()
+                for(doc in matchingDocs){
+                    if(doc != null){
+                        val mart = doc.toObject(Mart::class.java)
+                       // for (mart in marts!!){
+                            val marker = Marker()
+                            marker.captionText = mart?.name.toString()
+                            marker.icon = MarkerIcons.BLUE
+                            if(mart?.latitude == null || mart.longitude == null){
+                                continue
+                            }
+                            marker.position = LatLng(mart.latitude,mart.longitude)
+                            marker.captionRequestedWidth = 400
+                            marker.setCaptionAligns(Align.Top)
+                            marker.captionOffset = 5
+                            marker.captionTextSize = 16f
+                            markers.add(marker)
+                       // }
+                    }
+                }
+                _martMarker.value = markers
+                Timber.tag("check").d("마트 정보들 = ${markers}")
+
+            }
+            .addOnFailureListener { exception ->
+                Log.e("check", "Error: ", exception)
             }
     }
 }
