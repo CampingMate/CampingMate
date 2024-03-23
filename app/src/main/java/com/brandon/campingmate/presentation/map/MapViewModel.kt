@@ -252,7 +252,7 @@ class MapViewModel : ViewModel(){
                 }
                 _bookmarkCampMarker.value = bookmarkMarker
             }.addOnFailureListener {
-                Timber.tag("error").e("error : MapviewModel.getBookmarkedCamp()")
+                //Timber.tag("error").e("error : MapviewModel.getBookmarkedCamp()")
             }
         }
 
