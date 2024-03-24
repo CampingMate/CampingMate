@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide
 import com.google.firebase.firestore.FirebaseFirestore
 
 class CommentListAdapter(
+    private val onClick: (String) -> Unit
 ) : ListAdapter<CampCommentEntity, CommentListAdapter.CampCommentViewHolder>(
     object : DiffUtil.ItemCallback<CampCommentEntity>(){
         override fun areItemsTheSame(
@@ -34,6 +35,7 @@ class CommentListAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CampCommentViewHolder =
         CampCommentItemViewHolder(
             ItemDetailCommentBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+            onClick
         )
 
     override fun onBindViewHolder(holder: CampCommentViewHolder, position: Int) {
@@ -42,6 +44,7 @@ class CommentListAdapter(
 
     class CampCommentItemViewHolder(
         private val binding: ItemDetailCommentBinding,
+        private val onClick: (String) -> Unit,
     ) : CampCommentViewHolder(binding.root){
         override fun onBind(item: CampCommentEntity) = with(binding){
             if(item !is CampCommentEntity) {
@@ -56,6 +59,9 @@ class CommentListAdapter(
                 .load(item.imageUrl)
                 .into(ivCommentImg)
             ivCommentImg.clipToOutline = true
+            ivCommentImg.setOnClickListener {
+                onClick(item.imageUrl.toString())
+            }
             tvCommentUsername.text = item.userName.toString()
             Glide.with(binding.root)
                 .load(item.userProfile)
