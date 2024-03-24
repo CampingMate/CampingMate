@@ -15,6 +15,7 @@ import android.view.DragEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnDragListener
+import android.view.View.OnLongClickListener
 import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
@@ -337,7 +338,6 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         })
 
-
         commentBottomSheet.setOnClickListener {
             bottomSheetOverlay.visibility = View.VISIBLE
             behavior.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -582,6 +582,9 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         //Log.d("check", "onMapReady = ${mapX}, ${mapY}, ${campName},${naverMap}")
         val cameraPosition = CameraPosition(LatLng(37.5664056, 126.9778222), 16.0)
         naverMap?.cameraPosition = cameraPosition
+
+
+
         viewModel.campEntity.observe(this@CampDetailActivity){
             Log.d("Detail", " initsettiong = ${mapX}, ${mapY}, ${campName}, ${naverMap}")
             if (naverMap != null) {
@@ -591,6 +594,10 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             } else {
                 Toast.makeText(this@CampDetailActivity,"위치 정보가 없어 지도에 표시할 수 없습니다.",Toast.LENGTH_SHORT).show()
+            }
+            binding.btnRelocation.setOnClickListener{view->
+                val cameraPosition = CameraPosition(LatLng(it?.mapY?.toDouble()!!, it.mapX?.toDouble()!!), 16.0)
+                naverMap?.cameraPosition = cameraPosition
             }
         }
 
