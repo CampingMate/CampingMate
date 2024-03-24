@@ -10,6 +10,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -227,52 +228,29 @@ class SearchActivity : AppCompatActivity() {
         /**
          * 엔터누를시 검색
          */
-        tvEdit.setOnKeyListener{_, KeyCode, event ->
-            if((event.action== KeyEvent.ACTION_DOWN) && (KeyCode== KeyEvent.KEYCODE_ENTER)){
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                // 엔터 키가 눌렸을 때 호출되는 콜백
                 loadingAnimation.visibility = View.VISIBLE
-                val searchText = binding.tvEdit.text.toString()
+                val searchText = binding.searchView.query.toString()
                 viewModel.setUpParameter(searchText)
                 binding.root.hideKeyboard()
-                binding.tvEdit.clearFocus()
+                searchView.clearFocus()
                 val drawable = ContextCompat.getDrawable(this@SearchActivity, R.drawable.ic_filter)
                 ivSetting.setImageDrawable(drawable)
                 for (chipId in chipIds) {
                     val chip = root.findViewById<Chip>(chipId)
                     chip.isChecked = false
                 }
-                return@setOnKeyListener true
-            } else{
-                return@setOnKeyListener false
+                return true
             }
-        }
-        /**
-         * 텍스트 변화감지
-         */
-        tvEdit.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // 텍스트 변경 전 동작
-            }
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // 텍스트가 변경될 때 동작
-                updateImage()
-            }
-            override fun afterTextChanged(s: Editable?) {
-                // 텍스트 변경 후 동작
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                // 검색어가 변경될 때마다 호출되는 콜백
+                // newText에 변경된 검색어가 전달됩니다.
+                return true
             }
         })
-        /**
-         * editText포커스될때 검색이미지 invisible
-         */
-        tvEdit.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
-            if(hasFocus){
-                ivSearch.visibility = View.INVISIBLE
-            } else{
-                ivSearch.visibility = View.VISIBLE
-            }
-        }
-        ivDelete.setOnClickListener {
-            tvEdit.text.clear()
-        }
     }
 
     private fun setting(temp: String) {
@@ -281,15 +259,14 @@ class SearchActivity : AppCompatActivity() {
         Log.d("SearchActivity", "setting진입, ${temp}")
         when(temp){
             "검색바" -> {
-                binding.tvEdit.requestFocus()
+                binding.searchView.requestFocus()
                 val manager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                manager.showSoftInput(binding.tvEdit, InputMethodManager.SHOW_IMPLICIT)
-                binding.tvEdit.post {
-                    if (!manager.isActive(binding.tvEdit)) {
-                        manager.showSoftInput(binding.tvEdit, InputMethodManager.SHOW_IMPLICIT)
+                manager.showSoftInput(binding.searchView, InputMethodManager.SHOW_IMPLICIT)
+                binding.searchView.post {
+                    if (!manager.isActive(binding.searchView)) {
+                        manager.showSoftInput(binding.searchView, InputMethodManager.SHOW_IMPLICIT)
                     }
                 }
-                binding.ivSearch.visibility = View.GONE
             }
             "글램핑", "일반야영장", "자동차야영장", "카라반" -> {
                 when(temp){
@@ -303,16 +280,6 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * x이미지 활성화/비활성화
-     */
-    fun updateImage(){
-        if(binding.tvEdit.text.toString().isNotBlank()){
-            binding.ivDelete.visibility = View.VISIBLE
-        } else{
-            binding.ivDelete.visibility = View.INVISIBLE
-        }
-    }
 
     /**
      * 키보드 숨김처리
@@ -322,32 +289,6 @@ class SearchActivity : AppCompatActivity() {
         imm.hideSoftInputFromWindow(windowToken, 0)
     }
 
-    /**
-     * 바텀시트 스크롤
-     */
-//    private fun scrollTab() =with(binding){
-////        searchType.setOnClickListener {
-////            scrollToView(tvSearchType)
-////        }
-////        searchLocation.setOnClickListener {
-////            scrollToView(tvSearchLocation)
-////        }
-////        searchConvenience.setOnClickListener {
-////            scrollToView(tvSearchConvenience)
-////        }
-////        searchThema.setOnClickListener {
-////            scrollToView(tvSearchThema)
-////        }
-////        searchBottom.setOnClickListener {
-////            scrollToView(tvSearchBottom)
-////        }
-//    }
-
-//    private fun scrollToView(view: View) {
-//        binding.scrollView.post {
-//            binding.scrollView.smoothScrollTo(0, view.top)
-//        }
-//    }
 
     /**
      * 바텀시트 연결
@@ -360,7 +301,7 @@ class SearchActivity : AppCompatActivity() {
 
         binding.ivSetting.setOnClickListener {
             binding.root.hideKeyboard()
-            binding.tvEdit.clearFocus()
+            binding.searchView.clearFocus()
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
         behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
