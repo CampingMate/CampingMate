@@ -103,6 +103,58 @@
                 <include layout="@layout/shimmer_item_post" />
             </LinearLayout>
         </com.facebook.shimmer.ShimmerFrameLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/lottie_nothing_to_show"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/white"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/btn_lottie_camp"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_margin="40dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                app:lottie_rawRes="@raw/lottie_board_nothing_to_show" />
+
+            <TextView
+                android:id="@+id/tv_description_nothing_to_show"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginTop="20dp"
+                android:text="검색된 게시물이 없습니다"
+                android:textColor="@color/bottom_gray"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btn_lottie_camp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginTop="10dp"
+                android:padding="5dp"
+                android:text="전체 보기"
+                android:textColor="@color/bottom_gray"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/btn_lottie_camp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

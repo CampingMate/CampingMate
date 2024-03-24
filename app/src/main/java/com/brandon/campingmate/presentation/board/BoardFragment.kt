@@ -23,20 +23,25 @@ import androidx.recyclerview.widget.RecyclerView
 import com.brandon.campingmate.R
 import com.brandon.campingmate.data.local.preferences.EncryptedPrefs
 import com.brandon.campingmate.data.local.preferences.PreferencesDataSourceImpl
+import com.brandon.campingmate.data.remote.api.OpenSearchDataSourceImpl
 import com.brandon.campingmate.data.remote.firebasestorage.FireBaseStorageDataSourceImpl
 import com.brandon.campingmate.data.remote.firestore.FirestoreDataSourceImpl
 import com.brandon.campingmate.data.repository.PostRepositoryImpl
+import com.brandon.campingmate.data.repository.SearchPostRepositoryImpl
 import com.brandon.campingmate.data.repository.UserRepositoryImpl
 import com.brandon.campingmate.databinding.FragmentBoardBinding
 import com.brandon.campingmate.domain.usecase.GetPostsUseCase
 import com.brandon.campingmate.domain.usecase.GetUserUserCase
+import com.brandon.campingmate.domain.usecase.SearchPostUseCase
 import com.brandon.campingmate.network.firestore.FirebaseService.fireStoreDB
 import com.brandon.campingmate.network.firestore.FirebaseService.firebaseStorage
+import com.brandon.campingmate.network.retrofit.NetWorkClient.openSearchService
 import com.brandon.campingmate.presentation.board.adapter.PostListAdapter
 import com.brandon.campingmate.presentation.board.adapter.PostListItem
 import com.brandon.campingmate.presentation.common.SnackbarUtil
 import com.brandon.campingmate.presentation.postdetail.PostDetailActivity
 import com.brandon.campingmate.presentation.postwrite.PostWriteActivity
+import com.brandon.campingmate.utils.setDebouncedOnClickListener
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -60,6 +65,11 @@ class BoardFragment : Fragment() {
                     ), FirestoreDataSourceImpl(
                         fireStoreDB
                     )
+                )
+            ),
+            SearchPostUseCase(
+                SearchPostRepositoryImpl(
+                    OpenSearchDataSourceImpl(openSearchService)
                 )
             )
         )
@@ -138,6 +148,8 @@ class BoardFragment : Fragment() {
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
+                Timber.d("검색 키워드: $query")
+                viewModel.searchPost(query)
                 searchView.clearFocus()
                 return false
             }
@@ -196,6 +208,9 @@ class BoardFragment : Fragment() {
             binding.swipeRefresh.isRefreshing = false
         }
 
+        btnLottieCamp.setDebouncedOnClickListener {
+            viewModel.handleEvent(BoardEvent.RefreshRequested)
+        }
     }
 
     private fun initView() = with(binding) {
@@ -257,6 +272,7 @@ class BoardFragment : Fragment() {
     }
 
     private fun onBind(state: BoardUiState) = with(state) {
+        binding.lottieNothingToShow.isVisible = isNothingToShow
         postListAdapter.submitList(posts + if (isLoadingMore) listOf(PostListItem.Loading) else emptyList()) {
             if (shouldScrollToTop) {
                 binding.rvPostList.smoothScrollToPosition(0)
