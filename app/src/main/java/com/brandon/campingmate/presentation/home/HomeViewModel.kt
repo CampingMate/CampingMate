@@ -49,12 +49,12 @@ class HomeViewModel: ViewModel() {
 //            val allCamps: Query = db.collection("reviewTest_empty").whereNotEqualTo("commentList", listOf<String>())
             var allData : MutableList<HomeEntity> = mutableListOf()
             allCamps.get().addOnSuccessListener { documents ->
-                Log.d("HomeViewModel","#csh Success")
+//                Log.d("HomeViewModel","#csh Success")
                 for (document in documents) {
                     val allList = document.toObject(HomeEntity::class.java)
                     allData.add(allList)
                 }
-                Log.d("HomeViewModel","allData : $allData")
+//                Log.d("HomeViewModel","allData : $allData")
                 _reviewItem.value=allData
             }
         }
@@ -98,7 +98,7 @@ class HomeViewModel: ViewModel() {
     }
 
     fun loadDistrictItem(data: String) {
-        Log.d("Home", "1. data=$data")
+//        Log.d("Home", "1. data=$data")
         viewModelScope.launch {
             _districtItem.value?.clear()
             val result = when (data) {
@@ -119,7 +119,7 @@ class HomeViewModel: ViewModel() {
 //                Log.d("Home","item : $dataItem")
                 }
                 _districtItem.value = districtList
-                Log.d("Home", "districtItem:$districtItem")
+//                Log.d("Home", "districtItem:$districtItem")
 //            if(isAdded){
 //                val context = requireContext()
 //                districtAdapter = HomeAdapter(context, districtItem)
@@ -130,7 +130,7 @@ class HomeViewModel: ViewModel() {
 //            }
 
             }.addOnFailureListener { exception ->
-                Log.d("Home", "districtItem fail")
+//                Log.d("Home", "districtItem fail")
             }
         }
     }
@@ -170,10 +170,10 @@ class HomeViewModel: ViewModel() {
 //        Log.d("Home", "parseYear=${parseYear}")
             val responseData = NetWorkClient.holidayNetWork.getRestDeInfo(authKey, year, "json", num)
             val holidayInfo = responseData.response.body.items.item
-            Timber.tag("Home").d("holidayInfo=%s", responseData)
+//            Timber.tag("Home").d("holidayInfo=%s", responseData)
             return holidayInfo
         } catch (e: Exception) {
-            Timber.tag("HOLIDAY").d("Error: $e")
+//            Timber.tag("HOLIDAY").d("Error: $e")
             return mutableListOf()
         }
     }

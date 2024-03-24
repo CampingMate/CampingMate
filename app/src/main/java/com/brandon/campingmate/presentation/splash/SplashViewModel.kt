@@ -41,7 +41,7 @@ class SplashViewModel:ViewModel() {
     }
 
     fun loadData() {
-        Log.d("Splash ViewModel", "#csh loadData start")
+//        Log.d("Splash ViewModel", "#csh loadData start")
         viewModelScope.launch {
             val db = Firebase.firestore
             val allCity: Query = db.collection("camps").limit(10)
@@ -54,7 +54,7 @@ class SplashViewModel:ViewModel() {
                     _allCityData.value?.add(cityList)
 //                    _allCityData.add(cityList)
                 }
-                Log.d("Splash ViewModel ","#csh _allCityData = ${_allCityData.value}")
+//                Log.d("Splash ViewModel ","#csh _allCityData = ${_allCityData.value}")
                 _isGet.value = _isGet.value.toMutableMap().apply {
                     this["city"] = true
                 }
@@ -66,7 +66,7 @@ class SplashViewModel:ViewModel() {
                     _allThemeData.value?.add(themeList)
 //                    _allThemeData.add(themeList)
                 }
-                Log.d("Splash ViewModel ","#csh _allThemeData = ${_allThemeData.value}")
+//                Log.d("Splash ViewModel ","#csh _allThemeData = ${_allThemeData.value}")
                 _isGet.value = _isGet.value.toMutableMap().apply {
                     this["theme"] = true
                 }
@@ -76,11 +76,11 @@ class SplashViewModel:ViewModel() {
     }
 
     fun setLoadingState(){
-        Log.d("Splash ViewModel ","#csh setLoadingState")
+//        Log.d("Splash ViewModel ","#csh setLoadingState")
         val allLoaded = _isGet.value.all{it.value}
         if(allLoaded){
             _isLoading.value=false
         }
-        Log.d("Splash ViewModel ","#csh setLoadingState _isLoading.value : ${_isLoading.value}")
+//        Log.d("Splash ViewModel ","#csh setLoadingState _isLoading.value : ${_isLoading.value}")
     }
 }
