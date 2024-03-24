@@ -149,6 +149,7 @@
                     android:background="@drawable/shape_circle_background"
                     android:backgroundTint="@color/bottom_gray"
                     android:clipToOutline="true"
+                    android:scaleType="centerCrop"
                     app:layout_constraintBottom_toBottomOf="@+id/tv_comment"
                     app:layout_constraintStart_toStartOf="@id/tv_title_comment"
                     app:layout_constraintTop_toTopOf="@+id/tv_comment" />

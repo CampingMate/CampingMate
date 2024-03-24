@@ -11,7 +11,6 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -151,22 +150,18 @@ class BoardFragment : Fragment() {
                 Timber.d("검색 키워드: $query")
                 viewModel.searchPost(query)
                 searchView.clearFocus()
+
+                binding.fab.apply {
+                    setImageResource(R.drawable.ic_refresh)
+                    setOnClickListener {
+                        viewModel.handleEvent(BoardEvent.RefreshRequested)
+                        setImageResource(R.drawable.ic_add)
+                    }
+                }
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                newText.isNullOrEmpty().let {
-                    btnWrite.isVisible = it
-                    val params = searchView.layoutParams as ConstraintLayout.LayoutParams
-                    if (it) {
-                        params.marginEnd = 0
-                    } else {
-                        val marginInDp = 16
-                        val marginInPx = (marginInDp * resources.displayMetrics.density).toInt() // DP를 픽셀로 변환
-                        params.marginEnd = marginInPx
-                    }
-                    searchView.layoutParams = params
-                }
                 return false
             }
         })
@@ -178,7 +173,6 @@ class BoardFragment : Fragment() {
                     val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                     val totalItemCount = layoutManager.itemCount
                     val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
-
                     if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition + 1 >= totalItemCount) {
                         viewModel.handleEvent(BoardEvent.LoadMoreRequested)
                     }
@@ -186,7 +180,7 @@ class BoardFragment : Fragment() {
             }
         })
 
-        btnWrite.setOnClickListener {
+        fab.setOnClickListener {
             viewModel.handleEvent(BoardEvent.NavigateToPostWrite)
         }
 
@@ -302,11 +296,11 @@ class BoardFragment : Fragment() {
 
     private fun updateUiForLogin(isLogin: Boolean) = with(binding) {
         if (isLogin) {
-            btnWrite.setOnClickListener {
+            fab.setOnClickListener {
                 viewModel.handleEvent(BoardEvent.NavigateToPostWrite)
             }
         } else {
-            btnWrite.setOnClickListener {
+            fab.setOnClickListener {
                 SnackbarUtil.showSnackBar(binding.root)
             }
         }
