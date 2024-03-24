@@ -7,6 +7,7 @@ data class BoardUiState(
     val isRefreshing: Boolean,
     val isLoadingMore: Boolean,
     val isInitialLoading: Boolean,
+    val isNothingToShow: Boolean,
     val shouldScrollToTop: Boolean,
 ) {
     companion object {
@@ -15,6 +16,7 @@ data class BoardUiState(
             isRefreshing = false,
             isLoadingMore = false,
             isInitialLoading = false,
+            isNothingToShow = false,
             shouldScrollToTop = false,
         )
     }

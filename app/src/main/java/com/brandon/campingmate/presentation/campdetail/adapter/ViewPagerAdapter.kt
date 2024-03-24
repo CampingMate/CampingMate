@@ -1,5 +1,7 @@
 package com.brandon.campingmate.presentation.campdetail.adapter
 
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -15,7 +17,6 @@ class ViewPagerAdapter(imageList: MutableList<String>) : RecyclerView.Adapter<Vi
     override fun getItemCount(): Int = item.size
 
     override fun onBindViewHolder(holder: PagerViewHolder, position: Int) {
-//        holder.image.setImageResource(item[position])
         Glide.with(holder.itemView.context)
             .load(item[position])
             .centerCrop()

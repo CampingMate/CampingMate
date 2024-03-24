@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -16,63 +15,34 @@
             android:id="@+id/iv_arrow_back"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="20dp"
             android:src="@drawable/ic_arrow_back"
-            app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
-            app:layout_constraintEnd_toStartOf="@+id/linearLayout"
-            app:layout_constraintTop_toTopOf="@+id/linearLayout" />
+            app:layout_constraintBottom_toBottomOf="@+id/search_view"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/search_view" />
 
-        <LinearLayout
-            android:id="@+id/linearLayout"
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/search_view"
+            style="@style/CustomSearchViewStyle"
             android:layout_width="270dp"
             android:layout_height="45dp"
             android:layout_marginTop="20dp"
-            android:background="@drawable/search_selector"
-            android:orientation="horizontal"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/iv_search"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:visibility="visible"
-                android:layout_marginStart="8dp"
-                android:src="@drawable/ic_search" />
-
-            <EditText
-                android:id="@+id/tv_edit"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="8dp"
-                android:imeOptions="actionSearch"
-                android:fontFamily="@font/spoqahansansneo_regular"
-                android:hint="@string/search_search_hint"
-                android:textSize="16sp"
-                android:background="@null"/>
-            <ImageView
-                android:id="@+id/iv_delete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_close"
-                android:visibility="invisible"
-                android:layout_gravity="center"/>
-
-        </LinearLayout>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/iv_setting"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="center"
-            android:layout_marginStart="20dp"
+            android:layout_marginEnd="16dp"
             android:src="@drawable/ic_filter"
-            app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
-            app:layout_constraintStart_toEndOf="@+id/linearLayout"
-            app:layout_constraintTop_toTopOf="@+id/linearLayout" />
+            app:layout_constraintBottom_toBottomOf="@+id/search_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/search_view" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
@@ -84,31 +54,32 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout"/>
+            app:layout_constraintTop_toBottomOf="@+id/search_view" />
+
         <TextView
             android:id="@+id/tv_no_result"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
             android:text="검색 결과가 없습니다."
             android:textSize="20sp"
             android:textStyle="bold"
             android:visibility="invisible"
-            android:layout_marginTop="100dp"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/linearLayout"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/search_view" />
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/loading_animation"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            app:lottie_autoPlay="true"
-            app:lottie_rawRes="@raw/lottie_search_loading"
-            app:lottie_loop="true"
             android:visibility="gone"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/search_view"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/lottie_search_loading" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
     <!--    여기서부턴 바텀시트   -->
@@ -120,67 +91,117 @@
         android:background="@drawable/search_bottom_background"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-        <LinearLayout
-            android:id="@+id/linear_category"
+        <!--        <LinearLayout-->
+        <!--            android:id="@+id/linear_category"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:orientation="horizontal"-->
+        <!--            android:layout_marginTop="20dp"-->
+        <!--            android:layout_marginStart="16dp"-->
+        <!--            android:layout_marginEnd="16dp"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="parent"-->
+        <!--            android:gravity="center">-->
+
+        <!--            <TextView-->
+        <!--                android:id="@+id/search_type"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:text="@string/search_type"-->
+        <!--                android:gravity="center"-->
+        <!--                android:layout_weight="1"-->
+        <!--                android:textSize="20sp"/>-->
+
+        <!--            <TextView-->
+        <!--                android:id="@+id/search_location"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:text="@string/search_location"-->
+        <!--                android:gravity="center"-->
+        <!--                android:layout_weight="1"-->
+        <!--                android:textSize="20sp"/>-->
+
+        <!--            <TextView-->
+        <!--                android:id="@+id/search_convenience"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:text="@string/search_convenience"-->
+        <!--                android:gravity="center"-->
+        <!--                android:layout_weight="1"-->
+        <!--                android:textSize="20sp"/>-->
+
+        <!--            <TextView-->
+        <!--                android:id="@+id/search_thema"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:text="@string/search_thema"-->
+        <!--                android:gravity="center"-->
+        <!--                android:layout_weight="1"-->
+        <!--                android:textSize="20sp"/>-->
+
+        <!--        </LinearLayout>-->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/bottom_sheet_handle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="20dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:gravity="center">
+            android:background="@drawable/shape_bottom_sheet_background"
+            android:backgroundTint="#EBEBEB"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <View
+                android:id="@+id/view_handle"
+                android:layout_width="30dp"
+                android:layout_height="3dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/shape_rounded_corner_background_r6"
+                android:backgroundTint="@color/hint_gray"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/search_type"
+                android:id="@+id/tv_bottom_sheet_title_comment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/search_type"
-                android:gravity="center"
-                android:layout_weight="1"
-                android:textSize="20sp"/>
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/search_filter_title"
+                android:textFontWeight="700"
+                android:textSize="24dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/view_handle" />
 
-            <TextView
-                android:id="@+id/search_location"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/search_location"
-                android:gravity="center"
-                android:layout_weight="1"
-                android:textSize="20sp"/>
+            <ImageView
+                android:id="@+id/iv_btn_close"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_close_thin"
+                app:layout_constraintBottom_toBottomOf="@id/tv_bottom_sheet_title_comment"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_bottom_sheet_title_comment" />
 
-            <TextView
-                android:id="@+id/search_convenience"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/search_convenience"
-                android:gravity="center"
-                android:layout_weight="1"
-                android:textSize="20sp"/>
-
-            <TextView
-                android:id="@+id/search_thema"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/search_thema"
-                android:gravity="center"
-                android:layout_weight="1"
-                android:textSize="20sp"/>
-
-        </LinearLayout>
-
-<!--        <TextView-->
-<!--            android:id="@+id/search_bottom"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="28dp"-->
-<!--            android:text="@string/search_bottom_shape"-->
-<!--            android:textSize="15sp"-->
-<!--            app:layout_constraintBottom_toBottomOf="@id/search_thema"-->
-<!--            app:layout_constraintStart_toEndOf="@id/search_thema"-->
-<!--            app:layout_constraintTop_toTopOf="@id/search_thema" />-->
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/hint_gray"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_bottom_sheet_title_comment" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <!--        <TextView-->
+        <!--            android:id="@+id/search_bottom"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginStart="28dp"-->
+        <!--            android:text="@string/search_bottom_shape"-->
+        <!--            android:textSize="15sp"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@id/search_thema"-->
+        <!--            app:layout_constraintStart_toEndOf="@id/search_thema"-->
+        <!--            app:layout_constraintTop_toTopOf="@id/search_thema" />-->
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scrollView"
@@ -188,7 +209,7 @@
             android:layout_height="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/linear_category">
+            app:layout_constraintTop_toBottomOf="@id/bottom_sheet_handle">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -199,21 +220,31 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="18dp"
+                    android:layout_marginTop="10dp"
                     android:text="@string/search_type"
                     android:textSize="15sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintTop_toTopOf="parent" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:text="@string/search_location_multy_choice"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_search_type"
+                    app:layout_constraintStart_toEndOf="@id/tv_search_type"
+                    app:layout_constraintTop_toTopOf="@id/tv_search_type" />
+
+                <!--캠핑 유형-->
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/chip_type_group"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:singleSelection="true"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginTop="14dp"
                     android:layout_marginStart="16dp"
+                    android:layout_marginTop="14dp"
+                    android:layout_marginEnd="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_search_type">
@@ -305,17 +336,27 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/divider_type" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:text="@string/search_location_multy_choice"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_search_location"
+                    app:layout_constraintStart_toEndOf="@id/tv_search_location"
+                    app:layout_constraintTop_toTopOf="@id/tv_search_location" />
+                <!--지역-->
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/chip_location_group"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
                     android:layout_marginStart="16dp"
-                    app:layout_goneMarginEnd="16dp"
+                    android:layout_marginTop="14dp"
+                    android:layout_marginEnd="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_search_location"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginEnd="16dp">
+                    app:layout_goneMarginEnd="16dp">
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipSeoul"
@@ -547,18 +588,18 @@
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/divider_location" />
-
+                <!--편의시설-->
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/chip_convenience_group"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:singleSelection="true"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="14dp"
                     android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_search_convenience">
+                    app:layout_constraintTop_toBottomOf="@+id/tv_search_convenience"
+                    app:singleSelection="true">
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipBrazier"
@@ -706,18 +747,18 @@
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/divider_convenience" />
-
+                <!--테마-->
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/chip_thema_group"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:singleSelection="true"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="14dp"
                     android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_search_thema">
+                    app:layout_constraintTop_toBottomOf="@+id/tv_search_thema"
+                    app:singleSelection="true">
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipSummerWater"
@@ -841,113 +882,112 @@
 
                 </com.google.android.material.chip.ChipGroup>
 
-<!--                <View-->
-<!--                    android:id="@+id/divider_thema"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="1dp"-->
-<!--                    android:layout_gravity="center"-->
-<!--                    android:layout_marginStart="16dp"-->
-<!--                    android:layout_marginTop="16dp"-->
-<!--                    android:layout_marginEnd="16dp"-->
-<!--                    android:background="@color/divider_color"-->
-<!--                    app:layout_constraintEnd_toEndOf="parent"-->
-<!--                    app:layout_constraintStart_toStartOf="parent"-->
-<!--                    app:layout_constraintTop_toBottomOf="@+id/chip_thema_group" />-->
+                <!--                <View-->
+                <!--                    android:id="@+id/divider_thema"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="1dp"-->
+                <!--                    android:layout_gravity="center"-->
+                <!--                    android:layout_marginStart="16dp"-->
+                <!--                    android:layout_marginTop="16dp"-->
+                <!--                    android:layout_marginEnd="16dp"-->
+                <!--                    android:background="@color/divider_color"-->
+                <!--                    app:layout_constraintEnd_toEndOf="parent"-->
+                <!--                    app:layout_constraintStart_toStartOf="parent"-->
+                <!--                    app:layout_constraintTop_toBottomOf="@+id/chip_thema_group" />-->
 
-<!--                <TextView-->
-<!--                    android:id="@+id/tv_search_bottom"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginStart="16dp"-->
-<!--                    android:layout_marginTop="16dp"-->
-<!--                    android:text="@string/search_bottom_shape"-->
-<!--                    android:textSize="15sp"-->
-<!--                    android:textStyle="bold"-->
-<!--                    app:layout_constraintStart_toStartOf="parent"-->
-<!--                    app:layout_constraintTop_toBottomOf="@id/divider_thema" />-->
+                <!--                <TextView-->
+                <!--                    android:id="@+id/tv_search_bottom"-->
+                <!--                    android:layout_width="wrap_content"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_marginStart="16dp"-->
+                <!--                    android:layout_marginTop="16dp"-->
+                <!--                    android:text="@string/search_bottom_shape"-->
+                <!--                    android:textSize="15sp"-->
+                <!--                    android:textStyle="bold"-->
+                <!--                    app:layout_constraintStart_toStartOf="parent"-->
+                <!--                    app:layout_constraintTop_toBottomOf="@id/divider_thema" />-->
 
-<!--                <com.google.android.material.chip.ChipGroup-->
-<!--                    android:id="@+id/chip_bottom_group"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    app:singleSelection="true"-->
-<!--                    android:layout_marginTop="14dp"-->
-<!--                    android:layout_marginEnd="16dp"-->
-<!--                    app:layout_constraintStart_toStartOf="@id/tv_search_bottom"-->
-<!--                    app:layout_constraintTop_toBottomOf="@+id/tv_search_bottom">-->
+                <!--                <com.google.android.material.chip.ChipGroup-->
+                <!--                    android:id="@+id/chip_bottom_group"-->
+                <!--                    android:layout_width="wrap_content"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    app:singleSelection="true"-->
+                <!--                    android:layout_marginTop="14dp"-->
+                <!--                    android:layout_marginEnd="16dp"-->
+                <!--                    app:layout_constraintStart_toStartOf="@id/tv_search_bottom"-->
+                <!--                    app:layout_constraintTop_toBottomOf="@+id/tv_search_bottom">-->
 
-<!--                    <com.google.android.material.chip.Chip-->
-<!--                        android:id="@+id/chipGrass"-->
-<!--                        style="@style/CustomChipChoice"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="36dp"-->
-<!--                        android:checkable="true"-->
-<!--                        android:clickable="true"-->
-<!--                        android:fontFamily="@font/spoqahansansneo_regular"-->
-<!--                        android:text="@string/search_chip_grass"-->
-<!--                        app:chipCornerRadius="6dp"-->
-<!--                        app:chipStrokeWidth="1dp" />-->
+                <!--                    <com.google.android.material.chip.Chip-->
+                <!--                        android:id="@+id/chipGrass"-->
+                <!--                        style="@style/CustomChipChoice"-->
+                <!--                        android:layout_width="wrap_content"-->
+                <!--                        android:layout_height="36dp"-->
+                <!--                        android:checkable="true"-->
+                <!--                        android:clickable="true"-->
+                <!--                        android:fontFamily="@font/spoqahansansneo_regular"-->
+                <!--                        android:text="@string/search_chip_grass"-->
+                <!--                        app:chipCornerRadius="6dp"-->
+                <!--                        app:chipStrokeWidth="1dp" />-->
 
-<!--                    <com.google.android.material.chip.Chip-->
-<!--                        android:id="@+id/chipCrushedStone"-->
-<!--                        style="@style/CustomChipChoice"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="36dp"-->
-<!--                        android:checkable="true"-->
-<!--                        android:clickable="true"-->
-<!--                        android:fontFamily="@font/spoqahansansneo_regular"-->
-<!--                        android:text="@string/search_chip_crushed_stone"-->
-<!--                        app:chipCornerRadius="6dp"-->
-<!--                        app:chipStrokeWidth="1dp" />-->
+                <!--                    <com.google.android.material.chip.Chip-->
+                <!--                        android:id="@+id/chipCrushedStone"-->
+                <!--                        style="@style/CustomChipChoice"-->
+                <!--                        android:layout_width="wrap_content"-->
+                <!--                        android:layout_height="36dp"-->
+                <!--                        android:checkable="true"-->
+                <!--                        android:clickable="true"-->
+                <!--                        android:fontFamily="@font/spoqahansansneo_regular"-->
+                <!--                        android:text="@string/search_chip_crushed_stone"-->
+                <!--                        app:chipCornerRadius="6dp"-->
+                <!--                        app:chipStrokeWidth="1dp" />-->
 
-<!--                    <com.google.android.material.chip.Chip-->
-<!--                        android:id="@+id/chipTech"-->
-<!--                        style="@style/CustomChipChoice"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="36dp"-->
-<!--                        android:checkable="true"-->
-<!--                        android:clickable="true"-->
-<!--                        android:fontFamily="@font/spoqahansansneo_regular"-->
-<!--                        android:text="@string/search_chip_tech"-->
-<!--                        app:chipCornerRadius="6dp"-->
-<!--                        app:chipStrokeWidth="1dp" />-->
+                <!--                    <com.google.android.material.chip.Chip-->
+                <!--                        android:id="@+id/chipTech"-->
+                <!--                        style="@style/CustomChipChoice"-->
+                <!--                        android:layout_width="wrap_content"-->
+                <!--                        android:layout_height="36dp"-->
+                <!--                        android:checkable="true"-->
+                <!--                        android:clickable="true"-->
+                <!--                        android:fontFamily="@font/spoqahansansneo_regular"-->
+                <!--                        android:text="@string/search_chip_tech"-->
+                <!--                        app:chipCornerRadius="6dp"-->
+                <!--                        app:chipStrokeWidth="1dp" />-->
 
-<!--                    <com.google.android.material.chip.Chip-->
-<!--                        android:id="@+id/chipGravel"-->
-<!--                        style="@style/CustomChipChoice"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="36dp"-->
-<!--                        android:checkable="true"-->
-<!--                        android:clickable="true"-->
-<!--                        android:fontFamily="@font/spoqahansansneo_regular"-->
-<!--                        android:text="@string/search_chip_gravel"-->
-<!--                        app:chipCornerRadius="6dp"-->
-<!--                        app:chipStrokeWidth="1dp" />-->
+                <!--                    <com.google.android.material.chip.Chip-->
+                <!--                        android:id="@+id/chipGravel"-->
+                <!--                        style="@style/CustomChipChoice"-->
+                <!--                        android:layout_width="wrap_content"-->
+                <!--                        android:layout_height="36dp"-->
+                <!--                        android:checkable="true"-->
+                <!--                        android:clickable="true"-->
+                <!--                        android:fontFamily="@font/spoqahansansneo_regular"-->
+                <!--                        android:text="@string/search_chip_gravel"-->
+                <!--                        app:chipCornerRadius="6dp"-->
+                <!--                        app:chipStrokeWidth="1dp" />-->
 
-<!--                    <com.google.android.material.chip.Chip-->
-<!--                        android:id="@+id/chipSoil"-->
-<!--                        style="@style/CustomChipChoice"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="36dp"-->
-<!--                        android:checkable="true"-->
-<!--                        android:clickable="true"-->
-<!--                        android:fontFamily="@font/spoqahansansneo_regular"-->
-<!--                        android:text="@string/search_chip_soil"-->
-<!--                        app:chipCornerRadius="6dp"-->
-<!--                        app:chipStrokeWidth="1dp" />-->
+                <!--                    <com.google.android.material.chip.Chip-->
+                <!--                        android:id="@+id/chipSoil"-->
+                <!--                        style="@style/CustomChipChoice"-->
+                <!--                        android:layout_width="wrap_content"-->
+                <!--                        android:layout_height="36dp"-->
+                <!--                        android:checkable="true"-->
+                <!--                        android:clickable="true"-->
+                <!--                        android:fontFamily="@font/spoqahansansneo_regular"-->
+                <!--                        android:text="@string/search_chip_soil"-->
+                <!--                        app:chipCornerRadius="6dp"-->
+                <!--                        app:chipStrokeWidth="1dp" />-->
 
-<!--                </com.google.android.material.chip.ChipGroup>-->
+                <!--                </com.google.android.material.chip.ChipGroup>-->
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/btn_reset"
                     android:layout_width="150dp"
                     android:layout_height="50dp"
-                    android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
-                    android:layout_marginBottom="50dp"
+                    android:layout_marginBottom="90dp"
                     android:background="@drawable/btn_reset"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/chip_thema_group"
                     app:layout_constraintTop_toBottomOf="@id/chip_thema_group">
 
                     <ImageView

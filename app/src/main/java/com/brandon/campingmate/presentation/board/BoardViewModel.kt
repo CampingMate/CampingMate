@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.brandon.campingmate.domain.model.User
 import com.brandon.campingmate.domain.usecase.GetPostsUseCase
 import com.brandon.campingmate.domain.usecase.GetUserUserCase
+import com.brandon.campingmate.domain.usecase.SearchPostUseCase
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +21,7 @@ import timber.log.Timber
 class BoardViewModel(
     private val getPostUseCase: GetPostsUseCase,
     private val getUserUserCase: GetUserUserCase,
+    private val searchPostUseCase: SearchPostUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BoardUiState.init())
@@ -40,12 +42,24 @@ class BoardViewModel(
         checkLoginStatus()
     }
 
+    fun searchPost(keyword: String?) {
+        if (keyword.isNullOrBlank()) return
+        viewModelScope.launch {
+            searchPostUseCase(keyword).fold(onSuccess = { newPostListItems ->
+                Timber.tag("SEARCH").d("성공: $newPostListItems")
+                if (newPostListItems.isEmpty()) {
+                    _uiState.update { it.copy(posts = newPostListItems, isNothingToShow = true) }
+                } else {
+                    _uiState.update { it.copy(posts = newPostListItems) }
+                }
+            }, onFailure = { e -> Timber.d("검색 중 에러 발생: $e") })
+        }
+    }
+
     fun checkLoginStatus() {
         viewModelScope.launch {
-            getUserUserCase().fold(
-                onSuccess = { user -> _user.value = user },
-                onFailure = { e -> Timber.d("로그인 중 에러 발생, 예외: $e") }
-            )
+            getUserUserCase().fold(onSuccess = { user -> _user.value = user },
+                onFailure = { e -> Timber.d("로그인 중 에러 발생: $e") })
         }
     }
 
@@ -92,30 +106,25 @@ class BoardViewModel(
     }
 
     private fun getPosts(
-        pageSize: Int = 10,
-        shouldFetchFromFirst: Boolean = false,
-        shouldScrollToTop: Boolean = false
+        pageSize: Int = 10, shouldFetchFromFirst: Boolean = false, shouldScrollToTop: Boolean = false
     ) {
         viewModelScope.launch {
             getPostUseCase(
-                pageSize = pageSize,
-                shouldFetchFromFirst = shouldFetchFromFirst
-            ).fold(
-                onSuccess = { newPosts ->
-                    if (_uiState.value.isLoadingMore && newPosts.isEmpty()) handleEvent(BoardEvent.MakeToast("새로운 게시글이 더 이상 없어요."))
-                    if (_uiState.value.isRefreshing) handleEvent(BoardEvent.MakeToast("새로고침"))
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            posts = if (shouldFetchFromFirst) newPosts else currentState.posts + newPosts,
-                            isRefreshing = false,
-                            isLoadingMore = false,
-                            isInitialLoading = false,
-                            shouldScrollToTop = shouldScrollToTop,
-                        )
-                    }
-                },
-                onFailure = {}
-            )
+                pageSize = pageSize, shouldFetchFromFirst = shouldFetchFromFirst
+            ).fold(onSuccess = { newPosts ->
+                if (_uiState.value.isLoadingMore && newPosts.isEmpty()) handleEvent(BoardEvent.MakeToast("새로운 게시글이 더 이상 없어요."))
+                if (_uiState.value.isRefreshing) handleEvent(BoardEvent.MakeToast("새로고침"))
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        posts = if (shouldFetchFromFirst) newPosts else currentState.posts + newPosts,
+                        isRefreshing = false,
+                        isLoadingMore = false,
+                        isInitialLoading = false,
+                        isNothingToShow = false,
+                        shouldScrollToTop = shouldScrollToTop,
+                    )
+                }
+            }, onFailure = {})
         }
     }
 
@@ -132,12 +141,15 @@ class BoardViewModel(
 
 class BoardViewModelFactory(
     private val getPostsUseCase: GetPostsUseCase,
-    private val getUserUserCase: GetUserUserCase
+    private val getUserUserCase: GetUserUserCase,
+    private val searchPostUseCase: SearchPostUseCase
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         Timber.d("Creating BoardViewModel instance")
         if (modelClass.isAssignableFrom(BoardViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST") return BoardViewModel(getPostsUseCase, getUserUserCase) as T
+            @Suppress("UNCHECKED_CAST") return BoardViewModel(
+                getPostsUseCase, getUserUserCase, searchPostUseCase
+            ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

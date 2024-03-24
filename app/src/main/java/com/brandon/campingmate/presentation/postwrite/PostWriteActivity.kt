@@ -228,7 +228,6 @@ class PostWriteActivity : AppCompatActivity() {
                 val heightDiff = rootView.rootView.height - (rect.bottom - rect.top)
                 val isKeyboardActive = heightDiff > 500
                 if (heightDiff != previousHeightDiff) {
-                    Timber.tag("VIEW").d("isKeyboardActive: $isKeyboardActive")
                     when (isKeyboardActive) {
                         true -> {
                             binding.rvImageContainer.animate().translationY(rvImageContainer.height.toFloat())

@@ -37,6 +37,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="5dp"
                 >
                 <ImageView
                     android:id="@+id/iv_camp_pet_img"
@@ -297,10 +298,12 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/lo_district_title"
+            <LinearLayout
+                android:id="@+id/location_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/lo_holiday"
                 android:layout_marginStart="16dp"
@@ -326,8 +329,7 @@
                     app:layout_constraintStart_toEndOf="@id/tv_bigtitle_district"
                     app:layout_constraintTop_toTopOf="@id/tv_bigtitle_district" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
+            </LinearLayout>
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chip_district_group"
@@ -341,7 +343,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lo_district_title"
+                app:layout_constraintTop_toBottomOf="@id/location_layout"
                 app:singleLine="true"
                 app:singleSelection="true">
 
@@ -496,6 +498,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
                 android:layout_marginEnd="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -507,6 +510,7 @@
                     android:id="@+id/chip_theme_group"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="12dp"
                     android:layout_marginEnd="16dp"
                     android:orientation="horizontal"
