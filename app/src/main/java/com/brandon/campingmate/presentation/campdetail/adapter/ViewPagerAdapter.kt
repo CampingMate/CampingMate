@@ -17,13 +17,10 @@ class ViewPagerAdapter(imageList: MutableList<String>) : RecyclerView.Adapter<Vi
     override fun getItemCount(): Int = item.size
 
     override fun onBindViewHolder(holder: PagerViewHolder, position: Int) {
-        val dimColor = Color.parseColor("#0D000000")
         Glide.with(holder.itemView.context)
             .load(item[position])
             .centerCrop()
             .into(holder.image)
-
-//        holder.image.setColorFilter(dimColor, PorterDuff.Mode.SRC_ATOP)
     }
 
     inner class PagerViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder
