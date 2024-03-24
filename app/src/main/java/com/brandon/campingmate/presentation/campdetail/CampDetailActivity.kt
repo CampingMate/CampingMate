@@ -90,6 +90,9 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onResume() {
         super.onResume()
         userId = EncryptedPrefs.getMyId()
+        if(userId != null){
+            binding.commentEdit.isFocusableInTouchMode = true
+        }
         checkBookmarked()
     }
 
@@ -135,8 +138,9 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                     selectedImage.setImageURI(null)
                     selectedImage.visibility = View.GONE
                     selectedImageDelete.visibility = View.GONE
+                    sendLoading = false
+                    commentEdit.clearFocus()
                 }
-                binding.loadingAnimation.visibility = View.INVISIBLE
             }
         }
         checkLastComment.observe(this@CampDetailActivity) {
@@ -155,37 +159,49 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         campName = it.facltNm
         Log.d("Detail", " initsettiong = ${mapX}, ${mapY}, ${campName}, ${naverMap}")
         tvCampName.text = it.facltNm
-        tvAddr.text = it.addr1 ?: "등록된 주소가 없습니다."
-        tvCall.text = it.tel ?: "등록된 번호가 없습니다."
+        if(it.addr1.isNullOrBlank()){
+            tvAddr.text = "등록된 주소가 없습니다."
+        } else{
+            tvAddr.text = it.addr1
+        }
+        if(it.tel.isNullOrBlank()){
+            tvCall.text = "등록된 번호가 없습니다."
+        } else{
+            tvCall.text = it.tel
+        }
         if (it.homepage.isNullOrBlank()) {
-            tvHomepage.text = "등록된 홈페이지가 없습니다."
+//            tvHomepage.text = "등록된 홈페이지가 없습니다."
+            tvHomepage.visibility = View.GONE
         } else {
             tvHomepage.text = "홈페이지 - ${it.homepage}"
         }
-        if (it.allar.isNullOrBlank()) {
-            tvSize.text = "등록된 면적 정보가 없습니다."
+        if (it.allar == "0") {
+//            tvSize.text = "등록된 면적 정보가 없습니다."
+            tvSize.visibility = View.GONE
         } else {
             tvSize.text = "면적 - ${it.allar}㎡"
         }
         if (it.hvofBgnde.isNullOrBlank() && it.hvofEnddle.isNullOrBlank()) {
-            tvRestTime.text = "등록된 휴장기간 정보가 없습니다."
+//            tvRestTime.text = "등록된 휴장기간 정보가 없습니다."
+            tvRestTime.visibility = View.GONE
         } else {
             tvRestTime.text = "휴장기간 ${it.hvofBgnde} ~ ${it.hvofEnddle} "
         }
         if (it.operPdCl.isNullOrBlank()) {
-            tvPlayTime.text = "등록된 운영기간 정보가 없습니다."
+//            tvPlayTime.text = "등록된 운영기간 정보가 없습니다."
+            tvPlayTime.visibility = View.GONE
         } else {
             tvPlayTime.text = "운영기간 - ${it.operPdCl}"
         }
-        var bottom = ""
-        if (it.siteBottomCl1 != "0") bottom += "잔디, "
-        if (it.siteBottomCl2 != "0") bottom += "파쇄석, "
-        if (it.siteBottomCl3 != "0") bottom += "테크, "
-        if (it.siteBottomCl4 != "0") bottom += "자갈, "
-        if (it.siteBottomCl5 != "0") bottom += "맨흙"
+//        var bottom = ""
+//        if (it.siteBottomCl1 != "0") bottom += "잔디, "
+//        if (it.siteBottomCl2 != "0") bottom += "파쇄석, "
+//        if (it.siteBottomCl3 != "0") bottom += "테크, "
+//        if (it.siteBottomCl4 != "0") bottom += "자갈, "
+//        if (it.siteBottomCl5 != "0") bottom += "맨흙"
 //        tvBottom.text = "바닥재질 - ${bottom}"
-        tvBottom.text = ""
-        tvBottom.visibility = View.GONE
+//        tvBottom.text = ""
+//        tvBottom.visibility = View.GONE
         if (it.intro.isNullOrBlank()) {
             tvIntroduceComment.text = "등록된 내용이 없습니다."
         } else {
@@ -194,22 +210,26 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         tvConvenienceComment.text =
             "편의시설 - 화장실: ${it.toiletCo} 샤워실: ${it.swrmCo} 개수대: ${it.wtrplCo} 화로대-${it.brazierCl}"
         if (it.sbrsCl.isNullOrEmpty()) {
-            tvConvenienceComment2.text = "등록된 부대시설이 없습니다."
+//            tvConvenienceComment2.text = "등록된 부대시설이 없습니다."
+            tvConvenienceComment2.visibility = View.GONE
         } else {
             tvConvenienceComment2.text = "부대시설 - ${it.sbrsCl}"
         }
         if (it.themaEnvrnCl.isNullOrEmpty()) {
-            tvConvenienceThema.text = "등록된 테마가 없습니다."
+//            tvConvenienceThema.text = "등록된 테마가 없습니다."
+            tvConvenienceThema.visibility = View.GONE
         } else {
             tvConvenienceThema.text = "테마 - ${it.themaEnvrnCl}"
         }
         if (it.posblFcltyCl.isNullOrEmpty()) {
-            tvConvenienceNear.text = "등록된 내용이 없습니다."
+//            tvConvenienceNear.text = "등록된 내용이 없습니다."
+            tvConvenienceNear.visibility = View.GONE
         } else {
             tvConvenienceNear.text = "주변이용가능시설 - ${it.posblFcltyCl}"
         }
         if (it.featureNm.isNullOrBlank()) {
-            tvConvenienceFeature.text = "등록된 특징이 없습니다."
+//            tvConvenienceFeature.text = "등록된 특징이 없습니다."
+            tvConvenienceFeature.visibility = View.GONE
         } else {
             tvConvenienceFeature.text = "특징 - ${it.featureNm}"
         }
@@ -217,9 +237,11 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         ivArrowBack.setOnClickListener {
             finish()
         }
-        val tell = it.tel
-        ivCallCamping.setOnClickListener {
-            val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${tell}"))
+        callLayout.setOnClickListener {
+            if (tvCall.text == "등록된 번호가 없습니다.") {
+                return@setOnClickListener
+            }
+            val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${tvCall.text}"))
             startActivity(intent)
         }
         val reserveUrl = it.resveUrl
@@ -299,6 +321,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         })
         commentBottomSheet.setOnClickListener {
+            bottomSheetOverlay.visibility = View.VISIBLE
             behavior.state = BottomSheetBehavior.STATE_COLLAPSED
             val screenHeight = resources.displayMetrics.heightPixels // 화면의 높이를 가져옴
             val peekHeightRatio = 0.7 // 바텀시트가 화면의 70%까지 보이도록 설정
@@ -318,6 +341,9 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_HIDDEN) {
                     viewModel.checkComment(myId!!)
+                    bottomSheetOverlay.visibility = View.GONE
+                    commentEdit.clearFocus()
+                    binding.root.hideKeyboard()
                 }
             }
 
@@ -353,34 +379,60 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
      * 댓글
      */
     private fun comment() = with(binding) {
+        linearComment.setOnClickListener {
+            if (userId == null) {
+                SnackbarUtil.showSnackBar(it)
+                binding.root.hideKeyboard()
+                behavior.state = BottomSheetBehavior.STATE_HIDDEN
+                return@setOnClickListener
+            }
+        }
+        commentLayout.setOnClickListener {
+            if (userId == null) {
+                SnackbarUtil.showSnackBar(it)
+                binding.root.hideKeyboard()
+                behavior.state = BottomSheetBehavior.STATE_HIDDEN
+                return@setOnClickListener
+            }
+        }
         commentPlusImage.setOnClickListener {
-            openGalleryForImage()
+            if (userId == null) {
+                SnackbarUtil.showSnackBar(it)
+                binding.root.hideKeyboard()
+                behavior.state = BottomSheetBehavior.STATE_HIDDEN
+                return@setOnClickListener
+            } else{
+                openGalleryForImage()
+            }
+        }
+        commentEdit.setOnClickListener {
+            if(userId == null){
+                SnackbarUtil.showSnackBar(it)
+                binding.root.hideKeyboard()
+                behavior.state = BottomSheetBehavior.STATE_HIDDEN
+                return@setOnClickListener
+            }
         }
         commentSend.setOnClickListener {
+            val content = commentEdit.text.toString()
+            if (content.isBlank()) {
+                sendLoading = false
+                return@setOnClickListener
+            }
             if (userId != null) {
                 if (!sendLoading) {
                     sendLoading = true
                     loadingAnimation.visibility = View.VISIBLE
                     commentSend.hideKeyboardInput()
 
-                    val content = commentEdit.text.toString()
-                    if (content.isBlank()) {
-                        sendLoading = false
-                        return@setOnClickListener
+                    val myImage = if (selectedImage.visibility == View.VISIBLE) {
+                        myImage
                     } else {
-                        val myImage = if (selectedImage.visibility == View.VISIBLE) {
-                            myImage
-                        } else {
-                            ""
-                        }
-                        val campId = myId
-                        viewModel.bringUserData(userId!!, content, myImage, campId!!)
+                        ""
                     }
+                    val campId = myId
+                    viewModel.bringUserData(userId!!, content, myImage, campId!!)
                 }
-            } else {
-                SnackbarUtil.showSnackBar(it)
-                binding.root.hideKeyboard()
-                behavior.state = BottomSheetBehavior.STATE_HIDDEN
             }
         }
         selectedImageDelete.setOnClickListener {

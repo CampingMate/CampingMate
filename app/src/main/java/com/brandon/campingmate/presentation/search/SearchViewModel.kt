@@ -22,6 +22,9 @@ class SearchViewModel : ViewModel() {
     val keyword: LiveData<MutableList<CampEntity>> get() = _keyword
     private val _myList: MutableLiveData<MutableList<CampEntity>> = MutableLiveData()
     val myList: LiveData<MutableList<CampEntity>> get() = _myList
+    private val _toastMessage: MutableLiveData<String> = MutableLiveData()
+    val toastMessage: LiveData<String> get() = _toastMessage
+
     var lastVisible: DocumentSnapshot? = null
     var lastVisibleKeyword: DocumentSnapshot? = null
     var isLoadingData: Boolean = false
@@ -126,7 +129,8 @@ class SearchViewModel : ViewModel() {
                     if (documents.size() > 0) {
                         lastVisibleKeyword = documents.documents[documents.size() - 1]
                     } else {
-                        lastVisibleKeyword = null  // 더 이상 데이터가 없을 때 lastVisible을 null로 설정
+                        lastVisibleKeyword = null
+                        displayNoMoreData()
                     }
                     isLoadingDataKeyword = false
                 }
@@ -192,14 +196,10 @@ class SearchViewModel : ViewModel() {
                 }
                 _myList.value = newCampList
                 if (documents.size() > 0) {
-                    lastVisible = when (documents.size()) {
-                        5 -> documents.documents[documents.size() - 1]
-                        4 -> documents.documents[documents.size() - 2]
-                        3 -> documents.documents[documents.size() - 3]
-                        2 -> documents.documents[documents.size() - 4]
-                        1 -> documents.documents[documents.size() - 5]
-                        else -> null
-                    }
+                    lastVisible = documents.documents[documents.size() - 1]
+                    Log.d("Search", "무한 ${lastVisible?.get("facltNm")}")
+                } else {
+                    lastVisible = null  // 더 이상 데이터가 없을 때 lastVisible을 null로 설정
                 }
                 Log.d("Search", "첫번째 ${lastVisible?.get("facltNm")}")
             }
@@ -277,6 +277,7 @@ class SearchViewModel : ViewModel() {
                         Log.d("Search", "무한 ${lastVisible?.get("facltNm")}")
                     } else {
                         lastVisible = null  // 더 이상 데이터가 없을 때 lastVisible을 null로 설정
+                        displayNoMoreData()
                     }
                     isLoadingData = false
                 }
@@ -286,6 +287,9 @@ class SearchViewModel : ViewModel() {
                     isLoadingData = false
                 }
         }
+    }
+    fun displayNoMoreData(){
+        _toastMessage.value = "더 이상 가져올 데이터가 없습니다."
     }
 
 }

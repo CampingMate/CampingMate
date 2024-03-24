@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -54,6 +55,9 @@ class SearchActivity : AppCompatActivity() {
             myNewList.addAll(it)
             listAdapter.submitList(myNewList)
             checkItem(myNewList)
+        }
+        toastMessage.observe(this@SearchActivity){
+            Toast.makeText(this@SearchActivity, it, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -273,7 +277,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun setting(temp: String) {
         bottomSheet() //바텀시트 연결
-        scrollTab() //바텀시트 스크롤탭
+//        scrollTab() //바텀시트 스크롤탭
         Log.d("SearchActivity", "setting진입, ${temp}")
         when(temp){
             "검색바" -> {
@@ -321,29 +325,29 @@ class SearchActivity : AppCompatActivity() {
     /**
      * 바텀시트 스크롤
      */
-    private fun scrollTab() =with(binding){
-        searchType.setOnClickListener {
-            scrollToView(tvSearchType)
-        }
-        searchLocation.setOnClickListener {
-            scrollToView(tvSearchLocation)
-        }
-        searchConvenience.setOnClickListener {
-            scrollToView(tvSearchConvenience)
-        }
-        searchThema.setOnClickListener {
-            scrollToView(tvSearchThema)
-        }
-//        searchBottom.setOnClickListener {
-//            scrollToView(tvSearchBottom)
-//        }
-    }
+//    private fun scrollTab() =with(binding){
+////        searchType.setOnClickListener {
+////            scrollToView(tvSearchType)
+////        }
+////        searchLocation.setOnClickListener {
+////            scrollToView(tvSearchLocation)
+////        }
+////        searchConvenience.setOnClickListener {
+////            scrollToView(tvSearchConvenience)
+////        }
+////        searchThema.setOnClickListener {
+////            scrollToView(tvSearchThema)
+////        }
+////        searchBottom.setOnClickListener {
+////            scrollToView(tvSearchBottom)
+////        }
+//    }
 
-    private fun scrollToView(view: View) {
-        binding.scrollView.post {
-            binding.scrollView.smoothScrollTo(0, view.top)
-        }
-    }
+//    private fun scrollToView(view: View) {
+//        binding.scrollView.post {
+//            binding.scrollView.smoothScrollTo(0, view.top)
+//        }
+//    }
 
     /**
      * 바텀시트 연결
@@ -366,6 +370,9 @@ class SearchActivity : AppCompatActivity() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
             }
         })
+        binding.ivBtnClose.setOnClickListener {
+            behavior.state = BottomSheetBehavior.STATE_HIDDEN
+        }
     }
 
 }
