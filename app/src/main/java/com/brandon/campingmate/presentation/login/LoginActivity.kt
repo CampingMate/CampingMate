@@ -1,8 +1,12 @@
 package com.brandon.campingmate.presentation.login
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,6 +23,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.firestore
+import com.google.firebase.storage.storage
 import com.kakao.sdk.auth.LoginClient
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.AuthErrorCause
@@ -72,50 +77,37 @@ class LoginActivity : AppCompatActivity() {
                     }
 
                     else -> { // Unknown
-                        Toast.makeText(this, "기타 에러", Toast.LENGTH_SHORT).show()
+                        binding.clLoginLoading.visibility = View.GONE
+                        finish()
+                        Timber.tag("KakaoLoginError").d("기타 에러")
+                        //Toast.makeText(this, "기타 에러", Toast.LENGTH_SHORT).show()
                     }
                 }
             } else if (token != null) {
+                binding.clLoginLoading.visibility = View.VISIBLE
                 val db = Firebase.firestore
                 UserApiClient.instance.me { user, _ ->
                     val documentRef = db.collection("users").document("Kakao${user?.id}")
-                    documentRef.get().addOnSuccessListener { documentSnapshot ->
-                        if (!documentSnapshot.exists()) {
-                            val userId = "Kakao${user?.id}"
-                            val imageUri = Uri.parse(user?.kakaoAccount?.profile?.profileImageUrl)
-
-                            // profileImgUpload 함수 호출
-                            profileImgUpload(imageUri, userId) { isSuccess, uri ->
-                                if (isSuccess && uri != null) {
-                                    // 업로드 및 downloadUrl 성공
-                                    val userModel = hashMapOf(
-                                        "userId" to userId,
-                                        "nickName" to "${user?.kakaoAccount?.profile?.nickname}",
-                                        "profileImage" to uri.toString(),
-                                        "userEmail" to "${user?.kakaoAccount?.email}",
-                                        "bookmarked" to null
-                                    )
-                                    documentRef.set(userModel).addOnSuccessListener {
-                                        EncryptedPrefs.saveMyId(userId)
-                                        Toast.makeText(this, "로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show()
-                                        finish()
-                                    }.addOnFailureListener {
-                                        // 문서 저장 실패
-                                        Toast.makeText(this, "로그인에 실패하였습니다.", Toast.LENGTH_SHORT).show()
-                                        finish()
-                                    }
-                                } else {
-                                    // 업로드 실패 혹은 downloadUrl 실패
-                                    Toast.makeText(this, "로그인에 실패하였습니다.", Toast.LENGTH_SHORT).show()
-                                    finish()
-                                }
+                    val userModel = hashMapOf(
+                        "userId" to "Kakao${user?.id}",
+                        "nickName" to "${user?.kakaoAccount?.profile?.nickname?.take(10)}",
+                        "profileImage" to "${user?.kakaoAccount?.profile?.profileImageUrl}",
+                        "userEmail" to "${user?.kakaoAccount?.email}",
+                        "bookmarked" to null
+                    )
+                    documentRef.get().addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val documentSnapshot = task.result
+                            if (!documentSnapshot.exists()) {
+                                profileImgUpload(Uri.parse(user?.kakaoAccount?.profile?.profileImageUrl), "Kakao${user?.id}")
+                                documentRef.set(userModel)
+                                Toast.makeText(this, "로그인 성공!", Toast.LENGTH_SHORT).show()
                             }
-                        } else {
-                            // 이미 문서가 존재하는 경우
-                            Toast.makeText(this, "환영합니다!", Toast.LENGTH_SHORT).show()
-                            EncryptedPrefs.saveMyId("Kakao${user?.id}")
-                            finish()
                         }
+                        Toast.makeText(this, "환영합니다.", Toast.LENGTH_SHORT).show()
+                        EncryptedPrefs.saveMyId("Kakao${user?.id}")
+                        binding.clLoginLoading.visibility = View.GONE
+                        finish()
                     }
                 }
             }
@@ -153,58 +145,58 @@ class LoginActivity : AppCompatActivity() {
 
     private fun initActivityResult() {
         googleLoginResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            val data = result.data
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            val account = task.getResult(ApiException::class.java)
-            firebaseAuthWithGoogle(account.idToken)
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data = result.data
+                try {
+                    val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+                    val account = task.getResult(ApiException::class.java)
+                    firebaseAuthWithGoogle(account.idToken)
+                } catch (e: ApiException) {
+                    // Google 로그인 실패 처리
+                    Timber.tag("GoogleLoginError").d("Google 로그인 실패: ${e.statusCode}")
+                    finish()
+                }
+            } else {
+                // 사용자가 로그인을 취소했거나 결과가 OK가 아닐 때의 처리
+                Timber.tag("GoogleLoginError").d("로그인 사용자 취소 또는 실패")
+                finish()
+            }
         }
     }
 
     private fun firebaseAuthWithGoogle(idToken: String?) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
+        binding.clLoginLoading.visibility = View.VISIBLE
+        val db = Firebase.firestore
         firebaseAuth.signInWithCredential(credential).addOnSuccessListener { result ->
-            val db = Firebase.firestore
             val documentRef = db.collection("users").document("Google${result.user?.uid}")
             val userModel = hashMapOf(
                 "userId" to "Google${result.user?.uid}",
-                "nickName" to "${result.user?.displayName}",
-                "profileImage" to null,
+                "nickName" to "${result.user?.displayName?.take(10)}",
+                "profileImage" to "${result.user?.photoUrl}",
                 "userEmail" to "${result.user?.email}",
                 "bookmarked" to null
             )
-            documentRef.get().addOnSuccessListener { documentSnapshot ->
-                if (!documentSnapshot.exists()) {
-                    // 이미지 업로드 후 사용자 문서 저장
-                    profileImgUpload(Uri.parse(result.user?.photoUrl.toString()), "Google${result.user?.uid}") { isSuccess, uri ->
-                        if (isSuccess && uri != null) {
-                            // 업로드 성공, 다운로드 URL을 포함하여 문서 저장
-                            userModel["profileImage"] = uri.toString()
-                            documentRef.set(userModel).addOnSuccessListener {
-                                EncryptedPrefs.saveMyId("Google${result.user?.uid}")
-                                Timber.tag("로그인UserID검사").d("Google${result.user?.uid}")
-                                Toast.makeText(this, "로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show()
-                                finish()
-                            }.addOnFailureListener {
-                                Timber.tag("GoogleLoginError:문서저장실패").d(it.toString())
-                                finish()
-                            }
-                        } else {
-                            // 업로드 실패
-                            Toast.makeText(this, "로그인에 실패하였습니다.", Toast.LENGTH_SHORT).show()
-                            finish()
-                        }
+            documentRef.get().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val documentSnapshot = task.result
+                    if (!documentSnapshot.exists()) {
+                        profileImgUpload(Uri.parse(result.user?.photoUrl.toString()), "Google${result.user?.uid}")
+                        documentRef.set(userModel)
+                        Toast.makeText(this, "로그인 성공!", Toast.LENGTH_SHORT).show()
                     }
-                } else {
-                    // 문서가 이미 존재하는 경우
-                    EncryptedPrefs.saveMyId("Google${result.user?.uid}")
-                    Toast.makeText(this, "환영합니다!", Toast.LENGTH_SHORT).show()
-                    finish()
                 }
+                Toast.makeText(this, "환영합니다.", Toast.LENGTH_SHORT).show()
+                EncryptedPrefs.saveMyId("Google${result.user?.uid}")
+                binding.clLoginLoading.visibility = View.GONE
+                finish()
             }
-        }.addOnFailureListener { e ->
-            Timber.tag("GoogleLoginError:인증실패").d(e.toString())
-            finish()
         }
+            .addOnFailureListener {
+                Timber.tag("GoogleLoginError").d(it.toString())
+                binding.clLoginLoading.visibility = View.GONE
+                finish()
+            }
     }
 
     private fun googleSignIn() {

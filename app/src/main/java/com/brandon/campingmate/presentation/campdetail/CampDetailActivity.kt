@@ -81,7 +81,6 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         initView()
         initViewModel()
         initBottomSheet()
-        checkBookmarked()
         clickBookmarked()
         mapView = binding.fcMap
         mapView?.onCreate(savedInstanceState)
@@ -91,6 +90,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onResume() {
         super.onResume()
         userId = EncryptedPrefs.getMyId()
+        checkBookmarked()
     }
 
     private fun initViewPager() {

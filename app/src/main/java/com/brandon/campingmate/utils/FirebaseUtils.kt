@@ -4,11 +4,9 @@ import android.net.Uri
 import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
 import com.google.firebase.storage.storage
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -26,29 +24,18 @@ fun Timestamp?.toFormattedString(): String {
     return this?.toDate()?.let { dateFormat.format(it) } ?: ""
 }
 
-fun profileImgUpload(imageURI: Uri, userID: String, onComplete: (Boolean, Uri?) -> Unit) {
+fun profileImgUpload(imageURI: Uri, userID: String) {
     val storage = Firebase.storage
-    val storageRef = storage.getReference("profileImage").child(userID)
+    val storageRef = storage.getReference("profileImage")
 
-    CoroutineScope(Dispatchers.IO).launch {
-        try {
-            val uploadTask = if (imageURI.toString().startsWith("http")) {
-                // 인터넷 URL의 경우 putStream 사용
-                val stream = URL(imageURI.toString()).openStream()
-                storageRef.putStream(stream).await()
-            } else {
-                // 로컬 파일 업로드 시 putFile 사용
-                storageRef.putFile(imageURI).await()
-            }
-
-            val uri = storageRef.downloadUrl.await()
-            withContext(Dispatchers.Main) {
-                onComplete(true, uri)
-            }
-        } catch (e: Exception) {
-            withContext(Dispatchers.Main) {
-                onComplete(false, null)
-            }
+    if (imageURI.toString().startsWith("http")) {
+        GlobalScope.launch(Dispatchers.IO) {
+            //인터넷URL의 경우 putStream사용.
+            storageRef.child(userID).putStream(URL(imageURI.toString()).openStream())
         }
+    } else {
+        //로컬 파일 업로드 시 putFile 사용
+        storageRef.child(userID).putFile(imageURI)
     }
+
 }
