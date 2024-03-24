@@ -291,7 +291,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             if (isChecked) {
                 if (userId == null) {
                     SnackbarUtil.showSnackBar(buttonView)
-
+                    buttonView.isChecked = false
                 } else {
                     markers.forEach {
                         hideMarker(it)

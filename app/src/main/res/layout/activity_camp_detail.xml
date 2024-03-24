@@ -498,6 +498,19 @@
                     app:layout_constraintEnd_toEndOf="@+id/fc_map"
                     app:layout_constraintTop_toTopOf="@+id/fc_map" />
 
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_relocation"
+                    android:layout_width="78dp"
+                    android:layout_height="34dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="@drawable/apply_btn"
+                    android:text="제자리로"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    app:layout_constraintEnd_toEndOf="@+id/fc_map"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_detailroute" />
+
                 <View
                     android:id="@+id/divider_4"
                     android:layout_width="match_parent"
