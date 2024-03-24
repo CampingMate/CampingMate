@@ -297,14 +297,16 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/lo_district_title"
+            <LinearLayout
+                android:id="@+id/location_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lo_holiday"
+                android:orientation="horizontal"
+                android:layout_marginTop="50dp"
+                android:gravity="center"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="32dp">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lo_holiday">
 
                 <TextView
                     android:id="@+id/tv_bigtitle_district"
@@ -312,21 +314,17 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/spoqahansansneo_bold"
                     android:text="지역별 캠핑장"
-                    android:textSize="20sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:textSize="20sp"/>
 
                 <ImageView
                     android:id="@+id/iv_more_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="19dp"
                     android:layout_marginStart="4dp"
-                    android:src="@drawable/ic_arrow_forward"
-                    app:layout_constraintBottom_toBottomOf="@id/tv_bigtitle_district"
-                    app:layout_constraintStart_toEndOf="@id/tv_bigtitle_district"
-                    app:layout_constraintTop_toTopOf="@id/tv_bigtitle_district" />
+                    android:src="@drawable/ic_arrow_forward"/>
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chip_district_group"

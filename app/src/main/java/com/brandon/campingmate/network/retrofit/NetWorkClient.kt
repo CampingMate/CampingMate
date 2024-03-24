@@ -2,7 +2,6 @@ package com.brandon.campingmate.network.retrofit
 
 import com.getkeepsafe.relinker.BuildConfig
 import com.google.gson.GsonBuilder
-import com.brandon.campingmate.BuildConfig
 import com.brandon.campingmate.data.remote.api.OpenSearchService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
