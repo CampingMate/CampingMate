@@ -5,22 +5,31 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.media.Image
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.AttributeSet
 import android.util.Log
+import android.view.DragEvent
 import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnDragListener
 import android.view.View.OnTouchListener
+import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import android.view.inputmethod.InputMethodManager
+import android.widget.AbsListView
+import android.widget.AbsListView.OnScrollListener
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
+import coil.decode.withInterruptibleSource
 import com.brandon.campingmate.R
 import com.brandon.campingmate.data.local.preferences.EncryptedPrefs
 import com.brandon.campingmate.databinding.ActivityCampDetailBinding
@@ -30,7 +39,6 @@ import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.campdetail.adapter.CommentListAdapter
 import com.brandon.campingmate.presentation.campdetail.adapter.ViewPagerAdapter
 import com.brandon.campingmate.presentation.common.SnackbarUtil
-import com.brandon.campingmate.utils.toPx
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -45,9 +53,6 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.Marker
 import timber.log.Timber
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -55,7 +60,20 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private val viewModel by lazy {
         ViewModelProvider(this)[CampDetailViewModel::class.java]
     }
-    private val listAdapter: CommentListAdapter by lazy { CommentListAdapter() }
+    private val listAdapter: CommentListAdapter by lazy { CommentListAdapter({ commentImage ->
+        commentImageClick(commentImage)
+    }) }
+
+    private fun commentImageClick(commentImage: String) {
+//        Toast.makeText(this, "이미지클릭", Toast.LENGTH_SHORT).show()
+        val dialog = ImageDialog(this, commentImage)
+        dialog.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
+        dialog.show()
+    }
+
     var userId: String? = EncryptedPrefs.getMyId()
     private val db = FirebaseFirestore.getInstance()
     private val imageUrls = mutableListOf<String>()
@@ -81,7 +99,6 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         initView()
         initViewModel()
         initBottomSheet()
-        checkBookmarked()
         clickBookmarked()
         mapView = binding.fcMap
         mapView?.onCreate(savedInstanceState)
@@ -91,6 +108,10 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onResume() {
         super.onResume()
         userId = EncryptedPrefs.getMyId()
+        if(userId != null){
+            binding.commentEdit.isFocusableInTouchMode = true
+        }
+        checkBookmarked()
     }
 
     private fun initViewPager() {
@@ -135,8 +156,9 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                     selectedImage.setImageURI(null)
                     selectedImage.visibility = View.GONE
                     selectedImageDelete.visibility = View.GONE
+                    sendLoading = false
+                    commentEdit.clearFocus()
                 }
-                binding.loadingAnimation.visibility = View.INVISIBLE
             }
         }
         checkLastComment.observe(this@CampDetailActivity) {
@@ -147,45 +169,64 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         commentCount.observe(this@CampDetailActivity) {
             binding.commentCount.text = it
         }
+        martMarker.observe(this@CampDetailActivity){
+            val markers = it
+            for(martMarker in markers){
+                martMarker.map = naverMap!!
+            }
+        }
+
     }
 
     private fun initSetting(it: CampEntity) = with(binding) {
         mapX = it.mapX
         mapY = it.mapY
         campName = it.facltNm
-        Log.d("Detail", " initsettiong = ${mapX}, ${mapY}, ${campName}, ${naverMap}")
+
         tvCampName.text = it.facltNm
-        tvAddr.text = it.addr1 ?: "등록된 주소가 없습니다."
-        tvCall.text = it.tel ?: "등록된 번호가 없습니다."
+        if(it.addr1.isNullOrBlank()){
+            tvAddr.text = "등록된 주소가 없습니다."
+        } else{
+            tvAddr.text = it.addr1
+        }
+        if(it.tel.isNullOrBlank()){
+            tvCall.text = "등록된 번호가 없습니다."
+        } else{
+            tvCall.text = it.tel
+        }
         if (it.homepage.isNullOrBlank()) {
-            tvHomepage.text = "등록된 홈페이지가 없습니다."
+//            tvHomepage.text = "등록된 홈페이지가 없습니다."
+            tvHomepage.visibility = View.GONE
         } else {
             tvHomepage.text = "홈페이지 - ${it.homepage}"
         }
-        if (it.allar.isNullOrBlank()) {
-            tvSize.text = "등록된 면적 정보가 없습니다."
+        if (it.allar == "0") {
+//            tvSize.text = "등록된 면적 정보가 없습니다."
+            tvSize.visibility = View.GONE
         } else {
             tvSize.text = "면적 - ${it.allar}㎡"
         }
         if (it.hvofBgnde.isNullOrBlank() && it.hvofEnddle.isNullOrBlank()) {
-            tvRestTime.text = "등록된 휴장기간 정보가 없습니다."
+//            tvRestTime.text = "등록된 휴장기간 정보가 없습니다."
+            tvRestTime.visibility = View.GONE
         } else {
             tvRestTime.text = "휴장기간 ${it.hvofBgnde} ~ ${it.hvofEnddle} "
         }
         if (it.operPdCl.isNullOrBlank()) {
-            tvPlayTime.text = "등록된 운영기간 정보가 없습니다."
+//            tvPlayTime.text = "등록된 운영기간 정보가 없습니다."
+            tvPlayTime.visibility = View.GONE
         } else {
             tvPlayTime.text = "운영기간 - ${it.operPdCl}"
         }
-        var bottom = ""
-        if (it.siteBottomCl1 != "0") bottom += "잔디, "
-        if (it.siteBottomCl2 != "0") bottom += "파쇄석, "
-        if (it.siteBottomCl3 != "0") bottom += "테크, "
-        if (it.siteBottomCl4 != "0") bottom += "자갈, "
-        if (it.siteBottomCl5 != "0") bottom += "맨흙"
+//        var bottom = ""
+//        if (it.siteBottomCl1 != "0") bottom += "잔디, "
+//        if (it.siteBottomCl2 != "0") bottom += "파쇄석, "
+//        if (it.siteBottomCl3 != "0") bottom += "테크, "
+//        if (it.siteBottomCl4 != "0") bottom += "자갈, "
+//        if (it.siteBottomCl5 != "0") bottom += "맨흙"
 //        tvBottom.text = "바닥재질 - ${bottom}"
-        tvBottom.text = ""
-        tvBottom.visibility = View.GONE
+//        tvBottom.text = ""
+//        tvBottom.visibility = View.GONE
         if (it.intro.isNullOrBlank()) {
             tvIntroduceComment.text = "등록된 내용이 없습니다."
         } else {
@@ -194,22 +235,26 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         tvConvenienceComment.text =
             "편의시설 - 화장실: ${it.toiletCo} 샤워실: ${it.swrmCo} 개수대: ${it.wtrplCo} 화로대-${it.brazierCl}"
         if (it.sbrsCl.isNullOrEmpty()) {
-            tvConvenienceComment2.text = "등록된 부대시설이 없습니다."
+//            tvConvenienceComment2.text = "등록된 부대시설이 없습니다."
+            tvConvenienceComment2.visibility = View.GONE
         } else {
             tvConvenienceComment2.text = "부대시설 - ${it.sbrsCl}"
         }
         if (it.themaEnvrnCl.isNullOrEmpty()) {
-            tvConvenienceThema.text = "등록된 테마가 없습니다."
+//            tvConvenienceThema.text = "등록된 테마가 없습니다."
+            tvConvenienceThema.visibility = View.GONE
         } else {
             tvConvenienceThema.text = "테마 - ${it.themaEnvrnCl}"
         }
         if (it.posblFcltyCl.isNullOrEmpty()) {
-            tvConvenienceNear.text = "등록된 내용이 없습니다."
+//            tvConvenienceNear.text = "등록된 내용이 없습니다."
+            tvConvenienceNear.visibility = View.GONE
         } else {
             tvConvenienceNear.text = "주변이용가능시설 - ${it.posblFcltyCl}"
         }
         if (it.featureNm.isNullOrBlank()) {
-            tvConvenienceFeature.text = "등록된 특징이 없습니다."
+//            tvConvenienceFeature.text = "등록된 특징이 없습니다."
+            tvConvenienceFeature.visibility = View.GONE
         } else {
             tvConvenienceFeature.text = "특징 - ${it.featureNm}"
         }
@@ -217,9 +262,11 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         ivArrowBack.setOnClickListener {
             finish()
         }
-        val tell = it.tel
-        ivCallCamping.setOnClickListener {
-            val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${tell}"))
+        callLayout.setOnClickListener {
+            if (tvCall.text == "등록된 번호가 없습니다.") {
+                return@setOnClickListener
+            }
+            val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${tvCall.text}"))
             startActivity(intent)
         }
         val reserveUrl = it.resveUrl
@@ -232,13 +279,11 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                     .show()
             }
         }
-        if (naverMap != null) {
-            Log.d("Detail", "initsettiong 안에 마커만들기 실행됨")
-            makeMarker(it.mapX, it.mapY, it.facltNm, naverMap)
-        }
+
         binding.btnDetailroute.setOnClickListener { view ->
             openMap(it.mapY!!.toDouble(), it.mapX!!.toDouble(), it.facltNm)
         }
+        viewModel.callMart(mapY!!.toDouble(),mapX!!.toDouble() )
 
     }
 
@@ -256,25 +301,18 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         comment()
         scrollListener()
 
-        btnDetailsattel.setOnClickListener {
-            when (maptype) {
+        spinnerDetailsattel.setOnSpinnerItemSelectedListener<String> { oldIndex, oldItem, newIndex, newItem ->
+            when (newIndex) {
+                0 -> {
+                    naverMap?.mapType = NaverMap.MapType.Basic
+                }
                 1 -> {
                     naverMap?.mapType = NaverMap.MapType.Satellite
-                    maptype += 1
-                    btnDetailsattel.text = "위성도"
                 }
-
                 2 -> {
                     naverMap?.mapType = NaverMap.MapType.Terrain
-                    maptype += 1
-                    btnDetailsattel.text = "지형도"
                 }
-
-                3 -> {
-                    naverMap?.mapType = NaverMap.MapType.Basic
-                    maptype = 1
-                    btnDetailsattel.text = "기본"
-                }
+                else-> naverMap?.mapType = NaverMap.MapType.Basic
             }
         }
 
@@ -298,7 +336,10 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                 return onTouchEvent(event)
             }
         })
+
+
         commentBottomSheet.setOnClickListener {
+            bottomSheetOverlay.visibility = View.VISIBLE
             behavior.state = BottomSheetBehavior.STATE_COLLAPSED
             val screenHeight = resources.displayMetrics.heightPixels // 화면의 높이를 가져옴
             val peekHeightRatio = 0.7 // 바텀시트가 화면의 70%까지 보이도록 설정
@@ -318,6 +359,9 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_HIDDEN) {
                     viewModel.checkComment(myId!!)
+                    bottomSheetOverlay.visibility = View.GONE
+                    commentEdit.clearFocus()
+                    binding.root.hideKeyboard()
                 }
             }
 
@@ -353,34 +397,60 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
      * 댓글
      */
     private fun comment() = with(binding) {
+        linearComment.setOnClickListener {
+            if (userId == null) {
+                SnackbarUtil.showSnackBar(it)
+                binding.root.hideKeyboard()
+                behavior.state = BottomSheetBehavior.STATE_HIDDEN
+                return@setOnClickListener
+            }
+        }
+        commentLayout.setOnClickListener {
+            if (userId == null) {
+                SnackbarUtil.showSnackBar(it)
+                binding.root.hideKeyboard()
+                behavior.state = BottomSheetBehavior.STATE_HIDDEN
+                return@setOnClickListener
+            }
+        }
         commentPlusImage.setOnClickListener {
-            openGalleryForImage()
+            if (userId == null) {
+                SnackbarUtil.showSnackBar(it)
+                binding.root.hideKeyboard()
+                behavior.state = BottomSheetBehavior.STATE_HIDDEN
+                return@setOnClickListener
+            } else{
+                openGalleryForImage()
+            }
+        }
+        commentEdit.setOnClickListener {
+            if(userId == null){
+                SnackbarUtil.showSnackBar(it)
+                binding.root.hideKeyboard()
+                behavior.state = BottomSheetBehavior.STATE_HIDDEN
+                return@setOnClickListener
+            }
         }
         commentSend.setOnClickListener {
+            val content = commentEdit.text.toString()
+            if (content.isBlank()) {
+                sendLoading = false
+                return@setOnClickListener
+            }
             if (userId != null) {
                 if (!sendLoading) {
                     sendLoading = true
                     loadingAnimation.visibility = View.VISIBLE
                     commentSend.hideKeyboardInput()
 
-                    val content = commentEdit.text.toString()
-                    if (content.isBlank()) {
-                        sendLoading = false
-                        return@setOnClickListener
+                    val myImage = if (selectedImage.visibility == View.VISIBLE) {
+                        myImage
                     } else {
-                        val myImage = if (selectedImage.visibility == View.VISIBLE) {
-                            myImage
-                        } else {
-                            ""
-                        }
-                        val campId = myId
-                        viewModel.bringUserData(userId!!, content, myImage, campId!!)
+                        ""
                     }
+                    val campId = myId
+                    viewModel.bringUserData(userId!!, content, myImage, campId!!)
                 }
-            } else {
-                SnackbarUtil.showSnackBar(it)
-                binding.root.hideKeyboard()
-                behavior.state = BottomSheetBehavior.STATE_HIDDEN
             }
         }
         selectedImageDelete.setOnClickListener {
@@ -503,18 +573,28 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     override fun onMapReady(p0: NaverMap) {
-        Log.d("Detail", "onMapReady")
         naverMap = p0
         //한번도 카메라 영역 제한
         naverMap?.minZoom = 6.0
         naverMap?.maxZoom = 18.0
         naverMap?.extent =
             LatLngBounds(LatLng(32.973077, 124.270981), LatLng(38.856197, 130.051725))
-        Log.d("Detail", "onMapReady = ${mapX}, ${mapY}, ${campName},${naverMap}")
-        if (mapX?.isNotEmpty() == true && mapY?.isNotEmpty() == true && campName?.isNotEmpty() == true) {
-            Log.d("Detail", "onmapready 안에 마커만들기 실행됨")
-            makeMarker(mapX, mapY, campName, naverMap)
+        //Log.d("check", "onMapReady = ${mapX}, ${mapY}, ${campName},${naverMap}")
+        val cameraPosition = CameraPosition(LatLng(37.5664056, 126.9778222), 16.0)
+        naverMap?.cameraPosition = cameraPosition
+        viewModel.campEntity.observe(this@CampDetailActivity){
+            Log.d("Detail", " initsettiong = ${mapX}, ${mapY}, ${campName}, ${naverMap}")
+            if (naverMap != null) {
+                Log.d("Detail", "initsettiong 안에 마커만들기 실행됨")
+                if (it != null) {
+                    makeMarker(it.mapX, it.mapY, it.facltNm, naverMap!!)
+                }
+            } else {
+                Toast.makeText(this@CampDetailActivity,"위치 정보가 없어 지도에 표시할 수 없습니다.",Toast.LENGTH_SHORT).show()
+            }
         }
+
+
     }
 
     private fun View.hideKeyboardInput() {
@@ -525,16 +605,14 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onDestroy() {
         super.onDestroy()
         mapView = null
-        Log.d("test", "맵뷰 파괴됨")
     }
 
     private fun makeMarker(mapX: String?, mapY: String?, campName: String?, map: NaverMap?) {
         if (mapX != null && mapY != null) {
             val mapY = if (mapY.isNullOrEmpty()) 45.0 else mapY!!.toDouble()
             val mapX = if (mapX.isNullOrEmpty()) 130.0 else mapX!!.toDouble()
-            val cameraPosition = CameraPosition(LatLng(mapY, mapX), 10.0)
+            val cameraPosition = CameraPosition(LatLng(mapY, mapX), 11.0)
             val marker = Marker()
-            Timber.tag("makeMarker").d("mapx =${mapX}, mapy = ${mapY}")
             marker.position = LatLng(mapY, mapX)
             marker.captionText = campName.toString()
             marker.captionRequestedWidth = 200
@@ -614,4 +692,6 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(windowToken, 0)
     }
+
+
 }

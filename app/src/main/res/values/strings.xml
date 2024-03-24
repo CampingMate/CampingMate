@@ -15,6 +15,7 @@
     <string name="search_search_hint">검색어를 입력해주세요.</string>
     <string name="search_type">유형</string>
     <string name="search_location">지역</string>
+    <string name="search_location_multy_choice">(다중선택가능)</string>
     <string name="search_convenience">편의 시설</string>
     <string name="search_thema">테마 환경</string>
     <string name="search_bottom_shape">바닥 재질</string>
@@ -65,6 +66,7 @@
     <string name="search_chip_soil">맨흙</string>
     <string name="search_reset">초기화</string>
     <string name="search_apply">적용하기</string>
+    <string name="search_filter_title">검색필터</string>
 
 
     <string name="profile_logout"><u>로그아웃</u></string>
