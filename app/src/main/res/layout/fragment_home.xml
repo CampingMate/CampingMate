@@ -43,7 +43,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_icon_v2"
+                    android:src="@drawable/ic_icon_green"
                     />
             </androidx.cardview.widget.CardView>
 
@@ -302,7 +302,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="32dp"
                 android:gravity="center"
                 android:layout_marginStart="16dp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -325,96 +325,108 @@
 
 
             </LinearLayout>
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chip_district_group"
+            
+            <HorizontalScrollView
+                android:id="@+id/sv_district_chip"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
-                android:orientation="horizontal"
-                app:chipSpacingHorizontal="6dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/location_layout"
-                app:singleLine="true"
-                app:singleSelection="true">
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipAllCity"
-                    style="@style/CustomChipChoiceHome"
-                    android:layout_width="wrap_content"
+                android:scrollbars="none"
+                >
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chip_district_group"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:clickable="true"
-                    android:fontFamily="@font/spoqahansansneo_medium"
-                    android:text="전체"
-                    app:chipCornerRadius="6dp"
-                    app:chipStrokeWidth="1dp" />
+                    android:orientation="horizontal"
+                    app:chipSpacingHorizontal="6dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/location_layout"
+                    app:singleLine="true"
+                    app:singleSelection="true">
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipCapital"
-                    style="@style/CustomChipChoiceHome"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:clickable="true"
-                    android:fontFamily="@font/spoqahansansneo_medium"
-                    android:text="수도권"
-                    app:chipCornerRadius="6dp"
-                    app:chipStrokeWidth="1dp" />
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipAllCity"
+                        style="@style/CustomChipChoiceHome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_medium"
+                        android:text="전체"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipChungcheong"
-                    style="@style/CustomChipChoiceHome"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:clickable="true"
-                    android:fontFamily="@font/spoqahansansneo_medium"
-                    android:text="충청도"
-                    app:chipCornerRadius="6dp"
-                    app:chipStrokeWidth="1dp" />
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipCapital"
+                        style="@style/CustomChipChoiceHome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_medium"
+                        android:text="수도권"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipGangwon"
-                    style="@style/CustomChipChoiceHome"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:clickable="true"
-                    android:fontFamily="@font/spoqahansansneo_medium"
-                    android:text="강원도"
-                    app:chipCornerRadius="6dp"
-                    app:chipStrokeWidth="1dp" />
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipChungcheong"
+                        style="@style/CustomChipChoiceHome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_medium"
+                        android:text="충청도"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipGyeongsang"
-                    style="@style/CustomChipChoiceHome"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:clickable="true"
-                    android:fontFamily="@font/spoqahansansneo_medium"
-                    android:text="경상도"
-                    app:chipCornerRadius="6dp"
-                    app:chipStrokeWidth="1dp" />
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipGangwon"
+                        style="@style/CustomChipChoiceHome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_medium"
+                        android:text="강원도"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipJeolla"
-                    style="@style/CustomChipChoiceHome"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:clickable="true"
-                    android:fontFamily="@font/spoqahansansneo_medium"
-                    android:text="전라도"
-                    app:chipCornerRadius="6dp"
-                    app:chipStrokeWidth="1dp" />
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipGyeongsang"
+                        style="@style/CustomChipChoiceHome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_medium"
+                        android:text="경상도"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
 
-            </com.google.android.material.chip.ChipGroup>
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipJeolla"
+                        style="@style/CustomChipChoiceHome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:clickable="true"
+                        android:fontFamily="@font/spoqahansansneo_medium"
+                        android:text="전라도"
+                        app:chipCornerRadius="6dp"
+                        app:chipStrokeWidth="1dp" />
+
+                </com.google.android.material.chip.ChipGroup>
+
+            </HorizontalScrollView>
+
+
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_district_item"
@@ -424,7 +436,7 @@
                 android:layout_marginTop="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/chip_district_group">
+                app:layout_constraintTop_toBottomOf="@id/sv_district_chip">
 
             </androidx.recyclerview.widget.RecyclerView>
 

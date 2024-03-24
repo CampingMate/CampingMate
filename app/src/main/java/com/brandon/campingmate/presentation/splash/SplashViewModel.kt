@@ -1,15 +1,11 @@
 package com.brandon.campingmate.presentation.splash
 
-import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.domain.model.HomeEntity
-import com.brandon.campingmate.presentation.main.MainActivity
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
@@ -33,21 +29,26 @@ class SplashViewModel:ViewModel() {
 //    private val _isGet : MutableLiveData<Int> = MutableLiveData()
 //    val isGet : LiveData<Int> get() = _isGet
 
-    private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
-    val isLoading : StateFlow<Boolean> get() = _isLoading
+    private val _isLoading: MutableLiveData<Boolean> = MutableLiveData(true)
+    val isLoading: LiveData<Boolean> get() = _isLoading
 
-    private val _isGet: MutableStateFlow<Map<String, Boolean>> = MutableStateFlow(mapOf("city" to false, "theme" to false))
-    val isGet : StateFlow<Map<String, Boolean>> get() = _isGet
+    private val _isGet: MutableStateFlow<Map<String, Boolean>> =
+        MutableStateFlow(mapOf("city" to false, "theme" to false))
+    val isGet: StateFlow<Map<String, Boolean>> get() = _isGet
 
-    fun loadData(){
-        Log.d("Splash ViewModel","#csh loadData start")
+    init {
+        loadData()
+    }
+
+    fun loadData() {
+        Log.d("Splash ViewModel", "#csh loadData start")
         viewModelScope.launch {
             val db = Firebase.firestore
             val allCity: Query = db.collection("camps").limit(10)
 //            val allCity: Query = db.collection("reviewTest")
 //            val allCity: Query = db.collection("reviewTest_empty")
-            val allTheme : Query = allCity.whereNotEqualTo("themaEnvrnCl", listOf<String>()).limit(10)
-            allCity.get().addOnSuccessListener {documents ->
+            val allTheme: Query = allCity.whereNotEqualTo("themaEnvrnCl", listOf<String>()).limit(10)
+            allCity.get().addOnSuccessListener { documents ->
                 for (document in documents) {
                     val cityList = document.toObject(HomeEntity::class.java)
                     _allCityData.value?.add(cityList)

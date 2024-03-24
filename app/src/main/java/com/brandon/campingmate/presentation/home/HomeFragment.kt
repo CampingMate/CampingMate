@@ -9,41 +9,30 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.ScrollView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.brandon.campingmate.BuildConfig
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.FragmentHomeBinding
-import com.brandon.campingmate.domain.model.HolidayItem
 import com.brandon.campingmate.domain.model.HomeEntity
-import com.brandon.campingmate.network.retrofit.NetWorkClient.holidayNetWork
 import com.brandon.campingmate.presentation.home.adapter.HomeAdapter
 import com.brandon.campingmate.presentation.home.adapter.PetAdapter
 import com.brandon.campingmate.presentation.home.adapter.ReviewAdapter
-import com.brandon.campingmate.presentation.main.MainActivity
 import com.brandon.campingmate.presentation.search.SearchActivity
 import com.brandon.campingmate.presentation.splash.SplashViewModel
-import com.bumptech.glide.Glide
 import com.google.android.material.chip.ChipGroup
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
-import kotlinx.coroutines.launch
-import timber.log.Timber
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding ?: throw IllegalStateException("Attempt to access binding when not set.")
     private val homeViewModel by lazy { ViewModelProvider(this)[HomeViewModel::class.java] }
-    private val splashViewModel by lazy { ViewModelProvider(this)[SplashViewModel::class.java] }
+    private val splashViewModel: SplashViewModel by activityViewModels()
 
     private var districtItem = mutableListOf<HomeEntity>()
     private var themeItem = mutableListOf<HomeEntity>()
@@ -183,7 +172,7 @@ class HomeFragment : Fragment() {
             }
 
         }
-        splashViewModel.loadData()
+//        splashViewModel.loadData()
     }
 
     private fun initPetView(){

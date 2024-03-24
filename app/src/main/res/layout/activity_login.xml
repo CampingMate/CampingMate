@@ -4,36 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/brandColor"
     tools:context=".presentation.login.LoginActivity">
 
     <ImageView
         android:id="@+id/iv_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/ic_login_img"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tv_camping"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="CAMPING"
-        android:textSize="50sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/iv_login" />
-
-    <TextView
-        android:id="@+id/tv_mate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="MATE"
-        android:textSize="50sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_camping" />
-
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/cv_google"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_google"
@@ -42,7 +23,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="14dp"
-        app:cardBackgroundColor="@color/kakao_yellow"
+        app:cardBackgroundColor="@color/white"
         app:cardCornerRadius="8dp"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toTopOf="@id/cv_kakao"
@@ -50,16 +31,19 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:layout_gravity="center|left"
-            android:layout_marginStart="15dp" />
+            android:layout_marginStart="15dp"
+            android:src="@drawable/google_logo_icon_169090"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="구글로 로그인하기" />
+            android:text="구글로 로그인하기"
+            android:fontFamily="@font/spoqahansansneo_regular"
+            android:textSize="20sp"/>
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
@@ -77,16 +61,19 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:layout_gravity="center|left"
-            android:layout_marginStart="15dp" />
+            android:layout_marginStart="15dp"
+            android:src="@drawable/pngegg"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="카카오로 로그인하기" />
+            android:text="카카오로 로그인하기"
+            android:fontFamily="@font/spoqahansansneo_regular"
+            android:textSize="20sp"/>
     </androidx.cardview.widget.CardView>
 
     <TextView
