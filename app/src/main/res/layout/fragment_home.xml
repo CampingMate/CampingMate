@@ -37,7 +37,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="5dp"
                 >
                 <ImageView
                     android:id="@+id/iv_camp_pet_img"
@@ -303,11 +302,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:layout_marginTop="50dp"
                 android:gravity="center"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lo_holiday"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="32dp">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lo_holiday">
 
                 <TextView
                     android:id="@+id/tv_bigtitle_district"
@@ -315,19 +314,15 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/spoqahansansneo_bold"
                     android:text="지역별 캠핑장"
-                    android:textSize="20sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:textSize="20sp"/>
 
                 <ImageView
                     android:id="@+id/iv_more_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="19dp"
                     android:layout_marginStart="4dp"
-                    android:src="@drawable/ic_arrow_forward"
-                    app:layout_constraintBottom_toBottomOf="@id/tv_bigtitle_district"
-                    app:layout_constraintStart_toEndOf="@id/tv_bigtitle_district"
-                    app:layout_constraintTop_toTopOf="@id/tv_bigtitle_district" />
+                    android:src="@drawable/ic_arrow_forward"/>
+
 
             </LinearLayout>
 
@@ -498,7 +493,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="4dp"
                 android:layout_marginEnd="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -510,7 +504,6 @@
                     android:id="@+id/chip_theme_group"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
                     android:layout_marginTop="12dp"
                     android:layout_marginEnd="16dp"
                     android:orientation="horizontal"
