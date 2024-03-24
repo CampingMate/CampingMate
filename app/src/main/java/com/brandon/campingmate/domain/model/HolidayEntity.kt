@@ -2,7 +2,7 @@ package com.brandon.campingmate.domain.model
 data class HolidayEntity(val response : HolidayResponse)
 
 data class HolidayResponse(
-    val header : HolidayHeader,
+//    val header : HolidayHeader,
     val body : HolidayBody
 )
 
