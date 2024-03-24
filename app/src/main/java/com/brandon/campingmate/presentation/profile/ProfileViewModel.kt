@@ -50,8 +50,12 @@ class ProfileViewModel : ViewModel() {
                         contentIds.add(item.toString())
                     }
                 }
-                bookmarkCamp.clear()
                 if (contentIds.isNotEmpty()) {
+                    bookmarkCamp.clear()
+                    callBookmarkCamp(contentIds)
+                } else {
+                    contentIds.add("0")
+                    bookmarkCamp.clear()
                     callBookmarkCamp(contentIds)
                 }
             }
@@ -149,5 +153,9 @@ class ProfileViewModel : ViewModel() {
         _postList.value = _postList.value?.toMutableList()?.apply {
             removePostItem?.let { add(it) }
         } ?: mutableListOf()
+    }
+
+    fun clearBookmarkedList() {
+        _bookmarkedList.value = emptyList()
     }
 }

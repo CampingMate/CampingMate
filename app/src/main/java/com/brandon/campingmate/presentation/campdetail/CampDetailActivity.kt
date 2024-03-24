@@ -81,7 +81,6 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         initView()
         initViewModel()
         initBottomSheet()
-        checkBookmarked()
         clickBookmarked()
         mapView = binding.fcMap
         mapView?.onCreate(savedInstanceState)
@@ -94,6 +93,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         if(userId != null){
             binding.commentEdit.isFocusableInTouchMode = true
         }
+        checkBookmarked()
     }
 
     private fun initViewPager() {
