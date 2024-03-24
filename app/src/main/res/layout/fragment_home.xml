@@ -43,7 +43,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_icon_v2"
+                    android:src="@drawable/ic_icon_green"
                     />
             </androidx.cardview.widget.CardView>
 

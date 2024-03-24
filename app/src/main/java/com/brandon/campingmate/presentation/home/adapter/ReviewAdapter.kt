@@ -30,7 +30,7 @@ class ReviewAdapter(private val mContext: Context, var mItems: MutableList<HomeE
         }
 
         if (mItems[position].firstImageUrl == "")
-            holder.campImg.setImageResource(R.drawable.ic_login_img)
+            holder.campImg.setImageResource(R.drawable.default_camping)
         else {
             Glide.with(mContext)
                 .load(mItems[position].firstImageUrl)

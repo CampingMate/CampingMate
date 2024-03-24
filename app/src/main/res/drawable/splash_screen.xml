@@ -3,6 +3,6 @@
     <item
         android:width = "@dimen/splash_screen_icon_size"
         android:height="@dimen/splash_screen_icon_size"
-        android:drawable="@drawable/ic_icon_v2"
+        android:drawable="@drawable/ic_icon_green"
         android:gravity="center|fill"/>
 </layer-list>

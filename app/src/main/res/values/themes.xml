@@ -18,7 +18,7 @@
 
     <style name="Theme.AppCompat.Starting" parent="Theme.SplashScreen">
         <item name="postSplashScreenTheme">@style/Base.Theme.CampingMate</item>
-        <item name="windowSplashScreenBackground">#536730</item>
+        <item name="windowSplashScreenBackground">@color/brandColor</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/default_camping</item>
     </style>
 

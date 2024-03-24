@@ -31,7 +31,7 @@ class PetAdapter(private val mContext: Context, var mItems: MutableList<HomeEnti
             mContext.startActivity(intent)
         }
         if (mItems[position]?.firstImageUrl == "")
-            holder.campImg.setImageResource(R.drawable.ic_login_img)
+            holder.campImg.setImageResource(R.drawable.default_camping)
         else {
             val dimColor = Color.parseColor("#0D000000")
             holder.campImg.setColorFilter(dimColor, PorterDuff.Mode.SRC_ATOP)

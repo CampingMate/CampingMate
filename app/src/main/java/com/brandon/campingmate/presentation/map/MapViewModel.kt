@@ -203,7 +203,7 @@ class MapViewModel : ViewModel(){
                     }
                 }
                 if(imgList.isEmpty()){
-                    imgList.add("android.resource://${BuildConfig.APPLICATION_ID}/${R.drawable.ic_login_img}")
+                    imgList.add("android.resource://${BuildConfig.APPLICATION_ID}/${R.drawable.default_camping}")
                 }
                 _imageRes.value = imgList
             } catch (e:Exception){
