@@ -4,14 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.brandon.campingmate.R
 import com.brandon.campingmate.databinding.ItemSmallCampBinding
-import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.domain.model.HomeEntity
 import com.brandon.campingmate.presentation.campdetail.CampDetailActivity
 import com.bumptech.glide.Glide
@@ -34,7 +31,7 @@ class HomeAdapter(private val mContext: Context, var mItems: MutableList<HomeEnt
             mContext.startActivity(intent)
         }
         if (mItems?.get(position)?.firstImageUrl == "")
-            holder.campImg.setImageResource(R.drawable.ic_login_img)
+            holder.campImg.setImageResource(R.drawable.default_camping)
         else {
             val dimColor = Color.parseColor("#0D000000")
             holder.campImg.setColorFilter(dimColor, PorterDuff.Mode.SRC_ATOP)

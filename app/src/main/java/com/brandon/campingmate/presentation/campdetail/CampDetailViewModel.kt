@@ -2,8 +2,6 @@ package com.brandon.campingmate.presentation.campdetail
 
 import android.net.Uri
 import android.util.Log
-import android.view.View
-import android.view.WindowId
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,18 +16,14 @@ import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
-import com.google.common.collect.Lists
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.Marker
