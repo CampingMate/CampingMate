@@ -459,36 +459,44 @@
                     android:id="@+id/fc_map"
                     android:layout_width="0dp"
                     android:layout_height="300dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_map" />
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btn_detailsattel"
+                <com.skydoves.powerspinner.PowerSpinnerView
+                    android:id="@+id/spinner_detailsattel"
                     android:layout_width="78dp"
                     android:layout_height="34dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="16dp"
-                    android:background="@drawable/apply_btn"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@color/brandColor"
+                    android:gravity="center"
                     android:text="기본"
                     android:textColor="@color/white"
                     android:textSize="13sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/fc_map" />
+                    app:layout_constraintStart_toStartOf="@+id/fc_map"
+                    app:layout_constraintTop_toTopOf="@+id/fc_map"
+                    app:spinner_divider_show="true"
+                    app:spinner_item_array="@array/maptype"
+                    app:spinner_item_height="40dp"
+                    app:spinner_popup_animation="bounce"
+                    app:spinner_popup_background="@color/brandColor" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_detailroute"
                     android:layout_width="78dp"
                     android:layout_height="34dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:background="@drawable/apply_btn"
                     android:text="경로 보기"
                     android:textColor="@color/white"
                     android:textSize="13sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/btn_detailsattel" />
+                    app:layout_constraintEnd_toEndOf="@+id/fc_map"
+                    app:layout_constraintTop_toTopOf="@+id/fc_map" />
 
                 <View
                     android:id="@+id/divider_4"
@@ -613,6 +621,8 @@
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
+        android:visibility="gone"
         android:background="@drawable/search_bottom_background"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
