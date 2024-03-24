@@ -17,6 +17,7 @@ class LocationActivity : AppCompatActivity() {
     private val viewModel by lazy {
         ViewModelProvider(this)[LocationViewModel::class.java]
     }
+    private var choiceLocation: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +37,7 @@ class LocationActivity : AppCompatActivity() {
 
     private fun initView() = with(binding) {
         val selectedChipName = intent.getStringExtra("checkedChipName")
+        choiceLocation = selectedChipName!!
         locationRecycler.adapter = listAdapter
         locationRecycler.layoutManager =
             LinearLayoutManager(this@LocationActivity, LinearLayoutManager.VERTICAL, false)
@@ -50,15 +52,15 @@ class LocationActivity : AppCompatActivity() {
                 if (visibleItemCount + firstVisibleItemPosition >= totalItemCount && firstVisibleItemPosition >= 0) {
                     // 목록의 끝에 도달했을 때, 더 많은 데이터 로드
                     if (!viewModel.isLoading) {
-                        viewModel.loadMoreData(selectedChipName!!)
+                        viewModel.loadMoreData(choiceLocation)
                     }
                 }
             }
         })
         loadingAnimation.visibility = View.VISIBLE
-        viewModel.callData(selectedChipName!!)
+        viewModel.callData(choiceLocation)
         ivArrowBack.setOnClickListener { finish() }
-        locationText(selectedChipName)
+        locationText(choiceLocation)
     }
 
     private fun locationText(selectedChipName: String) =with(binding){
@@ -79,27 +81,33 @@ class LocationActivity : AppCompatActivity() {
         }
         tvAll.setOnClickListener {
             showLocation(allView)
-            viewModel.callData("전체")
+            choiceLocation = "전체"
+            viewModel.callData(choiceLocation)
         }
         tvSudo.setOnClickListener {
             showLocation(sudoView)
-            viewModel.callData("수도권")
+            choiceLocation = "수도권"
+            viewModel.callData(choiceLocation)
         }
         tvGangwon.setOnClickListener {
             showLocation(gangwonView)
-            viewModel.callData("강원도")
+            choiceLocation = "강원도"
+            viewModel.callData(choiceLocation)
         }
         tvChungcheong.setOnClickListener {
             showLocation(chungcheongView)
-            viewModel.callData("충청도")
+            choiceLocation = "충청도"
+            viewModel.callData(choiceLocation)
         }
         tvJeolla.setOnClickListener {
             showLocation(jeollaView)
-            viewModel.callData("전라도")
+            choiceLocation = "전라도"
+            viewModel.callData(choiceLocation)
         }
         tvGyeongsang.setOnClickListener {
             showLocation(gyeongsangView)
-            viewModel.callData("경상도")
+            choiceLocation = "경상도"
+            viewModel.callData(choiceLocation)
         }
     }
 
