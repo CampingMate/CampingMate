@@ -1015,15 +1015,17 @@
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_apply"
-                    android:layout_width="200dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
+                    android:layout_marginEnd="16dp"
                     android:background="@drawable/apply_btn"
                     android:text="@string/search_apply"
                     android:textColor="@color/background"
                     app:layout_constraintBottom_toBottomOf="@id/btn_reset"
                     app:layout_constraintStart_toEndOf="@id/btn_reset"
-                    app:layout_constraintTop_toTopOf="@id/btn_reset" />
+                    app:layout_constraintTop_toTopOf="@id/btn_reset"
+                    app:layout_constraintEnd_toEndOf="parent"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
