@@ -11,7 +11,6 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -23,20 +22,25 @@ import androidx.recyclerview.widget.RecyclerView
 import com.brandon.campingmate.R
 import com.brandon.campingmate.data.local.preferences.EncryptedPrefs
 import com.brandon.campingmate.data.local.preferences.PreferencesDataSourceImpl
+import com.brandon.campingmate.data.remote.api.OpenSearchDataSourceImpl
 import com.brandon.campingmate.data.remote.firebasestorage.FireBaseStorageDataSourceImpl
 import com.brandon.campingmate.data.remote.firestore.FirestoreDataSourceImpl
 import com.brandon.campingmate.data.repository.PostRepositoryImpl
+import com.brandon.campingmate.data.repository.SearchPostRepositoryImpl
 import com.brandon.campingmate.data.repository.UserRepositoryImpl
 import com.brandon.campingmate.databinding.FragmentBoardBinding
 import com.brandon.campingmate.domain.usecase.GetPostsUseCase
 import com.brandon.campingmate.domain.usecase.GetUserUserCase
+import com.brandon.campingmate.domain.usecase.SearchPostUseCase
 import com.brandon.campingmate.network.firestore.FirebaseService.fireStoreDB
 import com.brandon.campingmate.network.firestore.FirebaseService.firebaseStorage
+import com.brandon.campingmate.network.retrofit.NetWorkClient.openSearchService
 import com.brandon.campingmate.presentation.board.adapter.PostListAdapter
 import com.brandon.campingmate.presentation.board.adapter.PostListItem
 import com.brandon.campingmate.presentation.common.SnackbarUtil
 import com.brandon.campingmate.presentation.postdetail.PostDetailActivity
 import com.brandon.campingmate.presentation.postwrite.PostWriteActivity
+import com.brandon.campingmate.utils.setDebouncedOnClickListener
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -60,6 +64,11 @@ class BoardFragment : Fragment() {
                     ), FirestoreDataSourceImpl(
                         fireStoreDB
                     )
+                )
+            ),
+            SearchPostUseCase(
+                SearchPostRepositoryImpl(
+                    OpenSearchDataSourceImpl(openSearchService)
                 )
             )
         )
@@ -138,23 +147,21 @@ class BoardFragment : Fragment() {
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
+                Timber.d("검색 키워드: $query")
+                viewModel.searchPost(query)
                 searchView.clearFocus()
+
+                binding.fab.apply {
+                    setImageResource(R.drawable.ic_refresh)
+                    setOnClickListener {
+                        viewModel.handleEvent(BoardEvent.RefreshRequested)
+                        setImageResource(R.drawable.ic_add)
+                    }
+                }
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                newText.isNullOrEmpty().let {
-                    btnWrite.isVisible = it
-                    val params = searchView.layoutParams as ConstraintLayout.LayoutParams
-                    if (it) {
-                        params.marginEnd = 0
-                    } else {
-                        val marginInDp = 16
-                        val marginInPx = (marginInDp * resources.displayMetrics.density).toInt() // DP를 픽셀로 변환
-                        params.marginEnd = marginInPx
-                    }
-                    searchView.layoutParams = params
-                }
                 return false
             }
         })
@@ -166,7 +173,6 @@ class BoardFragment : Fragment() {
                     val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                     val totalItemCount = layoutManager.itemCount
                     val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
-
                     if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition + 1 >= totalItemCount) {
                         viewModel.handleEvent(BoardEvent.LoadMoreRequested)
                     }
@@ -174,7 +180,7 @@ class BoardFragment : Fragment() {
             }
         })
 
-        btnWrite.setOnClickListener {
+        fab.setOnClickListener {
             viewModel.handleEvent(BoardEvent.NavigateToPostWrite)
         }
 
@@ -196,6 +202,9 @@ class BoardFragment : Fragment() {
             binding.swipeRefresh.isRefreshing = false
         }
 
+        btnLottieCamp.setDebouncedOnClickListener {
+            viewModel.handleEvent(BoardEvent.RefreshRequested)
+        }
     }
 
     private fun initView() = with(binding) {
@@ -257,6 +266,7 @@ class BoardFragment : Fragment() {
     }
 
     private fun onBind(state: BoardUiState) = with(state) {
+        binding.lottieNothingToShow.isVisible = isNothingToShow
         postListAdapter.submitList(posts + if (isLoadingMore) listOf(PostListItem.Loading) else emptyList()) {
             if (shouldScrollToTop) {
                 binding.rvPostList.smoothScrollToPosition(0)
@@ -286,11 +296,11 @@ class BoardFragment : Fragment() {
 
     private fun updateUiForLogin(isLogin: Boolean) = with(binding) {
         if (isLogin) {
-            btnWrite.setOnClickListener {
+            fab.setOnClickListener {
                 viewModel.handleEvent(BoardEvent.NavigateToPostWrite)
             }
         } else {
-            btnWrite.setOnClickListener {
+            fab.setOnClickListener {
                 SnackbarUtil.showSnackBar(binding.root)
             }
         }

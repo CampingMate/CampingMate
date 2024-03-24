@@ -1,8 +1,11 @@
 package com.brandon.campingmate.utils.mappers
 
 import com.brandon.campingmate.data.remote.dto.PostDTO
+import com.brandon.campingmate.data.remote.dto.PostHitDTO
 import com.brandon.campingmate.domain.model.Post
 import com.brandon.campingmate.presentation.board.adapter.PostListItem
+import com.google.firebase.Timestamp
+import java.util.Date
 
 fun Post.toPostDTO(): PostDTO {
     return PostDTO(
@@ -57,4 +60,23 @@ fun PostListItem.PostItem.toPostEntity(): Post {
         imageUrls = this.imageUrlList,
         timestamp = this.timestamp
     )
+}
+
+fun PostHitDTO.toPost(): Post {
+    return Post(
+        postId = this.postId,
+        authorName = this.authorName,
+        authorId = this.authorId,
+        authorProfileImageUrl = this.authorProfileImageUrl,
+        title = this.title,
+        content = this.content,
+        imageUrls = this.imageUrls,
+        timestamp = this.timestamp.toTimeStamp()
+    )
+}
+
+fun Long?.toTimeStamp(): Timestamp? {
+    if (this == null) return null
+    val date = Date(this)
+    return Timestamp(date)
 }
