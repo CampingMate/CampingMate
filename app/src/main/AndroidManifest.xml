@@ -19,9 +19,9 @@
         android:icon="@mipmap/ic_launcher_campingmate"
         android:label="@string/app_name"
         android:largeHeap="true"
+        android:theme="@style/Base.Theme.CampingMate"
         android:roundIcon="@mipmap/ic_launcher_campingmate_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Starting"
         tools:targetApi="31">
 
         <!-- 모든 액티비티에 android:screenOrientation="portrait" 추가 -->
@@ -69,6 +69,7 @@
         <activity
             android:name=".presentation.main.MainActivity"
             android:exported="true"
+            android:theme="@style/Theme.AppCompat.Starting"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

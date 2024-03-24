@@ -45,7 +45,6 @@ class MainActivity : AppCompatActivity() {
     private fun setSplash() {
         val splashScreen = installSplashScreen()
 
-
         sharedViewModel.isLoading.observe(this) { isLoading ->
             splashScreen.setKeepOnScreenCondition { isLoading }
         }
