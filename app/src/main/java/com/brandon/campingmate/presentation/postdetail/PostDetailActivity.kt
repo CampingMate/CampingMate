@@ -401,7 +401,7 @@ class PostDetailActivity : AppCompatActivity() {
     private fun configureCommentInputField(isUserLoggedIn: Boolean) {
         with(binding) {
             if (isUserLoggedIn) {
-                clCommentBarContainer.setOnClickListener(null)
+                etCommentInput.setOnClickListener(null)
                 etCommentInput.isFocusable = true
                 etCommentInput.isFocusableInTouchMode = true
                 etCommentInput.hint = "텍스트를 입력하세요"

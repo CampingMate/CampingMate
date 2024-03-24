@@ -100,7 +100,6 @@ class BoardFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Timber.tag("BOARD").d("BoardFragment onViewCreated")
 
-//        upLoadFakePosts(5)
         initResultLauncher()
         initView()
         initListener()
@@ -150,12 +149,14 @@ class BoardFragment : Fragment() {
                 Timber.d("검색 키워드: $query")
                 viewModel.searchPost(query)
                 searchView.clearFocus()
-
                 binding.fab.apply {
                     setImageResource(R.drawable.ic_refresh)
                     setOnClickListener {
                         viewModel.handleEvent(BoardEvent.RefreshRequested)
                         setImageResource(R.drawable.ic_add)
+                        setOnClickListener {
+                            viewModel.handleEvent(BoardEvent.NavigateToPostWrite)
+                        }
                     }
                 }
                 return false
