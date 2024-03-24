@@ -8,19 +8,26 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.AttributeSet
 import android.util.Log
+import android.view.DragEvent
 import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnDragListener
 import android.view.View.OnTouchListener
 import android.view.animation.AlphaAnimation
 import android.view.inputmethod.InputMethodManager
+import android.widget.AbsListView
+import android.widget.AbsListView.OnScrollListener
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
+import coil.decode.withInterruptibleSource
 import com.brandon.campingmate.R
 import com.brandon.campingmate.data.local.preferences.EncryptedPrefs
 import com.brandon.campingmate.databinding.ActivityCampDetailBinding
@@ -160,7 +167,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         mapX = it.mapX
         mapY = it.mapY
         campName = it.facltNm
-        Log.d("Detail", " initsettiong = ${mapX}, ${mapY}, ${campName}, ${naverMap}")
+
         tvCampName.text = it.facltNm
         tvAddr.text = it.addr1 ?: "등록된 주소가 없습니다."
         tvCall.text = it.tel ?: "등록된 번호가 없습니다."
@@ -239,19 +246,12 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                     .show()
             }
         }
-        if (naverMap != null) {
-            Log.d("Detail", "initsettiong 안에 마커만들기 실행됨")
-            makeMarker(it.mapX, it.mapY, it.facltNm, naverMap)
-        }
+
         binding.btnDetailroute.setOnClickListener { view ->
             openMap(it.mapY!!.toDouble(), it.mapX!!.toDouble(), it.facltNm)
         }
         viewModel.callMart(mapY!!.toDouble(),mapX!!.toDouble() )
-        if (naverMap != null) {
-            makeMarker(mapX, mapY, campName, naverMap)
-        } else {
-            Toast.makeText(this@CampDetailActivity,"위치 정보가 없어 지도에 표시할 수 없습니다.",Toast.LENGTH_SHORT).show()
-        }
+
     }
 
     private fun initView() = with(binding) {
@@ -268,25 +268,18 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         comment()
         scrollListener()
 
-        btnDetailsattel.setOnClickListener {
-            when (maptype) {
+        spinnerDetailsattel.setOnSpinnerItemSelectedListener<String> { oldIndex, oldItem, newIndex, newItem ->
+            when (newIndex) {
+                0 -> {
+                    naverMap?.mapType = NaverMap.MapType.Basic
+                }
                 1 -> {
                     naverMap?.mapType = NaverMap.MapType.Satellite
-                    maptype += 1
-                    btnDetailsattel.text = "위성도"
                 }
-
                 2 -> {
                     naverMap?.mapType = NaverMap.MapType.Terrain
-                    maptype += 1
-                    btnDetailsattel.text = "지형도"
                 }
-
-                3 -> {
-                    naverMap?.mapType = NaverMap.MapType.Basic
-                    maptype = 1
-                    btnDetailsattel.text = "기본"
-                }
+                else-> naverMap?.mapType = NaverMap.MapType.Basic
             }
         }
 
@@ -310,6 +303,8 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                 return onTouchEvent(event)
             }
         })
+
+
         commentBottomSheet.setOnClickListener {
             behavior.state = BottomSheetBehavior.STATE_COLLAPSED
             val screenHeight = resources.displayMetrics.heightPixels // 화면의 높이를 가져옴
@@ -521,8 +516,20 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         naverMap?.maxZoom = 18.0
         naverMap?.extent =
             LatLngBounds(LatLng(32.973077, 124.270981), LatLng(38.856197, 130.051725))
-        Log.d("check", "onMapReady = ${mapX}, ${mapY}, ${campName},${naverMap}")
-
+        //Log.d("check", "onMapReady = ${mapX}, ${mapY}, ${campName},${naverMap}")
+        val cameraPosition = CameraPosition(LatLng(37.5664056, 126.9778222), 16.0)
+        naverMap?.cameraPosition = cameraPosition
+        viewModel.campEntity.observe(this@CampDetailActivity){
+            Log.d("Detail", " initsettiong = ${mapX}, ${mapY}, ${campName}, ${naverMap}")
+            if (naverMap != null) {
+                Log.d("Detail", "initsettiong 안에 마커만들기 실행됨")
+                if (it != null) {
+                    makeMarker(it.mapX, it.mapY, it.facltNm, naverMap!!)
+                }
+            } else {
+                Toast.makeText(this@CampDetailActivity,"위치 정보가 없어 지도에 표시할 수 없습니다.",Toast.LENGTH_SHORT).show()
+            }
+        }
 
 
     }

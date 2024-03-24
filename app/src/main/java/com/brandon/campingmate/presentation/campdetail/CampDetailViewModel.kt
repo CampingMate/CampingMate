@@ -344,7 +344,7 @@ class CampDetailViewModel : ViewModel() {
         for (b in bounds) {
             val q = db.collection("mart")
                 .orderBy("geohash")
-                .limit(15)
+                .limit(10)
                 .startAt(b.startHash)
                 .endAt(b.endHash)
             tasks.add(q.get())

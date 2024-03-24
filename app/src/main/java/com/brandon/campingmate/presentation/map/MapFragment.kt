@@ -56,7 +56,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val binding get() = _binding!!
     private var mapView: MapView? = null
     private var naverMap: NaverMap? = null
-    private var maptype: Int = 1
     private var context: Context? = null
     private val imgAdapter = DialogImgAdapter()
     private var tedNaverClustering: TedNaverClustering<LocationBasedListItem>? = null
@@ -69,7 +68,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         ViewModelProvider(this)[MapViewModel::class.java]
     }
     private lateinit var fusedLocationSource: FusedLocationSource
-    private val db = FirebaseFirestore.getInstance()
     var userId: String? = EncryptedPrefs.getMyId()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -119,16 +117,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
         }
 
-
-
         ivDialogclose.setOnClickListener {
             clMapBottomDialog.isGone = true
         }
 
-//        button.setOnClickListener {
-//            val intent = Intent(context, WebViewActivity::class.java)
-//            startActivity(intent)
-//        }
         rvCampImg.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         rvCampImg.adapter = imgAdapter
@@ -301,7 +293,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     SnackbarUtil.showSnackBar(buttonView)
 
                 } else {
-                    binding.switchBookmark.text = "북마크"
                     markers.forEach {
                         hideMarker(it)
                     }
@@ -314,7 +305,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     bookmark = true
                 }
             } else {
-                binding.switchBookmark.text = "전체"
                 bookmarkMarkers.forEach {
                     hideMarker(it)
                 }
@@ -359,6 +349,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     }
                     val param = viewModel.getImgParamHashmap(it.contentId.toString())
                     viewModel.getImgList(param)
+                }
+                .clusterClickListener {
+
                 }
                 .minClusterSize(0)
                 .clusterBuckets(intArrayOf(5000, 100))
