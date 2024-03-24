@@ -1,5 +1,7 @@
 package com.brandon.campingmate.network.retrofit
 
+import com.getkeepsafe.relinker.BuildConfig
+import com.google.gson.GsonBuilder
 import com.brandon.campingmate.BuildConfig
 import com.brandon.campingmate.data.remote.api.OpenSearchService
 import okhttp3.OkHttpClient
@@ -30,8 +32,8 @@ object NetWorkClient {
 
     val imageNetWork: NetWorkInterface = imageRetrofit.create(NetWorkInterface::class.java)
 
-    private val holidayRetrofit =
-        Retrofit.Builder().baseUrl(HOLIDAY_URL).addConverterFactory(GsonConverterFactory.create()).client(
+    private val holidayRetrofit = Retrofit.Builder()
+        .baseUrl(HOLIDAY_URL).addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create())).client(
             createOkHttpClient()
         ).build()
 

@@ -109,6 +109,7 @@ class HomeFragment : Fragment() {
         onLayoutClickListener(binding.loSearch)
 
 
+
         binding.locationLayout.setOnClickListener {
             val checkedChipId = binding.chipDistrictGroup.checkedChipId
             val checkedChipName = when(checkedChipId){
