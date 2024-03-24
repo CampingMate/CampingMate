@@ -120,4 +120,10 @@ dependencies {
 
     //lifecycle
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.3.1")
+
+    //geofire
+    implementation ("com.firebase:geofire-android-common:3.2.0")
+
+    //spinner
+    implementation ("com.github.skydoves:powerspinner:1.2.7")
 }

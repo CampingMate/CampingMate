@@ -21,7 +21,6 @@ class ViewPagerAdapter(imageList: MutableList<String>) : RecyclerView.Adapter<Vi
             .load(item[position])
             .centerCrop()
             .into(holder.image)
-
     }
 
     inner class PagerViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder

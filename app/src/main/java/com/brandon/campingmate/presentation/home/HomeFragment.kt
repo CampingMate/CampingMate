@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -27,6 +28,7 @@ import com.brandon.campingmate.presentation.home.adapter.ReviewAdapter
 import com.brandon.campingmate.presentation.main.MainActivity
 import com.brandon.campingmate.presentation.search.SearchActivity
 import com.brandon.campingmate.presentation.splash.SplashViewModel
+import com.bumptech.glide.Glide
 import com.google.android.material.chip.ChipGroup
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.Query
@@ -40,46 +42,51 @@ import java.time.temporal.ChronoUnit
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding ?: throw IllegalStateException("Attempt to access binding when not set.")
-
-    private val viewModel by lazy {
-        ViewModelProvider(this)[HomeViewModel::class.java]
-    }
-
-    private val splashViewModel by lazy {
-        ViewModelProvider(this)[SplashViewModel::class.java]
-    }
+    private val homeViewModel by lazy { ViewModelProvider(this)[HomeViewModel::class.java] }
+    private val splashViewModel by lazy { ViewModelProvider(this)[SplashViewModel::class.java] }
 
     private var districtItem = mutableListOf<HomeEntity>()
-    private var petItem = mutableListOf<HomeEntity?>()
     private var themeItem = mutableListOf<HomeEntity>()
-    private var dataItem = mutableListOf<HomeEntity>()
     private lateinit var districtAdapter: HomeAdapter
     private lateinit var themeAdapter: HomeAdapter
-    private val db = Firebase.firestore
-    private val allCity: Query = db.collection("camps")
+//    private val db = Firebase.firestore
+//    private val allCity: Query = db.collection("camps")
+
+    private var scrollView: ScrollView? = null
+    private var scrollPosition: Int = 0
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        Log.d("Home", "#csh onAttach")
+        Log.d("Home", "#Cycle onAttach")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("Home", "#csh onCreate")
+        Log.d("Home", "#Cycle onCreate")
+
+
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Log.d("Home", "#csh onCreateView")
+        Log.d("Home", "#Cycle onCreateView")
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
+
+        scrollView = binding.svHome
+
+        if(savedInstanceState != null){
+            scrollPosition = savedInstanceState.getInt("SCROLL_POSITION")
+            scrollView?.scrollTo(0,scrollPosition)
+        }
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d("Home", "#csh onViewCreated")
+        Log.d("Home", "#Cycle onViewCreated")
 //        Log.d("Home", "#csh onViewCreated city : $city")
 //        holidayInfo()
 //        viewModelGet("district")
@@ -88,6 +95,11 @@ class HomeFragment : Fragment() {
 ////        initView(allCity, "theme")
 //        initPetView()
 //        initReviewItem()
+
+//        Glide.with(binding.root)
+//            .asGif()
+//            .load(R.drawable.ic_brand_img_gif)
+//            .into(binding.ivBramdImg)
         init()
 
         onLayoutClickListener(binding.loCategoryCar)
@@ -114,14 +126,31 @@ class HomeFragment : Fragment() {
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        Log.d("Home", "#csh onActivityCreated")
-    }
-
     override fun onStart() {
         super.onStart()
-        Log.d("Home", "#csh onStart")
+        Log.d("Home", "#Cycle onStart")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("Home", "#Cycle onResume")
+        scrollView?.post {
+            scrollView?.scrollTo(0,scrollPosition)
+            Log.d("Home", "#scroll $scrollPosition")
+        }
+        initReviewItem()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("Home", "#Cycle onPause")
+        scrollPosition = scrollView?.scrollY?:0
+        Log.d("Home", "#scroll $scrollPosition")
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("SCROLL_POSITION", scrollPosition)
     }
 
     private fun init(){
@@ -129,38 +158,79 @@ class HomeFragment : Fragment() {
         holidayInfo()
         initPetView()
         var isReview = true
+        var isDistrict = true
+        var isTheme = true
 
         splashViewModel.isGet.asLiveData().observe(viewLifecycleOwner) { isDataLoaded ->
+            Log.d("Home", "#csh init observe")
             val isCityLoaded = isDataLoaded["city"]?:false
             val isThemeLoaded = isDataLoaded["theme"]?:false
 
-            if (isCityLoaded) {
+            if (isCityLoaded && isDistrict) {
+                Log.d("Home", "#csh init district")
                 viewModelGet("district")
-//        initView(allCity, "district")
-//        initView(allCity, "theme")
+                isDistrict=false
                 if(isReview) {
                     initReviewItem()
                     isReview=false
                 }
             }
-            if (isThemeLoaded) {
+            if (isThemeLoaded && isTheme) {
+                Log.d("Home", "#csh init theme")
                 viewModelGet("theme")
-//        initView(allCity, "district")
-//        initView(allCity, "theme")
+                isTheme = false
             }
 
         }
         splashViewModel.loadData()
     }
 
-    private fun viewModelGet(select:String){
-        Log.d("Splash", "#csh viewModelGet")
+    private fun initPetView(){
+        //반려동물
+        homeViewModel.loadPetItem()
+        homeViewModel.petItem.observe(viewLifecycleOwner){petItemList ->
+            if(isAdded){
+                val context = requireContext()
+                val petAdapter = PetAdapter(context, petItemList)
+                binding.rvPetItem.adapter = petAdapter
+                binding.rvPetItem.layoutManager =
+                    LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                binding.rvPetItem.itemAnimator = null
+            }
+        }
+    }
 
+    private fun initReviewItem(){
+//        Log.d("Home", "#csh initReviewItem()")
+        homeViewModel.loadReviewItem()
+        homeViewModel.reviewItem.observe(viewLifecycleOwner){
+//            Log.d("Home", "#csh it: $it")
+            val reviewData = mutableListOf<HomeEntity>()
+            if(!it.isNullOrEmpty()){
+                reviewData.addAll(it)
+                reviewData.sortByDescending { it.commentList.size }
+//                Log.d("Home", "#csh reviewData: $reviewData")
+//                Log.d("Home", "#csh reviewData size: ${reviewData.size}")
+            }else{
+//                Log.d("Home", "#csh reviewData empty: ${splashViewModel.allCityData.value}")
+                reviewData.addAll(splashViewModel.allCityData.value!!)
+                reviewData.shuffle()
+//                Log.d("Home", "#csh reviewData empty: $reviewData")
+            }
+
+            val context = requireContext()
+            val reviewAdapter = ReviewAdapter(context, reviewData)
+            binding.rvReviewItem.adapter = reviewAdapter
+            binding.rvReviewItem.layoutManager =
+                LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            binding.rvReviewItem.itemAnimator = null
+        }
+    }
+
+    private fun viewModelGet(select:String){
         Log.d("Home","#csh viewModelGet()")
 
-
         if(select == "district") {
-//        districtAdapter = HomeAdapter(requireContext(), viewModel.allCityData.value!!)
             districtAdapter = HomeAdapter(requireContext(), splashViewModel.allCityData.value)
             binding.rvDistrictItem.adapter = districtAdapter
             binding.rvDistrictItem.layoutManager =
@@ -169,69 +239,13 @@ class HomeFragment : Fragment() {
         }
 
         else {
-//        themeAdapter = HomeAdapter(requireContext(), viewModel.allThemeData.value!!)
             themeAdapter = HomeAdapter(requireContext(), splashViewModel.allThemeData.value)
             binding.rvThemeItem.adapter = themeAdapter
             binding.rvThemeItem.layoutManager =
                 GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
             binding.rvThemeItem.itemAnimator = null
         }
-
-
         selectChip()
-
-
-    }
-
-    private fun initView(data: Query, select:String) {
-        Log.d("Home", "initView()-data:$data")
-        var limitData = data.limit(10)
-        var view = binding.rvDistrictItem
-        dataItem.clear()
-//        if (data == allCity)
-//            limitData = data.limit(10)
-//        else if (select == "theme")
-//            limitData = data.whereNotEqualTo("districtItem", listOf<String>())
-        if (select == "theme")
-            limitData = data.whereNotEqualTo("themaEnvrnCl", listOf<String>()).limit(10)
-
-        limitData.get().addOnSuccessListener { documents ->
-            for (document in documents) {
-                val dataList = document.toObject(HomeEntity::class.java)
-                dataItem.add(dataList)
-                if(select=="theme")
-                    Log.d("Home","theme item : $dataItem")
-                else
-                    Log.d("Home","district item : $dataItem")
-            }
-            view = when (select) {
-                "theme" -> binding.rvThemeItem
-                "district" -> binding.rvDistrictItem
-                else -> throw IllegalArgumentException("Invalid data value: $data")
-            }
-            Log.d("Home", "view=$view")
-            Log.d("Home", "dataItem=$dataItem")
-            if (isAdded){
-                val context = requireContext()
-                if (view == binding.rvDistrictItem) {
-                    districtAdapter = HomeAdapter(context, dataItem)
-                    view.adapter = districtAdapter
-                    view.layoutManager =
-                        GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
-                    view.itemAnimator = null
-
-                } else if (view == binding.rvThemeItem) {
-                    themeAdapter = HomeAdapter(context, dataItem)
-                    binding.rvThemeItem.adapter = themeAdapter
-                    binding.rvThemeItem.layoutManager =
-                        GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
-                    binding.rvThemeItem.itemAnimator = null
-
-                }
-            }
-
-            selectChip()
-        }
     }
 
     private fun selectChip() {
@@ -282,92 +296,58 @@ class HomeFragment : Fragment() {
 
     }
 
-    private fun initReviewItem(){
-        Log.d("Home", "#csh initReviewItem()")
-        viewModel.loadReviewItem()
-        viewModel.reviewItem.observe(viewLifecycleOwner){
-            Log.d("Home", "#csh it: $it")
-            val reviewData = mutableListOf<HomeEntity>()
-            if(!it.isNullOrEmpty()){
-                reviewData.addAll(it)
-                reviewData.sortByDescending { it.commentList.size }
-                Log.d("Home", "#csh reviewData: $reviewData")
-                Log.d("Home", "#csh reviewData size: ${reviewData.size}")
-            }else{
-                Log.d("Home", "#csh reviewData empty: ${splashViewModel.allCityData.value}")
-                reviewData.addAll(splashViewModel.allCityData.value!!)
-                reviewData.shuffle()
-                Log.d("Home", "#csh reviewData empty: $reviewData")
-            }
-
-            val context = requireContext()
-            val reviewAdapter = ReviewAdapter(context, reviewData)
-            binding.rvReviewItem.adapter = reviewAdapter
-            binding.rvReviewItem.layoutManager =
-                LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            binding.rvReviewItem.itemAnimator = null
-        }
-    }
-
-    private fun initPetView(){
-        //반려동물
-        val dataPet = allCity.whereIn("animalCmgCl", listOf("가능", "가능(소형견)")).limit(10)
-        dataPet.get().addOnSuccessListener { documents ->
-            for (document in documents) {
-                val dataList = document.toObject(HomeEntity::class.java)
-                petItem.add(dataList)
-//                Log.d("Home","item : $dataItem")
-            }
-            if (isAdded){
-                val context = requireContext()
-                val petAdapter = PetAdapter(context, petItem)
-                binding.rvPetItem.adapter = petAdapter
-                binding.rvPetItem.layoutManager =
-                    LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-                binding.rvPetItem.itemAnimator = null
-            }
-
-        }
-    }
-
     private fun initDistrictView(data: String) {
         Log.d("Home", "1. data=$data")
-        districtItem.clear()
-        val result = when(data){
-            "Capital" -> allCity.whereIn("doNm", listOf("서울시", "경기도", "인천시")).limit(10)
-            "Chungcheong" ->allCity.whereIn("doNm", listOf("충청남도", "충청북도", "세종시", "대전시")).limit(10)
-            "Gyeongsang" -> allCity.whereIn("doNm", listOf("경상북도", "경상남도", "부산시", "울산시", "대구시")).limit(10)
-            "Jeolla" -> allCity.whereIn("doNm", listOf("전라북도", "전라남도", "광주시", "제주도")).limit(10)
-            "Gangwon" -> allCity.whereIn("doNm", listOf("강원도")).limit(10)
-            else -> {
-                Toast.makeText(requireContext(), "지역칩 오류", Toast.LENGTH_SHORT).show()
-                throw IllegalArgumentException("Invalid data value: $data")
-            }
-        }
-//        Log.d("Home", "2. data=$data")
-        result.get().addOnSuccessListener { documents ->
-            for (document in documents) {
-                val dataList = document.toObject(HomeEntity::class.java)
-                districtItem.add(dataList)
-//                Log.d("Home","item : $dataItem")
-            }
-            Log.d("Home", "districtItem:$districtItem")
-            if(isAdded){
+        homeViewModel.loadDistrictItem(data)
+        homeViewModel.districtItem.observe(viewLifecycleOwner){districtItemList ->
+            if(isAdded ){
+                Log.d("Home", "#csh initDistrictView isAdded")
                 val context = requireContext()
-                districtAdapter = HomeAdapter(context, districtItem)
+                districtAdapter = HomeAdapter(context, districtItemList)
                 binding.rvDistrictItem.adapter = districtAdapter
                 binding.rvDistrictItem.layoutManager =
                     GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
                 binding.rvDistrictItem.itemAnimator = null
             }
-
-        }.addOnFailureListener { exception ->
-            Log.d("Home", "districtItem fail")
         }
+//        districtItem.clear()
+//        val result = when(data){
+//            "Capital" -> allCity.whereIn("doNm", listOf("서울시", "경기도", "인천시")).limit(10)
+//            "Chungcheong" ->allCity.whereIn("doNm", listOf("충청남도", "충청북도", "세종시", "대전시")).limit(10)
+//            "Gyeongsang" -> allCity.whereIn("doNm", listOf("경상북도", "경상남도", "부산시", "울산시", "대구시")).limit(10)
+//            "Jeolla" -> allCity.whereIn("doNm", listOf("전라북도", "전라남도", "광주시", "제주도")).limit(10)
+//            "Gangwon" -> allCity.whereIn("doNm", listOf("강원도")).limit(10)
+//            else -> {
+//                Toast.makeText(requireContext(), "지역칩 오류", Toast.LENGTH_SHORT).show()
+//                throw IllegalArgumentException("Invalid data value: $data")
+//            }
+//        }
+//        Log.d("Home", "2. data=$data")
+//        result.get().addOnSuccessListener { documents ->
+//            for (document in documents) {
+//                val dataList = document.toObject(HomeEntity::class.java)
+//                districtItem.add(dataList)
+////                Log.d("Home","item : $dataItem")
+//            }
+//            Log.d("Home", "districtItem:$districtItem")
+//            if(isAdded){
+//                val context = requireContext()
+//                districtAdapter = HomeAdapter(context, districtItem)
+//                binding.rvDistrictItem.adapter = districtAdapter
+//                binding.rvDistrictItem.layoutManager =
+//                    GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
+//                binding.rvDistrictItem.itemAnimator = null
+//            }
+//
+//        }.addOnFailureListener { exception ->
+//            Log.d("Home", "districtItem fail")
+//        }
     }
 
     private fun initThemeView(data: String) {
         Log.d("Home", "1. data=$data")
+        val db = Firebase.firestore
+        val allCity: Query = db.collection("camps")
         themeItem.clear()
         val result = when(data){
             "Swim" -> allCity.whereArrayContains("themaEnvrnCl", "여름물놀이").limit(10)
@@ -419,74 +399,15 @@ class HomeFragment : Fragment() {
         }
     }
 
-//    val date = LocalDate.now()
-//    val dateFormat = date.format(DateTimeFormatter.BASIC_ISO_DATE)
-//    val parseYear = dateFormat.substring(0,4)
-
     private fun holidayInfo(){
         Log.d("Home", "#csh holidayInfo start")
-        val holidayList = mutableListOf<HolidayItem?>()
-
-        val nowDate = LocalDate.now()
-        val formatDate = nowDate.format(DateTimeFormatter.BASIC_ISO_DATE)
-        val parse = formatDate.toString().substring(0,4)
-        lifecycleScope.launch {
-            val data = communicateNetWork(parse,100)
-
-            val dataSort = data.sortedBy { it.locdate }
-            val dataFilter = dataSort?.filter { it.locdate != null && it.locdate >= formatDate.toInt()}
-            if(dataFilter?.size!!<5) {
-                holidayList.addAll(dataFilter)
-                val addItem = communicateNetWork("${parse.toInt() + 1}", 5 - dataFilter.size!!)
-                holidayList.addAll(addItem)
-            }else{
-                holidayList.addAll(dataFilter.take(5))
+        homeViewModel.loadHolidayData()
+        homeViewModel.holidayItems.observe(viewLifecycleOwner){ holidayList ->
+            if(!holidayList.isNullOrEmpty()){
+                val nextHoliday = holidayList.first()
+                binding.tvHolidayName.text = "다음 휴일인 ${nextHoliday?.dateName}까지 "
+                binding.tvDday.text = "${nextHoliday?.dDay}일"
             }
-            holidayList.forEach { it ->
-                var dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
-                var dDay = ChronoUnit.DAYS.between(LocalDate.parse(formatDate, dateFormatter), LocalDate.parse(it?.locdate.toString(), dateFormatter))
-                it?.dDay = dDay
-            }
-            Log.d("Home", "#csh check D-Day=${holidayList}")
-            binding.tvHolidayName.text = "다음 휴일인 ${holidayList[0]?.dateName}까지 "
-            binding.tvDday.text = "${holidayList[0]?.dDay}일"
-//
-//
-//            var maxDiff = Long.MAX_VALUE
-//            var minDiffItem:HolidayEntity.Response.Body.Items.Item? = null
-//            var diff:Long = 0
-//            Log.d("Home", "item=${item}")
-//            item?.forEach { item ->
-//                if(nowDate.toString().toInt()<item.locdate){
-//                    val itemDate = LocalDate.parse(item.locdate.toString())
-////                    val nowDate = LocalDate.parse(dateFormat)
-//                    val diff = ChronoUnit.DAYS.between(nowDate, itemDate)
-//                    if ( diff>=0 && diff<maxDiff){
-//                        minDiffItem = item
-//                        maxDiff = diff
-//                    }
-//                }
-//
-//            }
-//            binding.tvHolidayName.text = minDiffItem?.dateName
-////            binding.tvDday.text = "(D-${})"
-        }
-    }
-
-    private suspend fun communicateNetWork(year: String, num: Int): MutableList<HolidayItem> {
-        try {
-            val authKey = BuildConfig.camp_data_key
-            val date = LocalDate.now()
-            val dateFormat = date.format(DateTimeFormatter.BASIC_ISO_DATE)
-//            val parseYear = dateFormat.substring(0,3)
-//        Log.d("Home", "parseYear=${parseYear}")
-            val responseData = holidayNetWork.getRestDeInfo(authKey, year, "json", num)
-            val holidayInfo = responseData.response.body.items.item
-            Timber.tag("Home").d("holidayInfo=%s", responseData)
-            return holidayInfo
-        } catch (e: Exception) {
-            Timber.tag("HOLIDAY").d("Error: $e")
-            return mutableListOf()
         }
     }
 

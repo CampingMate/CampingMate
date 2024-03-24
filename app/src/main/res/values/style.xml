@@ -32,7 +32,7 @@
         <item name="chipStartPadding">6dp</item>
         <item name="chipMinHeight">50dp</item>
     </style>
-<!--  원래 customChipChoice의 chipEnd/startPadding은 12였다.  -->
+    <!--  원래 customChipChoice의 chipEnd/startPadding은 12였다.  -->
     <style name="CustomChipChoiceLocation" parent="@style/Widget.MaterialComponents.Chip.Choice">
         <item name="chipBackgroundColor">@color/chip_bg</item>
         <item name="android:textColor">@color/chip_txt</item>
@@ -42,13 +42,14 @@
         <item name="chipStartPadding">22dp</item>
         <item name="chipMinHeight">50dp</item>
     </style>
+
     <style name="CustomChipChoiceHome" parent="@style/Widget.MaterialComponents.Chip.Choice">
         <item name="chipBackgroundColor">@color/chip_bg</item>
         <item name="android:textColor">@color/chip_txt</item>
         <item name="chipStrokeColor">@color/chip_str</item>
         <item name="android:textSize">13sp</item>
-                <item name="chipEndPadding">5dp</item>
-                <item name="chipStartPadding">5dp</item>
+        <item name="chipEndPadding">5dp</item>
+        <item name="chipStartPadding">5dp</item>
         <item name="chipMinHeight">36dp</item>
     </style>
 
@@ -78,6 +79,20 @@
     <style name="ShapeAppearanceOverlay.FloatingButton" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="Theme.App" parent="@android:style/Theme.DeviceDefault" />
+
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen.IconBackground">
+        <item name="windowSplashScreenBackground">@color/brandColor</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_logo_img</item>
+        <item name="android:windowSplashScreenBrandingImage">@drawable/ic_brand_img_600_240</item>
+        <item name="postSplashScreenTheme">@style/Theme.CampingMate</item>
+
+        <item name="windowSplashScreenIconBackgroundColor">@color/brandColor</item>
+        <!--        <item name="windowSplashScreenBackground">@android:color/black</item>-->
+        <!--        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_logo_img</item>-->
+        <!--        <item name="postSplashScreenTheme">@style/Theme.App</item>-->
     </style>
 
 </resources>
