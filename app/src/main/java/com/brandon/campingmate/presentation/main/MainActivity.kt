@@ -1,28 +1,27 @@
 package com.brandon.campingmate.presentation.main
 
-import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
-import android.view.animation.AnticipateInterpolator
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.brandon.campingmate.R
-import androidx.core.animation.doOnEnd
-import androidx.core.splashscreen.SplashScreen
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.brandon.campingmate.databinding.ActivityMainBinding
+import com.brandon.campingmate.presentation.splash.SplashViewModel
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
     val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+    private val sharedViewModel: SplashViewModel by viewModels()
 
-    private lateinit var splashScreen: SplashScreen
 
     private var backPressedTime: Long = 0
+
+
     @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
         if (backPressedTime + 2000 > System.currentTimeMillis()) {
@@ -34,15 +33,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("Main", "#csh onCreate")
-        splashScreen = installSplashScreen()
-        startSplash()
+        setSplash()
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
         Timber.plant(Timber.DebugTree())
-
         initView()
+
+    }
+
+    private fun setSplash() {
+        val splashScreen = installSplashScreen()
+
+
+        sharedViewModel.isLoading.observe(this) { isLoading ->
+            splashScreen.setKeepOnScreenCondition { isLoading }
+        }
 
     }
 
@@ -52,21 +58,6 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment?.navController
         if (navController != null) {
             binding.bottomNavigation.setupWithNavController(navController)
-        }
-    }
-
-    private fun startSplash() {
-
-        splashScreen.setOnExitAnimationListener { splashScreenView ->
-            ObjectAnimator.ofPropertyValuesHolder(splashScreenView.iconView).run {
-                interpolator = AnticipateInterpolator()
-                duration = 1000L
-                doOnEnd {
-                    splashScreenView.remove()
-                }
-                Log.d("Main", "#csh duration start")
-                start()
-            }
         }
     }
 
