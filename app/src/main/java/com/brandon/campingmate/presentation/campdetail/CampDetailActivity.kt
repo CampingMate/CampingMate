@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.media.Image
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -12,6 +13,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
+import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -30,7 +32,6 @@ import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.campdetail.adapter.CommentListAdapter
 import com.brandon.campingmate.presentation.campdetail.adapter.ViewPagerAdapter
 import com.brandon.campingmate.presentation.common.SnackbarUtil
-import com.brandon.campingmate.utils.toPx
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -45,9 +46,6 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.Marker
 import timber.log.Timber
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -55,7 +53,20 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private val viewModel by lazy {
         ViewModelProvider(this)[CampDetailViewModel::class.java]
     }
-    private val listAdapter: CommentListAdapter by lazy { CommentListAdapter() }
+    private val listAdapter: CommentListAdapter by lazy { CommentListAdapter({ commentImage ->
+        commentImageClick(commentImage)
+    }) }
+
+    private fun commentImageClick(commentImage: String) {
+//        Toast.makeText(this, "이미지클릭", Toast.LENGTH_SHORT).show()
+        val dialog = ImageDialog(this, commentImage)
+        dialog.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
+        dialog.show()
+    }
+
     var userId: String? = EncryptedPrefs.getMyId()
     private val db = FirebaseFirestore.getInstance()
     private val imageUrls = mutableListOf<String>()

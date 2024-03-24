@@ -97,7 +97,7 @@ class HomeFragment : Fragment() {
         onLayoutClickListener(binding.loSearch)
 
 
-        binding.ivMoreIcon.setOnClickListener {
+        binding.locationLayout.setOnClickListener {
             val checkedChipId = binding.chipDistrictGroup.checkedChipId
             val checkedChipName = when(checkedChipId){
                 R.id.chipCapital -> "수도권"
