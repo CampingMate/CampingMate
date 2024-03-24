@@ -2,6 +2,8 @@ package com.brandon.campingmate.presentation.main
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -46,7 +48,9 @@ class MainActivity : AppCompatActivity() {
         val splashScreen = installSplashScreen()
 
         sharedViewModel.isLoading.observe(this) { isLoading ->
-            splashScreen.setKeepOnScreenCondition { isLoading }
+            Handler(Looper.getMainLooper()).postDelayed({
+                splashScreen.setKeepOnScreenCondition { isLoading }
+            }, 600)
         }
 
     }
