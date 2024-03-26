@@ -274,5 +274,4 @@ class BoardFragment : Fragment() {
             }
         }
     }
-
 }

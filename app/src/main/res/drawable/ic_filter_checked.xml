@@ -2,6 +2,7 @@
     android:width="21.08dp"
     android:height="20dp"
     android:viewportWidth="21.08"
+    android:tint="@color/brandColor"
     android:viewportHeight="20">
   <path
       android:pathData="M11.73,3.33c0,0.61 -0.5,1.11 -1.11,1.11H1.11c-0.61,0 -1.11,-0.5 -1.11,-1.11s0.5,-1.11 1.11,-1.11h9.51c0.61,0 1.11,0.5 1.11,1.11Z"
