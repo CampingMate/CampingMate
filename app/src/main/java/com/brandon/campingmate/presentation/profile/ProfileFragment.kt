@@ -179,19 +179,23 @@ class ProfileFragment : Fragment() {
                     ivProfileImg.scaleType = ImageView.ScaleType.CENTER_CROP
                     Glide.with(binding.root).load(it?.profileImage).into(ivProfileImg)
                     ivProfileImg.visibility = View.VISIBLE
-                    tvProfileName.textSize = 20f
-                    tvProfileName.text = decryptedNickName
+                    if (llEditConfirm.visibility == View.GONE) {
+                        tvProfileName.textSize = 20f
+                        tvProfileName.text = decryptedNickName
+                    }
                     tvProfileEmail.text = decryptedEmail
                 }
             }
 
             tvProfileName.visibility = View.VISIBLE
             tvProfileEmail.visibility = View.VISIBLE
-
-            btnLogout.visibility = View.VISIBLE
-
+            if (llEditConfirm.visibility == View.GONE) {
+                btnLogout.visibility = View.VISIBLE
+            }
             btnGoLogin.visibility = View.GONE
-            btnProfileEdit.visibility = View.VISIBLE
+            if (llEditConfirm.visibility == View.GONE) {
+                btnProfileEdit.visibility = View.VISIBLE
+            }
 
             tvTabLoginText.visibility = View.GONE
             if (lineBookmarked.visibility == View.VISIBLE) {
@@ -219,7 +223,7 @@ class ProfileFragment : Fragment() {
             ivProfileImg.scaleType = ImageView.ScaleType.CENTER_INSIDE
             ivProfileImg.setImageResource(R.drawable.ic_camp)
             ivProfileImg.visibility = View.VISIBLE
-            tvProfileName.textSize = 24f
+            tvProfileName.textSize = 22f
             tvProfileName.text = getString(R.string.profile_login_text)
             tvProfileName.visibility = View.VISIBLE
             tvProfileEmail.visibility = View.GONE
@@ -418,16 +422,16 @@ class ProfileFragment : Fragment() {
                 tvProfileName.text = tvProfileName.text
             } else {
                 profileImgUri = null
-                tvProfileName.text = ""
+                tvProfileName.text =""
                 ivProfileImg.setImageURI(profileImgUri)
+                llEditConfirm.visibility = View.GONE
                 initLogin()
             }
-
+            llEditConfirm.visibility = View.GONE
             btnEditName.visibility = View.GONE
             btnEditImg.visibility = View.GONE
             btnLogout.visibility = View.VISIBLE
             btnProfileEdit.visibility = View.VISIBLE
-            llEditConfirm.visibility = View.GONE
             tvProfileName.visibility = View.VISIBLE
             if (rvBookmarked.visibility == View.VISIBLE) {
                 tvTabBookmarked.visibility = View.GONE
@@ -490,12 +494,12 @@ class ProfileFragment : Fragment() {
                 when (recyclerView) {
                     binding.rvBookmarked -> {
                         val bookmarkID = bookmarkAdapter.currentList[position]
-                        viewModel.removeBookmarkAdapter(userId.toString(), bookmarkID.contentId.toString())
+                        viewModel.removeBookmarkAdapter(bookmarkID.contentId.toString())
                         undoSnackbar = Snackbar.make(binding.root, "해당 북마크를 삭제했습니다.", 5000).apply {
                             anchorView = (activity)?.findViewById(R.id.bottom_navigation)
                         }
                         undoSnackbar?.setAction("되돌리기") {
-                            viewModel.undoBookmarkCamp(userId.toString())
+                            viewModel.undoBookmarkCamp()
                             if (binding.lineBookmarked.visibility == View.VISIBLE) {
                                 if (position == 0) {
                                     binding.rvBookmarked.post { binding.rvBookmarked.smoothScrollToPosition(0) }

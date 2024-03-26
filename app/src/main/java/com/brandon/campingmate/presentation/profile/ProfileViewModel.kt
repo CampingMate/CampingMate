@@ -106,20 +106,12 @@ class ProfileViewModel : ViewModel() {
         _postList.value = writingPost
     }
 
-    fun removeBookmarkAdapter(userID: String, contentID: String) {
+    fun removeBookmarkAdapter(contentID: String) {
         _bookmarkedList.value = _bookmarkedList.value?.toMutableList()?.apply {
             removeBookmarkItem = find { it.contentId == contentID }
             removeBookmarkIndex = indexOf(removeBookmarkItem)
             remove(removeBookmarkItem)
         } ?: mutableListOf()
-
-        val db = FirebaseFirestore.getInstance()
-        val docRef = db.collection("users").document(userID)
-        val updateBookmarkList = mutableListOf<String>()
-        _bookmarkedList.value?.forEach {
-            updateBookmarkList.add(it.contentId.toString())
-        }
-        docRef.update("bookmarked", updateBookmarkList)
     }
 
     fun removeBookmarkDB(userID: String) {
@@ -128,7 +120,7 @@ class ProfileViewModel : ViewModel() {
         docRef.update("bookmarked",FieldValue.arrayRemove(removeBookmarkItem?.contentId))
     }
 
-    fun undoBookmarkCamp(userID: String) {
+    fun undoBookmarkCamp() {
         _bookmarkedList.value = _bookmarkedList.value?.toMutableList()?.apply {
             removeBookmarkItem?.let {
                 if (removeBookmarkIndex != null && removeBookmarkIndex!! in 0 until size) {
