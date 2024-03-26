@@ -5,6 +5,7 @@ import com.brandon.campingmate.data.remote.dto.PostDTO
 import com.brandon.campingmate.data.remote.dto.UserDTO
 import com.brandon.campingmate.domain.model.PostComment
 import com.brandon.campingmate.utils.Resource
+import com.brandon.campingmate.utils.UserCryptoUtils.toDecryptedUser
 import com.brandon.campingmate.utils.mappers.toPostComment
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
@@ -99,8 +100,9 @@ class FirestoreDataSourceImpl(
         return withContext(IO) {
             runCatching {
                 val document = firestore.collection("users").document(userId).get().await()
-                document.toObject(UserDTO::class.java)
+                val encryptedUser = document.toObject(UserDTO::class.java)
                     ?: throw NoSuchElementException("Can't find the User using local myID: $userId")
+                encryptedUser.toDecryptedUser()
             }
         }
     }

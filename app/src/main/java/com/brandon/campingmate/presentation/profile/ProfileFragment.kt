@@ -19,7 +19,6 @@ import android.os.Parcelable
 import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,10 +42,10 @@ import com.brandon.campingmate.data.local.preferences.EncryptedPrefs
 import com.brandon.campingmate.databinding.FragmentProfileBinding
 import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.login.LoginActivity
-import com.brandon.campingmate.presentation.login.LoginActivity.Constants.AES_KEY
-import com.brandon.campingmate.presentation.login.LoginActivity.Constants.decrypt
 import com.brandon.campingmate.presentation.profile.adapter.ProfileBookmarkAdapter
 import com.brandon.campingmate.presentation.profile.adapter.ProfilePostAdapter
+import com.brandon.campingmate.utils.UserCryptoUtils.AES_KEY
+import com.brandon.campingmate.utils.UserCryptoUtils.decrypt
 import com.brandon.campingmate.utils.profileImgUpload
 import com.bumptech.glide.Glide
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -59,8 +58,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.storage
 import com.kakao.sdk.user.UserApiClient
 import timber.log.Timber
-import javax.crypto.Cipher
-import javax.crypto.spec.SecretKeySpec
 
 class ProfileFragment : Fragment() {
 
