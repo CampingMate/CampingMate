@@ -12,6 +12,8 @@ import com.brandon.campingmate.domain.model.CampCommentEntity
 import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.domain.model.Mart
 import com.brandon.campingmate.network.retrofit.NetWorkClient
+import com.brandon.campingmate.utils.UserCryptoUtils.AES_KEY
+import com.brandon.campingmate.utils.UserCryptoUtils.decrypt
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
 import com.google.android.gms.tasks.Task
@@ -291,7 +293,7 @@ class CampDetailViewModel : ViewModel() {
         userDocRef
             .get()
             .addOnSuccessListener {
-                val userName = it.get("nickName")
+                val userName = decrypt(it.get("nickName").toString(), AES_KEY)
                 val date =
                     SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(
                         Date()
