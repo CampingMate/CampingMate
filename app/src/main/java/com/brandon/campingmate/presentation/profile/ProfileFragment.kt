@@ -46,6 +46,7 @@ import com.brandon.campingmate.presentation.profile.adapter.ProfileBookmarkAdapt
 import com.brandon.campingmate.presentation.profile.adapter.ProfilePostAdapter
 import com.brandon.campingmate.utils.UserCryptoUtils.AES_KEY
 import com.brandon.campingmate.utils.UserCryptoUtils.decrypt
+import com.brandon.campingmate.utils.UserCryptoUtils.encrypt
 import com.brandon.campingmate.utils.profileImgUpload
 import com.bumptech.glide.Glide
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -405,7 +406,8 @@ class ProfileFragment : Fragment() {
         with(binding) {
             if (confirm) {
                 val documentRef = db.collection("users").document(userId.toString())
-                val updateNickname = hashMapOf<String, Any>("nickName" to "${tvProfileName.text}")
+                val newNickname = encrypt(tvProfileName.text.toString(), AES_KEY)
+                val updateNickname = hashMapOf<String, Any>("nickName" to newNickname)
                 if (profileImgUri != null) {
                     profileImgUpload(profileImgUri!!, userId.toString())
                     Firebase.storage.getReference("profileImage").child(userId.toString()).downloadUrl.addOnCompleteListener {
