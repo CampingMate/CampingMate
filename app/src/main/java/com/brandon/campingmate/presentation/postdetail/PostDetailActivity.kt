@@ -449,7 +449,6 @@ class PostDetailActivity : AppCompatActivity() {
         binding.btnDeletePost.isVisible = true
     }
 
-
     private fun finishActivityWithToast(message: String, isFinishing: Boolean) {
         viewModel.handleEvent(PostDetailEvent.MakeToast(message))
         if (isFinishing) {

@@ -23,4 +23,12 @@ class FireBaseStorageDataSourceImpl(
             imageUrl ?: throw Exception("Failed to get download URL")
         }
     }
+
+    override suspend fun deletePostImage(imageUrl: String) {
+        return withContext(IO) {
+            runCatching {
+                storage.getReferenceFromUrl(imageUrl).delete()
+            }
+        }
+    }
 }
