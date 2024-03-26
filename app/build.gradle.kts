@@ -126,4 +126,6 @@ dependencies {
 
     //spinner
     implementation ("com.github.skydoves:powerspinner:1.2.7")
+    //recaptcha추가
+    implementation ("com.google.android.recaptcha:recaptcha:18.4.0")
 }
