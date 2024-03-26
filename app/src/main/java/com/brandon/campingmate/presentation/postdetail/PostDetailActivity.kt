@@ -285,6 +285,7 @@ class PostDetailActivity : AppCompatActivity() {
             }
         }
         state.comments.let { comments ->
+            binding.tvTitleCommentCount.text = comments.size.toString()
             val firstComment = comments.lastOrNull()
             firstComment?.let { comment ->
                 binding.ivCommentUserProfile.load(comment.authorImageUrl)
