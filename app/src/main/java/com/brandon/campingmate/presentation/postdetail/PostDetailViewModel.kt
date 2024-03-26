@@ -50,6 +50,14 @@ class PostDetailViewModel(
     private val _buttonUiState = MutableStateFlow(false)
     val buttonUiState: Flow<Boolean> = _buttonUiState
 
+    private val adminUserIds = setOf(
+        "Googleagfia3z11ggaO4EuItkR5O5AsjN2",
+        "Kakao3378858360",
+        "Kakao3378858947",
+        "Google2Gy9bYVkj0NdlzC8MYTEEqaW57s1",
+        "Kakao3378474735"
+    )
+
     init {
         checkLoginStatus()
     }
@@ -74,7 +82,6 @@ class PostDetailViewModel(
         }
         val post = _uiState.value.post
 
-        // TODO 포스트의 모든 이미지 삭제
         viewModelScope.launch {
             deletePost(post).fold(
                 onSuccess = {
@@ -112,7 +119,8 @@ class PostDetailViewModel(
         if (item.authorId.isNullOrBlank()) {
             _event.tryEmit(PostDetailEvent.ShowBottomSheetMenu(isOwner = false, postCommentId = null))
         } else {
-            val isOwner = _user.value?.userId == item.authorId
+            val currentUserId = _user.value?.userId
+            val isOwner = currentUserId == item.authorId || currentUserId in adminUserIds
             _event.tryEmit(
                 PostDetailEvent.ShowBottomSheetMenu(
                     isOwner = isOwner,
@@ -233,11 +241,10 @@ class PostDetailViewModel(
     }
 
     private fun checkIfOwner() {
-        if (_uiState.value.post?.authorId == _user.value?.userId ||
-            _user.value?.userId == "Googleagfia3z11ggaO4EuItkR5O5AsjN2" ||
-            _user.value?.userId == "Kakao3378858360" ||
-            _user.value?.userId == "Kakao3378858947"
-        ) {
+        val authorId = _uiState.value.post?.authorId
+        val currentUserId = _user.value?.userId
+
+        if (currentUserId == authorId || currentUserId in adminUserIds) {
             _event.tryEmit(PostDetailEvent.OwnershipVerified)
         }
     }

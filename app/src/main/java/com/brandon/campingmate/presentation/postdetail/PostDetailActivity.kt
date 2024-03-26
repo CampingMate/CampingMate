@@ -231,7 +231,6 @@ class PostDetailActivity : AppCompatActivity() {
         btnDeletePost.setDebouncedOnClickListener {
             viewModel.handleEvent(PostDetailEvent.DeletePost)
         }
-
     }
 
     private fun initViewModel() = with(viewModel) {
@@ -281,7 +280,6 @@ class PostDetailActivity : AppCompatActivity() {
             else -> {}
         }
     }
-
 
     private fun onBind(state: PostDetailUiState) {
         state.post?.let { post ->
