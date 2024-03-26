@@ -36,4 +36,5 @@ sealed class PostDetailEvent {
     object DeletePost : PostDetailEvent()
 
     object Post404 : PostDetailEvent()
+
 }
