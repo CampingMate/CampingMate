@@ -72,9 +72,11 @@ class PostDetailViewModel(
         if (_uiState.value.post?.postId.isNullOrBlank() || user.value?.userId.isNullOrBlank()) {
             _event.tryEmit(PostDetailEvent.MakeToast("게시글 삭제 중 오류가 발생했습니다"))
         }
-        val postId = _uiState.value.post?.postId
+        val post = _uiState.value.post
+
+        // TODO 포스트의 모든 이미지 삭제
         viewModelScope.launch {
-            deletePost(postId).fold(
+            deletePost(post).fold(
                 onSuccess = {
                     _event.tryEmit(PostDetailEvent.DeletePost)
                 },
