@@ -13,7 +13,6 @@ object SnackbarUtil {
 
     fun showSnackBar(view: View) {
         val snackbar = Snackbar.make(view, "", 2000)
-
         val inflater = LayoutInflater.from(view.context)
         val customLayout = inflater.inflate(R.layout.dialog_snackbar, null)
 
@@ -30,8 +29,6 @@ object SnackbarUtil {
             val intent = Intent(view.context, LoginActivity::class.java)
             view.context.startActivity(intent)
         }
-
-
     }
 
 }
