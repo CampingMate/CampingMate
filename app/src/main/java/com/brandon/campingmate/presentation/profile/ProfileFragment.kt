@@ -44,6 +44,7 @@ import com.brandon.campingmate.databinding.FragmentProfileBinding
 import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.login.LoginActivity
 import com.brandon.campingmate.presentation.login.LoginActivity.Constants.AES_KEY
+import com.brandon.campingmate.presentation.login.LoginActivity.Constants.decrypt
 import com.brandon.campingmate.presentation.profile.adapter.ProfileBookmarkAdapter
 import com.brandon.campingmate.presentation.profile.adapter.ProfilePostAdapter
 import com.brandon.campingmate.utils.profileImgUpload
@@ -671,14 +672,6 @@ class ProfileFragment : Fragment() {
         super.onDestroyView()
         _binding = null
         profileImgUri = null
-    }
-    // 대칭키 복호화 함수
-    fun decrypt(encryptedData: String, key: ByteArray): String {
-        val cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING")
-        val secretKeySpec = SecretKeySpec(key, "AES")
-        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec)
-        val decryptedBytes = cipher.doFinal(Base64.decode(encryptedData, Base64.DEFAULT))
-        return String(decryptedBytes)
     }
 
 }

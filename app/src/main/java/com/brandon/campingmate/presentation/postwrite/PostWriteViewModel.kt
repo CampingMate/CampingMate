@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.brandon.campingmate.domain.model.User
 import com.brandon.campingmate.domain.usecase.GetUserUserCase
 import com.brandon.campingmate.domain.usecase.UploadPostUseCase
+import com.brandon.campingmate.presentation.login.LoginActivity.Constants.AES_KEY
+import com.brandon.campingmate.presentation.login.LoginActivity.Constants.decrypt
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow

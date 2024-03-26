@@ -14,6 +14,7 @@ import com.brandon.campingmate.R
 import com.brandon.campingmate.data.local.preferences.EncryptedPrefs
 import com.brandon.campingmate.databinding.ActivityLoginBinding
 import com.brandon.campingmate.presentation.login.LoginActivity.Constants.AES_KEY
+import com.brandon.campingmate.presentation.login.LoginActivity.Constants.encrypt
 import com.brandon.campingmate.utils.profileImgUpload
 import com.bumptech.glide.Glide
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -50,6 +51,25 @@ class LoginActivity : AppCompatActivity() {
             keyGen.init(256, SecureRandom())
             val secretKey: SecretKey = keyGen.generateKey()
             return secretKey.encoded
+        }
+        // 대칭키 암호화 함수
+        fun encrypt(data: String, key: ByteArray): String {
+            //AES알고리즘 사용해서 ECB모드와 PKCS5Padding패딩방식을 지정
+            //ECB모드는 암호화할 블록이 서로 독립적으로 처리되는 방식
+            //PKCS5Padding은 블록 크기에 맞춰 패딩을 추가하는 방식
+            val cipher = Cipher.getInstance("AES/ECB/PKCS5Padding")
+            val secretKeySpec = SecretKeySpec(key, "AES") //SecretKeySpec클래스 사용해서 암호화 키 생성
+            cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec) //객체를 암호화 모드로 초기화
+            val encryptedBytes = cipher.doFinal(data.toByteArray()) //주어진 데이터를 암호화, 바이트배열로 전환
+            return Base64.encodeToString(encryptedBytes, Base64.DEFAULT) //Base64로 인코딩해서 문자열로 반환
+        }
+        // 대칭키 복호화 함수
+        fun decrypt(encryptedData: String, key: ByteArray): String {
+            val cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING")
+            val secretKeySpec = SecretKeySpec(key, "AES")
+            cipher.init(Cipher.DECRYPT_MODE, secretKeySpec)
+            val decryptedBytes = cipher.doFinal(Base64.decode(encryptedData, Base64.DEFAULT))
+            return String(decryptedBytes)
         }
     }
 
@@ -229,16 +249,5 @@ class LoginActivity : AppCompatActivity() {
     private fun googleSignIn() {
         val signInIntent = googleSighInClient.signInIntent
         googleLoginResult.launch(signInIntent)
-    }
-    // 대칭키 암호화 함수
-    fun encrypt(data: String, key: ByteArray): String {
-        //AES알고리즘 사용해서 ECB모드와 PKCS5Padding패딩방식을 지정
-        //ECB모드는 암호화할 블록이 서로 독립적으로 처리되는 방식
-        //PKCS5Padding은 블록 크기에 맞춰 패딩을 추가하는 방식
-        val cipher = Cipher.getInstance("AES/ECB/PKCS5Padding")
-        val secretKeySpec = SecretKeySpec(key, "AES") //SecretKeySpec클래스 사용해서 암호화 키 생성
-        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec) //객체를 암호화 모드로 초기화
-        val encryptedBytes = cipher.doFinal(data.toByteArray()) //주어진 데이터를 암호화, 바이트배열로 전환
-        return Base64.encodeToString(encryptedBytes, Base64.DEFAULT) //Base64로 인코딩해서 문자열로 반환
     }
 }
