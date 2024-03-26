@@ -56,8 +56,8 @@ class PostRepositoryImpl(
     override suspend fun uploadPostWithImages(
         post: Post,
         imageUris: List<Uri>,
-    ): Result<String> = coroutineScope {
-        runCatching {
+    ): Result<String> = runCatching {
+        coroutineScope {
             val imageUrls = imageUris.map { uri ->
                 async { fireBaseStorageDataSource.uploadPostImage(uri).getOrThrow() }
             }.awaitAll()
@@ -74,8 +74,15 @@ class PostRepositoryImpl(
         return firestoreDataSource.deletePostCommentById(commentId, postId)
     }
 
-    override suspend fun deletePostById(postId: String): Result<String> {
-        return firestoreDataSource.deletePostById(postId)
+    override suspend fun deletePostById(post: Post): Result<String> = runCatching {
+        coroutineScope {
+            post.imageUrls?.map { url ->
+                async { fireBaseStorageDataSource.deletePostImage(url) }
+            }?.awaitAll()
+        }
+        firestoreDataSource.deletePostById(
+            post.postId ?: throw IllegalArgumentException("postId can't be null or blank")
+        ).getOrThrow()
     }
 }
 

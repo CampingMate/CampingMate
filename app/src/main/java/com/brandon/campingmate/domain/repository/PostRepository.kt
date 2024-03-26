@@ -34,5 +34,5 @@ interface PostRepository {
 
     suspend fun deletePostCommentById(commentId: String, postId: String): Result<String>
 
-    suspend fun deletePostById(postId: String): Result<String>
+    suspend fun deletePostById(postId: Post): Result<String>
 }
