@@ -4,8 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -14,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.brandon.campingmate.R
 import com.brandon.campingmate.data.local.preferences.EncryptedPrefs
 import com.brandon.campingmate.databinding.ActivityLoginBinding
+import com.brandon.campingmate.utils.UserCryptoUtils.AES_KEY
+import com.brandon.campingmate.utils.UserCryptoUtils.encrypt
 import com.brandon.campingmate.utils.profileImgUpload
 import com.bumptech.glide.Glide
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -24,7 +24,6 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.firestore
-import com.google.firebase.storage.storage
 import com.kakao.sdk.auth.LoginClient
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.AuthErrorCause
@@ -94,11 +93,15 @@ class LoginActivity : AppCompatActivity() {
                 val db = Firebase.firestore
                 UserApiClient.instance.me { user, _ ->
                     val documentRef = db.collection("users").document("Kakao${user?.id}")
+                    val encryptedNickName =
+                        user?.kakaoAccount?.profile?.nickname?.take(10)
+                            ?.let { encrypt(it, AES_KEY) }
+                    val encryptedUserEmail = user?.kakaoAccount?.email?.let { encrypt(it, AES_KEY) }
                     val userModel = hashMapOf(
                         "userId" to "Kakao${user?.id}",
-                        "nickName" to "${user?.kakaoAccount?.profile?.nickname?.take(10)}",
+                        "nickName" to encryptedNickName,
                         "profileImage" to "${user?.kakaoAccount?.profile?.profileImageUrl}",
-                        "userEmail" to "${user?.kakaoAccount?.email}",
+                        "userEmail" to encryptedUserEmail,
                         "bookmarked" to null
                     )
                     documentRef.get().addOnCompleteListener { task ->
@@ -176,11 +179,13 @@ class LoginActivity : AppCompatActivity() {
         val db = Firebase.firestore
         firebaseAuth.signInWithCredential(credential).addOnSuccessListener { result ->
             val documentRef = db.collection("users").document("Google${result.user?.uid}")
+            val encryptedNickName = result.user?.displayName?.take(10)?.let { encrypt(it, AES_KEY) }
+            val encryptedUserEmail = result.user?.email?.let { encrypt(it, AES_KEY) }
             val userModel = hashMapOf(
                 "userId" to "Google${result.user?.uid}",
-                "nickName" to "${result.user?.displayName?.take(10)}",
+                "nickName" to encryptedNickName,
                 "profileImage" to "${result.user?.photoUrl}",
-                "userEmail" to "${result.user?.email}",
+                "userEmail" to encryptedUserEmail,
                 "bookmarked" to null
             )
             documentRef.get().addOnCompleteListener { task ->

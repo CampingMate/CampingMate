@@ -44,6 +44,8 @@ import com.brandon.campingmate.domain.model.CampEntity
 import com.brandon.campingmate.presentation.login.LoginActivity
 import com.brandon.campingmate.presentation.profile.adapter.ProfileBookmarkAdapter
 import com.brandon.campingmate.presentation.profile.adapter.ProfilePostAdapter
+import com.brandon.campingmate.utils.UserCryptoUtils.AES_KEY
+import com.brandon.campingmate.utils.UserCryptoUtils.decrypt
 import com.brandon.campingmate.utils.profileImgUpload
 import com.bumptech.glide.Glide
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -171,13 +173,15 @@ class ProfileFragment : Fragment() {
     private fun initLogin() {
         with(binding) {
             viewModel.userData.observe(viewLifecycleOwner) {
+                val decryptedNickName = it?.nickName?.let { it1 -> decrypt(it1, AES_KEY) }
+                val decryptedEmail = it?.userEmail?.let { it1 -> decrypt(it1, AES_KEY) }
                 if (profileImgUri == null) {
                     ivProfileImg.scaleType = ImageView.ScaleType.CENTER_CROP
                     Glide.with(binding.root).load(it?.profileImage).into(ivProfileImg)
                     ivProfileImg.visibility = View.VISIBLE
                     tvProfileName.textSize = 20f
-                    tvProfileName.text = it?.nickName.toString()
-                    tvProfileEmail.text = it?.userEmail.toString()
+                    tvProfileName.text = decryptedNickName
+                    tvProfileEmail.text = decryptedEmail
                 }
             }
 

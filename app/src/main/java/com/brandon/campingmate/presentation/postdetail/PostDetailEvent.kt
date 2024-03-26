@@ -12,7 +12,7 @@ sealed class PostDetailEvent {
         val message: String
     ) : PostDetailEvent()
 
-    data class ShowBottomSheetMenuIfUserExists(
+    data class ShowBottomSheetCommentMenu(
         val item: PostCommentListItem.PostCommentItem
     ) : PostDetailEvent()
 
@@ -31,5 +31,9 @@ sealed class PostDetailEvent {
 
     object InfiniteScroll : PostDetailEvent()
 
+    object OwnershipVerified : PostDetailEvent()
 
+    object DeletePost : PostDetailEvent()
+
+    object Post404 : PostDetailEvent()
 }

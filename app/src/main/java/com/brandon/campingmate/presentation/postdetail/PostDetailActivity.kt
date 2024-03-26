@@ -1,6 +1,5 @@
 package com.brandon.campingmate.presentation.postdetail
 
-import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Rect
@@ -37,6 +36,7 @@ import com.brandon.campingmate.data.repository.UserRepositoryImpl
 import com.brandon.campingmate.databinding.ActivityPostDetailBinding
 import com.brandon.campingmate.databinding.BottomSheetPostdetailCommnetSideMenuBinding
 import com.brandon.campingmate.domain.usecase.DeletePostCommentUseCase
+import com.brandon.campingmate.domain.usecase.DeletePostUseCase
 import com.brandon.campingmate.domain.usecase.GetPostByIdUseCase
 import com.brandon.campingmate.domain.usecase.GetPostCommentsUseCase
 import com.brandon.campingmate.domain.usecase.GetUserUserCase
@@ -74,7 +74,7 @@ class PostDetailActivity : AppCompatActivity() {
 
     private val commentListAdapter: PostCommentListAdapter by lazy {
         PostCommentListAdapter(onClick = { commentItem ->
-            viewModel.handleEvent(PostDetailEvent.ShowBottomSheetMenuIfUserExists(commentItem))
+            viewModel.handleEvent(PostDetailEvent.ShowBottomSheetCommentMenu(commentItem))
         })
     }
 
@@ -108,6 +108,12 @@ class PostDetailActivity : AppCompatActivity() {
                     FirestoreDataSourceImpl(fireStoreDB),
                     FireBaseStorageDataSourceImpl(FirebaseService.firebaseStorage)
                 )
+            ),
+            DeletePostUseCase(
+                PostRepositoryImpl(
+                    FirestoreDataSourceImpl(fireStoreDB),
+                    FireBaseStorageDataSourceImpl(FirebaseService.firebaseStorage)
+                )
             )
         )
     }
@@ -127,7 +133,6 @@ class PostDetailActivity : AppCompatActivity() {
         initListener()
         initViewModel()
         setupOnBackPressedHandling()
-
     }
 
     override fun onResume() {
@@ -223,12 +228,16 @@ class PostDetailActivity : AppCompatActivity() {
             viewModel.checkValidComment(it.toString())
         }
 
+        btnDeletePost.setDebouncedOnClickListener {
+            viewModel.handleEvent(PostDetailEvent.DeletePost)
+        }
+
     }
 
     private fun initViewModel() = with(viewModel) {
         lifecycleScope.launch {
             viewModel.user.flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED).collectLatest { user ->
-                configureCommentInputField(user != null)
+                setupCommentMenu(user != null)
             }
         }
 
@@ -265,11 +274,15 @@ class PostDetailActivity : AppCompatActivity() {
                 event.postCommentId
             )
 
+            PostDetailEvent.OwnershipVerified -> handleDeletePostButton()
+            PostDetailEvent.DeletePost -> finishActivityWithToast("게시물이 삭제되었습니다", true)
+            PostDetailEvent.Post404 -> finishActivityWithToast("이미 삭제된 게시물입니다.", false)
+
             else -> {}
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+
     private fun onBind(state: PostDetailUiState) {
         state.post?.let { post ->
             with(binding) {
@@ -285,6 +298,7 @@ class PostDetailActivity : AppCompatActivity() {
             }
         }
         state.comments.let { comments ->
+            binding.tvTitleCommentCount.text = comments.size.toString()
             val firstComment = comments.lastOrNull()
             firstComment?.let { comment ->
                 binding.ivCommentUserProfile.load(comment.authorImageUrl)
@@ -303,6 +317,7 @@ class PostDetailActivity : AppCompatActivity() {
         if (!state.isSwipeLoadingComments) {
             binding.sheetRefresh.isRefreshing = false
         }
+
     }
 
     private fun initView() = with(binding) {
@@ -398,7 +413,7 @@ class PostDetailActivity : AppCompatActivity() {
         bottomSheetDialog.show()
     }
 
-    private fun configureCommentInputField(isUserLoggedIn: Boolean) {
+    private fun setupCommentMenu(isUserLoggedIn: Boolean) {
         with(binding) {
             if (isUserLoggedIn) {
                 etCommentInput.setOnClickListener(null)
@@ -430,4 +445,16 @@ class PostDetailActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    private fun handleDeletePostButton() {
+        binding.btnDeletePost.isVisible = true
+    }
+
+
+    private fun finishActivityWithToast(message: String, isFinishing: Boolean) {
+        viewModel.handleEvent(PostDetailEvent.MakeToast(message))
+        if (isFinishing) {
+            ActivityCompat.finishAfterTransition(this@PostDetailActivity)
+            overridePendingTransition(R.anim.anim_none, R.anim.slide_out)
+        }
+    }
 }

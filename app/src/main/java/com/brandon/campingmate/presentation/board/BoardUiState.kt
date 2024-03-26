@@ -7,6 +7,7 @@ data class BoardUiState(
     val isRefreshing: Boolean,
     val isLoadingMore: Boolean,
     val isInitialLoading: Boolean,
+    val isSearchLoading: Boolean,
     val isNothingToShow: Boolean,
     val shouldScrollToTop: Boolean,
 ) {
@@ -16,6 +17,7 @@ data class BoardUiState(
             isRefreshing = false,
             isLoadingMore = false,
             isInitialLoading = false,
+            isSearchLoading = false,
             isNothingToShow = false,
             shouldScrollToTop = false,
         )

@@ -73,6 +73,10 @@ class PostRepositoryImpl(
     override suspend fun deletePostCommentById(commentId: String, postId: String): Result<String> {
         return firestoreDataSource.deletePostCommentById(commentId, postId)
     }
+
+    override suspend fun deletePostById(postId: String): Result<String> {
+        return firestoreDataSource.deletePostById(postId)
+    }
 }
 
 
