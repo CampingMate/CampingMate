@@ -44,13 +44,20 @@ class BoardViewModel(
 
     fun searchPost(keyword: String?) {
         if (keyword.isNullOrBlank()) return
+        _uiState.update { it.copy(isSearchLoading = true) }
         viewModelScope.launch {
             searchPostUseCase(keyword).fold(onSuccess = { newPostListItems ->
                 Timber.tag("SEARCH").d("성공: $newPostListItems")
                 if (newPostListItems.isEmpty()) {
-                    _uiState.update { it.copy(posts = newPostListItems, isNothingToShow = true) }
+                    _uiState.update {
+                        it.copy(
+                            posts = newPostListItems,
+                            isNothingToShow = true,
+                            isSearchLoading = false
+                        )
+                    }
                 } else {
-                    _uiState.update { it.copy(posts = newPostListItems) }
+                    _uiState.update { it.copy(posts = newPostListItems, isSearchLoading = false) }
                 }
             }, onFailure = { e -> Timber.d("검색 중 에러 발생: $e") })
         }
@@ -121,6 +128,7 @@ class BoardViewModel(
                         isLoadingMore = false,
                         isInitialLoading = false,
                         isNothingToShow = false,
+                        isSearchLoading = false,
                         shouldScrollToTop = shouldScrollToTop,
                     )
                 }

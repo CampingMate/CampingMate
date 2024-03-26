@@ -40,6 +40,7 @@ import com.brandon.campingmate.presentation.board.adapter.PostListItem
 import com.brandon.campingmate.presentation.common.SnackbarUtil
 import com.brandon.campingmate.presentation.postdetail.PostDetailActivity
 import com.brandon.campingmate.presentation.postwrite.PostWriteActivity
+import com.brandon.campingmate.utils.clearText
 import com.brandon.campingmate.utils.setDebouncedOnClickListener
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -191,10 +192,12 @@ class BoardFragment : Fragment() {
         swipeRefresh.setOnRefreshListener {
             viewModel.handleEvent(BoardEvent.RefreshRequested)
             binding.swipeRefresh.isRefreshing = false
+            searchView.clearText()
         }
 
         btnLottieCamp.setDebouncedOnClickListener {
             viewModel.handleEvent(BoardEvent.RefreshRequested)
+            searchView.clearText()
         }
     }
 
@@ -258,6 +261,7 @@ class BoardFragment : Fragment() {
 
     private fun onBind(state: BoardUiState) = with(state) {
         binding.lottieNothingToShow.isVisible = isNothingToShow
+        binding.lottieSearching.isVisible = isSearchLoading
         postListAdapter.submitList(posts + if (isLoadingMore) listOf(PostListItem.Loading) else emptyList()) {
             if (shouldScrollToTop) {
                 binding.rvPostList.smoothScrollToPosition(0)

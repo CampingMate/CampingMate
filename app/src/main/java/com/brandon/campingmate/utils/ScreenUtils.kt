@@ -2,6 +2,7 @@ package com.brandon.campingmate.utils
 
 import android.content.Context
 import android.view.View
+import androidx.appcompat.widget.SearchView
 
 fun Float.toPx(context: Context): Int = (this * context.resources.displayMetrics.density + 0.5f).toInt()
 
@@ -19,4 +20,8 @@ fun View.setDebouncedOnClickListener(debounceTime: Long = 1000L, action: (View) 
             }
         }
     })
+}
+
+fun SearchView.clearText() {
+    this.setQuery("", false)
 }
