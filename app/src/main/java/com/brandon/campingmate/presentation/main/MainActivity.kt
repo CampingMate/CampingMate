@@ -41,7 +41,6 @@ class MainActivity : AppCompatActivity() {
 
         Timber.plant(Timber.DebugTree())
         initView()
-
     }
 
     private fun setSplash() {
