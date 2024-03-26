@@ -663,7 +663,13 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     fun showBottomSheetCommentMenu(
         comment: CampCommentEntity,
     ) {
-        val isOwner = comment.userId == userId
+        val user = comment.userId
+        val isOwner = user == userId ||
+                user == "Kakao3378858947" || //우진님
+                user == "Kakao3378858360" || //근영님
+                user == "GooglefzN0fi888dOR7eBQlAwRqClg3Me2" || // 성현님
+                user == "Google2Gy9bYVkj0NdlzC8MYTEEqaW57s1" || // 지혜님
+                user == "Kakao3378474735" //경식님
         val campId = comment.campId
 
         showBottomSheetCommentMenu(isOwner, campId, comment)
