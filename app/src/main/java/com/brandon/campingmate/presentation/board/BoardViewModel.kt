@@ -80,11 +80,14 @@ class BoardViewModel(
                 _event.tryEmit(BoardEvent.NavigateToPostWrite)
             }
 
-            BoardEvent.RefreshRequested -> {
+            is BoardEvent.MakeToast -> _event.tryEmit(BoardEvent.MakeToast(event.message))
+
+
+            BoardEvent.RefreshPostsRequested -> {
                 refreshPosts()
             }
 
-            BoardEvent.LoadMoreRequested -> {
+            BoardEvent.LoadMorePostsRequested -> {
                 loadMorePosts()
             }
 
@@ -110,6 +113,7 @@ class BoardViewModel(
         if (_uiState.value.isRefreshing) return
         _uiState.update { it.copy(isRefreshing = true) }
         getPosts(shouldFetchFromFirst = true)
+        handleEvent(BoardEvent.MakeToast("새로고침"))
     }
 
     private fun getPosts(
@@ -120,7 +124,6 @@ class BoardViewModel(
                 pageSize = pageSize, shouldFetchFromFirst = shouldFetchFromFirst
             ).fold(onSuccess = { newPosts ->
                 if (_uiState.value.isLoadingMore && newPosts.isEmpty()) handleEvent(BoardEvent.MakeToast("새로운 게시글이 더 이상 없어요."))
-                if (_uiState.value.isRefreshing) handleEvent(BoardEvent.MakeToast("새로고침"))
                 _uiState.update { currentState ->
                     currentState.copy(
                         posts = if (shouldFetchFromFirst) newPosts else currentState.posts + newPosts,

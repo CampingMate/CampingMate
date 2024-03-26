@@ -13,11 +13,10 @@ sealed class BoardEvent {
 
     object NavigateToPostWrite : BoardEvent()
 
-    object RefreshRequested : BoardEvent()
+    object RefreshPostsRequested : BoardEvent()
 
-    object LoadMoreRequested : BoardEvent()
+    object LoadMorePostsRequested : BoardEvent()
 
     object RefreshPostsAndScrollToTopRequested : BoardEvent()
-
 
 }

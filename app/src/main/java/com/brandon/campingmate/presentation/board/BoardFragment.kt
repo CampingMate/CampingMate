@@ -44,7 +44,6 @@ import com.brandon.campingmate.utils.clearText
 import com.brandon.campingmate.utils.setDebouncedOnClickListener
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class BoardFragment : Fragment() {
 
@@ -83,63 +82,39 @@ class BoardFragment : Fragment() {
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var postWriteResultLauncher: ActivityResultLauncher<Intent>
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Timber.d("BoardFragment onCreate")
-
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        Timber.tag("BOARD").d("BoardFragment onCreateView")
         _binding = FragmentBoardBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Timber.tag("BOARD").d("BoardFragment onViewCreated")
-
         initResultLauncher()
         initView()
         initListener()
         initViewModel()
     }
 
-    override fun onStart() {
-        super.onStart()
-        Timber.tag("BOARD").d("BoardFragment onStart")
-    }
-
     override fun onResume() {
         super.onResume()
-        Timber.tag("BOARD").d("BoardFragment onResume")
         viewModel.checkLoginStatus()
         binding.shimmerView.startShimmer()
-        Timber.d("BoardFragment onResume")
     }
 
     override fun onPause() {
         super.onPause()
         binding.shimmerView.stopShimmer()
-        Timber.tag("BOARD").d("BoardFragment onPause")
     }
 
     override fun onStop() {
         super.onStop()
-        Timber.tag("BOARD").d("BoardFragment onStop")
         hideKeyboard()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        Timber.tag("BOARD").d("BoardFragment onDestroyView")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Timber.tag("BOARD").d("BoardFragment onDestroy")
         _binding = null
     }
 
@@ -147,7 +122,6 @@ class BoardFragment : Fragment() {
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                Timber.d("검색 키워드: $query")
                 viewModel.searchPost(query)
                 searchView.clearFocus()
                 return false
@@ -166,7 +140,7 @@ class BoardFragment : Fragment() {
                     val totalItemCount = layoutManager.itemCount
                     val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
                     if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition + 1 >= totalItemCount) {
-                        viewModel.handleEvent(BoardEvent.LoadMoreRequested)
+                        viewModel.handleEvent(BoardEvent.LoadMorePostsRequested)
                     }
                 }
             }
@@ -190,13 +164,13 @@ class BoardFragment : Fragment() {
         })
 
         swipeRefresh.setOnRefreshListener {
-            viewModel.handleEvent(BoardEvent.RefreshRequested)
+            viewModel.handleEvent(BoardEvent.RefreshPostsRequested)
             binding.swipeRefresh.isRefreshing = false
             searchView.clearText()
         }
 
         btnLottieCamp.setDebouncedOnClickListener {
-            viewModel.handleEvent(BoardEvent.RefreshRequested)
+            viewModel.handleEvent(BoardEvent.RefreshPostsRequested)
             searchView.clearText()
         }
     }
