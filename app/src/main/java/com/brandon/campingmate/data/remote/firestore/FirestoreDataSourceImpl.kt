@@ -5,6 +5,7 @@ import com.brandon.campingmate.data.remote.dto.PostDTO
 import com.brandon.campingmate.data.remote.dto.UserDTO
 import com.brandon.campingmate.domain.model.PostComment
 import com.brandon.campingmate.utils.Resource
+import com.brandon.campingmate.utils.UserCryptoUtils.toDecryptedUser
 import com.brandon.campingmate.utils.mappers.toPostComment
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
@@ -95,21 +96,33 @@ class FirestoreDataSourceImpl(
         }
     }
 
-    override suspend fun getUserById(userId: String): Result<UserDTO?> = withContext(IO) {
-        // 로컬 userId 는 있지만 document 가 null 로 나온 경우
-        runCatching {
-            val document = firestore.collection("users").document(userId).get().await()
-            document.toObject(UserDTO::class.java)
-                ?: throw NoSuchElementException("Can't find the User using local myID: $userId")
+    override suspend fun getUserById(userId: String): Result<UserDTO?> {
+        return withContext(IO) {
+            runCatching {
+                val document = firestore.collection("users").document(userId).get().await()
+                val encryptedUser = document.toObject(UserDTO::class.java)
+                    ?: throw NoSuchElementException("Can't find the User using local myID: $userId")
+                encryptedUser.toDecryptedUser()
+            }
         }
     }
 
-    override suspend fun deletePostCommentById(commentId: String, postId: String): Result<String> =
-        withContext(IO) {
+    override suspend fun deletePostCommentById(commentId: String, postId: String): Result<String> {
+        return withContext(IO) {
             runCatching {
                 firestore.collection("posts").document(postId)
                     .collection("comments").document(commentId).delete()
-                "Post comment($commentId) is deleted"
+                commentId
             }
         }
+    }
+
+    override suspend fun deletePostById(postId: String): Result<String> {
+        return withContext(IO) {
+            runCatching {
+                firestore.collection("posts").document(postId).delete()
+                postId
+            }
+        }
+    }
 }
