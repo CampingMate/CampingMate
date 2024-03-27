@@ -13,7 +13,7 @@ import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 
 class SplashViewModel : ViewModel() {
     private val _allCityData: MutableLiveData<MutableList<HomeEntity>> = MutableLiveData(mutableListOf())
@@ -36,10 +36,14 @@ class SplashViewModel : ViewModel() {
 
     private fun loadKey() {
         viewModelScope.launch {
-            val aesKey = fireStoreDB.collection("keys")
-                .document("9FwUIJRcHbLhrCYZJGfi").get().await()
-                .getString("aesKey") ?: ""
-            UserCryptoUtils.AES_KEY = aesKey
+            fireStoreDB.collection("keys")
+                .document("9FwUIJRcHbLhrCYZJGfi").get().addOnSuccessListener {
+                    val aesKey = it.getString("aesKey") ?: ""
+                    UserCryptoUtils.AES_KEY = aesKey
+                }.addOnFailureListener {
+                    Timber.d("키 가져오기에 실패했습니다")
+                }
+
         }
     }
 
