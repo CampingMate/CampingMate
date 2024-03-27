@@ -77,20 +77,23 @@ class PostDetailViewModel(
     }
 
     private fun handleDeletePost() {
-        if (_uiState.value.post?.postId.isNullOrBlank() || user.value?.userId.isNullOrBlank()) {
-            _event.tryEmit(PostDetailEvent.MakeToast("게시글 삭제 중 오류가 발생했습니다"))
-        }
         val post = _uiState.value.post
+        if (post == null) {
+            _event.tryEmit(PostDetailEvent.MakeToast("이미 삭제된 게시물입니다."))
+            return
+        } else if (_uiState.value.post?.postId.isNullOrBlank() || user.value?.userId.isNullOrBlank()) {
+            _event.tryEmit(PostDetailEvent.MakeToast("게시글 삭제 중 오류가 발생했습니다"))
+            return
+        }
 
         viewModelScope.launch {
-            deletePost(post).fold(
-                onSuccess = {
-                    _event.tryEmit(PostDetailEvent.DeletePost)
-                },
-                onFailure = {
-                    _event.tryEmit(PostDetailEvent.MakeToast("게시글 삭제 중 오류가 발생했습니다"))
-                }
-            )
+            runCatching {
+                deletePost(post)
+            }.onSuccess {
+                _event.tryEmit(PostDetailEvent.DeletePost)
+            }.onFailure { exception ->
+                _event.tryEmit(PostDetailEvent.MakeToast("${exception.message}"))
+            }
         }
     }
 
@@ -149,7 +152,7 @@ class PostDetailViewModel(
                     _user.value = user
                     checkIfOwner()
                 },
-                onFailure = { e -> Timber.d("로그인 중 에러 발생, 예외: $e") }
+                onFailure = { e -> Timber.tag("USER").d("로그인 중 에러 발생, 예외: $e") }
             )
         }
     }
@@ -214,20 +217,24 @@ class PostDetailViewModel(
     fun getPostById(postId: String?) {
         if (postId == null) return
         viewModelScope.launch {
-            when (val result = getPostUseCase(postId)) {
-                Resource.Empty -> {
-                    _event.tryEmit(PostDetailEvent.Post404)
-                }
+            try {
+                when (val result = getPostUseCase(postId)) {
+                    Resource.Empty -> {
+                        _event.tryEmit(PostDetailEvent.Post404)
+                    }
 
-                is Resource.Error -> {
-                    _event.tryEmit(PostDetailEvent.MakeToast("게시물 불러오기 에러: ${result.message}"))
-                }
+                    is Resource.Error -> {
+                        _event.tryEmit(PostDetailEvent.MakeToast("게시물 불러오기 에러: ${result.message}"))
+                    }
 
-                is Resource.Success -> {
-                    _uiState.value = _uiState.value.copy(post = result.data)
-                    getComments()
-                    checkIfOwner()
+                    is Resource.Success -> {
+                        _uiState.value = _uiState.value.copy(post = result.data)
+                        getComments()
+                        checkIfOwner()
+                    }
                 }
+            } catch (e: Exception) {
+                Timber.d("게시물 가져오기 에러: $e")
             }
         }
     }
