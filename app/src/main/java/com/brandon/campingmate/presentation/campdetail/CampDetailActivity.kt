@@ -264,7 +264,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         val reserveUrl = it.resveUrl
         btnReserve.setOnClickListener {
-            if (!reserveUrl.isNullOrBlank()) {
+            if (!reserveUrl.isNullOrBlank() && reserveUrl.startsWith("http")) {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(reserveUrl))
                 startActivity(intent)
             } else {
