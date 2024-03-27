@@ -196,6 +196,14 @@ class PostDetailViewModel(
     }
 
     private fun uploadComment(comment: String) {
+        val post = _uiState.value.post
+        if (post == null) {
+            _event.tryEmit(PostDetailEvent.MakeToast("이미 삭제된 게시물입니다."))
+            return
+        } else if (_uiState.value.post?.postId.isNullOrBlank() || user.value?.userId.isNullOrBlank()) {
+            _event.tryEmit(PostDetailEvent.MakeToast("게시글 삭제 중 오류가 발생했습니다"))
+            return
+        }
         viewModelScope.launch {
             uploadPostCommentUseCase(
                 postId = _uiState.value.post?.postId,
