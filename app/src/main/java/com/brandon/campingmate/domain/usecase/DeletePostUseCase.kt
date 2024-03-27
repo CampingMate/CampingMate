@@ -9,7 +9,7 @@ class DeletePostUseCase(
     suspend operator fun invoke(
         post: Post?
     ): Result<String> {
-        if (post == null) throw IllegalArgumentException("postId can't be null or blank")
+        if (post == null) throw IllegalArgumentException("이미 삭제된 게시물입니다.")
         return postRepository.deletePostById(post)
     }
 }

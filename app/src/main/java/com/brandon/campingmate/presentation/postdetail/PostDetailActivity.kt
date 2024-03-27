@@ -127,6 +127,7 @@ class PostDetailActivity : AppCompatActivity() {
 
 
         val postId = intent.getStringExtra(EXTRA_POST_ID)
+        Timber.tag("USER").d("postId: $postId")
         viewModel.getPostById(postId)
 
         initView()
