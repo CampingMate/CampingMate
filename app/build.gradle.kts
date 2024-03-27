@@ -123,7 +123,7 @@ dependencies {
 
     //geofire
     implementation ("com.firebase:geofire-android-common:3.2.0")
-
+    debugImplementation ("com.squareup.leakcanary:leakcanary-android:2.13")
     //spinner
     implementation ("com.github.skydoves:powerspinner:1.2.7")
     //recaptcha추가

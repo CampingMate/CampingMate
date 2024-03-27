@@ -100,6 +100,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onResume() {
         super.onResume()
+        mapView?.onResume()
         userId = EncryptedPrefs.getMyId()
         if(userId != null){
             binding.commentEdit.isFocusableInTouchMode = true
@@ -604,10 +605,30 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(windowToken, 0)
     }
+    override fun onStart() {
+        super.onStart()
+        mapView?.onStart()
+    }
+    override fun onPause() {
+        super.onPause()
+        mapView?.onPause()
+    }
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        mapView?.onSaveInstanceState(outState)
+    }
+    override fun onStop() {
+        super.onStop()
+        mapView?.onStop()
+    }
 
     override fun onDestroy() {
         super.onDestroy()
-        mapView = null
+        mapView?.onDestroy()
+    }
+    override fun onLowMemory() {
+        super.onLowMemory()
+        mapView?.onLowMemory()
     }
 
     private fun makeMarker(mapX: String?, mapY: String?, campName: String?, map: NaverMap?) {
