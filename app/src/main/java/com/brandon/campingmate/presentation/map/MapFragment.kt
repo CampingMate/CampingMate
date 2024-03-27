@@ -196,7 +196,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             bookmarkMarkers = temp
             markers.addAll(temp)
             if(naverMap != null){
-                showCampSite(naverMap?.cameraPosition?.zoom!!, markers, naverMap!!, campDataList)
+                showCampSite(naverMap?.cameraPosition?.zoom, markers, naverMap, campDataList)
             }
 
         }
@@ -261,13 +261,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             //Timber.tag("test").d(naverMap?.cameraPosition?.zoom.toString())
             if (bookmark) {
                 showCampSite(
-                    naverMap?.cameraPosition?.zoom!!,
+                    naverMap?.cameraPosition?.zoom,
                     bookmarkMarkers,
-                    naverMap!!,
+                    naverMap,
                     bookMarkedList
                 )
             } else {
-                showCampSite(naverMap?.cameraPosition?.zoom!!, markers, naverMap!!, campDataList)
+                showCampSite(naverMap?.cameraPosition?.zoom, markers, naverMap, campDataList)
             }
 
         }
@@ -282,9 +282,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         hideMarker(it)
                     }
                     showCampSite(
-                        naverMap?.cameraPosition?.zoom!!,
+                        naverMap?.cameraPosition?.zoom,
                         bookmarkMarkers,
-                        naverMap!!,
+                        naverMap,
                         bookMarkedList
                     )
                     bookmark = true
@@ -293,55 +293,60 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 bookmarkMarkers.forEach {
                     hideMarker(it)
                 }
-                showCampSite(naverMap?.cameraPosition?.zoom!!, markers, naverMap!!, campDataList)
+                showCampSite(naverMap?.cameraPosition?.zoom, markers, naverMap, campDataList)
                 bookmark = false
             }
         }
 
 
-
-        tedNaverClustering =
-            TedNaverClustering.with<LocationBasedListItem>(requireContext(), naverMap!!)
-                .customMarker {
-                    Marker().apply {
-                        val zoom = naverMap?.cameraPosition?.zoom!!
-                        if (zoom.toInt() > 13) {
-                            captionText = it.facltNm.toString()
+        naverMap?.let {
+            tedNaverClustering =
+                TedNaverClustering.with<LocationBasedListItem>(requireContext(),it)
+                    .customMarker {
+                        Marker().apply {
+                            val zoom = naverMap?.cameraPosition?.zoom
+                            if(zoom != null){
+                                if (zoom.toInt() > 13) {
+                                    captionText = it.facltNm.toString()
+                                }
+                            }
+                            captionRequestedWidth = 200
+                            setCaptionAligns(Align.Top)
+                            captionOffset = 5
+                            captionTextSize = 16f
+                            //markers.add(this)
                         }
-                        captionRequestedWidth = 200
-                        setCaptionAligns(Align.Top)
-                        captionOffset = 5
-                        captionTextSize = 16f
-                        //markers.add(this)
                     }
-                }
-                .markerClickListener {
-                    val tag = it.induty
-                    val loc = it.lctCl
-                    imgAdapter.clear()
-                    binding.clMapBottomDialog.setOnClickListener(null)
-                    binding.tvDialogtag.text = "$tag · $loc"
-                    binding.tvDialogcampname.text = it.facltNm
-                    binding.tvDialoglocation.text = it.addr1
-                    binding.clMapBottomDialog.isGone = false
-                    binding.clMapBottomDialog.setOnClickListener { view ->
-                        val intent = Intent(requireContext(), CampDetailActivity::class.java)
-                        var data = CampEntity(
-                            contentId = it.contentId,
-                        )
-                        intent.putExtra("campData", data)
-                        startActivity(intent)
+                    .markerClickListener {
+                        val tag = it.induty
+                        val loc = it.lctCl
+                        imgAdapter.clear()
+                        binding.clMapBottomDialog.setOnClickListener(null)
+                        binding.tvDialogtag.text = "$tag · $loc"
+                        binding.tvDialogcampname.text = it.facltNm
+                        binding.tvDialoglocation.text = it.addr1
+                        binding.clMapBottomDialog.isGone = false
+                        binding.clMapBottomDialog.setOnClickListener { view ->
+                            val intent = Intent(requireContext(), CampDetailActivity::class.java)
+                            var data = CampEntity(
+                                contentId = it.contentId,
+                            )
+                            intent.putExtra("campData", data)
+                            startActivity(intent)
+                        }
+                        val param = viewModel.getImgParamHashmap(it.contentId.toString())
+                        viewModel.getImgList(param)
                     }
-                    val param = viewModel.getImgParamHashmap(it.contentId.toString())
-                    viewModel.getImgList(param)
-                }
-                .clusterClickListener {
+                    .clusterClickListener {
 
-                }
-                .minClusterSize(0)
-                .clusterBuckets(intArrayOf(5000, 100))
-                .items(mutableListOf())
-                .make()
+                    }
+                    .minClusterSize(0)
+                    .clusterBuckets(intArrayOf(5000, 100))
+                    .items(mutableListOf())
+                    .make()
+
+        }
+
     }
 
 
@@ -386,18 +391,19 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mapView?.onLowMemory()
     }
 
-    private fun showMarker(marker: Marker, naverMap: NaverMap) {
-        marker.map = naverMap
+    private fun showMarker(marker: Marker, naverMap: NaverMap?) {
+        if(naverMap != null){
+            marker.map = naverMap
+        }
+
     }
 
     private fun hideMarker(marker: Marker) {
         marker.map = null
     }
 
-
-    //fun updateMarkers(naverMap: NaverMap, tMarkers: MutableList<Marker>){
     private fun updateCluster(
-        naverMap: NaverMap,
+        naverMap: NaverMap?,
         campData: MutableList<LocationBasedListItem>,
         mMarkers: MutableList<Marker>
     ) {
@@ -412,50 +418,50 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             val middleIdx = campData.size / 4
 
             val job1 = async {
-                showCampData(campData, naverMap, 0, middleIdx)
+                addCampData(campData, naverMap, 0, middleIdx)
             }
             val job2 = async {
-                showCampData(campData, naverMap, middleIdx, middleIdx * 2)
+                addCampData(campData, naverMap, middleIdx, middleIdx * 2)
             }
             val job3 = async {
-                showCampData(campData, naverMap, middleIdx * 2, middleIdx * 3)
+                addCampData(campData, naverMap, middleIdx * 2, middleIdx * 3)
             }
             val job4 = async {
-                showCampData(campData, naverMap, middleIdx * 3, campData.size)
+                addCampData(campData, naverMap, middleIdx * 3, campData.size)
             }
             val list = listOf(job1, job2, job3, job4)
             list.awaitAll()
         }
     }
 
-    private fun showCampData(
+    private fun addCampData(
         campData: MutableList<LocationBasedListItem>,
-        naverMap: NaverMap,
+        naverMap: NaverMap?,
         startIdx: Int,
         endIdx: Int
     ) {
-        val mapBounds = naverMap.contentBounds
+        val mapBounds = naverMap?.contentBounds
         val clustering = mutableListOf<LocationBasedListItem>()
         for (i in startIdx until endIdx) {
             val lat = campData[i].mapY
             val lon = campData[i].mapX
             val position = LatLng(lat!!.toDouble(), lon!!.toDouble())
             //Log.d("test","포지션= ${position}")
-            if (mapBounds.contains(position)) {
+            if (mapBounds?.contains(position) == true) {
                 clustering.add(campData[i])
             }
         }
         tedNaverClustering?.addItems(clustering)
     }
 
-    private fun updateMarkers(cMarkers: MutableList<Marker>, naverMap: NaverMap) {
-        val mapBounds = naverMap.contentBounds
+    private fun updateMarkers(cMarkers: MutableList<Marker>, naverMap: NaverMap?) {
+        val mapBounds = naverMap?.contentBounds
         tedNaverClustering?.clearItems()
 
         for (marker in cMarkers) {
             val position = marker.position
             //Log.d("test","포지션= ${position}")
-            if (mapBounds.contains(position)) {
+            if (mapBounds?.contains(position) == true) {
                 marker.captionOffset = 5
                 showMarker(marker, naverMap)
                 //Log.d("test","마커 드러남")
@@ -465,14 +471,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun updateNoCaptionMarkers(cMarkers: MutableList<Marker>, naverMap: NaverMap) {
-        val mapBounds = naverMap.contentBounds
+    private fun updateNoCaptionMarkers(cMarkers: MutableList<Marker>, naverMap: NaverMap?) {
+        val mapBounds = naverMap?.contentBounds
         tedNaverClustering?.clearItems()
 
         for (marker in cMarkers) {
             val position = marker.position
             //Log.d("test","포지션= ${position}")
-            if (mapBounds.contains(position)) {
+            if (mapBounds?.contains(position) == true) {
                 marker.captionOffset = 9999
                 showMarker(marker, naverMap)
                 //Log.d("test","마커 드러남")
@@ -483,15 +489,17 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun showCampSite(
-        zoom: Double,
+        zoom: Double?,
         mMarkers: MutableList<Marker>,
-        map: NaverMap,
+        map: NaverMap?,
         campData: MutableList<LocationBasedListItem>
     ) {
-        when (zoom.toInt()) {
-            in 13..18 -> updateMarkers(mMarkers, map)
-            in 11..12 -> updateNoCaptionMarkers(mMarkers, map)
-            in 6..10 -> updateCluster(map, campData, mMarkers)
+        if(map != null) {
+            when (zoom?.toInt()) {
+                in 13..18 -> updateMarkers(mMarkers, map)
+                in 11..12 -> updateNoCaptionMarkers(mMarkers, map)
+                in 6..10 -> updateCluster(map, campData, mMarkers)
+            }
         }
     }
 }

@@ -162,12 +162,6 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         commentCount.observe(this@CampDetailActivity) {
             binding.commentCount.text = it
         }
-        martMarker.observe(this@CampDetailActivity){
-            val markers = it
-            for(martMarker in markers){
-                martMarker.map = naverMap!!
-            }
-        }
 
     }
 
@@ -583,7 +577,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             if (naverMap != null) {
                 Log.d("Detail", "initsettiong 안에 마커만들기 실행됨")
                 if (it != null) {
-                    makeMarker(it.mapX, it.mapY, it.facltNm, naverMap!!)
+                    makeMarker(it.mapX, it.mapY, it.facltNm, naverMap)
                 }
             } else {
                 Toast.makeText(this@CampDetailActivity,"위치 정보가 없어 지도에 표시할 수 없습니다.",Toast.LENGTH_SHORT).show()
@@ -594,6 +588,15 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
 
+        viewModel.martMarker.observe(this@CampDetailActivity){
+            val markers = it
+            for(martMarker in markers){
+                if(naverMap != null){
+                    martMarker.map = naverMap
+                }
+
+            }
+        }
 
     }
 
@@ -609,8 +612,8 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun makeMarker(mapX: String?, mapY: String?, campName: String?, map: NaverMap?) {
         if (mapX != null && mapY != null) {
-            val mapY = if (mapY.isNullOrEmpty()) 45.0 else mapY!!.toDouble()
-            val mapX = if (mapX.isNullOrEmpty()) 130.0 else mapX!!.toDouble()
+            val mapY = if (mapY.isNullOrEmpty()) 45.0 else mapY.toDouble()
+            val mapX = if (mapX.isNullOrEmpty()) 130.0 else mapX.toDouble()
             val cameraPosition = CameraPosition(LatLng(mapY, mapX), 11.0)
             val marker = Marker()
             marker.position = LatLng(mapY, mapX)
