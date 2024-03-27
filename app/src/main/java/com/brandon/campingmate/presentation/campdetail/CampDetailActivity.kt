@@ -92,6 +92,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         initViewModel()
         initBottomSheet()
         clickBookmarked()
+        binding.spinnerDetailsattel.lifecycleOwner = this
         mapView = binding.fcMap
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync(this)
@@ -335,6 +336,7 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             val screenHeight = resources.displayMetrics.heightPixels // 화면의 높이를 가져옴
             val peekHeightRatio = 0.7 // 바텀시트가 화면의 70%까지 보이도록 설정
             behavior.peekHeight = (screenHeight * peekHeightRatio).toInt()
+            spinnerDetailsattel.dismiss()
         }
         bottomSheetCancle.setOnClickListener {
             behavior.state = BottomSheetBehavior.STATE_HIDDEN

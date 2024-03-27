@@ -478,6 +478,7 @@
                     android:textSize="13sp"
                     app:layout_constraintStart_toStartOf="@+id/fc_map"
                     app:layout_constraintTop_toTopOf="@+id/fc_map"
+                    app:spinner_popup_elevation="1dp"
                     app:spinner_divider_show="true"
                     app:spinner_item_array="@array/maptype"
                     app:spinner_item_height="40dp"

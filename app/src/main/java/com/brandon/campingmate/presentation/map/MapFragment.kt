@@ -356,11 +356,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onResume() {
         super.onResume()
-
         mapView?.onResume()
     }
 
     override fun onPause() {
+        binding.spinnerSattel.dismiss()
         super.onPause()
         mapView?.onPause()
     }
