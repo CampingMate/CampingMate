@@ -62,7 +62,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:visibility="gone"
-        android:background="@color/background"
+        android:background="@color/white"
         android:id="@+id/cl_map_bottomDialog"
         android:layout_width="match_parent"
         android:layout_height="220dp"

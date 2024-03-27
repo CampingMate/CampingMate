@@ -1,36 +1,24 @@
 package com.brandon.campingmate.presentation.map
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
 import androidx.core.view.isGone
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.brandon.campingmate.data.local.preferences.EncryptedPrefs
-import com.brandon.campingmate.presentation.map.adapter.DialogImgAdapter
-import com.brandon.campingmate.domain.model.LocationBasedListItem
 import com.brandon.campingmate.databinding.FragmentMapBinding
 import com.brandon.campingmate.domain.model.CampEntity
-import com.brandon.campingmate.domain.model.NaverItem
-import com.brandon.campingmate.presentation.board.BoardEvent
+import com.brandon.campingmate.domain.model.LocationBasedListItem
 import com.brandon.campingmate.presentation.campdetail.CampDetailActivity
 import com.brandon.campingmate.presentation.common.SnackbarUtil
-import com.brandon.campingmate.presentation.profile.ProfileViewModel
-import com.google.firebase.firestore.FirebaseFirestore
-import com.kakao.sdk.user.UserApiClient
+import com.brandon.campingmate.presentation.map.adapter.DialogImgAdapter
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
-import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
@@ -39,17 +27,13 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.Marker
-import com.naver.maps.map.overlay.Overlay
-import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
-import com.naver.maps.map.util.MarkerIcons
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import ted.gun0912.clustering.naver.TedNaverClustering
-import timber.log.Timber
 
 class MapFragment : Fragment(), OnMapReadyCallback {
     private var _binding: FragmentMapBinding? = null
@@ -93,6 +77,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState)
         initViewModel()
         initView()
+        binding.spinnerSattel.lifecycleOwner = this
     }
 
     private fun initView() = with(binding) {
