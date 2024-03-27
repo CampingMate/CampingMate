@@ -5,32 +5,23 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
-import android.media.Image
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.AttributeSet
 import android.util.Log
-import android.view.DragEvent
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnDragListener
-import android.view.View.OnLongClickListener
 import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import android.view.inputmethod.InputMethodManager
-import android.widget.AbsListView
-import android.widget.AbsListView.OnScrollListener
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
-import coil.decode.withInterruptibleSource
 import com.brandon.campingmate.R
 import com.brandon.campingmate.data.local.preferences.EncryptedPrefs
 import com.brandon.campingmate.databinding.ActivityCampDetailBinding
@@ -664,12 +655,13 @@ class CampDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         comment: CampCommentEntity,
     ) {
         val user = comment.userId
-        val isOwner = user == userId ||
-                user == "Kakao3378858947" || //우진님
-                user == "Kakao3378858360" || //근영님
-                user == "GooglefzN0fi888dOR7eBQlAwRqClg3Me2" || // 성현님
-                user == "Google2Gy9bYVkj0NdlzC8MYTEEqaW57s1" || // 지혜님
-                user == "Kakao3378474735" //경식님
+        val admin = arrayOf(
+            "Kakao3378858947",
+            "Kakao3378858360",
+            "Kakao3378474735",
+            "GooglefzN0fi888dOR7eBQlAwRqClg3Me2",
+            "Google2Gy9bYVkj0NdlzC8MYTEEqaW57s1",)
+        val isOwner = user == userId || admin.contains(userId)
         val campId = comment.campId
 
         showBottomSheetCommentMenu(isOwner, campId, comment)
