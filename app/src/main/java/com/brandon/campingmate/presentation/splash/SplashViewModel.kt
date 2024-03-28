@@ -31,7 +31,7 @@ class SplashViewModel : ViewModel() {
 
     init {
         loadData()
-        loadKey()
+//        loadKey()
     }
 
     private fun loadKey() {
