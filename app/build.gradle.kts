@@ -8,7 +8,7 @@ plugins {
     id("com.google.firebase.crashlytics")
     id("com.google.firebase.firebase-perf")
 }
-fun getApiKey(propertyKey: String): String {
+fun getKey(propertyKey: String): String {
     return gradleLocalProperties(rootDir).getProperty(propertyKey)
 }
 android {
@@ -21,7 +21,8 @@ android {
         targetSdk = 34
         versionCode = 7
         versionName = "1.0"
-        buildConfigField("String", "camp_data_key", getApiKey("camp_data_key"))
+        buildConfigField("String", "camp_data_key", getKey("camp_data_key"))
+        buildConfigField("String", "ENCRYPT_KEY", getKey("encrypt_key"))
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

@@ -1,13 +1,14 @@
 package com.brandon.campingmate.utils
 
 import android.util.Base64
+import com.brandon.campingmate.BuildConfig
 import com.brandon.campingmate.data.remote.dto.UserDTO
 import javax.crypto.Cipher
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
 object UserCryptoUtils {
-    var AES_KEY = ""
+    var AES_KEY = BuildConfig.ENCRYPT_KEY
     // 대칭키 암호화 함수
     fun encrypt(data: String, key: String): String {
         val cipher = Cipher.getInstance("AES/GCM/NoPadding")
