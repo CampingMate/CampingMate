@@ -28,6 +28,7 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
+import com.naver.maps.map.util.MarkerIcons
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -40,13 +41,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val binding get() = _binding!!
     private var mapView: MapView? = null
     private var naverMap: NaverMap? = null
-    private var context: Context? = null
     private val imgAdapter = DialogImgAdapter()
     private var tedNaverClustering: TedNaverClustering<LocationBasedListItem>? = null
     private var campDataList = mutableListOf<LocationBasedListItem>()
-    private var imageList = mutableListOf<String>()
-    private var bookMarkedList = mutableListOf<LocationBasedListItem>()
-    private var markers = mutableListOf<Marker>()
+    private var mapFragmentBookMarkedList = mutableListOf<LocationBasedListItem>()
+    private var mapFragmentMarkers = mutableListOf<Marker>()
     private var bookmarkMarkers = mutableListOf<Marker>()
     private val viewModel by lazy {
         ViewModelProvider(this)[MapViewModel::class.java]
@@ -63,7 +62,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        context = container?.context
         _binding = FragmentMapBinding.inflate(inflater, container, false)
         mapView = binding.mvMap
         mapView?.onCreate(savedInstanceState)
@@ -81,8 +79,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun initView() = with(binding) {
-        val map = viewModel.getBlParamHashmap()
-        viewModel.getAllCampList(map)
 
         spinnerSattel.setOnSpinnerItemSelectedListener<String> { oldIndex, oldItem, newIndex, newItem ->
             when (newIndex) {
@@ -107,96 +103,115 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
 
         rvCampImg.layoutManager =
-            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         rvCampImg.adapter = imgAdapter
 
 
     }
 
     private fun initViewModel() = with(viewModel) {
-
-        campMarker.observe(viewLifecycleOwner) {
-            if (campList.value?.isNotEmpty() == true) {
-                campDataList = campList.value!!
-                val tempList = mutableListOf<Marker>()
-                //마커에 클릭리스너 추가
-                for(campMarker in campMarker.value!!){
-                    campMarker.setOnClickListener {
-                        val campData = campMarker.tag as LocationBasedListItem
-                        val tag = campData.induty
-                        val loc = campData.lctCl
-                        imgAdapter.clear()
-                        binding.clMapBottomDialog.setOnClickListener(null)
-                        binding.tvDialogtag.text = "$tag · $loc"
-                        binding.tvDialogcampname.text = campData.facltNm
-                        binding.tvDialoglocation.text = campData.addr1
-                        binding.clMapBottomDialog.isGone = false
-                        binding.clMapBottomDialog.setOnClickListener { view ->
-                            val intent = Intent(requireContext(), CampDetailActivity::class.java)
-                            var data = campData.contentId
-                            intent.putExtra("campData", data)
-                            startActivity(intent)
-                        }
-                        //뷰모델에 이미지 불러오기 실행
-                        val param = viewModel.getImgParamHashmap(campData.contentId.toString())
-                        viewModel.getImgList(param)
-                        true
-                    }
-                    tempList.add(campMarker)
+        val map = getBlParamHashmap()
+        getAllCampList(map)
+        campList.observe(viewLifecycleOwner) {
+            val campdatalists = it
+            campDataList = campdatalists
+            val tempList = mutableListOf<Marker>()
+            for (camp in campdatalists) {
+                val marker = Marker()
+                if (camp.mapX.isNullOrEmpty() || camp.mapY.isNullOrEmpty()) {
+                    continue
                 }
-                markers = tempList
-                if(userId != null){
-                    getBookmarkedList(campDataList,userId!!)
-                }
-
-            }
-        }
-
-        imageRes.observe(viewLifecycleOwner) {
-            if (imageRes.value?.isNotEmpty() == true) {
-                imageList = viewModel.imageRes.value!!
-                imgAdapter.submitList(imageList)
-            }
-        }
-
-        bookmarkCampMarker.observe(viewLifecycleOwner) {
-            bookMarkedList = bookmarkedList.value!!
-
-            bookmarkMarkers.forEach {
-                hideMarker(it)
-            }
-
-            markers.removeAll(bookmarkMarkers)
-            val temp = mutableListOf<Marker>()
-            //마커에 클릭리스너 추가
-            for (camp in it) {
-                camp.setOnClickListener {
-                    val campData = camp.tag as LocationBasedListItem
-                    val tag = campData.induty
-                    val loc = campData.lctCl
+                marker.captionText = camp.facltNm.toString()
+                marker.captionRequestedWidth = 400
+                marker.setCaptionAligns(Align.Top)
+                marker.tag = camp
+                marker.captionOffset = 5
+                marker.captionTextSize = 16f
+                marker.position = LatLng(camp.mapY.toDouble(), camp.mapX.toDouble())
+                marker.setOnClickListener {
+                    val tag = camp.induty
+                    val loc = camp.lctCl
                     imgAdapter.clear()
                     binding.clMapBottomDialog.setOnClickListener(null)
                     binding.tvDialogtag.text = "$tag · $loc"
-                    binding.tvDialogcampname.text = campData.facltNm
-                    binding.tvDialoglocation.text = campData.addr1
+                    binding.tvDialogcampname.text = camp.facltNm
+                    binding.tvDialoglocation.text = camp.addr1
                     binding.clMapBottomDialog.isGone = false
                     binding.clMapBottomDialog.setOnClickListener { view ->
                         val intent = Intent(requireContext(), CampDetailActivity::class.java)
-                        var data = campData.contentId
+                        var data = camp.contentId
                         intent.putExtra("campData", data)
                         startActivity(intent)
                     }
                     //뷰모델에 이미지 불러오기 실행
-                    val param = viewModel.getImgParamHashmap(campData.contentId.toString())
+                    val param = viewModel.getImgParamHashmap(camp.contentId.toString())
                     viewModel.getImgList(param)
                     true
                 }
-                temp.add(camp)
+                tempList.add(marker)
             }
-            bookmarkMarkers = temp
-            markers.addAll(temp)
+            mapFragmentMarkers = tempList
+            if(userId != null){
+                getBookmarkedList(campdatalists,userId!!)
+            }
+        }
+
+        imageRes.observe(viewLifecycleOwner) {
+            val imgList = it
+            if (imgList.isNotEmpty()) {
+                imgAdapter.submitList(imgList)
+            }
+        }
+
+        bookmarkedList.observe(viewLifecycleOwner) {
+            val bookmarkedCampLists = it
+            mapFragmentBookMarkedList = bookmarkedCampLists
+            bookmarkMarkers.forEach {
+                hideMarker(it)
+            }
+            mapFragmentMarkers.removeAll(bookmarkMarkers)
+            //마커에 클릭리스너 추가
+            val bookmarkMarker = mutableListOf<Marker>()
+
+            for (camp in bookmarkedCampLists) {
+                val marker = Marker()
+                if (camp.mapX.isNullOrEmpty() || camp.mapY.isNullOrEmpty()) {
+                    continue
+                }
+                marker.captionText = camp.facltNm.toString()
+                marker.captionRequestedWidth = 400
+                marker.setCaptionAligns(Align.Top)
+                marker.icon = MarkerIcons.RED
+                marker.tag = camp
+                marker.captionOffset = 5
+                marker.captionTextSize = 16f
+                marker.position = LatLng(camp.mapY.toDouble(), camp.mapX.toDouble())
+                marker.setOnClickListener {
+                    val tag = camp.induty
+                    val loc =camp.lctCl
+                    imgAdapter.clear()
+                    binding.clMapBottomDialog.setOnClickListener(null)
+                    binding.tvDialogtag.text = "$tag · $loc"
+                    binding.tvDialogcampname.text = camp.facltNm
+                    binding.tvDialoglocation.text = camp.addr1
+                    binding.clMapBottomDialog.isGone = false
+                    binding.clMapBottomDialog.setOnClickListener { view ->
+                        val intent = Intent(requireContext(), CampDetailActivity::class.java)
+                        var data = camp.contentId
+                        intent.putExtra("campData", data)
+                        startActivity(intent)
+                    }
+                    //뷰모델에 이미지 불러오기 실행
+                    val param = viewModel.getImgParamHashmap(camp.contentId.toString())
+                    viewModel.getImgList(param)
+                    true
+                }
+                bookmarkMarker.add(marker)
+            }
+            bookmarkMarkers = bookmarkMarker
+            mapFragmentMarkers.addAll(bookmarkMarker)
             if(naverMap != null){
-                showCampSite(naverMap?.cameraPosition?.zoom, markers, naverMap, campDataList)
+                showCampSite(naverMap?.cameraPosition?.zoom!!,mapFragmentMarkers, naverMap!!, campDataList)
             }
 
         }
@@ -264,10 +279,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     naverMap?.cameraPosition?.zoom,
                     bookmarkMarkers,
                     naverMap,
-                    bookMarkedList
+                    mapFragmentBookMarkedList
                 )
             } else {
-                showCampSite(naverMap?.cameraPosition?.zoom, markers, naverMap, campDataList)
+                showCampSite(naverMap?.cameraPosition?.zoom, mapFragmentMarkers, naverMap, campDataList)
             }
 
         }
@@ -278,14 +293,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     SnackbarUtil.showSnackBar(buttonView)
                     buttonView.isChecked = false
                 } else {
-                    markers.forEach {
+                    mapFragmentMarkers.forEach {
                         hideMarker(it)
                     }
                     showCampSite(
                         naverMap?.cameraPosition?.zoom,
                         bookmarkMarkers,
                         naverMap,
-                        bookMarkedList
+                        mapFragmentBookMarkedList
                     )
                     bookmark = true
                 }
@@ -293,7 +308,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 bookmarkMarkers.forEach {
                     hideMarker(it)
                 }
-                showCampSite(naverMap?.cameraPosition?.zoom, markers, naverMap, campDataList)
+                showCampSite(naverMap?.cameraPosition?.zoom, mapFragmentMarkers, naverMap, campDataList)
                 bookmark = false
             }
         }
@@ -360,25 +375,28 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     override fun onResume() {
-        super.onResume()
         mapView?.onResume()
+        super.onResume()
+
     }
 
     override fun onPause() {
         binding.spinnerSattel.dismiss()
-        super.onPause()
         mapView?.onPause()
+        super.onPause()
+
     }
 
     override fun onStop() {
-        super.onStop()
         mapView?.onStop()
+        super.onStop()
+
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         mapView?.onDestroy()
         _binding = null
+        super.onDestroyView()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
