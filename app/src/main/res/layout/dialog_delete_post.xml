@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/layout_dialog"
+    android:minWidth="300dp"
+    android:paddingHorizontal="24dp">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:fontFamily="@font/spoqahansansneo_bold"
+        android:text="게시물 삭제"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/spoqahansansneo_regular"
+        android:gravity="center"
+        android:text="정말 삭제하시겠습니까?"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_title" />
+
+
+    <TextView
+        android:id="@+id/btn_delete_yes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="20dp"
+        android:layout_weight="12"
+        android:background="@drawable/btn_green"
+        android:fontFamily="@font/spoqahansansneo_regular"
+        android:gravity="center"
+        android:paddingVertical="14dp"
+        android:text="예"
+        android:textColor="@color/background"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_delete_no"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_description" />
+
+    <TextView
+        android:id="@+id/btn_delete_no"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_weight="12"
+        android:background="@drawable/btn_border"
+        android:fontFamily="@font/spoqahansansneo_regular"
+        android:gravity="center"
+        android:paddingVertical="14dp"
+        android:text="아니오"
+        android:textColor="#4a4a4a"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@id/btn_delete_yes"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btn_delete_yes"
+        app:layout_constraintTop_toTopOf="@id/btn_delete_yes" />
+</androidx.constraintlayout.widget.ConstraintLayout>
