@@ -19,8 +19,8 @@ android {
         applicationId = "com.brandon.campingmate"
         minSdk = 28
         targetSdk = 34
-        versionCode = 7
-        versionName = "1.0"
+        versionCode = 10
+        versionName = "1.1"
         buildConfigField("String", "camp_data_key", getKey("camp_data_key"))
         buildConfigField("String", "ENCRYPT_KEY", getKey("encrypt_key"))
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -118,7 +118,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.2.0")
 
     // EncryptedSharedPreferences
-    implementation("androidx.security:security-crypto-ktx:1.1.0-alpha03")
+    implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
 
     // Shimmer
     implementation("com.facebook.shimmer:shimmer:0.5.0")
