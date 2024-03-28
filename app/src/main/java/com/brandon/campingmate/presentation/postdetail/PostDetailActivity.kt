@@ -1,5 +1,6 @@
 package com.brandon.campingmate.presentation.postdetail
 
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Rect
@@ -12,6 +13,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
@@ -230,7 +232,7 @@ class PostDetailActivity : AppCompatActivity() {
         }
 
         btnDeletePost.setDebouncedOnClickListener {
-            viewModel.handleEvent(PostDetailEvent.DeletePost)
+            showDeleteConfirmationDialog { viewModel.handleEvent(PostDetailEvent.DeletePost) }
         }
     }
 
@@ -454,5 +456,25 @@ class PostDetailActivity : AppCompatActivity() {
             ActivityCompat.finishAfterTransition(this@PostDetailActivity)
             overridePendingTransition(R.anim.anim_none, R.anim.slide_out)
         }
+    }
+
+    private fun showDeleteConfirmationDialog(onConfirm: () -> Unit) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_delete_post, null)
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        dialogView.findViewById<TextView>(R.id.btn_delete_yes)?.setOnClickListener {
+            onConfirm()
+            dialog.dismiss()
+        }
+
+        dialogView.findViewById<TextView>(R.id.btn_delete_no)?.setOnClickListener {
+            dialog.dismiss()
+        }
+        dialog.show()
     }
 }
